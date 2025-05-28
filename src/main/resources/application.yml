@@ -1,0 +1,9 @@
+spring:
+  application:
+    name:
+      CooperationCenter
+  thymeleaf:
+    prefix:
+      classpath:/templates/
+    suffix:
+      .html
