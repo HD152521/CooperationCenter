@@ -1,4 +1,4 @@
-package com.cooperation.project.cooperationcenter.domain.test;
+package com.cooperation.project.cooperationcenter.domain;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -10,32 +10,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/test")
 @Slf4j
-public class TestController {
+@RequestMapping("/main")
+public class AdminMainController {
 
-    @GetMapping("/main")
+    @GetMapping("/page")
     public String mainPage(HttpSession session, Model model) {
         boolean isLogin = session.getAttribute("member") != null;
+        if(!isLogin) return"redirect:/admin/login";
 
         model.addAttribute("pageTitle", "대시보드 홈");
-        model.addAttribute("isLogin", isLogin);
         model.addAttribute("member", session.getAttribute("member"));
         log.info("{}",session.getAttribute("member"));
-
         return "admin/main";  // templates/index.html
-    }
 
-    @GetMapping("/login")
-    public String loginPage(Model model) {
-        model.addAttribute("pageTitle", "대시보드 홈");
-        return "admin/login";  // templates/index.html
     }
-
-    @GetMapping("/register")
-    public String registerPage(Model model) {
-        model.addAttribute("pageTitle", "대시보드 홈");
-        return "admin/register";  // templates/index.html
-    }
-
 }
