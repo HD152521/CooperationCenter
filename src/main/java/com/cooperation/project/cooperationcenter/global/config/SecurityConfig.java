@@ -46,6 +46,7 @@ public class SecurityConfig {
 
                                 //fixme 임시용임 밑에는
                                 .requestMatchers("/api/v1/**").permitAll()
+                                .requestMatchers("/**").permitAll()
                                 .requestMatchers("/test/**","/excep/**","/main/**","/admin/login").permitAll()
                                 .anyRequest().authenticated()
                 )
