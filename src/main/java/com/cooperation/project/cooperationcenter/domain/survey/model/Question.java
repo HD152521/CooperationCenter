@@ -3,10 +3,15 @@ package com.cooperation.project.cooperationcenter.domain.survey.model;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.security.core.parameters.P;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -21,8 +26,38 @@ public class Question extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Survey survey;
 
+    @OneToMany(mappedBy = "question")
+    private List<QuestionOption> options = new ArrayList<>();
+
     private QuestionType questionType;
-    private int questionOrder;
+    private String question;
     private String questionDescription;
     private boolean isNecessary;
+    private boolean isOption;
+
+    @Builder
+    public Question(QuestionType questionType, String questionDescription, boolean isNecessary, Survey survey,String question){
+        this.questionType = questionType;
+        this.question = question;
+        this.questionDescription = questionDescription;
+        this.isNecessary = isNecessary;
+        this.survey = survey;
+        this.isOption = QuestionType.checkType(questionType);
+    }
+
+    public void setOptions(QuestionOption option) {
+        if(this.options.contains(option)) return;
+        this.options.add(option);
+    }
+
+    @Override
+    public String toString() {
+        return "Question{" +
+                "id=" + id +
+                ", survey=" + survey +
+                ", questionType=" + questionType +
+                ", questionDescription='" + questionDescription + '\'' +
+                ", isNecessary=" + isNecessary +
+                '}';
+    }
 }
