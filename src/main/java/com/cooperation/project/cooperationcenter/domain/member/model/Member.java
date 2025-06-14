@@ -1,6 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.member.model;
 
 
+import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyLog;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -11,6 +12,7 @@ import org.antlr.v4.runtime.misc.NotNull;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -30,6 +32,10 @@ public class Member extends BaseEntity {
     @NotNull private Role role;             //권한
     @NotNull private boolean isFirstLogin;  //처음로그인
     private String imgUrl;
+
+    @OneToMany(mappedBy = "member")
+    private List<SurveyLog> surveyLogs = new ArrayList<>();
+
 
 
     public enum Role{
