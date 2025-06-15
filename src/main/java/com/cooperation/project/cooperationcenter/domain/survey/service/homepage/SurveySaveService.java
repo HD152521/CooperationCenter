@@ -15,7 +15,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -158,12 +160,17 @@ public class SurveySaveService {
         List<SurveyResponseDto> response = new ArrayList<>();
         List<Survey> surveys = getAllSurveyFromDB();
         for(Survey survey : surveys){
+            LocalDate now = LocalDate.now();
+            int daysLeft = (survey.getEndDate()==null) ? 0 : Period.between(now, survey.getEndDate()).getDays();
+            boolean isBefore = survey.getStartDate() != null && now.isBefore(survey.getStartDate());
             response.add(
                     new SurveyResponseDto(
                         survey.getSurveyTitle(),
                             survey.getCreatedAt(),
                             survey.getParticipantCount(),
-                            3
+                            daysLeft,
+                            survey.getId(),
+                            isBefore
                     )
             );
             //fixme 남은 날짜 고쳐야함

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +27,8 @@ public class Survey extends BaseEntity {
     private String surveyTitle;
     private String surveyDescription;
     private int participantCount;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     @OneToMany(mappedBy = "survey")
     private final List<Question> questions = new ArrayList<>();
@@ -37,11 +40,13 @@ public class Survey extends BaseEntity {
     private final List<QuestionOption> options = new ArrayList<>();
 
     @Builder
-    public Survey(String surveyTitle,String surveyDescription,String owner){
+    public Survey(String surveyTitle,String surveyDescription,String owner,LocalDate startDate, LocalDate endDate){
         this.surveyDescription = surveyDescription;
         this.surveyTitle = surveyTitle;
         this.participantCount = 0;
         this.owner = owner;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     public void setQuestion(Question question){
