@@ -1,5 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.survey.service.homepage;
 
+import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerPageDto;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.QuestionDto;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyRequest;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyResponseDto;
@@ -87,7 +88,7 @@ public class SurveySaveService {
         return options;
     }
 
-    public List<QuestionDto> getSurveys(Long surveyId){
+    public AnswerPageDto getSurveys(Long surveyId){
         List<QuestionDto> response = new ArrayList<>();
         Survey survey = getSurveyFromId(surveyId);
         List<Question> questions = getQuestions(survey);
@@ -107,7 +108,7 @@ public class SurveySaveService {
             List<String> optionList = q.isOption() ? optionMap.getOrDefault(q.getId(), new ArrayList<>()) : null;
             response.add(
                     new QuestionDto(
-                            q.getQuestionType().toString(),
+                            q.getQuestionType().toString().toLowerCase(),
                             q.getQuestion(),
                             q.getQuestionDescription(),
                             optionList,
@@ -116,7 +117,7 @@ public class SurveySaveService {
             );
         }
 
-        return response;
+        return new AnswerPageDto(survey.getSurveyTitle(),survey.getSurveyDescription(),response);
     }
 
 //    String type,
