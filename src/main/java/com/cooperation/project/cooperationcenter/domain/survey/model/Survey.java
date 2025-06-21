@@ -12,6 +12,7 @@ import org.hibernate.annotations.SQLRestriction;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Entity
@@ -22,6 +23,9 @@ public class Survey extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true, nullable = false)
+    private String surveyId;
 
     private String owner;
     private String surveyTitle;
@@ -34,10 +38,11 @@ public class Survey extends BaseEntity {
     private final List<Question> questions = new ArrayList<>();
 
     @OneToMany(mappedBy = "survey")
-    private final List<SurveyLog> surveyLogs = new ArrayList<>();
+    private final List<QuestionOption> options = new ArrayList<>();
 
     @OneToMany(mappedBy = "survey")
-    private final List<QuestionOption> options = new ArrayList<>();
+    private final List<SurveyLog> surveyLogs = new ArrayList<>();
+
 
     @Builder
     public Survey(String surveyTitle,String surveyDescription,String owner,LocalDate startDate, LocalDate endDate){
@@ -47,6 +52,7 @@ public class Survey extends BaseEntity {
         this.owner = owner;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.surveyId = UUID.randomUUID().toString();
     }
 
     public void setQuestion(Question question){

@@ -9,7 +9,7 @@ public record SurveyResponseDto(
         LocalDateTime createdAt,
         int participant,
         int lastDate,
-        Long surveyId,
+        String surveyId,
         boolean isBefore
 ) {
 }

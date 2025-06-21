@@ -14,6 +14,7 @@ import com.cooperation.project.cooperationcenter.domain.survey.repository.Survey
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -90,7 +91,7 @@ public class SurveySaveService {
         return options;
     }
 
-    public AnswerPageDto getSurveys(Long surveyId){
+    public AnswerPageDto getSurveys(String surveyId){
         List<QuestionDto> response = new ArrayList<>();
         Survey survey = getSurveyFromId(surveyId);
         List<Question> questions = getQuestions(survey);
@@ -137,6 +138,15 @@ public class SurveySaveService {
         }
     }
 
+    public Survey getSurveyFromId(String surveyId){
+        try{
+            return surveyRepository.findSurveyBySurveyId(surveyId);
+        }catch (Exception e){
+            log.warn("getSurveyForm survey Id Fail");
+            return null;
+        }
+    }
+
     public List<Question> getQuestions(Survey survey){
         try{
             return questionRepository.findQuestionsBySurvey(survey);
@@ -169,11 +179,10 @@ public class SurveySaveService {
                             survey.getCreatedAt(),
                             survey.getParticipantCount(),
                             daysLeft,
-                            survey.getId(),
+                            survey.getSurveyId(),
                             isBefore
                     )
             );
-            //fixme 남은 날짜 고쳐야함
         }
         log.info("response:{}",response.get(0).toString());
         return response;
@@ -188,9 +197,69 @@ public class SurveySaveService {
         }
     }
 
-    //todo 추후 개발
-    public void saveOptions(){
+    @Transactional
+    public void deleteSurvey(String surveyId){
+        Survey survey = getSurveyFromId(surveyId);
+        log.info("delete survey:{}",survey.getSurveyId());
+        try {
+            for (Question question : survey.getQuestions()) {
+                questionOptionRepository.deleteAll(question.getOptions());
+                question.getOptions().clear(); // 메모리 내 컬렉션도 정리
+            }
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            log.warn("option delete fail...");
+        }
+        survey.getOptions().clear();
 
+        try {
+            questionRepository.deleteAll(survey.getQuestions());
+            survey.getQuestions().clear();
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            log.warn("question 삭제 실패");
+        }
+
+        surveyRepository.delete(survey);
+        log.info("survey delete success...");
     }
+
+    @Transactional
+    public Survey copySurvey(String originalSurveyId) {
+        Survey original = getSurveyFromId(originalSurveyId);
+
+        Survey copy = Survey.builder()
+                .surveyTitle(original.getSurveyTitle() + " - 복사본")
+                .surveyDescription(original.getSurveyDescription())
+                .owner(original.getOwner())
+                .startDate(original.getStartDate())
+                .endDate(original.getEndDate())
+                .build();
+        surveyRepository.save(copy);
+
+        for (Question originalQ : original.getQuestions()) {
+            Question newQ = Question.builder()
+                    .questionType(originalQ.getQuestionType())
+                    .questionDescription(originalQ.getQuestionDescription())
+                    .isNecessary(originalQ.isNecessary())
+                    .question(originalQ.getQuestion())
+                    .survey(copy)
+                    .build();
+            questionRepository.save(newQ);
+
+            for (QuestionOption originalOpt : originalQ.getOptions()) {
+                QuestionOption newOpt = QuestionOption.builder()
+                        .text(originalOpt.getOptionText())
+                        .nextQuestionId(originalOpt.getNextQuestionId())
+                        .question(newQ)
+                        .survey(copy)
+                        .build();
+                questionOptionRepository.save(newOpt);
+            }
+        }
+
+        return copy;
+    }
+
 
 }

@@ -5,6 +5,7 @@ import com.cooperation.project.cooperationcenter.domain.survey.dto.QuestionDto;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyRequest;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyResponseDto;
 import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveySaveService;
+import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ public class SurveyRestController {
     }
 
     @GetMapping("/{surveyId}")
-    public AnswerPageDto getSurvey(@PathVariable Long surveyId){
+    public AnswerPageDto getSurvey(@PathVariable String surveyId){
         log.info("[controller] getSurvey 진입 : {}",surveyId);
         return surveyService.getSurveys(surveyId);
     }
@@ -37,8 +38,19 @@ public class SurveyRestController {
         return surveyService.getAllSurvey();
     }
 
+    @DeleteMapping("/{surveyId}")
+    public BaseResponse<?> deleteSurvey(@PathVariable String surveyId){
+        log.info("[controller] getSurvey 진입 : {}",surveyId);
+        surveyService.deleteSurvey(surveyId);
+        return BaseResponse.onSuccess("success");
+    }
 
-
+    @PostMapping("/copy/{surveyId}")
+    public BaseResponse<?> copoSurvey(@PathVariable String surveyId){
+        log.info("[controller] getSurvey 진입 : {}",surveyId);
+        surveyService.copySurvey(surveyId);
+        return BaseResponse.onSuccess("success");
+    }
 
 
 }
