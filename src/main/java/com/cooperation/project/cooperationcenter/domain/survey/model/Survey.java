@@ -33,6 +33,7 @@ public class Survey extends BaseEntity {
     private int participantCount;
     private LocalDate startDate;
     private LocalDate endDate;
+    private int copyCnt;
 
     @OneToMany(mappedBy = "survey")
     private final List<Question> questions = new ArrayList<>();
@@ -53,6 +54,7 @@ public class Survey extends BaseEntity {
         this.startDate = startDate;
         this.endDate = endDate;
         this.surveyId = UUID.randomUUID().toString();
+        this.copyCnt = 0;
     }
 
     public void setQuestion(Question question){
@@ -63,6 +65,10 @@ public class Survey extends BaseEntity {
     public void setSurveyLogs(SurveyLog log){
         if(this.surveyLogs.contains(log)) return;
         this.surveyLogs.add(log);
+    }
+
+    public void copyCntPlus(){
+        this.copyCnt++;
     }
 
     public void setOptions(QuestionOption option){

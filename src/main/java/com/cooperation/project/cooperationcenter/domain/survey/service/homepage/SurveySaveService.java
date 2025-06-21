@@ -227,15 +227,19 @@ public class SurveySaveService {
     @Transactional
     public Survey copySurvey(String originalSurveyId) {
         Survey original = getSurveyFromId(originalSurveyId);
+        String copyTitle = original.getSurveyTitle() + " - 복사본("+(original.getCopyCnt()+1)+")";
 
         Survey copy = Survey.builder()
-                .surveyTitle(original.getSurveyTitle() + " - 복사본")
+                .surveyTitle(copyTitle)
                 .surveyDescription(original.getSurveyDescription())
                 .owner(original.getOwner())
                 .startDate(original.getStartDate())
                 .endDate(original.getEndDate())
                 .build();
         surveyRepository.save(copy);
+
+        original.copyCntPlus();
+        surveyRepository.save(original);
 
         for (Question originalQ : original.getQuestions()) {
             Question newQ = Question.builder()
@@ -260,6 +264,5 @@ public class SurveySaveService {
 
         return copy;
     }
-
 
 }
