@@ -1,11 +1,17 @@
 package com.cooperation.project.cooperationcenter.domain.survey.dto;
 
 import com.cooperation.project.cooperationcenter.domain.survey.model.Survey;
+import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveySaveService;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@RequiredArgsConstructor
 public class SurveyRequest {
+
+    private final SurveySaveService surveySaveService;
+
     public record SurveyDto(
             String description,
             String title,

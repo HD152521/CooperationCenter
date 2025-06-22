@@ -1,5 +1,9 @@
 package com.cooperation.project.cooperationcenter.domain.survey.controller.homepage;
 
+import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyEditDto;
+import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyRequest;
+import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyResponseDto;
+import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveySaveService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Slf4j
 public class SurveyController {
 
+    private final SurveySaveService surveySaveService;
     String surveyPath = "homepage/user/survey";
 
     @RequestMapping("/make")
@@ -30,6 +35,13 @@ public class SurveyController {
         model.addAttribute("surveyId", surveyId);
         log.info("surveyId:{}",surveyId);
         return surveyPath+"/survey-answer";
+    }
+
+    @RequestMapping("/edit/{surveyId}")
+    public String editSurvey(@PathVariable String surveyId, Model model){
+        model.addAttribute("survey", SurveyEditDto.to(surveyId,surveySaveService));
+        log.info("surveyId:{}",SurveyEditDto.to(surveyId,surveySaveService).toString());
+        return surveyPath+"/survey-make";
     }
 
 }

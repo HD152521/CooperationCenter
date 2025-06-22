@@ -18,6 +18,10 @@ public enum QuestionType {
         this.type = type;
     }
 
+    public String getType(){
+        return this.type;
+    }
+
     public static QuestionType fromType(String checkType){
         for(QuestionType type : values()){
             if(type.type.equalsIgnoreCase(checkType)){

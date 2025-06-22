@@ -52,5 +52,12 @@ public class SurveyRestController {
         return BaseResponse.onSuccess("success");
     }
 
+    @PatchMapping("/{surveyId}")
+    public void editSurvey(@PathVariable String surveyId){
+        log.info("[controller] getSurvey 진입 : {}",surveyId);
+        //fixme 수정 해야함.
+//        surveyService.e(surveyId);
+    }
+
 
 }

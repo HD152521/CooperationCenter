@@ -50,6 +50,13 @@ public class Question extends BaseEntity {
         this.options.add(option);
     }
 
+    public List<String> getOptionString(){
+        if(!this.isOption) return null;
+        List<String> options = new ArrayList<>();
+        for(QuestionOption op : this.getOptions()) options.add(op.getOptionText());
+        return options;
+    }
+
     @Override
     public String toString() {
         return "Question{" +
