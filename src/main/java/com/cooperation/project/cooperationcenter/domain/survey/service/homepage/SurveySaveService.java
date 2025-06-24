@@ -111,6 +111,7 @@ public class SurveySaveService {
         return questions;
     }
 
+    @Transactional
     public List<QuestionOption> getQuestionOptionFromDto(List<QuestionDto> requestDtos, List<Question> questions,Survey survey){
         List<QuestionOption> options = new ArrayList<>();
 
@@ -119,9 +120,11 @@ public class SurveySaveService {
             QuestionDto dto = requestDtos.get(i);
 
             if (q.isOption()) {
-                for (String optionText : dto.options()) {
+                for (OptionDto optionText : dto.options()) {
                     QuestionOption option = QuestionOption.builder()
-                            .text(optionText)
+                            .text(optionText.text())
+                            .nextQuestionId(optionText.nextQuestion())
+                            .realNextQuestionId(q.getQuestionId())
                             .survey(survey)
                             .question(q)
                             .build();
@@ -151,14 +154,13 @@ public class SurveySaveService {
         }
 
         for(Question q : questions){
-            List<String> optionList = q.isOption() ? optionMap.getOrDefault(q.getId(), new ArrayList<>()) : null;
             response.add(
                     new QuestionDto(
                             q.getId(),
                             q.getQuestionType().toString().toLowerCase(),
                             q.getQuestion(),
                             q.getQuestionDescription(),
-                            optionList,
+                            OptionDto.to(q.getOptions()),
                             q.isNecessary()
                     )
             );

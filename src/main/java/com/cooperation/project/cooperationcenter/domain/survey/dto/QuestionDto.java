@@ -13,21 +13,20 @@ public record QuestionDto(
         String type,
         String question,
         String description,
-        List<String> options,
+        List<OptionDto> options,
         boolean required
 ){
     public static List<QuestionDto> to(Survey survey){
         List<QuestionDto> dtos = new ArrayList<>();
         List<Question> questions = survey.getQuestions();
         for(Question q : questions){
-            List<String> op = q.getOptionString();
             dtos.add(
                     new QuestionDto(
                             q.getId(),
                             q.getQuestionType().getType(),
                             q.getQuestion(),
                             q.getQuestionDescription(),
-                            op,
+                            OptionDto.to(q.getOptions()),
                             q.isNecessary()
                     )
             );

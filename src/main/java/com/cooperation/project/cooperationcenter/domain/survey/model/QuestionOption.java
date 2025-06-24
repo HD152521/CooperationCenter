@@ -21,7 +21,7 @@ public class QuestionOption extends BaseEntity {
     private Long id;
     private String optionText;
     private int nextQuestionId; //다음 questionid
-    private int realNextQuestionId; //다음 questionid
+    private String realNextQuestionId; //다음 questionid
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Survey survey;
@@ -30,7 +30,7 @@ public class QuestionOption extends BaseEntity {
     private Question question;
 
     @Builder
-    public QuestionOption(String text, int nextQuestionId,Question question,Survey survey,int realNextQuestionId){
+    public QuestionOption(String text, int nextQuestionId,Question question,Survey survey,String realNextQuestionId){
         this.optionText = text;
         this.nextQuestionId = nextQuestionId;
         this.question = question;
