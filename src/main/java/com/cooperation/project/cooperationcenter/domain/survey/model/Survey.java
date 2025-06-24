@@ -71,6 +71,10 @@ public class Survey extends BaseEntity {
         this.copyCnt++;
     }
 
+    public void removeQuestion(Question question){
+        this.getQuestions().remove(question);
+    }
+
     public void setOptions(QuestionOption option){
         if(this.options.contains(option)) return;
         this.options.add(option);

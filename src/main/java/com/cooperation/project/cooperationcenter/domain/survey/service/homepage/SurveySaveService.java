@@ -1,9 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.survey.service.homepage;
 
-import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerPageDto;
-import com.cooperation.project.cooperationcenter.domain.survey.dto.QuestionDto;
-import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyRequest;
-import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyResponseDto;
+import com.cooperation.project.cooperationcenter.domain.survey.dto.*;
 import com.cooperation.project.cooperationcenter.domain.survey.model.Question;
 import com.cooperation.project.cooperationcenter.domain.survey.model.QuestionOption;
 import com.cooperation.project.cooperationcenter.domain.survey.model.QuestionType;
@@ -19,10 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,11 +29,46 @@ public class SurveySaveService {
     private final QuestionOptionRepository questionOptionRepository;
     private final QuestionRepository questionRepository;
 
+    @Transactional
     public void saveSurvey(SurveyRequest.SurveyDto request){
+        log.info("{}",request);
         Survey survey = SurveyRequest.SurveyDto.toEntity(request);
         List<Question> questions = getQuestionsFromDto(request.questions(),survey);
         List<QuestionOption> options = getQuestionOptionFromDto(request.questions(),questions,survey);
+        save(survey,questions,options);
+    }
 
+    @Transactional
+    public void editSurvey(SurveyEditDto request){
+        log.info("data:{}",request.toString());
+        Survey survey = getSurveyFromId(request.surveyId());
+        List<Question> questions = getQuestionsFromDto(request.questions(),survey);
+        deleteRemovedQuestions(survey, questions);
+        //fixme option은 조금 더 나중에 하자
+        List<QuestionOption> options = getQuestionOptionFromDto(request.questions(),questions,survey);
+        save(survey,questions,options);
+    }
+
+    public void deleteRemovedQuestions(Survey survey, List<Question> questions){
+        List<Question> surveyQuestions = survey.getQuestions();
+
+        Set<Long> submittedIds = questions.stream()
+                .map(Question::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        List<Question> toDelete = surveyQuestions.stream()
+                .filter(q -> q.getId() != null && !submittedIds.contains(q.getId()))
+                .toList();
+
+        for (Question q : toDelete) {
+            survey.removeQuestion(q); // 양방향 연관관계라면 필요
+            questionRepository.delete(q);
+        }
+    }
+
+    @Transactional
+    public void save(Survey survey, List<Question> questions, List<QuestionOption> options){
         try {
             surveyRepository.save(survey);
             questionRepository.saveAll(questions);
@@ -48,12 +78,25 @@ public class SurveySaveService {
             log.warn(e.getMessage());
             log.warn("설문조사 저장 실패");
         }
-        
     }
 
     public List<Question> getQuestionsFromDto(List<QuestionDto> request, Survey survey){
         List<Question> questions = new ArrayList<>();
         for(QuestionDto dto : request){
+            if(dto.questionId()!=null){
+                Question question = getQuestion(dto.questionId());
+                if (question!=null) {
+                    question.setQuestion(dto.question());
+                    question.setQuestionDescription(dto.description());
+                    QuestionType questionType = QuestionType.fromType(dto.type());
+                    question.setQuestionType(questionType);
+                    question.setOption(QuestionType.checkType(questionType));
+                    questions.add(question);
+
+                }
+                continue;
+            }
+
             QuestionType type = QuestionType.fromType(dto.type());
             Question question = Question.builder()
                     .isNecessary(dto.required())
@@ -111,6 +154,7 @@ public class SurveySaveService {
             List<String> optionList = q.isOption() ? optionMap.getOrDefault(q.getId(), new ArrayList<>()) : null;
             response.add(
                     new QuestionDto(
+                            q.getId(),
                             q.getQuestionType().toString().toLowerCase(),
                             q.getQuestion(),
                             q.getQuestionDescription(),
@@ -152,6 +196,15 @@ public class SurveySaveService {
             return questionRepository.findQuestionsBySurvey(survey);
         }catch(Exception e){
             log.warn("getQuestionBySurvey failed...");
+            return null;
+        }
+    }
+
+    public Question getQuestion(Long id){
+        try{
+            return questionRepository.findQuestionById(id);
+        }catch (Exception e){
+            log.warn("getQuestionById failed...");
             return null;
         }
     }

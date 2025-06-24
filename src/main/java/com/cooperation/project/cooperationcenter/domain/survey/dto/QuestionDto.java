@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record QuestionDto(
+        Long questionId,
         String type,
         String question,
         String description,
@@ -22,6 +23,7 @@ public record QuestionDto(
             List<String> op = q.getOptionString();
             dtos.add(
                     new QuestionDto(
+                            q.getId(),
                             q.getQuestionType().getType(),
                             q.getQuestion(),
                             q.getQuestionDescription(),

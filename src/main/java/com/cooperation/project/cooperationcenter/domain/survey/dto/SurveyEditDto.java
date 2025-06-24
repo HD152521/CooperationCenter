@@ -11,16 +11,18 @@ public record SurveyEditDto (
         String title,
         List<QuestionDto> questions,
         LocalDate startDate,
-        LocalDate endDate
+        LocalDate endDate,
+        String surveyId
 ){
-    public static SurveyRequest.SurveyDto to(String surveyid, SurveySaveService surveySaveService){
+    public static SurveyEditDto to(String surveyid, SurveySaveService surveySaveService){
         Survey survey = surveySaveService.getSurveyFromId(surveyid);
-        return new SurveyRequest.SurveyDto(
+        return new SurveyEditDto(
                 survey.getSurveyDescription(),
                 survey.getSurveyTitle(),
                 QuestionDto.to(survey),
                 survey.getStartDate(),
-                survey.getEndDate()
+                survey.getEndDate(),
+                surveyid
         );
     }
 }

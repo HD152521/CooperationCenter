@@ -1,9 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.survey.controller.homepage;
 
-import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerPageDto;
-import com.cooperation.project.cooperationcenter.domain.survey.dto.QuestionDto;
-import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyRequest;
-import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyResponseDto;
+import com.cooperation.project.cooperationcenter.domain.survey.dto.*;
 import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveySaveService;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import jakarta.websocket.server.PathParam;
@@ -52,11 +49,10 @@ public class SurveyRestController {
         return BaseResponse.onSuccess("success");
     }
 
-    @PatchMapping("/{surveyId}")
-    public void editSurvey(@PathVariable String surveyId){
-        log.info("[controller] getSurvey 진입 : {}",surveyId);
-        //fixme 수정 해야함.
-//        surveyService.e(surveyId);
+    @PatchMapping("/edit")
+    public void editSurvey(@RequestBody SurveyEditDto request){
+        log.info("[controller] getSurvey 진입 : {}",request.surveyId());
+        surveyService.editSurvey(request);
     }
 
 
