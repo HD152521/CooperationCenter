@@ -1,5 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.survey.model;
 
+import com.cooperation.project.cooperationcenter.domain.survey.dto.OptionDto;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,6 +10,8 @@ import org.springframework.security.core.parameters.P;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 
 @Getter
 @Setter
@@ -21,26 +24,31 @@ public class Question extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
+    private String questionId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Survey survey;
 
     @OneToMany(mappedBy = "question")
     private List<QuestionOption> options = new ArrayList<>();
-
     private QuestionType questionType;
     private String question;
     private String questionDescription;
     private boolean isNecessary;
     private boolean isOption;
+    private int questionOrder;
 
     @Builder
-    public Question(QuestionType questionType, String questionDescription, boolean isNecessary, Survey survey,String question){
+    public Question(QuestionType questionType, String questionDescription, boolean isNecessary, Survey survey,String question,int questionOrder){
         this.questionType = questionType;
         this.question = question;
         this.questionDescription = questionDescription;
         this.isNecessary = isNecessary;
         this.survey = survey;
         this.isOption = QuestionType.checkType(questionType);
+        this.questionId = UUID.randomUUID().toString();
+        this.questionOrder = questionOrder;
     }
 
     public void setOptions(QuestionOption option) {
