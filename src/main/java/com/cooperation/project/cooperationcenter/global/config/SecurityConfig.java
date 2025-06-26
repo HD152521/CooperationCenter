@@ -79,6 +79,7 @@ public class SecurityConfig {
 
         configuration.addAllowedOriginPattern("http://localhost:5173");
         configuration.addAllowedOriginPattern("https://onair-lime.vercel.app");
+        configuration.addAllowedOriginPattern("https://*.ngrok-free.app");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.addExposedHeader("Authorization");

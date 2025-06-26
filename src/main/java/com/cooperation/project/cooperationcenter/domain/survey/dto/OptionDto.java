@@ -8,13 +8,15 @@ import java.util.List;
 public record OptionDto(
         int nextQuestion,
         String realNextQuestion,
-        String text
+        String text,
+        Long optionId
 ){
     public static OptionDto to(QuestionOption questionOption) {
         return new OptionDto(
                 questionOption.getNextQuestionId(),
                 questionOption.getRealNextQuestionId(),
-                questionOption.getOptionText()
+                questionOption.getOptionText(),
+                questionOption.getId()
         );
     }
 

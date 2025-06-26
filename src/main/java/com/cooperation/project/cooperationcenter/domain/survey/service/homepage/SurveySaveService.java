@@ -46,6 +46,7 @@ public class SurveySaveService {
         deleteRemovedQuestions(survey, questions);
         //fixme option은 조금 더 나중에 하자
         List<QuestionOption> options = getQuestionOptionFromDto(request.questions(),questions,survey);
+
         save(survey,questions,options);
     }
 
@@ -82,8 +83,10 @@ public class SurveySaveService {
 
     public List<Question> getQuestionsFromDto(List<QuestionDto> request, Survey survey){
         List<Question> questions = new ArrayList<>();
+        int i = 1;
         for(QuestionDto dto : request){
             if(dto.questionId()!=null){
+                //note 원래 있던 질문들
                 Question question = getQuestion(dto.questionId());
                 if (question!=null) {
                     question.setQuestion(dto.question());
@@ -91,19 +94,19 @@ public class SurveySaveService {
                     QuestionType questionType = QuestionType.fromType(dto.type());
                     question.setQuestionType(questionType);
                     question.setOption(QuestionType.checkType(questionType));
+                    question.setQuestionOrder(i++);
                     questions.add(question);
-
                 }
                 continue;
             }
 
             QuestionType type = QuestionType.fromType(dto.type());
             Question question = Question.builder()
-                    .isNecessary(dto.required())
                     .questionDescription(dto.description())
                     .questionType(type)
                     .survey(survey)
                     .question(dto.question())
+                    .questionOrder(i++)
                     .build();
             questions.add(question);
             survey.setQuestion(question);
@@ -120,7 +123,19 @@ public class SurveySaveService {
             QuestionDto dto = requestDtos.get(i);
 
             if (q.isOption()) {
+                log.info("options:{}",dto.options().toString());
                 for (OptionDto optionText : dto.options()) {
+
+                    //fixme id값 있을 경우
+                    QuestionOption questionOption = questionOptionRepository.findQuestionOptionById(optionText.optionId());
+                    if(questionOption!=null){
+                        questionOption.setOptionText(optionText.text());
+                        questionOption.setNextQuestionId(optionText.nextQuestion());
+                        questionOption.setRealNextQuestionId(optionText.realNextQuestion());
+                        questionOptionRepository.save(questionOption);
+                        continue;
+                    }
+
                     QuestionOption option = QuestionOption.builder()
                             .text(optionText.text())
                             .nextQuestionId(optionText.nextQuestion())
@@ -161,7 +176,7 @@ public class SurveySaveService {
                             q.getQuestion(),
                             q.getQuestionDescription(),
                             OptionDto.to(q.getOptions()),
-                            q.isNecessary()
+                            q.getQuestionOrder()
                     )
             );
         }
@@ -169,11 +184,6 @@ public class SurveySaveService {
         return new AnswerPageDto(survey.getSurveyTitle(),survey.getSurveyDescription(),response);
     }
 
-//    String type,
-//    String question,
-//    String description,
-//    List<String> options,
-//    boolean required
 
     public Survey getSurveyFromId(Long surveyId){
         try{

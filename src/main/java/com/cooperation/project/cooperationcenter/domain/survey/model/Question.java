@@ -31,15 +31,16 @@ public class Question extends BaseEntity {
 
     @OneToMany(mappedBy = "question")
     private List<QuestionOption> options = new ArrayList<>();
-
     private QuestionType questionType;
     private String question;
     private String questionDescription;
     private boolean isNecessary;
     private boolean isOption;
 
+    private int questionOrder;
+
     @Builder
-    public Question(QuestionType questionType, String questionDescription, boolean isNecessary, Survey survey,String question){
+    public Question(QuestionType questionType, String questionDescription, boolean isNecessary, Survey survey,String question,int questionOrder){
         this.questionType = questionType;
         this.question = question;
         this.questionDescription = questionDescription;
@@ -47,6 +48,7 @@ public class Question extends BaseEntity {
         this.survey = survey;
         this.isOption = QuestionType.checkType(questionType);
         this.questionId = UUID.randomUUID().toString();
+        this.questionOrder = questionOrder;
     }
 
     public void setOptions(QuestionOption option) {
