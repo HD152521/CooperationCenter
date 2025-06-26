@@ -5,6 +5,7 @@ import com.cooperation.project.cooperationcenter.domain.survey.model.Survey;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+
 import java.util.List;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
@@ -12,4 +13,5 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     Question findQuestionById(Long id);
     @Query(value = "SELECT * FROM question WHERE is_deleted = FALSE ORDER BY id DESC LIMIT 1", nativeQuery = true)
     Question findTopQuestionByOrderByIdDescNative();
+
 }

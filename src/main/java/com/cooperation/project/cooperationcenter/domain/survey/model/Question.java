@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+
 @Getter
 @Setter
 @Entity
@@ -36,7 +37,6 @@ public class Question extends BaseEntity {
     private String questionDescription;
     private boolean isNecessary;
     private boolean isOption;
-
     private int questionOrder;
 
     @Builder
