@@ -111,7 +111,6 @@ public class SurveySaveService {
                     .questionType(type)
                     .survey(survey)
                     .question(dto.question())
-                    .questionOrder(i++)
                     .build();
             questions.add(question);
             survey.setQuestion(question);
@@ -119,7 +118,6 @@ public class SurveySaveService {
         return questions;
     }
 
-    @Transactional
     public List<QuestionOption> getQuestionOptionFromDto(List<QuestionDto> requestDtos, List<Question> questions,Survey survey){
         List<QuestionOption> options = new ArrayList<>();
 
@@ -128,24 +126,7 @@ public class SurveySaveService {
             QuestionDto dto = requestDtos.get(i);
 
             if (q.isOption()) {
-                log.info("options:{}",dto.options().toString());
-                for (OptionDto optionText : dto.options()) {
-
-                    //fixme id값 있을 경우
-                    QuestionOption questionOption = questionOptionRepository.findQuestionOptionById(optionText.optionId());
-                    if(questionOption!=null){
-                        questionOption.setOptionText(optionText.text());
-                        questionOption.setNextQuestionId(optionText.nextQuestion());
-                        questionOption.setRealNextQuestionId(optionText.realNextQuestion());
-                        questionOptionRepository.save(questionOption);
-
-                        survey.removeOption(questionOption);
-                        survey.setOptions(questionOption);
-                        q.removeOption(questionOption);
-                        q.setOptions(questionOption);
-                        continue;
-                    }
-
+                for (String optionText : dto.options()) {
                     QuestionOption option = QuestionOption.builder()
                             .text(optionText.text())
                             .nextQuestionId(optionText.nextQuestion())
@@ -185,8 +166,8 @@ public class SurveySaveService {
                             q.getQuestionType().toString().toLowerCase(),
                             q.getQuestion(),
                             q.getQuestionDescription(),
-                            OptionDto.to(q.getOptions()),
-                            q.getQuestionOrder()
+                            optionList,
+                            q.isNecessary()
                     )
             );
         }
