@@ -46,7 +46,6 @@ public class SurveySaveService {
         deleteRemovedQuestions(survey, questions);
         //fixme option은 조금 더 나중에 하자
         List<QuestionOption> options = getQuestionOptionFromDto(request.questions(),questions,survey);
-
         save(survey,questions,options);
     }
 
@@ -96,6 +95,7 @@ public class SurveySaveService {
                     question.setOption(QuestionType.checkType(questionType));
                     question.setQuestionOrder(i++);
                     questions.add(question);
+
                 }
                 continue;
             }
@@ -107,12 +107,14 @@ public class SurveySaveService {
                     .survey(survey)
                     .question(dto.question())
                     .questionOrder(i++)
+
                     .build();
             questions.add(question);
             survey.setQuestion(question);
         }
         return questions;
     }
+
 
     @Transactional
     public List<QuestionOption> getQuestionOptionFromDto(List<QuestionDto> requestDtos, List<Question> questions,Survey survey){
@@ -177,6 +179,7 @@ public class SurveySaveService {
                             q.getQuestionDescription(),
                             OptionDto.to(q.getOptions()),
                             q.getQuestionOrder()
+
                     )
             );
         }

@@ -21,6 +21,7 @@ public class QuestionOption extends BaseEntity {
     private int nextQuestionId; //다음 questionid
     private String realNextQuestionId; //다음 questionid
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Survey survey;
 
