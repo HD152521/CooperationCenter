@@ -1,5 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.survey.model;
 
+import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyEditDto;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -74,10 +75,21 @@ public class Survey extends BaseEntity {
     public void removeQuestion(Question question){
         this.getQuestions().remove(question);
     }
+    public void removeOption(QuestionOption option){
+        this.getOptions().remove(option);
+    }
+
 
     public void setOptions(QuestionOption option){
         if(this.options.contains(option)) return;
         this.options.add(option);
+    }
+
+    public void updateFromEditDto(SurveyEditDto dto) {
+        this.surveyTitle = dto.title();
+        this.surveyDescription = dto.description();
+        this.startDate = dto.startDate();
+        this.endDate = dto.endDate();
     }
 
     @Override

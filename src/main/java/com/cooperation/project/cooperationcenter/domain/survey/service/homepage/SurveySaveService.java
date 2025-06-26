@@ -42,6 +42,8 @@ public class SurveySaveService {
     public void editSurvey(SurveyEditDto request){
         log.info("data:{}",request.toString());
         Survey survey = getSurveyFromId(request.surveyId());
+        survey.updateFromEditDto(request);
+
         List<Question> questions = getQuestionsFromDto(request.questions(),survey);
         deleteRemovedQuestions(survey, questions);
         //fixme option은 조금 더 나중에 하자
@@ -96,6 +98,9 @@ public class SurveySaveService {
                     question.setOption(QuestionType.checkType(questionType));
                     question.setQuestionOrder(i++);
                     questions.add(question);
+
+                    survey.removeQuestion(question);
+                    survey.setQuestion(question);
                 }
                 continue;
             }
@@ -133,6 +138,11 @@ public class SurveySaveService {
                         questionOption.setNextQuestionId(optionText.nextQuestion());
                         questionOption.setRealNextQuestionId(optionText.realNextQuestion());
                         questionOptionRepository.save(questionOption);
+
+                        survey.removeOption(questionOption);
+                        survey.setOptions(questionOption);
+                        q.removeOption(questionOption);
+                        q.setOptions(questionOption);
                         continue;
                     }
 
