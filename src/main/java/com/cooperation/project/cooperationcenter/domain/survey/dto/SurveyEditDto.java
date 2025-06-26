@@ -1,6 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.survey.dto;
 
 import com.cooperation.project.cooperationcenter.domain.survey.model.Survey;
+import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveyFindService;
 import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveySaveService;
 
 import java.time.LocalDate;
@@ -14,8 +15,8 @@ public record SurveyEditDto (
         LocalDate endDate,
         String surveyId
 ){
-    public static SurveyEditDto to(String surveyid, SurveySaveService surveySaveService){
-        Survey survey = surveySaveService.getSurveyFromId(surveyid);
+    public static SurveyEditDto to(String surveyid, SurveyFindService surveyFindService){
+        Survey survey = surveyFindService.getSurveyFromId(surveyid);
         return new SurveyEditDto(
                 survey.getSurveyDescription(),
                 survey.getSurveyTitle(),

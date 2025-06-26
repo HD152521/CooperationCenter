@@ -28,6 +28,7 @@ public class SurveySaveService {
     private final SurveyRepository surveyRepository;
     private final QuestionOptionRepository questionOptionRepository;
     private final QuestionRepository questionRepository;
+    private final SurveyFindService surveyFindService;
 
     @Transactional
     public void saveSurvey(SurveyRequest.SurveyDto request){
@@ -41,7 +42,7 @@ public class SurveySaveService {
     @Transactional
     public void editSurvey(SurveyEditDto request){
         log.info("data:{}",request.toString());
-        Survey survey = getSurveyFromId(request.surveyId());
+        Survey survey = surveyFindService.getSurveyFromId(request.surveyId());
         survey.updateFromEditDto(request);
 
         List<Question> questions = getQuestionsFromDto(request.questions(),survey);
@@ -89,7 +90,7 @@ public class SurveySaveService {
         for(QuestionDto dto : request){
             if(dto.questionId()!=null){
                 //note 원래 있던 질문들
-                Question question = getQuestion(dto.questionId());
+                Question question = surveyFindService.getQuestion(dto.questionId());
                 if (question!=null) {
                     question.setQuestion(dto.question());
                     question.setQuestionDescription(dto.description());
@@ -145,9 +146,9 @@ public class SurveySaveService {
 
     public AnswerPageDto getSurveys(String surveyId){
         List<QuestionDto> response = new ArrayList<>();
-        Survey survey = getSurveyFromId(surveyId);
-        List<Question> questions = getQuestions(survey);
-        List<QuestionOption> options = getOptions(survey);
+        Survey survey = surveyFindService.getSurveyFromId(surveyId);
+        List<Question> questions = surveyFindService.getQuestions(survey);
+        List<QuestionOption> options = surveyFindService.getOptions(survey);
 
         log.info("option empty?:{}",options.isEmpty());
 
@@ -176,86 +177,11 @@ public class SurveySaveService {
     }
 
 
-    public Survey getSurveyFromId(Long surveyId){
-        try{
-            return surveyRepository.findSurveyById(surveyId);
-        }catch (Exception e){
-            log.warn("getSurveyFormId Fail");
-            return null;
-        }
-    }
 
-    public Survey getSurveyFromId(String surveyId){
-        try{
-            return surveyRepository.findSurveyBySurveyId(surveyId);
-        }catch (Exception e){
-            log.warn("getSurveyForm survey Id Fail");
-            return null;
-        }
-    }
-
-    public List<Question> getQuestions(Survey survey){
-        try{
-            return questionRepository.findQuestionsBySurvey(survey);
-        }catch(Exception e){
-            log.warn("getQuestionBySurvey failed...");
-            return null;
-        }
-    }
-
-    public Question getQuestion(Long id){
-        try{
-            return questionRepository.findQuestionById(id);
-        }catch (Exception e){
-            log.warn("getQuestionById failed...");
-            return null;
-        }
-    }
-
-    public List<QuestionOption> getOptions(Survey survey){
-        try{
-            log.info("surveyId:{}",survey.getId());
-            return questionOptionRepository.findQuestionOptionsBySurvey(survey);
-        }catch (Exception e){
-            log.warn("getOptionsBy survey and question failed...");
-            return null;
-        }
-    }
-
-    public List<SurveyResponseDto> getAllSurvey(){
-        List<SurveyResponseDto> response = new ArrayList<>();
-        List<Survey> surveys = getAllSurveyFromDB();
-        for(Survey survey : surveys){
-            LocalDate now = LocalDate.now();
-            int daysLeft = (survey.getEndDate()==null) ? 0 : Period.between(now, survey.getEndDate()).getDays();
-            boolean isBefore = survey.getStartDate() != null && now.isBefore(survey.getStartDate());
-            response.add(
-                    new SurveyResponseDto(
-                        survey.getSurveyTitle(),
-                            survey.getCreatedAt(),
-                            survey.getParticipantCount(),
-                            daysLeft,
-                            survey.getSurveyId(),
-                            isBefore
-                    )
-            );
-        }
-        log.info("response:{}",response.get(0).toString());
-        return response;
-    }
-
-    public List<Survey> getAllSurveyFromDB(){
-        try{
-            return surveyRepository.findAll();
-        }catch (Exception e){
-            log.warn("get all survey failed...");
-            return null;
-        }
-    }
 
     @Transactional
     public void deleteSurvey(String surveyId){
-        Survey survey = getSurveyFromId(surveyId);
+        Survey survey = surveyFindService.getSurveyFromId(surveyId);
         log.info("delete survey:{}",survey.getSurveyId());
         try {
             for (Question question : survey.getQuestions()) {
@@ -282,7 +208,7 @@ public class SurveySaveService {
 
     @Transactional
     public Survey copySurvey(String originalSurveyId) {
-        Survey original = getSurveyFromId(originalSurveyId);
+        Survey original = surveyFindService.getSurveyFromId(originalSurveyId);
         String copyTitle = original.getSurveyTitle() + " - 복사본("+(original.getCopyCnt()+1)+")";
 
         Survey copy = Survey.builder()
