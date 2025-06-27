@@ -6,23 +6,13 @@ import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.
 import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveySaveService;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -73,4 +63,9 @@ public class SurveyRestController {
         surveyAnswerService.answerSurvey(data,request);
     }
 
+    @PatchMapping("/edit")
+    public void editSurvey(@RequestBody SurveyEditDto request){
+        log.info("[controller] getSurvey 진입 : {}",request.surveyId());
+        surveySaveService.editSurvey(request);
+    }
 }
