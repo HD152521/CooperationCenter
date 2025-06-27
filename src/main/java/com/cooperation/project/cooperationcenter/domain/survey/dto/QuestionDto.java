@@ -10,7 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public record QuestionDto(
-        Long questionId,
+        String questionId,
         String type,
         String question,
         String description,
@@ -27,7 +27,7 @@ public record QuestionDto(
 
             dtos.add(
                     new QuestionDto(
-                            q.getId(),
+                            q.getQuestionId(),
                             q.getQuestionType().getType(),
                             q.getQuestion(),
                             q.getQuestionDescription(),

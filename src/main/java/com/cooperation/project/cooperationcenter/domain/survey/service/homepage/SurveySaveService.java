@@ -127,7 +127,7 @@ public class SurveySaveService {
             QuestionDto dto = requestDtos.get(i);
 
             if (q.isOption()) {
-                for (String optionText : dto.options()) {
+                for (OptionDto optionText : dto.options()) {
                     QuestionOption option = QuestionOption.builder()
                             .text(optionText.text())
                             .nextQuestionId(optionText.nextQuestion())
@@ -163,12 +163,13 @@ public class SurveySaveService {
         for(Question q : questions){
             response.add(
                     new QuestionDto(
-                            q.getId(),
+                            q.getQuestionId(),
                             q.getQuestionType().toString().toLowerCase(),
                             q.getQuestion(),
                             q.getQuestionDescription(),
-                            optionList,
-                            q.isNecessary()
+                            OptionDto.to(q.getOptions()),
+                            q.getQuestionOrder()
+
                     )
             );
         }

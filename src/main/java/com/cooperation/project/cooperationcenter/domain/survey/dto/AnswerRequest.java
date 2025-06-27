@@ -11,6 +11,7 @@ public class AnswerRequest {
     public record AnswerDto(
         int questionId,
         String type,
-        Object answer
+        Object answer,
+        String questionRealId
     ){}
 }

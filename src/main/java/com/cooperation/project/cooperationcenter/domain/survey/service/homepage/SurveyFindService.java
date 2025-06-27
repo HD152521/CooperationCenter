@@ -60,6 +60,15 @@ public class SurveyFindService {
         }
     }
 
+    public Question getQuestion(String id){
+        try{
+            return questionRepository.findQuestionByQuestionId(id);
+        }catch (Exception e){
+            log.warn("getQuestionById failed...");
+            return null;
+        }
+    }
+
     public List<QuestionOption> getOptions(Survey survey){
         try{
             log.info("surveyId:{}",survey.getId());
