@@ -6,23 +6,13 @@ import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.
 import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveySaveService;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,32 +25,32 @@ public class SurveyRestController {
     private final SurveyAnswerService surveyAnswerService;
 
     @PostMapping("/make")
-    public void saveSurvey(@RequestBody SurveyRequest.SurveyDto request) {
-        log.info("[controller] {}", request.toString());
+    public void saveSurvey(@RequestBody SurveyRequest.SurveyDto request){
+        log.info("[controller] {}",request.toString());
         surveySaveService.saveSurvey(request);
     }
 
     @GetMapping("/{surveyId}")
-    public AnswerPageDto getSurvey(@PathVariable String surveyId) {
-        log.info("[controller] getSurvey 진입 : {}", surveyId);
+    public AnswerPageDto getSurvey(@PathVariable String surveyId){
+        log.info("[controller] getSurvey 진입 : {}",surveyId);
         return surveySaveService.getSurveys(surveyId);
     }
 
     @GetMapping("/getAll")
-    public List<SurveyResponseDto> getSurveyAll() {
+    public List<SurveyResponseDto> getSurveyAll(){
         return surveyFindService.getAllSurvey();
     }
 
     @DeleteMapping("/{surveyId}")
-    public BaseResponse<?> deleteSurvey(@PathVariable String surveyId) {
-        log.info("[controller] getSurvey 진입 : {}", surveyId);
+    public BaseResponse<?> deleteSurvey(@PathVariable String surveyId){
+        log.info("[controller] getSurvey 진입 : {}",surveyId);
         surveySaveService.deleteSurvey(surveyId);
         return BaseResponse.onSuccess("success");
     }
 
     @PostMapping("/copy/{surveyId}")
-    public BaseResponse<?> copoSurvey(@PathVariable String surveyId) {
-        log.info("[controller] getSurvey 진입 : {}", surveyId);
+    public BaseResponse<?> copoSurvey(@PathVariable String surveyId){
+        log.info("[controller] getSurvey 진입 : {}",surveyId);
         surveySaveService.copySurvey(surveyId);
         return BaseResponse.onSuccess("success");
     }
@@ -70,6 +60,12 @@ public class SurveyRestController {
             @RequestPart("data") String data,
             HttpServletRequest request
     ) throws JsonProcessingException {
-        surveyAnswerService.answerSurvey(data, request);
+        surveyAnswerService.answerSurvey(data,request);
+    }
+
+    @PatchMapping("/edit")
+    public void editSurvey(@RequestBody SurveyEditDto request){
+        log.info("[controller] getSurvey 진입 : {}",request.surveyId());
+        surveySaveService.editSurvey(request);
     }
 }

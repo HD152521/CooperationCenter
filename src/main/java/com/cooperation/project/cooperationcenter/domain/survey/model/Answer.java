@@ -25,6 +25,7 @@ public class Answer extends BaseEntity {
 
     private QuestionType answerType;
 
+
     private String textAnswer;
     private String multiAnswer;
     private LocalDateTime dateAnswer;

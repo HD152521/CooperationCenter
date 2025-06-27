@@ -43,8 +43,6 @@ public class SurveySaveService {
     public void editSurvey(SurveyEditDto request){
         log.info("data:{}",request.toString());
         Survey survey = surveyFindService.getSurveyFromId(request.surveyId());
-        survey.updateFromEditDto(request);
-
         List<Question> questions = getQuestionsFromDto(request.questions(),survey);
         deleteRemovedQuestions(survey, questions);
         //fixme option은 조금 더 나중에 하자
@@ -112,6 +110,8 @@ public class SurveySaveService {
                     .questionType(type)
                     .survey(survey)
                     .question(dto.question())
+                    .questionOrder(i++)
+
                     .build();
             questions.add(question);
             survey.setQuestion(question);
@@ -119,6 +119,8 @@ public class SurveySaveService {
         return questions;
     }
 
+
+    @Transactional
     public List<QuestionOption> getQuestionOptionFromDto(List<QuestionDto> requestDtos, List<Question> questions,Survey survey){
         List<QuestionOption> options = new ArrayList<>();
 
@@ -128,6 +130,17 @@ public class SurveySaveService {
 
             if (q.isOption()) {
                 for (OptionDto optionText : dto.options()) {
+
+                    //fixme id값 있을 경우
+                    QuestionOption questionOption = questionOptionRepository.findQuestionOptionById(optionText.optionId());
+                    if(questionOption!=null){
+                        questionOption.setOptionText(optionText.text());
+                        questionOption.setNextQuestionId(optionText.nextQuestion());
+                        questionOption.setRealNextQuestionId(optionText.realNextQuestion());
+                        questionOptionRepository.save(questionOption);
+                        continue;
+                    }
+
                     QuestionOption option = QuestionOption.builder()
                             .text(optionText.text())
                             .nextQuestionId(optionText.nextQuestion())
