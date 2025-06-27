@@ -35,32 +35,32 @@ public class SurveyRestController {
     private final SurveyAnswerService surveyAnswerService;
 
     @PostMapping("/make")
-    public void saveSurvey(@RequestBody SurveyRequest.SurveyDto request){
-        log.info("[controller] {}",request.toString());
+    public void saveSurvey(@RequestBody SurveyRequest.SurveyDto request) {
+        log.info("[controller] {}", request.toString());
         surveySaveService.saveSurvey(request);
     }
 
     @GetMapping("/{surveyId}")
-    public AnswerPageDto getSurvey(@PathVariable String surveyId){
-        log.info("[controller] getSurvey 진입 : {}",surveyId);
+    public AnswerPageDto getSurvey(@PathVariable String surveyId) {
+        log.info("[controller] getSurvey 진입 : {}", surveyId);
         return surveySaveService.getSurveys(surveyId);
     }
 
     @GetMapping("/getAll")
-    public List<SurveyResponseDto> getSurveyAll(){
+    public List<SurveyResponseDto> getSurveyAll() {
         return surveyFindService.getAllSurvey();
     }
 
     @DeleteMapping("/{surveyId}")
-    public BaseResponse<?> deleteSurvey(@PathVariable String surveyId){
-        log.info("[controller] getSurvey 진입 : {}",surveyId);
+    public BaseResponse<?> deleteSurvey(@PathVariable String surveyId) {
+        log.info("[controller] getSurvey 진입 : {}", surveyId);
         surveySaveService.deleteSurvey(surveyId);
         return BaseResponse.onSuccess("success");
     }
 
     @PostMapping("/copy/{surveyId}")
-    public BaseResponse<?> copoSurvey(@PathVariable String surveyId){
-        log.info("[controller] getSurvey 진입 : {}",surveyId);
+    public BaseResponse<?> copoSurvey(@PathVariable String surveyId) {
+        log.info("[controller] getSurvey 진입 : {}", surveyId);
         surveySaveService.copySurvey(surveyId);
         return BaseResponse.onSuccess("success");
     }
@@ -70,7 +70,6 @@ public class SurveyRestController {
             @RequestPart("data") String data,
             HttpServletRequest request
     ) throws JsonProcessingException {
-        surveyAnswerService.answerSurvey(data,request);
+        surveyAnswerService.answerSurvey(data, request);
     }
-
 }
