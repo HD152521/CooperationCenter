@@ -56,6 +56,10 @@ public class Question extends BaseEntity {
         this.options.add(option);
     }
 
+    public void removeOption(QuestionOption option){
+        this.getOptions().remove(option);
+    }
+
     public List<String> getOptionString(){
         if(!this.isOption) return null;
         List<String> options = new ArrayList<>();

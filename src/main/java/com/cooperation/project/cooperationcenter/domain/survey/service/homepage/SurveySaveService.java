@@ -42,10 +42,13 @@ public class SurveySaveService {
     public void editSurvey(SurveyEditDto request){
         log.info("data:{}",request.toString());
         Survey survey = getSurveyFromId(request.surveyId());
+        survey.updateFromEditDto(request);
+
         List<Question> questions = getQuestionsFromDto(request.questions(),survey);
         deleteRemovedQuestions(survey, questions);
         //fixme option은 조금 더 나중에 하자
         List<QuestionOption> options = getQuestionOptionFromDto(request.questions(),questions,survey);
+
         save(survey,questions,options);
     }
 
@@ -96,6 +99,8 @@ public class SurveySaveService {
                     question.setQuestionOrder(i++);
                     questions.add(question);
 
+                    survey.removeQuestion(question);
+                    survey.setQuestion(question);
                 }
                 continue;
             }
@@ -107,15 +112,12 @@ public class SurveySaveService {
                     .survey(survey)
                     .question(dto.question())
                     .questionOrder(i++)
-
                     .build();
             questions.add(question);
             survey.setQuestion(question);
         }
         return questions;
     }
-
-
     @Transactional
     public List<QuestionOption> getQuestionOptionFromDto(List<QuestionDto> requestDtos, List<Question> questions,Survey survey){
         List<QuestionOption> options = new ArrayList<>();
@@ -135,6 +137,11 @@ public class SurveySaveService {
                         questionOption.setNextQuestionId(optionText.nextQuestion());
                         questionOption.setRealNextQuestionId(optionText.realNextQuestion());
                         questionOptionRepository.save(questionOption);
+                        survey.removeOption(questionOption);
+                        survey.setOptions(questionOption);
+                        q.removeOption(questionOption);
+                        q.setOptions(questionOption);
+
                         continue;
                     }
 
@@ -179,7 +186,6 @@ public class SurveySaveService {
                             q.getQuestionDescription(),
                             OptionDto.to(q.getOptions()),
                             q.getQuestionOrder()
-
                     )
             );
         }
