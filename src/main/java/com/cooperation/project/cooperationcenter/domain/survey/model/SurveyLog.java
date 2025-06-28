@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -38,6 +39,8 @@ public class SurveyLog extends BaseEntity {
     @OneToMany(mappedBy = "surveyLog")
     private List<Answer> answers = new ArrayList<>();
 
+        private LocalDateTime startTime;
+
     public void addAnswer(List<Answer> answers){
         this.answers.addAll(answers);
     }
@@ -47,9 +50,10 @@ public class SurveyLog extends BaseEntity {
     }
 
     @Builder
-    public SurveyLog(Member member, Survey survey) {
+    public SurveyLog(Member member, Survey survey,LocalDateTime startTime) {
         this.member = member;
         this.survey = survey;
+        this.startTime = startTime;
         this.surveyLogId =UUID.randomUUID().toString();
     }
 

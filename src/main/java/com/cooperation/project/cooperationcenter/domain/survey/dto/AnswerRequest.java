@@ -5,7 +5,9 @@ import java.util.List;
 public class AnswerRequest {
     public record Dto(
             String surveyId,
-            List<AnswerDto> answers
+            List<AnswerDto> answers,
+            String startTime,
+            int questionCnt
     ){}
 
     public record AnswerDto(

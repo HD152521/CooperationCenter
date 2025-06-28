@@ -1,7 +1,9 @@
 package com.cooperation.project.cooperationcenter.domain.survey.service.homepage;
 
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
+import com.cooperation.project.cooperationcenter.domain.member.repository.MemberRepository;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerRequest;
+import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerResponse;
 import com.cooperation.project.cooperationcenter.domain.survey.model.Answer;
 import com.cooperation.project.cooperationcenter.domain.survey.model.QuestionType;
 import com.cooperation.project.cooperationcenter.domain.survey.model.Survey;
@@ -25,6 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +40,8 @@ public class SurveyAnswerService {
 
     private final AnswerRepository answerRepository;
     private final SurveyLogRepository surveyLogRepository;
+    private final MemberRepository memberRepository;
+
 
     @Transactional
     public void answerSurvey(String data, HttpServletRequest request) throws JsonProcessingException {
@@ -49,23 +54,41 @@ public class SurveyAnswerService {
 
         Survey survey = surveyFindService.getSurveyFromId(requestDto.surveyId());
         //fixme 추후 예정
-        Member member = null;
+        Member member = memberRepository.findMemberByEmail("test@test.com").get();
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime dateTime = LocalDateTime.parse(requestDto.startTime(), formatter);
+
+        log.info("date convert완료");
         SurveyLog surveyLog = SurveyLog.builder()
                 .survey(survey)
                 .member(member)
+                .startTime(dateTime)
                 .build();
 
         //답변 로그를 저장하고 -> 문항들 저장
-        List<Answer> savedAnswer = saveAnswer(requestDto,multipartRequest);
+        List<Answer> savedAnswer = saveAnswer(requestDto,multipartRequest,surveyLog);
         surveyLog.addAnswer(savedAnswer);
+        log.info("답변 저장 완료");
 
         surveyLogRepository.save(surveyLog);
         log.info("➡️survey 답변 완료!");
     }
 
+    public AnswerResponse.AnswerDto getAnswerLog(String surveyId){
+        Survey survey = surveyFindService.getSurveyFromId(surveyId);
+        List<SurveyLog> surveyLog = surveyLogRepository.findSurveysLogBySurvey(survey);
+        //status 추가
+        List<AnswerResponse.LogDto> logs = AnswerResponse.LogDto.from(surveyLog);
+        return AnswerResponse.AnswerDto.from(survey,logs);
+    }
+
+
+
+
+
     @Transactional
-    public List<Answer> saveAnswer(AnswerRequest.Dto answerList, MultipartHttpServletRequest multipartRequest){
+    protected List<Answer> saveAnswer(AnswerRequest.Dto answerList, MultipartHttpServletRequest multipartRequest,SurveyLog surveyLog){
         List<Answer> saveList = new ArrayList<>();
         String fileName=null;
         for (AnswerRequest.AnswerDto an : answerList.answers()) {
@@ -75,13 +98,13 @@ public class SurveyAnswerService {
                 fileName = file.getOriginalFilename();
                 //note 파일 저장은 따로 추가하자
             }
-            saveList.add(convertToAnswer(an,answerList.surveyId(),fileName));
+            saveList.add(convertToAnswer(an,answerList.surveyId(),fileName,surveyLog));
             log.info("Q{}: {}", an.questionId(), an.answer());
         }
         return answerRepository.saveAll(saveList);
     }
 
-    private Answer convertToAnswer(AnswerRequest.AnswerDto answer,String surveyId,String filename){
+    private Answer convertToAnswer(AnswerRequest.AnswerDto answer,String surveyId,String filename,SurveyLog surveyLog){
         log.info(answer.type());
         QuestionType questionType = QuestionType.fromType(answer.type());
         if(questionType==null){
@@ -90,6 +113,7 @@ public class SurveyAnswerService {
         if (QuestionType.checkType(questionType)) {
             //옵션 질문들
             return Answer.builder()
+                    .surveyLog(surveyLog)
                     .answerType(questionType)
                     .questionId(answer.questionId())
                     .questionRealId(answer.questionRealId())
@@ -98,6 +122,7 @@ public class SurveyAnswerService {
         }else if(QuestionType.isDate(questionType)){
             LocalDateTime dateTime = LocalDate.parse((String)answer.answer()).atStartOfDay();
             return Answer.builder()
+                    .surveyLog(surveyLog)
                     .answerType(questionType)
                     .questionId(answer.questionId())
                     .questionRealId(answer.questionRealId())
@@ -105,6 +130,7 @@ public class SurveyAnswerService {
                     .build();
         }else if(QuestionType.isText(questionType)){
             return Answer.builder()
+                    .surveyLog(surveyLog)
                     .answerType(questionType)
                     .questionId(answer.questionId())
                     .questionRealId(answer.questionRealId())
@@ -113,6 +139,7 @@ public class SurveyAnswerService {
         }else if(QuestionType.isFile(questionType)){
             String path = "uploads/"+surveyId+"/"+filename;
             return Answer.builder()
+                    .surveyLog(surveyLog)
                     .answerType(questionType)
                     .questionId(answer.questionId())
                     .questionRealId(answer.questionRealId())

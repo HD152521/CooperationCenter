@@ -35,9 +35,8 @@ public class Answer extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private SurveyLog surveyLog;
 
-
     @Builder
-    public Answer(int questionId, String questionRealId, String textAnswer,String multiAnswer, LocalDateTime dateAnswer, String filePath,QuestionType answerType){
+    public Answer(int questionId, String questionRealId, String textAnswer,String multiAnswer, LocalDateTime dateAnswer, String filePath,QuestionType answerType,SurveyLog surveyLog){
         this.questionId = questionId;
         this.questionRealId = questionRealId;
         this.textAnswer = textAnswer;
@@ -45,5 +44,6 @@ public class Answer extends BaseEntity {
         this.dateAnswer = dateAnswer;
         this.filePath = filePath;
         this.answerType = answerType;
+        this.surveyLog = surveyLog;
     }
 }
