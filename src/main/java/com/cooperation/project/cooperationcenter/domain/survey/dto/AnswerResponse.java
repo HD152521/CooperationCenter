@@ -20,6 +20,17 @@ public class AnswerResponse {
             List<LogDto> logs
     ){
       public static AnswerDto from(Survey survey, List<LogDto> dtos){
+          if(dtos.isEmpty())
+              return new AnswerDto(
+                  survey.getSurveyId(),
+                  survey.getSurveyTitle(),
+                  survey.getStartDate(),
+                  survey.getEndDate(),
+                  0,
+                  0,
+                  0,
+                  null
+          );
           int finishCnt=0;
           int totalSpendTime=0;
           int total = dtos.size();

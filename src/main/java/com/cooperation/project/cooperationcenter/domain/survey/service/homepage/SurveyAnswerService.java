@@ -79,7 +79,8 @@ public class SurveyAnswerService {
         Survey survey = surveyFindService.getSurveyFromId(surveyId);
         List<SurveyLog> surveyLog = surveyLogRepository.findSurveysLogBySurvey(survey);
         //status 추가
-        List<AnswerResponse.LogDto> logs = AnswerResponse.LogDto.from(surveyLog);
+        List<AnswerResponse.LogDto> logs = new ArrayList<>();
+        if(!surveyLog.isEmpty())  logs = AnswerResponse.LogDto.from(surveyLog);
         return AnswerResponse.AnswerDto.from(survey,logs);
     }
 
