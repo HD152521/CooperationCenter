@@ -3,8 +3,11 @@ package com.cooperation.project.cooperationcenter.domain.survey.service.homepage
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerRequest;
 import com.cooperation.project.cooperationcenter.domain.survey.model.Answer;
+import com.cooperation.project.cooperationcenter.domain.survey.model.QuestionType;
 import com.cooperation.project.cooperationcenter.domain.survey.model.Survey;
 import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyLog;
+import com.cooperation.project.cooperationcenter.domain.survey.repository.AnswerRepository;
+import com.cooperation.project.cooperationcenter.domain.survey.repository.SurveyLogRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +23,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +34,9 @@ import java.util.List;
 public class SurveyAnswerService {
 
     private final SurveyFindService surveyFindService;
+
+    private final AnswerRepository answerRepository;
+    private final SurveyLogRepository surveyLogRepository;
 
     @Transactional
     public void answerSurvey(String data, HttpServletRequest request) throws JsonProcessingException {
@@ -49,33 +57,73 @@ public class SurveyAnswerService {
                 .build();
 
         //답변 로그를 저장하고 -> 문항들 저장
-        List<Answer> savedAnswer = saveAnswer(requestDto.answers(),multipartRequest);
+        List<Answer> savedAnswer = saveAnswer(requestDto,multipartRequest);
+        surveyLog.addAnswer(savedAnswer);
 
+        surveyLogRepository.save(surveyLog);
+        log.info("➡️survey 답변 완료!");
     }
 
     @Transactional
-    public List<Answer> saveAnswer(List<AnswerRequest.AnswerDto> answerList, MultipartHttpServletRequest multipartRequest){
+    public List<Answer> saveAnswer(AnswerRequest.Dto answerList, MultipartHttpServletRequest multipartRequest){
         List<Answer> saveList = new ArrayList<>();
-
-        for (AnswerRequest.AnswerDto an : answerList) {
-            if ("file".equals(an.type())) {
-                saveFile(an,multipartRequest);
+        String fileName=null;
+        for (AnswerRequest.AnswerDto an : answerList.answers()) {
+            fileName=null;
+            if (QuestionType.isFile(an.type())) {
+                MultipartFile file = saveFile(an,multipartRequest,answerList.surveyId());
+                fileName = file.getOriginalFilename();
                 //note 파일 저장은 따로 추가하자
-            } else {
-                saveList.add(convertToAnswer(an));
-                log.info("Q{}: {}", an.questionId(), an.answer());
             }
+            saveList.add(convertToAnswer(an,answerList.surveyId(),fileName));
+            log.info("Q{}: {}", an.questionId(), an.answer());
         }
-
-        return saveList;
+        return answerRepository.saveAll(saveList);
     }
 
-    private Answer convertToAnswer(AnswerRequest.AnswerDto answer){
+    private Answer convertToAnswer(AnswerRequest.AnswerDto answer,String surveyId,String filename){
+        log.info(answer.type());
+        QuestionType questionType = QuestionType.fromType(answer.type());
+        if(questionType==null){
+            log.warn("Answer type 변환 중 올바르지 않음");
+        }
+        if (QuestionType.checkType(questionType)) {
+            //옵션 질문들
+            return Answer.builder()
+                    .answerType(questionType)
+                    .questionId(answer.questionId())
+                    .questionRealId(answer.questionRealId())
+                    .multiAnswer(answer.answer().toString())
+                    .build();
+        }else if(QuestionType.isDate(questionType)){
+            LocalDateTime dateTime = LocalDate.parse((String)answer.answer()).atStartOfDay();
+            return Answer.builder()
+                    .answerType(questionType)
+                    .questionId(answer.questionId())
+                    .questionRealId(answer.questionRealId())
+                    .dateAnswer(dateTime)
+                    .build();
+        }else if(QuestionType.isText(questionType)){
+            return Answer.builder()
+                    .answerType(questionType)
+                    .questionId(answer.questionId())
+                    .questionRealId(answer.questionRealId())
+                    .textAnswer(answer.answer().toString())
+                    .build();
+        }else if(QuestionType.isFile(questionType)){
+            String path = "uploads/"+surveyId+"/"+filename;
+            return Answer.builder()
+                    .answerType(questionType)
+                    .questionId(answer.questionId())
+                    .questionRealId(answer.questionRealId())
+                    .filePath(path)
+                    .build();
+        }
         return null;
     }
 
-    private void saveFile(AnswerRequest.AnswerDto answer, MultipartHttpServletRequest multipartRequest){
-        String key=""; // ex: file-7
+    private MultipartFile saveFile(AnswerRequest.AnswerDto answer, MultipartHttpServletRequest multipartRequest,String surveyId){
+        String key="";
         if (answer.answer() instanceof String str) {
             key = answer.answer().toString();
             System.out.println("문자열 답변: " + str);
@@ -90,7 +138,8 @@ public class SurveyAnswerService {
             log.warn("❌ {} 는 비어 있음", key);
         } else {
             log.info("✅ {} 수신 성공: {}", key, file.getOriginalFilename());
-            Path uploadDir = Paths.get(System.getProperty("user.dir"), "uploads");
+            String path = "uploads/"+surveyId;
+            Path uploadDir = Paths.get(System.getProperty("user.dir"), path);
             try {
                 Files.createDirectories(uploadDir); // 경로 없으면 생성
             } catch (IOException e) {
@@ -104,6 +153,7 @@ public class SurveyAnswerService {
                 throw new RuntimeException(e);
             }
         }
+        return file;
     }
 
 }

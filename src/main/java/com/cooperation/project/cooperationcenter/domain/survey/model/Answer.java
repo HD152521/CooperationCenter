@@ -3,6 +3,7 @@ package com.cooperation.project.cooperationcenter.domain.survey.model;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -25,7 +26,6 @@ public class Answer extends BaseEntity {
 
     private QuestionType answerType;
 
-
     private String textAnswer;
     private String multiAnswer;
     private LocalDateTime dateAnswer;
@@ -35,4 +35,15 @@ public class Answer extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private SurveyLog surveyLog;
 
+
+    @Builder
+    public Answer(int questionId, String questionRealId, String textAnswer,String multiAnswer, LocalDateTime dateAnswer, String filePath,QuestionType answerType){
+        this.questionId = questionId;
+        this.questionRealId = questionRealId;
+        this.textAnswer = textAnswer;
+        this.multiAnswer = multiAnswer;
+        this.dateAnswer = dateAnswer;
+        this.filePath = filePath;
+        this.answerType = answerType;
+    }
 }

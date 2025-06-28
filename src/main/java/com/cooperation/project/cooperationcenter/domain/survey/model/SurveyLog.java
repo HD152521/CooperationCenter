@@ -38,6 +38,14 @@ public class SurveyLog extends BaseEntity {
     @OneToMany(mappedBy = "surveyLog")
     private List<Answer> answers = new ArrayList<>();
 
+    public void addAnswer(List<Answer> answers){
+        this.answers.addAll(answers);
+    }
+
+    public void addAnswer(Answer answer){
+        this.answers.add(answer);
+    }
+
     @Builder
     public SurveyLog(Member member, Survey survey) {
         this.member = member;
