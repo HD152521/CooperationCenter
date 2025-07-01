@@ -77,7 +77,7 @@ public class SurveyAnswerService {
 
     public AnswerResponse.AnswerDto getAnswerLog(String surveyId){
         Survey survey = surveyFindService.getSurveyFromId(surveyId);
-        List<SurveyLog> surveyLog = surveyLogRepository.findSurveysLogBySurvey(survey);
+        List<SurveyLog> surveyLog = surveyFindService.getSurveyLogs(survey);
         //status 추가
         List<AnswerResponse.LogDto> logs = new ArrayList<>();
         if(!surveyLog.isEmpty())  logs = AnswerResponse.LogDto.from(surveyLog);
@@ -182,6 +182,15 @@ public class SurveyAnswerService {
             }
         }
         return file;
+    }
+
+    public AnswerResponse.AnswerLogDto getAnswerLogDetail(String surveyId, String logId){
+        //Note 질문이랑 답변 문항들 RESPONSE로 보내야함
+        Survey survey = surveyFindService.getSurveyFromId(surveyId);
+        SurveyLog surveyLog = surveyFindService.getSurveyLog(logId);
+        List<Answer> answers = surveyFindService.getAnswer(surveyLog);
+
+        return AnswerResponse.AnswerLogDto.from(survey,surveyLog,answers);
     }
 
 }

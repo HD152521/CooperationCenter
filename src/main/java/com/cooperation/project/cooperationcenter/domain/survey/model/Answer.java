@@ -10,6 +10,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 @Entity
@@ -34,6 +36,14 @@ public class Answer extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private SurveyLog surveyLog;
+
+    public String getAnswer(){
+        if(QuestionType.isFile(this.answerType)) return filePath;
+        else if(QuestionType.checkType(this.answerType)) return multiAnswer;
+        else if(QuestionType.isDate(this.answerType)) return dateAnswer.toString();
+        else if(QuestionType.isText(this.answerType)) return textAnswer;
+        return null;
+    }
 
     @Builder
     public Answer(int questionId, String questionRealId, String textAnswer,String multiAnswer, LocalDateTime dateAnswer, String filePath,QuestionType answerType,SurveyLog surveyLog){

@@ -9,5 +9,6 @@ import java.util.List;
 public interface SurveyLogRepository extends JpaRepository<SurveyLog,Long> {
     List<SurveyLog> findSurveysLogBySurvey(Survey survey);
     int countSurveyLogsBySurvey(Survey survey);
+    SurveyLog findSurveyLogBySurveyLogId(String logId);
 
 }

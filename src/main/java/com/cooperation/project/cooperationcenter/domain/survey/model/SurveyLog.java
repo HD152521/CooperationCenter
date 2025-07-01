@@ -39,7 +39,7 @@ public class SurveyLog extends BaseEntity {
     @OneToMany(mappedBy = "surveyLog")
     private List<Answer> answers = new ArrayList<>();
 
-        private LocalDateTime startTime;
+    private LocalDateTime startTime;
 
     public void addAnswer(List<Answer> answers){
         this.answers.addAll(answers);

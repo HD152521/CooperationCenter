@@ -1,5 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.survey.dto;
 
+import com.cooperation.project.cooperationcenter.domain.survey.model.Answer;
 import com.cooperation.project.cooperationcenter.domain.survey.model.Survey;
 import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyLog;
 
@@ -57,7 +58,9 @@ public class AnswerResponse {
             String memberEmail,
             String submitTime,
             Long spendTime,
-            String finishStatus
+            String finishStatus,
+            String logId
+
     ){
         public static LogDto from(SurveyLog surveyLog){
             long diffInSeconds = Duration.between(surveyLog.getStartTime(), surveyLog.getCreatedAt()).getSeconds();
@@ -66,7 +69,8 @@ public class AnswerResponse {
                     surveyLog.getMember().getEmail(),
                     surveyLog.getCreatedAt().toString(),
                     diffInSeconds,
-                    "finish"
+                    "finish",
+                    surveyLog.getSurveyLogId()
             );
         }
 
@@ -74,6 +78,46 @@ public class AnswerResponse {
             List<LogDto> dtos = new ArrayList<>();
             for(SurveyLog s : surveyLogs) dtos.add(from(s));
             return dtos;
+        }
+    }
+
+    public record AnswerLogDto(
+            String surveyId,
+            String surveyTitle,
+            LocalDate surveyStartDate,
+            LocalDate surveyEndDate,
+            List<QuestionDto> questions,
+            List<AnswerDetailDto> answer,
+            LogDto logDto
+    ){
+        public static AnswerLogDto from(Survey survey, SurveyLog surveyLog,List<Answer> answers){
+            return new AnswerLogDto(
+                    survey.getSurveyId(),
+                    survey.getSurveyTitle(),
+                    survey.getStartDate(),
+                    survey.getEndDate(),
+                    QuestionDto.to(survey),
+                    AnswerDetailDto.from(answers),
+                    LogDto.from(surveyLog)
+            );
+        }
+    }
+
+    public record AnswerDetailDto(
+            String type,
+            String answer
+    ){
+        public static List<AnswerDetailDto> from(List<Answer> answers){
+            List<AnswerDetailDto> response = new ArrayList<>();
+            for(Answer an : answers) response.add(AnswerDetailDto.from(an));
+            return response;
+        }
+
+        public static AnswerDetailDto from(Answer answer){
+            return new AnswerDetailDto(
+                answer.getAnswerType().getType(),
+                    answer.getAnswer()
+            );
         }
     }
 }
