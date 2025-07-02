@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -55,17 +56,31 @@ public class SurveyRestController {
         return BaseResponse.onSuccess("success");
     }
 
-    @PostMapping("/answer")
-    public void receiveSurveyAnswer(
-            @RequestPart("data") String data,
-            HttpServletRequest request
-    ) throws JsonProcessingException {
-        surveyAnswerService.answerSurvey(data,request);
-    }
-
     @PatchMapping("/edit")
     public void editSurvey(@RequestBody SurveyEditDto request){
         log.info("[controller] getSurvey 진입 : {}",request.surveyId());
         surveySaveService.editSurvey(request);
+    }
+
+    @PostMapping("/answer")
+    public ResponseEntity<Void> receiveSurveyAnswer(
+            @RequestPart("data") String data,
+            HttpServletRequest request
+    ) throws JsonProcessingException {
+        log.info("[submit answer] dto:{}",data);
+        try{
+            surveyAnswerService.answerSurvey(data,request);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+        }
+        log.info("save answer");
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/answer/{surveyId}")
+    public AnswerResponse.AnswerDto getAnswerLog(@PathVariable String surveyId){
+        AnswerResponse.AnswerDto result = surveyAnswerService.getAnswerLog(surveyId);
+        log.info("result : {}",result.toString());
+        return result;
     }
 }

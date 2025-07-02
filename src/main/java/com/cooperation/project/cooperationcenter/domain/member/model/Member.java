@@ -1,6 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.member.model;
 
 
+import com.cooperation.project.cooperationcenter.domain.file.model.MemberFile;
 import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyLog;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -14,11 +15,11 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Entity
 @Table(name = "member")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE member SET is_deleted = true, deleted_at = now() where id = ?")
 @SQLRestriction("is_deleted is FALSE")
 public class Member extends BaseEntity {
@@ -29,14 +30,30 @@ public class Member extends BaseEntity {
     @NotNull private String memberName;     //실명
     @NotNull private String email;          //이메일
     @NotNull private String password;
-    @NotNull private Role role;             //권한
-    @NotNull private boolean isFirstLogin;  //처음로그인
-    private String imgUrl;
+    @NotNull private String homePhoneNumber;
+    @NotNull private String phoneNumber;
+    @NotNull private String Address1;
+    @NotNull private String Address2;
 
+    @NotNull private String agencyName;
+    @NotNull private String agencyAddress1;
+    @NotNull private String agencyAddress2;
+//    @NotNull private enum agencyRegion;  fixme 추가해야함.
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "agency_picture_id")
+    private MemberFile agencyPicture;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "business_certificate_id")
+    private MemberFile businessCertificate;
+
+
+    @NotNull private String memberId;
+    @NotNull private Role role;
+    @NotNull private boolean isApprovalSignup;
     @OneToMany(mappedBy = "member")
     private List<SurveyLog> surveyLogs = new ArrayList<>();
-
-
 
     public enum Role{
         USER("USER"),
@@ -47,12 +64,10 @@ public class Member extends BaseEntity {
     }
 
     @Builder
-    public Member(String memberName,String email,String password, String imgUrl){
-        this.memberName = memberName;
-        this.email = email;
-        this.password = password;
+    public Member(){
+
+        this.memberId = UUID.randomUUID().toString();
         this.role = Role.USER;
-        this.isFirstLogin = true;
-        this.imgUrl = imgUrl;
+        this.isApprovalSignup = false;
     }
 }

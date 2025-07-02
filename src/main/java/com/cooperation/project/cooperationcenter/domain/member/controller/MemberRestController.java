@@ -7,10 +7,8 @@ import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,4 +23,12 @@ public class MemberRestController {
         log.info("signup request: {}", request);
         return BaseResponse.onSuccess(memberService.signup(request));
     }
+
+    @GetMapping("/check-id")
+    public ResponseEntity<Boolean> checkDuplicateId(@RequestParam String username) {
+//        boolean isDuplicate = memberService.isUsernameTaken(username);
+//        return ResponseEntity.ok(isDuplicate);
+        return ResponseEntity.ok(true);
+    }
+
 }

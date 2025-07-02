@@ -1,12 +1,8 @@
 package com.cooperation.project.cooperationcenter.domain.survey.service.homepage;
 
 import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyResponseDto;
-import com.cooperation.project.cooperationcenter.domain.survey.model.Question;
-import com.cooperation.project.cooperationcenter.domain.survey.model.QuestionOption;
-import com.cooperation.project.cooperationcenter.domain.survey.model.Survey;
-import com.cooperation.project.cooperationcenter.domain.survey.repository.QuestionOptionRepository;
-import com.cooperation.project.cooperationcenter.domain.survey.repository.QuestionRepository;
-import com.cooperation.project.cooperationcenter.domain.survey.repository.SurveyRepository;
+import com.cooperation.project.cooperationcenter.domain.survey.model.*;
+import com.cooperation.project.cooperationcenter.domain.survey.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,6 +19,8 @@ public class SurveyFindService {
     private final SurveyRepository surveyRepository;
     private final QuestionOptionRepository questionOptionRepository;
     private final QuestionRepository questionRepository;
+    private final SurveyLogRepository surveyLogRepository;
+    private final AnswerRepository answerRepository;
 
     public Survey getSurveyFromId(Long surveyId){
         try{
@@ -106,6 +104,33 @@ public class SurveyFindService {
             return surveyRepository.findAll();
         }catch (Exception e){
             log.warn("get all survey failed...");
+            return null;
+        }
+    }
+
+    public SurveyLog getSurveyLog(String logId){
+        try{
+            return surveyLogRepository.findSurveyLogBySurveyLogId(logId);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public List<SurveyLog> getSurveyLogs(Survey survey){
+        try{
+            return surveyLogRepository.findSurveysLogBySurvey(survey);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public List<Answer> getAnswer(SurveyLog surveyLog){
+        try{
+            return answerRepository.findAnswersBySurveyLog(surveyLog);
+        }catch (Exception e){
+            log.warn(e.getMessage());
             return null;
         }
     }

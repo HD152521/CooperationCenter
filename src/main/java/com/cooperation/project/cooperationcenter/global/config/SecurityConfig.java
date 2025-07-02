@@ -78,8 +78,8 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         configuration.addAllowedOriginPattern("http://localhost:5173");
-        configuration.addAllowedOriginPattern("https://onair-lime.vercel.app");
-        configuration.addAllowedOriginPattern("https://*.ngrok-free.app");
+//        configuration.addAllowedOriginPattern("https://*.ngrok-free.app");
+        configuration.addAllowedOriginPattern("https://0da7-121-161-139-229.ngrok-free.app");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.addExposedHeader("Authorization");
