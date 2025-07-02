@@ -1,5 +1,9 @@
 package com.cooperation.project.cooperationcenter.domain.survey.service.homepage;
 
+import com.cooperation.project.cooperationcenter.domain.file.dto.SurveyFileDto;
+import com.cooperation.project.cooperationcenter.domain.file.model.FileType;
+import com.cooperation.project.cooperationcenter.domain.file.model.SurveyFile;
+import com.cooperation.project.cooperationcenter.domain.file.service.FileService;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.member.repository.MemberRepository;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerRequest;
@@ -37,6 +41,7 @@ import java.util.List;
 public class SurveyAnswerService {
 
     private final SurveyFindService surveyFindService;
+    private final FileService fileService;
 
     private final AnswerRepository answerRepository;
     private final SurveyLogRepository surveyLogRepository;
@@ -91,21 +96,19 @@ public class SurveyAnswerService {
     @Transactional
     protected List<Answer> saveAnswer(AnswerRequest.Dto answerList, MultipartHttpServletRequest multipartRequest,SurveyLog surveyLog){
         List<Answer> saveList = new ArrayList<>();
-        String fileName=null;
+        SurveyFile surveyFile=null;
         for (AnswerRequest.AnswerDto an : answerList.answers()) {
-            fileName=null;
             if (QuestionType.isFile(an.type())) {
-                MultipartFile file = saveFile(an,multipartRequest,answerList.surveyId());
-                fileName = file.getOriginalFilename();
+                surveyFile = saveFile(an,multipartRequest,answerList.surveyId());
                 //note 파일 저장은 따로 추가하자
             }
-            saveList.add(convertToAnswer(an,answerList.surveyId(),fileName,surveyLog));
+            saveList.add(convertToAnswer(an,answerList.surveyId(),surveyFile,surveyLog));
             log.info("Q{}: {}", an.questionId(), an.answer());
         }
         return answerRepository.saveAll(saveList);
     }
 
-    private Answer convertToAnswer(AnswerRequest.AnswerDto answer,String surveyId,String filename,SurveyLog surveyLog){
+    private Answer convertToAnswer(AnswerRequest.AnswerDto answer,String surveyId,SurveyFile surveyFile,SurveyLog surveyLog){
         log.info(answer.type());
         QuestionType questionType = QuestionType.fromType(answer.type());
         if(questionType==null){
@@ -138,26 +141,29 @@ public class SurveyAnswerService {
                     .textAnswer(answer.answer().toString())
                     .build();
         }else if(QuestionType.isFile(questionType)){
-            String path = "uploads/"+surveyId+"/"+filename;
             return Answer.builder()
                     .surveyLog(surveyLog)
                     .answerType(questionType)
                     .questionId(answer.questionId())
                     .questionRealId(answer.questionRealId())
-                    .filePath(path)
+                    .surveyFile(surveyFile)
                     .build();
         }
         return null;
     }
 
-    private MultipartFile saveFile(AnswerRequest.AnswerDto answer, MultipartHttpServletRequest multipartRequest,String surveyId){
+    public AnswerResponse.AnswerLogDto getAnswerLogDetail(String surveyId, String logId){
+        //Note 질문이랑 답변 문항들 RESPONSE로 보내야함
+        Survey survey = surveyFindService.getSurveyFromId(surveyId);
+        SurveyLog surveyLog = surveyFindService.getSurveyLog(logId);
+        List<Answer> answers = surveyFindService.getAnswer(surveyLog);
+        log.info("log Detail 조회 완료");
+        return AnswerResponse.AnswerLogDto.from(survey,surveyLog,answers);
+    }
+
+    private SurveyFile saveFile(AnswerRequest.AnswerDto answer,MultipartHttpServletRequest multipartRequest, String surveyId){
         String key="";
-        if (answer.answer() instanceof String str) {
-            key = answer.answer().toString();
-            System.out.println("문자열 답변: " + str);
-        } else if (answer.answer() instanceof List<?> list) {
-            System.out.println("다중 선택 답변: " + list);
-        }
+        if (answer.answer() instanceof String str) key = answer.answer().toString();
 
         MultipartFile file = multipartRequest.getFile(key);
         if (file == null) {
@@ -166,31 +172,11 @@ public class SurveyAnswerService {
             log.warn("❌ {} 는 비어 있음", key);
         } else {
             log.info("✅ {} 수신 성공: {}", key, file.getOriginalFilename());
-            String path = "uploads/"+surveyId;
-            Path uploadDir = Paths.get(System.getProperty("user.dir"), path);
-            try {
-                Files.createDirectories(uploadDir); // 경로 없으면 생성
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            Path saved = uploadDir.resolve(file.getOriginalFilename());
-            try {
-                file.transferTo(saved);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            //key예시 file-0 image-1
+            String type = key.split("-")[0];
+            return fileService.saveFile(new SurveyFileDto(file, surveyId, FileType.fromType(type)));
         }
-        return file;
-    }
-
-    public AnswerResponse.AnswerLogDto getAnswerLogDetail(String surveyId, String logId){
-        //Note 질문이랑 답변 문항들 RESPONSE로 보내야함
-        Survey survey = surveyFindService.getSurveyFromId(surveyId);
-        SurveyLog surveyLog = surveyFindService.getSurveyLog(logId);
-        List<Answer> answers = surveyFindService.getAnswer(surveyLog);
-
-        return AnswerResponse.AnswerLogDto.from(survey,surveyLog,answers);
+        return null;
     }
 
 }

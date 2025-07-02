@@ -1,5 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.survey.controller.homepage;
 
+import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerResponse;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyEditDto;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyRequest;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyResponseDto;
@@ -56,6 +57,8 @@ public class SurveyController {
     @RequestMapping("/log/{surveyId}/{logId}")
     public String getSurveyLog(@PathVariable String surveyId,@PathVariable String logId,Model model){
         model.addAttribute("answerLog",surveyAnswerService.getAnswerLogDetail(surveyId,logId));
+        AnswerResponse.AnswerLogDto response = surveyAnswerService.getAnswerLogDetail(surveyId,logId);
+        log.info("{}",response.toString());
         return surveyPath+"/survey-answer-detail";
     }
 
