@@ -1,10 +1,8 @@
 package com.cooperation.project.cooperationcenter.domain.file.service;
 
 import com.cooperation.project.cooperationcenter.domain.file.dto.SurveyFileDto;
-import com.cooperation.project.cooperationcenter.domain.file.model.FileType;
 import com.cooperation.project.cooperationcenter.domain.file.model.SurveyFile;
 import com.cooperation.project.cooperationcenter.domain.file.repository.SurveyFileRepository;
-import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -14,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriUtils;
 
@@ -25,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +31,7 @@ public class FileService {
 
     public SurveyFile saveFile(SurveyFileDto request){
         String path = "uploads/survey/"+request.surveyId();
-        if(request.fileType()!=null) path+="/"+request.fileType().getFileType();
+        if(request.surveyFileType()!=null) path+="/"+request.surveyFileType().getFileType();
         log.info("path:{}",path);
         Path uploadDir = Paths.get(System.getProperty("user.dir"), path);
 
@@ -49,7 +44,7 @@ public class FileService {
         SurveyFile surveyFile = SurveyFile.builder()
                 .filePath(path)
                 .realPath(uploadDir)
-                .fileType(request.fileType())
+                .surveyFileType(request.surveyFileType())
                 .file(request.file())
                 .build();
 

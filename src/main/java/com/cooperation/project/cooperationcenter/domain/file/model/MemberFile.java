@@ -16,9 +16,9 @@ import java.util.UUID;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE surveyFile SET is_deleted = true, deleted_at = now() where id = ?")
+@SQLDelete(sql = "UPDATE memberFile SET is_deleted = true, deleted_at = now() where id = ?")
 @SQLRestriction("is_deleted is FALSE")
-public class SurveyFile extends BaseEntity {
+public class MemberFile extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,16 +30,16 @@ public class SurveyFile extends BaseEntity {
     private double fileSize;
 
     @Transient private Path realPath;
-    private SurveyFileType surveyFileType;
+    private MemberFileType memberFileType;
 
     @Builder
-    public SurveyFile(String filePath, Path realPath, SurveyFileType surveyFileType, MultipartFile file){
+    public MemberFile(String filePath, Path realPath, MemberFileType memberFileType, MultipartFile file){
         this.fileId = UUID.randomUUID().toString();
         this.fileRealName = file.getOriginalFilename();
         this.fileName = this.fileId+"_"+fileRealName;
         this.filePath = filePath;
         this.fileSize = file.getSize(); //byte 단위임 -> kb하려면 /1024
         this.realPath = realPath;
-        this.surveyFileType = surveyFileType;
+        this.memberFileType = memberFileType;
     }
 }

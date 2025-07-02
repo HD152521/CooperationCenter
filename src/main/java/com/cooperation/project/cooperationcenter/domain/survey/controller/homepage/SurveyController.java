@@ -51,7 +51,7 @@ public class SurveyController {
     @RequestMapping("/log/{surveyId}")
     public String getSurveyLog(@PathVariable String surveyId,Model model){
         model.addAttribute("AnswerDto",surveyAnswerService.getAnswerLog(surveyId));
-        return surveyPath+"/survey-answer-log_v2";
+        return surveyPath+"/survey-answer-log";
     }
 
     @RequestMapping("/log/{surveyId}/{logId}")

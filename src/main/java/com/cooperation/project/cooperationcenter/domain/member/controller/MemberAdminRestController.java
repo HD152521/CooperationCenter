@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/admin/member")
+@RequestMapping("/api/v1/admin")
 public class MemberAdminRestController {
 
     private static final Logger log = LoggerFactory.getLogger(MemberAdminRestController.class);

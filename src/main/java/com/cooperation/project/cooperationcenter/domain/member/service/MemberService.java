@@ -56,17 +56,14 @@ public class MemberService {
         // 중복검사, 비번 같은지, 허용했는지
         log.info("checking exist: {}",!memberRepository.existsMemberByEmail(request.email()));
         if(memberRepository.existsMemberByEmail(request.email())) throw new Exception(ErrorCode.MEMBER_ALREADY_EXIST.getMessage());
-        if(!request.password().equals(request.retypePassword())) throw new Exception(ErrorCode.PASSWORD_MISS_MATCH.getMessage());
-        if(request.terms().equals("null")||request.terms()==null) throw new Exception(ErrorCode.TERMS_NOW_ALLOW.getMessage());
+//        if(!request.password().equals(request.retypePassword())) throw new Exception(ErrorCode.PASSWORD_MISS_MATCH.getMessage());
+//        if(request.terms().equals("null")||request.terms()==null) throw new Exception(ErrorCode.TERMS_NOW_ALLOW.getMessage());
     }
 
     public Member createMember(MemberRequest.SignupDto request){
         try{
             Member member = Member.builder()
-                    .memberName(request.fullName())
-                    .email(request.email())
-                    .password(request.password())
-                    .imgUrl(null)
+
                     .build();
             return member;
         }catch (Exception e){

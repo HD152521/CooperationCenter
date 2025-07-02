@@ -1,7 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.survey.service.homepage;
 
 import com.cooperation.project.cooperationcenter.domain.file.dto.SurveyFileDto;
-import com.cooperation.project.cooperationcenter.domain.file.model.FileType;
+import com.cooperation.project.cooperationcenter.domain.file.model.SurveyFileType;
 import com.cooperation.project.cooperationcenter.domain.file.model.SurveyFile;
 import com.cooperation.project.cooperationcenter.domain.file.service.FileService;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
@@ -19,16 +19,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -174,7 +169,7 @@ public class SurveyAnswerService {
             log.info("✅ {} 수신 성공: {}", key, file.getOriginalFilename());
             //key예시 file-0 image-1
             String type = key.split("-")[0];
-            return fileService.saveFile(new SurveyFileDto(file, surveyId, FileType.fromType(type)));
+            return fileService.saveFile(new SurveyFileDto(file, surveyId, SurveyFileType.fromType(type)));
         }
         return null;
     }
