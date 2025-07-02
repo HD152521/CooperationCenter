@@ -10,8 +10,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Getter
 @Entity
@@ -39,7 +39,17 @@ public class Answer extends BaseEntity {
 
     public String getAnswer(){
         if(QuestionType.isFile(this.answerType)) return filePath;
-        else if(QuestionType.checkType(this.answerType)) return multiAnswer;
+        else if(QuestionType.checkType(this.answerType)){
+            if(answerType.equals(QuestionType.MULTIPLE)){
+                return multiAnswer.split("_")[0];
+            }
+            else if(answerType.equals(QuestionType.MULTIPLECHECK)){
+                return Arrays.stream(multiAnswer.replaceAll("[\\[\\]]", "").split(",\\s*"))
+                        .map(s -> s.split("_")[0])
+                        .collect(Collectors.joining(","));
+            }
+            return multiAnswer;
+        }
         else if(QuestionType.isDate(this.answerType)) return dateAnswer.toString();
         else if(QuestionType.isText(this.answerType)) return textAnswer;
         return null;

@@ -3,13 +3,18 @@ package com.cooperation.project.cooperationcenter.domain.survey.dto;
 import com.cooperation.project.cooperationcenter.domain.survey.model.Answer;
 import com.cooperation.project.cooperationcenter.domain.survey.model.Survey;
 import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class AnswerResponse {
+    private static final Logger log = LoggerFactory.getLogger(AnswerResponse.class);
+
     public record AnswerDto(
             String surveyId,
             String surveyTitle,
@@ -91,6 +96,9 @@ public class AnswerResponse {
             LogDto logDto
     ){
         public static AnswerLogDto from(Survey survey, SurveyLog surveyLog,List<Answer> answers){
+            for(Answer a : answers){
+                log.info(a.getAnswer());
+            }
             return new AnswerLogDto(
                     survey.getSurveyId(),
                     survey.getSurveyTitle(),

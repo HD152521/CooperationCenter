@@ -6,13 +6,13 @@ import java.io.File;
 
 public enum QuestionType {
     SHORT("SHORT"),
-    PARAGRAPH("PARAGRAPH"),
     ESSAY("ESSAY"),
     MULTIPLE("MULTIPLE"),
     MULTIPLECHECK("multiple-checkbox"),
     DROPDOWN("DROPDOWN"),
     DATE("DATE"),
-    FILE("FILE");
+    FILE("FILE"),
+    IMAGE("IMAGE"),;
 
     private final String type;
 
@@ -40,7 +40,7 @@ public enum QuestionType {
     }
 
     public static boolean isText(QuestionType type){
-        if(type.equals(SHORT) || type.equals(PARAGRAPH) || type.equals(ESSAY)){
+        if(type.equals(SHORT) || type.equals(ESSAY)){
             return true;
         }
         return false;
@@ -55,10 +55,10 @@ public enum QuestionType {
     }
 
     public static boolean isFile(QuestionType type){
-        return type.equals(FILE);
+        return type.equals(FILE) || type.equals(IMAGE) ;
     }
 
     public static boolean isFile(String type){
-        return FILE.type.equalsIgnoreCase(type);
+        return FILE.type.equalsIgnoreCase(type) || IMAGE.type.equalsIgnoreCase(type);
     }
 }
