@@ -79,7 +79,6 @@ public enum ErrorCode implements BaseCode {
     EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "LOGIN-0001", "이메일이 잘못됨"),
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON-0000", "잘못된 요청입니다."),
     EXIST_EMAIL(HttpStatus.BAD_REQUEST, "COMMON-0002", "이미 존재하는 회원입니다."),
-    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER-0000", "존재하지 않는 회원입니다."),
     PASSWORD_ERROR(HttpStatus.BAD_REQUEST, "LOGIN-0000", "잘못된 비밀번호입니다."),
 
     EXPIRED_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "TOKEN-0000", "AccessToken 기간 만료됨"),
@@ -87,11 +86,11 @@ public enum ErrorCode implements BaseCode {
     EMPTY_TOKEN_PROVIDED(HttpStatus.UNAUTHORIZED, "TOKEN-0002", "토큰 텅텅"),
     REFRESH_TOKEN_NOT_VALID(HttpStatus.UNAUTHORIZED, "TOKEN-0003", "리프레시 토큰이 올바르지 않음"),
 
-    INVALID_EMAIL_OR_PASSWORD(HttpStatus.NOT_FOUND, "MEMBER-0001", "유효하지 않는 이메일, 비번"),
-    MEMBER_SAVE_ERROR(HttpStatus.BAD_REQUEST,"MEMBER-0000","member save error"),
-    MEMBER_ALREADY_EXIST(HttpStatus.BAD_REQUEST,"MEMBER-0001","member already exist"),
-    PASSWORD_MISS_MATCH(HttpStatus.BAD_REQUEST,"MEMBER-0002","member password and retype password is miss match"),
-    TERMS_NOW_ALLOW(HttpStatus.BAD_REQUEST,"MEMBER-0002","member password and retype password is miss match"),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER-0000", "존재하지 않는 회원입니다."),
+    MEMBER_SAVE_ERROR(HttpStatus.BAD_REQUEST,"MEMBER-0001","member save error"),
+    INVALID_EMAIL_OR_PASSWORD(HttpStatus.NOT_FOUND, "MEMBER-0002", "유효하지 않는 이메일, 비번"),
+    MEMBER_ALREADY_EXIST(HttpStatus.BAD_REQUEST,"MEMBER-0003","member already exist"),
+    MEMBER_NOT_ACCEPTED(HttpStatus.BAD_REQUEST,"MEMBER-0004","member not accepted yet"),
 
     // 5xx : server error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SERVER-0000", "서버 에러");

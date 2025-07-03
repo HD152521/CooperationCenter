@@ -79,7 +79,7 @@ public class SecurityConfig {
 
         configuration.addAllowedOriginPattern("http://localhost:5173");
 //        configuration.addAllowedOriginPattern("https://*.ngrok-free.app");
-        configuration.addAllowedOriginPattern("https://0da7-121-161-139-229.ngrok-free.app");
+        configuration.addAllowedOriginPattern("https://b285-175-195-148-118.ngrok-free.app");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.addExposedHeader("Authorization");
