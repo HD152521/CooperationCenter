@@ -193,19 +193,6 @@ public class JwtProvider implements TokenProvider {
                 .compact();
     }
 
-//    public String resolveRefreshToken(HttpServletRequest request, String name){
-//        if (request.getCookies() == null) return null;
-//        for (Cookie cookie : request.getCookies()) {
-//            log.info("cookie종류 보기 : {}",cookie.getName());
-//            if (name.equals(cookie.getName())) {
-//                log.info("refreshToken:{}",cookie.getValue());
-//                return cookie.getValue();
-//            }
-//        }
-//        log.warn("refresh토큰 못찾음");
-//        return null;
-//    }
-
     public String resolvAccesseToken(HttpServletRequest request) {
 
         // 쿠키에서 꺼내기

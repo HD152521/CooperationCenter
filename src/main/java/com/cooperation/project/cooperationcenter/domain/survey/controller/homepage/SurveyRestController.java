@@ -59,6 +59,7 @@ public class SurveyRestController {
     @PatchMapping("/edit")
     public void editSurvey(@RequestBody SurveyEditDto request){
         log.info("[controller] getSurvey 진입 : {}",request.surveyId());
+        //fixme 제목 안바뀜
         surveySaveService.editSurvey(request);
     }
 

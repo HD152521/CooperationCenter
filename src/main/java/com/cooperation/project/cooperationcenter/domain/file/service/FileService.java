@@ -1,8 +1,12 @@
 package com.cooperation.project.cooperationcenter.domain.file.service;
 
+import com.cooperation.project.cooperationcenter.domain.file.dto.MemberFileDto;
 import com.cooperation.project.cooperationcenter.domain.file.dto.SurveyFileDto;
+import com.cooperation.project.cooperationcenter.domain.file.model.MemberFile;
 import com.cooperation.project.cooperationcenter.domain.file.model.SurveyFile;
+import com.cooperation.project.cooperationcenter.domain.file.repository.MemberFileRepository;
 import com.cooperation.project.cooperationcenter.domain.file.repository.SurveyFileRepository;
+import com.cooperation.project.cooperationcenter.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -28,6 +32,7 @@ import java.nio.file.Paths;
 public class FileService {
 
     private final SurveyFileRepository surveyFileRepository;
+    private final MemberFileRepository memberFileRepository;
 
     public SurveyFile saveFile(SurveyFileDto request){
         String path = "uploads/survey/"+request.surveyId();
@@ -57,6 +62,34 @@ public class FileService {
         }
 
         return surveyFileRepository.save(surveyFile);
+    }
+
+    public MemberFile saveFile(MemberFileDto request){
+        String path = "uploads/member/"+request.memberFileType().getFileType();
+        Path uploadDir = Paths.get(System.getProperty("user.dir"), path);
+
+        try {
+            Files.createDirectories(uploadDir); // 경로 없으면 생성
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        MemberFile memberFile = MemberFile.builder()
+                .filePath(path)
+                .realPath(uploadDir)
+                .memberFileType(request.memberFileType())
+                .file(request.file())
+                .build();
+
+        Path saved = uploadDir.resolve(memberFile.getFileName());
+
+        try {
+            request.file().transferTo(saved);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return memberFileRepository.save(memberFile);
     }
 
     public ResponseEntity<Resource> loadSurveyFile(String fileId) throws MalformedURLException {

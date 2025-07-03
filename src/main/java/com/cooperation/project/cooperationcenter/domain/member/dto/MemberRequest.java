@@ -9,7 +9,6 @@ public class MemberRequest {
             @NotNull String memberName,             // 실명
             @NotNull String email,                  // 이메일
             @NotNull String password,
-            @NotNull String checkPassword,
             @NotNull String homePhoneNumber,
             @NotNull String phoneNumber,
             @NotNull String address1,
@@ -17,11 +16,23 @@ public class MemberRequest {
 
             @NotNull String agencyName,
             @NotNull String agencyAddress1,
-            @NotNull String agencyAddress2,
-
-            MultipartFile agencyPicture,            // 업로드된 사진
-            MultipartFile businessCertificate       // 업로드된 사업자등록증
-    ){}
+            @NotNull String agencyAddress2
+    ){
+        public SignupDto withEncodedPassword(String encodedPassword) {
+            return new SignupDto(
+                    this.memberName,
+                    this.email,
+                    encodedPassword, // 여기에 암호화된 비밀번호 주입
+                    this.homePhoneNumber,
+                    this.phoneNumber,
+                    this.address1,
+                    this.address2,
+                    this.agencyName,
+                    this.agencyAddress1,
+                    this.agencyAddress2
+            );
+        }
+    }
 
     public record LoginDto(
             String email,

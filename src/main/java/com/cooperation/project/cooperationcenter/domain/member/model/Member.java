@@ -2,14 +2,12 @@ package com.cooperation.project.cooperationcenter.domain.member.model;
 
 
 import com.cooperation.project.cooperationcenter.domain.file.model.MemberFile;
+import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
 import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyLog;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.antlr.v4.runtime.misc.NotNull;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -17,12 +15,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Getter
 @Entity
 @Table(name = "member")
+@Builder
 @SQLDelete(sql = "UPDATE member SET is_deleted = true, deleted_at = now() where id = ?")
 @SQLRestriction("is_deleted is FALSE")
 public class Member extends BaseEntity {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,8 +35,8 @@ public class Member extends BaseEntity {
     @NotNull private String password;
     @NotNull private String homePhoneNumber;
     @NotNull private String phoneNumber;
-    @NotNull private String Address1;
-    @NotNull private String Address2;
+    @NotNull private String address1;
+    @NotNull private String address2;
 
     @NotNull private String agencyName;
     @NotNull private String agencyAddress1;
@@ -55,19 +58,44 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member")
     private List<SurveyLog> surveyLogs = new ArrayList<>();
 
-    public enum Role{
+    public void accept(){
+        this.isApprovalSignup = true;
+    }
+
+    public enum Role {
         USER("USER"),
         ADMIN("ADMIN");
 
-        Role(String role){}
-        private String role;
+        private final String role;
+
+        Role(String role) {
+            this.role = role;
+        }
     }
 
-    @Builder
-    public Member(){
+    public static Member fromDto(
+            MemberRequest.SignupDto dto,
+            MemberFile agencyPicture,
+            MemberFile businessCertificate
+    ) {
+        return Member.builder()
+                .memberName(dto.memberName())
+                .email(dto.email())
+                .password(dto.password())
+                .homePhoneNumber(dto.homePhoneNumber())
+                .phoneNumber(dto.phoneNumber())
+                .address1(dto.address1())
+                .address2(dto.address2())
+                .agencyName(dto.agencyName())
+                .agencyAddress1(dto.agencyAddress1())
+                .agencyAddress2(dto.agencyAddress2())
+                .agencyPicture(agencyPicture)
+                .businessCertificate(businessCertificate)
 
-        this.memberId = UUID.randomUUID().toString();
-        this.role = Role.USER;
-        this.isApprovalSignup = false;
+                .memberId(UUID.randomUUID().toString())
+                .role(Role.USER) // 기본값
+                .isApprovalSignup(false) // 가입 승인 대기 상태
+                .build();
     }
+
 }
