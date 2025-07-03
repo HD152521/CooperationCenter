@@ -1,6 +1,8 @@
 package com.cooperation.project.cooperationcenter.domain.member.service;
 
 
+import com.cooperation.project.cooperationcenter.domain.agency.model.Agency;
+import com.cooperation.project.cooperationcenter.domain.agency.repository.AgencyRepository;
 import com.cooperation.project.cooperationcenter.domain.file.dto.MemberFileDto;
 import com.cooperation.project.cooperationcenter.domain.file.model.MemberFile;
 import com.cooperation.project.cooperationcenter.domain.file.model.MemberFileType;
@@ -41,8 +43,10 @@ public class MemberService {
     private static final Logger log = LoggerFactory.getLogger(MemberService.class);
     private final MemberCookieService memberCookieService;
     private final JwtProvider jwtProvider;
-    private final MemberRepository memberRepository;
     private final FileService fileService;
+
+    private final MemberRepository memberRepository;
+    private final AgencyRepository agencyRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -52,15 +56,11 @@ public class MemberService {
         MemberRequest.SignupDto request = mappingToDto(data);
         String encodedPassword = passwordEncoder.encode(request.password());
 
-        log.info("매핑");
-        
         MemberFile file1 = (agencyPicture==null) ? null : fileService.saveFile(new MemberFileDto(agencyPicture, MemberFileType.PICTURE));
         MemberFile file2 = (businessCertificate==null) ? null : fileService.saveFile(new MemberFileDto(businessCertificate, MemberFileType.CERTIFICATION));
-        log.info("파일 변환");
+
         Member member = Member.fromDto(request.withEncodedPassword(encodedPassword),file1,file2);
         memberRepository.save(member);
-        log.info("멤버저장");
-
     }
 
     public void login(MemberRequest.LoginDto request,HttpServletResponse response){

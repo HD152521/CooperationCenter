@@ -91,6 +91,7 @@ public enum ErrorCode implements BaseCode {
     INVALID_EMAIL_OR_PASSWORD(HttpStatus.NOT_FOUND, "MEMBER-0002", "유효하지 않는 이메일, 비번"),
     MEMBER_ALREADY_EXIST(HttpStatus.BAD_REQUEST,"MEMBER-0003","member already exist"),
     MEMBER_NOT_ACCEPTED(HttpStatus.BAD_REQUEST,"MEMBER-0004","member not accepted yet"),
+    MEMBER_NOT_ADMIN(HttpStatus.BAD_REQUEST,"MEMBER-0005","Meber is not ADMIN"),
 
     // 5xx : server error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SERVER-0000", "서버 에러");

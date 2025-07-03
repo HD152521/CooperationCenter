@@ -25,6 +25,7 @@ import java.util.UUID;
 @SQLRestriction("is_deleted is FALSE")
 public class Member extends BaseEntity {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -56,6 +57,10 @@ public class Member extends BaseEntity {
     @NotNull private boolean isApprovalSignup;
     @OneToMany(mappedBy = "member")
     private List<SurveyLog> surveyLogs = new ArrayList<>();
+
+    public void accept(){
+        this.isApprovalSignup = true;
+    }
 
     public enum Role {
         USER("USER"),

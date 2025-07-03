@@ -4,7 +4,9 @@ import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
 import com.cooperation.project.cooperationcenter.domain.member.service.MemberAdminService;
 import com.cooperation.project.cooperationcenter.domain.member.service.MemberService;
+import com.cooperation.project.cooperationcenter.global.exception.BaseException;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
+import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -26,5 +28,17 @@ public class MemberAdminRestController {
         log.info("id:{}, pw:{}",request.email(),request.password());
         return BaseResponse.onSuccess(memberAdminService.login(request,response,session));
     }
+
+    @PostMapping("/accept/{memberEmail}")
+    public BaseResponse<?> acceptMember(@PathVariable String memberEmail){
+        log.info("enter accept");
+        try{
+            memberAdminService.acceptedMember(memberEmail);
+            return BaseResponse.onSuccess("success");
+        }catch (Exception e){
+            return BaseResponse.onFailure(ErrorCode.BAD_REQUEST,null);
+        }
+    }
+
 
 }
