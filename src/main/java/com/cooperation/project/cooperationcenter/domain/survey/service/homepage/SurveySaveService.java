@@ -120,7 +120,6 @@ public class SurveySaveService {
         return questions;
     }
 
-
     @Transactional
     public List<QuestionOption> getQuestionOptionFromDto(List<QuestionDto> requestDtos, List<Question> questions,Survey survey){
         List<QuestionOption> options = new ArrayList<>();
@@ -139,6 +138,11 @@ public class SurveySaveService {
                         questionOption.setNextQuestionId(optionText.nextQuestion());
                         questionOption.setRealNextQuestionId(optionText.realNextQuestion());
                         questionOptionRepository.save(questionOption);
+
+                        survey.removeOption(questionOption);
+                        survey.setOptions(questionOption);
+                        q.removeOption(questionOption);
+                        q.setOptions(questionOption);
                         continue;
                     }
 
