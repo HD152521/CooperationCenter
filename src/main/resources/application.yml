@@ -7,7 +7,6 @@ spring:
       classpath:/templates/
     suffix:
       .html
-
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/cooperationcenter?autoReconnect=true&allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&createDatabaseIfNotExist=true
@@ -28,7 +27,11 @@ spring:
   mysql:
     charset: utf8mb4
     collation: utf8mb4_unicode_ci
-
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 20MB
 
 
 jwt:
@@ -36,3 +39,8 @@ jwt:
 
 server:
   port: ${PORT:8080}
+  servlet:
+    encoding:
+      enabled: true
+      charset: UTF-8
+      force: true

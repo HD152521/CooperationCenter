@@ -46,6 +46,7 @@ public class SecurityConfig {
 
                                 //fixme 임시용임 밑에는
                                 .requestMatchers("/api/v1/**").permitAll()
+                                .requestMatchers("/**").permitAll()
                                 .requestMatchers("/test/**","/excep/**","/main/**","/admin/login").permitAll()
                                 .anyRequest().authenticated()
                 )
@@ -77,7 +78,8 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         configuration.addAllowedOriginPattern("http://localhost:5173");
-        configuration.addAllowedOriginPattern("https://onair-lime.vercel.app");
+//        configuration.addAllowedOriginPattern("https://*.ngrok-free.app");
+        configuration.addAllowedOriginPattern("https://b285-175-195-148-118.ngrok-free.app");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.addExposedHeader("Authorization");

@@ -1,5 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.member.service;
 
+import com.cooperation.project.cooperationcenter.domain.agency.model.Agency;
+import com.cooperation.project.cooperationcenter.domain.agency.repository.AgencyRepository;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberResponse;
@@ -18,6 +20,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ public class MemberAdminService {
 
     private final MemberCookieService memberCookieService;
     private final MemberRepository memberRepository;
+    private final AgencyRepository agencyRepository;
     private final JwtProvider jwtProvider;
 
     public MemberResponse.LoginDto login(MemberRequest.LoginDto request, HttpServletResponse response, HttpSession session) {
@@ -38,6 +42,10 @@ public class MemberAdminService {
         if(!member.getPassword().equals(request.password())){
             log.warn("로그인 실패");
             throw new BaseException(ErrorCode.PASSWORD_ERROR);
+        }
+
+        if(!member.getRole().equals(Member.Role.ADMIN)){
+            throw new BaseException(ErrorCode.MEMBER_NOT_ADMIN);
         }
 
         TokenResponse tokenResponse = getTokenResponse(response,member);
@@ -91,5 +99,16 @@ public class MemberAdminService {
             log.error("알 수 없는 에러 발생: {}", e.getMessage(), e);
             return null;
         }
+    }
+
+    @Transactional
+    public void acceptedMember(String email){
+        Member member = memberRepository.findMemberByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+        member.accept();
+        memberRepository.save(member);
+
+        Agency agency = Agency.fromMember(member);
+        agencyRepository.save(agency);
     }
 }

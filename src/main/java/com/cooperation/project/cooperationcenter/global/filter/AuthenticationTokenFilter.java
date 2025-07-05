@@ -35,15 +35,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
         log.info("진입 path:{}",path);
 
         final String[] WHITELIST_PATHS = {
-                "/api/v1/admin",
-                "/main/page",
-                "/admin/login",
-                "/test",
-                "/health",
-                "/api-test",
-                "/swagger-ui",
-                "/v3",
-//                "/" //임시용
+                "/" //임시용
         };
         final String[] STYLE_PATHS = {
                 "/css",

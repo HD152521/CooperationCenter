@@ -4,13 +4,17 @@ package com.cooperation.project.cooperationcenter.domain.member.controller;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
 import com.cooperation.project.cooperationcenter.domain.member.service.MemberService;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
+import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,9 +24,40 @@ public class MemberRestController {
     private static final Logger log = LoggerFactory.getLogger(MemberRestController.class);
     private final MemberService memberService;
 
-    @PostMapping("/signup")
-    public BaseResponse<?> signup(@ModelAttribute MemberRequest.SignupDto request) throws Exception{
-        log.info("signup request: {}", request);
-        return BaseResponse.onSuccess(memberService.signup(request));
+    @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public BaseResponse<?> signup(
+            @RequestPart("data") String data,
+            @RequestPart(name = "agencyPicture", required = false) MultipartFile agencyPicture,
+            @RequestPart(name = "businessCertificate", required = false) MultipartFile businessCertificate
+    ) throws JsonProcessingException {
+        log.info("signup request: {}", data);
+        log.info("agencyPicture: {}", agencyPicture != null ? agencyPicture.getOriginalFilename() : "없음");
+        log.info("businessCertificate: {}", businessCertificate != null ? businessCertificate.getOriginalFilename() : "없음");
+        try{
+            memberService.signup(data,agencyPicture,businessCertificate);
+            return BaseResponse.onSuccess("success");
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return BaseResponse.onFailure(ErrorCode.BAD_REQUEST,null);
+        }
     }
+
+    @GetMapping("/check-id")
+    public ResponseEntity<Boolean> checkDuplicateId(@RequestParam String username) {
+        boolean isDuplicate = memberService.isUsernameTaken(username);
+        return ResponseEntity.ok(isDuplicate);
+    }
+
+    @PostMapping("/login")
+    public BaseResponse<?> login(@RequestBody MemberRequest.LoginDto request, HttpServletResponse response){
+        try{
+            memberService.login(request,response);
+            log.info("loginSuccess");
+            return BaseResponse.onSuccess("success");
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return BaseResponse.onFailure(ErrorCode.BAD_REQUEST,null);
+        }
+    }
+
 }
