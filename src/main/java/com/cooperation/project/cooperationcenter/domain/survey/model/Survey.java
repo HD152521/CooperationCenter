@@ -68,6 +68,10 @@ public class Survey extends BaseEntity {
         this.surveyLogs.add(log);
     }
 
+    public void setParticipantCount(){
+        this.participantCount++;
+    }
+
     public void copyCntPlus(){
         this.copyCnt++;
     }
@@ -88,6 +92,13 @@ public class Survey extends BaseEntity {
     public void updateFromEditDto(SurveyEditDto dto) {
         this.surveyTitle = dto.title();
         this.surveyDescription = dto.description();
+        this.startDate = dto.startDate();
+        this.endDate = dto.endDate();
+    }
+
+    public void setByDto(SurveyEditDto dto){
+        this.surveyDescription = dto.description();
+        this.surveyTitle = dto.title();
         this.startDate = dto.startDate();
         this.endDate = dto.endDate();
     }

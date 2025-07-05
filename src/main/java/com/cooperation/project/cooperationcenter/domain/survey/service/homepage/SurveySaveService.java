@@ -43,11 +43,12 @@ public class SurveySaveService {
     public void editSurvey(SurveyEditDto request){
         log.info("data:{}",request.toString());
         Survey survey = surveyFindService.getSurveyFromId(request.surveyId());
+        survey.setByDto(request);
+
         List<Question> questions = getQuestionsFromDto(request.questions(),survey);
         deleteRemovedQuestions(survey, questions);
-        //fixme option은 조금 더 나중에 하자
-        List<QuestionOption> options = getQuestionOptionFromDto(request.questions(),questions,survey);
 
+        List<QuestionOption> options = getQuestionOptionFromDto(request.questions(),questions,survey);
         save(survey,questions,options);
     }
 
