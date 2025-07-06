@@ -10,4 +10,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/agency")
 @Slf4j
 public class AgencyRestController {
+
 }

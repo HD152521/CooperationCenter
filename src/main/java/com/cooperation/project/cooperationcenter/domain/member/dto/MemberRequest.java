@@ -16,7 +16,8 @@ public class MemberRequest {
 
             @NotNull String agencyName,
             @NotNull String agencyAddress1,
-            @NotNull String agencyAddress2
+            @NotNull String agencyAddress2,
+            @NotNull String agencyPhone
     ){
         public SignupDto withEncodedPassword(String encodedPassword) {
             return new SignupDto(
@@ -29,7 +30,8 @@ public class MemberRequest {
                     this.address2,
                     this.agencyName,
                     this.agencyAddress1,
-                    this.agencyAddress2
+                    this.agencyAddress2,
+                    this.agencyPhone
             );
         }
     }
