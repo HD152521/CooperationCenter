@@ -112,5 +112,29 @@ public class FileService {
                 .body(resource);
     }
 
+    public ResponseEntity<Resource> viewMemberImage(String fileId) throws IOException {
+        log.info("파일 읽어옴0");
+        MemberFile file = memberFileRepository.findSurveyFileByFileId(fileId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."));
+        log.info("파일 읽어옴1");
+        Path filePath = Paths.get(file.getFilePath()).resolve(file.getFileName());
+        Resource resource = new UrlResource(filePath.toUri());
+        log.info("파일 읽어옴2");
+        if (!resource.exists() || !resource.isReadable()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 읽을 수 없습니다.");
+        }
+        log.info("파일 읽어옴3");
+        // 파일 확장자에 따라 MIME 타입 설정
+        String contentType = Files.probeContentType(filePath);
+        if (contentType == null) {
+            contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+        }
+        log.info("파일 확장자 확인");
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(resource);
+    }
+
 
 }

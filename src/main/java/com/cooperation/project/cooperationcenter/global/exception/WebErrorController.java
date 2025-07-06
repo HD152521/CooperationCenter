@@ -16,8 +16,9 @@ public class WebErrorController implements ErrorController {
 
     @RequestMapping("/error")
     public BaseResponse<?> handleError(HttpServletRequest request) throws NoHandlerFoundException {
-        log.info(request.getRequestURI());
         Object status = request.getAttribute("jakarta.servlet.error.status_code");
+        log.info(request.getRequestURI());
+        log.info("status:{}",status );
         if (status != null) {
             int statusCode = Integer.parseInt(status.toString());
             if (statusCode == HttpStatus.NOT_FOUND.value()) {

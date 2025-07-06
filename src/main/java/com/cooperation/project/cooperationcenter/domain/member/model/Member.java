@@ -41,6 +41,7 @@ public class Member extends BaseEntity {
     @NotNull private String agencyName;
     @NotNull private String agencyAddress1;
     @NotNull private String agencyAddress2;
+    @NotNull private String agencyPhone;
 //    @NotNull private enum agencyRegion;  fixme 추가해야함.
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -91,6 +92,7 @@ public class Member extends BaseEntity {
                 .agencyAddress2(dto.agencyAddress2())
                 .agencyPicture(agencyPicture)
                 .businessCertificate(businessCertificate)
+                .agencyPhone(dto.agencyPhone())
 
                 .memberId(UUID.randomUUID().toString())
                 .role(Role.USER) // 기본값

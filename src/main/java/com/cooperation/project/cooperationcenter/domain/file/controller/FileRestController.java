@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 
 @RestController
@@ -25,4 +26,11 @@ public class FileRestController {
         log.info("enter file controller");
         return fileService.loadSurveyFile(fileId);
     }
+
+    @GetMapping("/img/{fileId}")
+    public ResponseEntity<Resource> viewImage(@PathVariable String fileId) throws IOException {
+        log.info("enter file controller-img");
+        return fileService.viewMemberImage(fileId);
+    }
+
 }

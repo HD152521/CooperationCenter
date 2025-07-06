@@ -3,6 +3,7 @@ package com.cooperation.project.cooperationcenter.domain.agency.model;
 import com.cooperation.project.cooperationcenter.domain.file.model.MemberFile;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
+import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -19,7 +20,7 @@ import java.util.UUID;
 @Builder
 @SQLDelete(sql = "UPDATE agency SET is_deleted = true, deleted_at = now() where id = ?")
 @SQLRestriction("is_deleted is FALSE")
-public class Agency {
+public class Agency extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,6 +29,8 @@ public class Agency {
     private String agencyName;
     @NotNull private String agencyAddress1;
     @NotNull private String agencyAddress2;
+    @NotNull private String agencyPhone;
+    @NotNull private String agencyOwner;
 //    @NotNull private enum agencyRegion;  fixme 추가해야함.
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -43,6 +46,8 @@ public class Agency {
                 .agencyAddress1(member.getAgencyAddress1())
                 .agencyAddress2(member.getAgencyAddress2())
                 .agencyPicture(file)
+                .agencyPhone(member.getAgencyPhone())
+                .agencyOwner(member.getMemberName())
                 .build();
     }
 }
