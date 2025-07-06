@@ -22,7 +22,7 @@ public class SurveyController {
 
     private final SurveyAnswerService surveyAnswerService;
     private final SurveyFindService surveyFindService;
-    String surveyPath = "homepage/user/survey";
+    private final String surveyPath = "homepage/user/survey";
 
     @RequestMapping("/make")
     public String makeForm(){
