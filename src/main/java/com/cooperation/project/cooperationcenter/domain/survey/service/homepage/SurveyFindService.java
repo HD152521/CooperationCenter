@@ -3,6 +3,7 @@ package com.cooperation.project.cooperationcenter.domain.survey.service.homepage
 import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyResponseDto;
 import com.cooperation.project.cooperationcenter.domain.survey.model.*;
 import com.cooperation.project.cooperationcenter.domain.survey.repository.*;
+import com.cooperation.project.cooperationcenter.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -111,6 +112,18 @@ public class SurveyFindService {
     public SurveyLog getSurveyLog(String logId){
         try{
             return surveyLogRepository.findSurveyLogBySurveyLogId(logId);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public List<SurveyLog> getSurveyLogs(List<String> logIds){
+        try{
+            List<SurveyLog> response = new ArrayList<>();
+            for(String id : logIds) response.add(getSurveyLog(id));
+            if(response.isEmpty()) throw new NullPointerException();
+            return response;
         }catch (Exception e){
             log.warn(e.getMessage());
             return null;

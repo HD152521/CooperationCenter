@@ -3,6 +3,7 @@ package com.cooperation.project.cooperationcenter.domain.survey.controller.homep
 import com.cooperation.project.cooperationcenter.domain.survey.dto.*;
 import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveyAnswerService;
 import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveyFindService;
+import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveyLogService;
 import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveySaveService;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +26,7 @@ public class SurveyRestController {
     private final SurveySaveService surveySaveService;
     private final SurveyFindService surveyFindService;
     private final SurveyAnswerService surveyAnswerService;
+    private final SurveyLogService surveyLogService;
 
     @PostMapping("/make")
     public void saveSurvey(@RequestBody SurveyRequest.SurveyDto request){
@@ -80,8 +83,14 @@ public class SurveyRestController {
 
     @GetMapping("/answer/{surveyId}")
     public AnswerResponse.AnswerDto getAnswerLog(@PathVariable String surveyId){
-        AnswerResponse.AnswerDto result = surveyAnswerService.getAnswerLog(surveyId);
+        AnswerResponse.AnswerDto result = surveyLogService.getAnswerLog(surveyId);
         log.info("result : {}",result.toString());
         return result;
+    }
+
+    @PostMapping("/log/csv")
+    public ResponseEntity<Resource> extractCsv(@RequestBody LogCsv.RequestDto request){
+        log.info("[enter extract csv]");
+        return surveyLogService.extractCsv(request);
     }
 }

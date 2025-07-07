@@ -75,19 +75,6 @@ public class SurveyAnswerService {
         log.info("➡️survey 답변 완료!");
     }
 
-    public AnswerResponse.AnswerDto getAnswerLog(String surveyId){
-        Survey survey = surveyFindService.getSurveyFromId(surveyId);
-        List<SurveyLog> surveyLog = surveyFindService.getSurveyLogs(survey);
-        //status 추가
-        List<AnswerResponse.LogDto> logs = new ArrayList<>();
-        if(!surveyLog.isEmpty())  logs = AnswerResponse.LogDto.from(surveyLog);
-        return AnswerResponse.AnswerDto.from(survey,logs);
-    }
-
-
-
-
-
     @Transactional
     protected List<Answer> saveAnswer(AnswerRequest.Dto answerList, MultipartHttpServletRequest multipartRequest,SurveyLog surveyLog){
         List<Answer> saveList = new ArrayList<>();
@@ -145,15 +132,6 @@ public class SurveyAnswerService {
                     .build();
         }
         return null;
-    }
-
-    public AnswerResponse.AnswerLogDto getAnswerLogDetail(String surveyId, String logId){
-        //Note 질문이랑 답변 문항들 RESPONSE로 보내야함
-        Survey survey = surveyFindService.getSurveyFromId(surveyId);
-        SurveyLog surveyLog = surveyFindService.getSurveyLog(logId);
-        List<Answer> answers = surveyFindService.getAnswer(surveyLog);
-        log.info("log Detail 조회 완료");
-        return AnswerResponse.AnswerLogDto.from(survey,surveyLog,answers);
     }
 
     private SurveyFile saveFile(AnswerRequest.AnswerDto answer,MultipartHttpServletRequest multipartRequest, String surveyId){

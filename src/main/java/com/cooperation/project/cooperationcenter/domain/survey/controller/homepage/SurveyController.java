@@ -6,6 +6,7 @@ import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyRequest
 import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyResponseDto;
 import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveyAnswerService;
 import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveyFindService;
+import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveyLogService;
 import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveySaveService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ public class SurveyController {
 
     private final SurveyAnswerService surveyAnswerService;
     private final SurveyFindService surveyFindService;
+    private final SurveyLogService surveyLogService;
     private final String surveyPath = "homepage/user/survey";
 
     @RequestMapping("/make")
@@ -50,14 +52,14 @@ public class SurveyController {
 
     @RequestMapping("/log/{surveyId}")
     public String getSurveyLog(@PathVariable String surveyId,Model model){
-        model.addAttribute("AnswerDto",surveyAnswerService.getAnswerLog(surveyId));
+        model.addAttribute("AnswerDto",surveyLogService.getAnswerLog(surveyId));
         return surveyPath+"/survey-answer-log";
     }
 
     @RequestMapping("/log/{surveyId}/{logId}")
     public String getSurveyLog(@PathVariable String surveyId,@PathVariable String logId,Model model){
-        model.addAttribute("answerLog",surveyAnswerService.getAnswerLogDetail(surveyId,logId));
-        AnswerResponse.AnswerLogDto response = surveyAnswerService.getAnswerLogDetail(surveyId,logId);
+        model.addAttribute("answerLog",surveyLogService.getAnswerLogDetail(surveyId,logId));
+        AnswerResponse.AnswerLogDto response = surveyLogService.getAnswerLogDetail(surveyId,logId);
         log.info("{}",response.toString());
         return surveyPath+"/survey-answer-detail";
     }
