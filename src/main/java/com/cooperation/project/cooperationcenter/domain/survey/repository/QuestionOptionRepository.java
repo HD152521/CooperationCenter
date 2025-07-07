@@ -12,5 +12,6 @@ import java.util.List;
 public interface QuestionOptionRepository extends JpaRepository<QuestionOption, Long> {
     List<QuestionOption> findQuestionOptionsBySurvey(Survey survey);
     QuestionOption findQuestionOptionById(Long id);
+    List<QuestionOption> findQuestionOptionsByQuestion(Question question);
 
 }

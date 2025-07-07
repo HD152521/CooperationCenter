@@ -3,6 +3,7 @@ package com.cooperation.project.cooperationcenter.domain.survey.service.homepage
 import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyResponseDto;
 import com.cooperation.project.cooperationcenter.domain.survey.model.*;
 import com.cooperation.project.cooperationcenter.domain.survey.repository.*;
+import com.cooperation.project.cooperationcenter.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -67,10 +69,29 @@ public class SurveyFindService {
         }
     }
 
+    public Question getQuestion(Answer answer){
+        try{
+            return getQuestion(answer.getQuestionRealId());
+        }catch (Exception e){
+            log.warn("getQuestionByAnswer failed...");
+            return null;
+        }
+    }
+
     public List<QuestionOption> getOptions(Survey survey){
         try{
             log.info("surveyId:{}",survey.getId());
             return questionOptionRepository.findQuestionOptionsBySurvey(survey);
+        }catch (Exception e){
+            log.warn("getOptionsBy survey and question failed...");
+            return null;
+        }
+    }
+
+    public List<QuestionOption> getOptions(Answer answer){
+        try{
+            Question quesion = getQuestion(answer);
+            return questionOptionRepository.findQuestionOptionsByQuestion(quesion);
         }catch (Exception e){
             log.warn("getOptionsBy survey and question failed...");
             return null;
@@ -117,6 +138,18 @@ public class SurveyFindService {
         }
     }
 
+    public List<SurveyLog> getSurveyLogs(List<String> logIds){
+        try{
+            List<SurveyLog> response = new ArrayList<>();
+            for(String id : logIds) response.add(getSurveyLog(id));
+            if(response.isEmpty()) throw new NullPointerException();
+            return response;
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
     public List<SurveyLog> getSurveyLogs(Survey survey){
         try{
             return surveyLogRepository.findSurveysLogBySurvey(survey);
@@ -134,4 +167,20 @@ public class SurveyFindService {
             return null;
         }
     }
+
+    public String getAnswerFromMultiple(Answer answer){
+        List<QuestionOption> options = getOptions(answer);
+        log.info("options:{}",options.toString());
+        if(answer.getAnswerType().equals(QuestionType.MULTIPLECHECK)){
+            List<String> targetOptions = Arrays.stream(answer.getMultiAnswer().replaceAll("[\\[\\]]","").split(",\\s*"))
+                    .map(s -> s.split("_",2)[1])
+                    .toList();
+            return String.join(",",targetOptions);
+        }
+        else if(answer.getAnswerType().equals(QuestionType.MULTIPLE)){
+            return answer.getMultiAnswer().split("_",2)[1];
+        }
+        return answer.getAnswer();
+    }
+
 }
