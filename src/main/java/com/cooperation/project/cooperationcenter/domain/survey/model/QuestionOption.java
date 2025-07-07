@@ -33,7 +33,7 @@ public class QuestionOption extends BaseEntity {
         this.optionText = text;
         this.nextQuestionId = nextQuestionId;
         this.question = question;
-        this. survey = survey;
+        this.survey = survey;
         this.realNextQuestionId = realNextQuestionId;
     }
 

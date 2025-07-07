@@ -58,7 +58,7 @@ public class SurveyLogService {
         List<Question> questions = surveyFindService.getQuestions(survey);
 
         List<String> questionTexts = questions.stream()
-                .map(Question::getQuestion)
+                .map(q -> toCsvSafe(q.getQuestion()))
                 .toList();
         String questionLine = String.join(",", questionTexts);
         questionLine+="\n";
@@ -68,11 +68,16 @@ public class SurveyLogService {
         for(SurveyLog log : logs){
             List<Answer> answers = surveyFindService.getAnswer(log);
             List<String> answerTexts = answers.stream()
-                    .map(a -> QuestionType.isFile(a.getAnswerType())
-                            ? "\"=HYPERLINK(\"\""+origin+a.getAnswer().split("_")[0]+"\"\")\""
-                            : a.getAnswer())
+                    .map(a ->{
+                                if(QuestionType.isFile(a.getAnswerType())){
+                                    return "\"=HYPERLINK(\"\""+origin+a.getAnswer().split("_")[0]+"\"\")\"";
+                                }else if(QuestionType.checkType(a.getAnswerType())){
+                                    return toCsvSafe(surveyFindService.getAnswerFromMultiple(a));
+                                }else{
+                                    return a.getAnswer();
+                                }
+                    })
                     .toList();
-
             String AnswerLine = String.join(",", answerTexts);
             AnswerLine+="\n";
             System.out.println(AnswerLine);
@@ -88,5 +93,10 @@ public class SurveyLogService {
                 .contentType(MediaType.parseMediaType("text/csv"))
                 .contentLength(csvBytes.length)
                 .body(resource);
+    }
+
+    private static String toCsvSafe(String value) {
+        if (value == null) return "";
+        return "\"" + value.replace("\"", "\"\"") + "\"";
     }
 }

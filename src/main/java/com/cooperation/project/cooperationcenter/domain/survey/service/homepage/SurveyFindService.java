@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -68,10 +69,29 @@ public class SurveyFindService {
         }
     }
 
+    public Question getQuestion(Answer answer){
+        try{
+            return getQuestion(answer.getQuestionRealId());
+        }catch (Exception e){
+            log.warn("getQuestionByAnswer failed...");
+            return null;
+        }
+    }
+
     public List<QuestionOption> getOptions(Survey survey){
         try{
             log.info("surveyId:{}",survey.getId());
             return questionOptionRepository.findQuestionOptionsBySurvey(survey);
+        }catch (Exception e){
+            log.warn("getOptionsBy survey and question failed...");
+            return null;
+        }
+    }
+
+    public List<QuestionOption> getOptions(Answer answer){
+        try{
+            Question quesion = getQuestion(answer);
+            return questionOptionRepository.findQuestionOptionsByQuestion(quesion);
         }catch (Exception e){
             log.warn("getOptionsBy survey and question failed...");
             return null;
@@ -147,4 +167,20 @@ public class SurveyFindService {
             return null;
         }
     }
+
+    public String getAnswerFromMultiple(Answer answer){
+        List<QuestionOption> options = getOptions(answer);
+        log.info("options:{}",options.toString());
+        if(answer.getAnswerType().equals(QuestionType.MULTIPLECHECK)){
+            List<String> targetOptions = Arrays.stream(answer.getMultiAnswer().replaceAll("[\\[\\]]","").split(",\\s*"))
+                    .map(s -> s.split("_",2)[1])
+                    .toList();
+            return String.join(",",targetOptions);
+        }
+        else if(answer.getAnswerType().equals(QuestionType.MULTIPLE)){
+            return answer.getMultiAnswer().split("_",2)[1];
+        }
+        return answer.getAnswer();
+    }
+
 }
