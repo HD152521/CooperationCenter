@@ -104,7 +104,7 @@ public class SurveyFindService {
         for(Survey survey : surveys){
             LocalDate now = LocalDate.now();
             int daysLeft = (survey.getEndDate()==null) ? 0 : Period.between(now, survey.getEndDate()).getDays();
-            boolean isBefore = survey.getStartDate() != null && now.isBefore(survey.getStartDate());
+            boolean isBefore = survey.getStartDate() != null && now.isBefore(survey.getStartDate()) && !now.equals(survey.getStartDate());
             response.add(
                     new SurveyResponseDto(
                             survey.getSurveyTitle(),
