@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,17 @@ public class SurveyLogService {
 
     private final SurveyFindService surveyFindService;
     private final String origin = "http://localhost:8080/api/v1/file/";
+
+    public AnswerResponse.AnswerPagedDto getAnswerLog(String surveyId, Pageable pageable){
+        Survey survey = surveyFindService.getSurveyFromId(surveyId);
+        Page<SurveyLog> surveyLog = surveyFindService.getSurveyLogs(survey,pageable);
+        //status 추가
+        Page<AnswerResponse.LogDto> logs = surveyLog.hasContent()
+                ? AnswerResponse.LogDto.from(surveyLog)
+                : Page.empty();
+
+        return AnswerResponse.AnswerPagedDto.from(survey,logs);
+    }
 
     public AnswerResponse.AnswerDto getAnswerLog(String surveyId){
         Survey survey = surveyFindService.getSurveyFromId(surveyId);

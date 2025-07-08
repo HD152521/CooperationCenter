@@ -61,8 +61,10 @@ public class SurveyController {
     }
 
     @RequestMapping("/log/{surveyId}")
-    public String getSurveyLog(@PathVariable String surveyId,Model model){
-        model.addAttribute("AnswerDto",surveyLogService.getAnswerLog(surveyId));
+    public String getSurveyLog(@PathVariable String surveyId,Model model,
+                               @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+                               Pageable pageable){
+        model.addAttribute("AnswerDto",surveyLogService.getAnswerLog(surveyId,pageable));
         return surveyPath+"/survey-answer-log";
     }
 

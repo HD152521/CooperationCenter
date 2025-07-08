@@ -167,6 +167,15 @@ public class SurveyFindService {
         }
     }
 
+    public Page<SurveyLog> getSurveyLogs(Survey survey,Pageable pageable){
+        try{
+            return surveyLogRepository.findSurveysLogBySurvey(survey,pageable);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
     public List<Answer> getAnswer(SurveyLog surveyLog){
         try{
             return answerRepository.findAnswersBySurveyLog(surveyLog);
