@@ -6,6 +6,8 @@ import com.cooperation.project.cooperationcenter.domain.survey.repository.*;
 import com.cooperation.project.cooperationcenter.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -99,31 +101,36 @@ public class SurveyFindService {
         }
     }
 
-    public List<SurveyResponseDto> getAllSurvey(){
-        List<SurveyResponseDto> response = new ArrayList<>();
-        List<Survey> surveys = getAllSurveyFromDB();
-        for(Survey survey : surveys){
+    public Page<SurveyResponseDto> getAllSurvey(Pageable pageable){
+        Page<Survey> surveys = getAllSurveyFromDB(pageable);
+        return surveys.map(survey -> {
             LocalDate now = LocalDate.now();
-            int daysLeft = (survey.getEndDate()==null) ? 0 :  (int)ChronoUnit.DAYS.between(now, survey.getEndDate());
+            int daysLeft = (survey.getEndDate() == null) ? 0 : (int) ChronoUnit.DAYS.between(now, survey.getEndDate());
             boolean isBefore = survey.getStartDate() != null && now.isBefore(survey.getStartDate()) && !now.equals(survey.getStartDate());
-            response.add(
-                    new SurveyResponseDto(
-                            survey.getSurveyTitle(),
-                            survey.getCreatedAt(),
-                            survey.getParticipantCount(),
-                            daysLeft,
-                            survey.getSurveyId(),
-                            isBefore
-                    )
+
+            return new SurveyResponseDto(
+                    survey.getSurveyTitle(),
+                    survey.getCreatedAt(),
+                    survey.getParticipantCount(),
+                    daysLeft,
+                    survey.getSurveyId(),
+                    isBefore
             );
-        }
-        log.info("response:{}",response.get(0).toString());
-        return response;
+        });
     }
 
     public List<Survey> getAllSurveyFromDB(){
         try{
             return surveyRepository.findAll();
+        }catch (Exception e){
+            log.warn("get all survey failed...");
+            return null;
+        }
+    }
+
+    public Page<Survey> getAllSurveyFromDB(Pageable pageable){
+        try{
+            return surveyRepository.findAll(pageable);
         }catch (Exception e){
             log.warn("get all survey failed...");
             return null;

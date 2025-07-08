@@ -33,8 +33,9 @@ public class AgencyService {
         }
         if(agencies.size()<=3) return AgencyResponse.ListDto.from(agencies);
         Collections.shuffle(agencies);
-        return AgencyResponse.ListDto.from(agencies);
-
+        return AgencyResponse.ListDto.from(agencies.stream()
+                .limit(3)
+                .toList());
     }
 
     public List<Agency> getAgencyAll(){

@@ -55,7 +55,8 @@ public class SecurityConfig {
                                 .requestMatchers("/api/v1/member/**").permitAll()
 
                                 //note admin 페이지
-                                .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 전용
+//                                .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 전용
+                                .requestMatchers("/api/v1/admin/**").permitAll()// 관리자 전용
                                 .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex

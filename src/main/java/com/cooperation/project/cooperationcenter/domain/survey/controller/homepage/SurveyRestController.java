@@ -1,5 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.survey.controller.homepage;
 
+import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.*;
 import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveyAnswerService;
 import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveyFindService;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,10 +42,10 @@ public class SurveyRestController {
         return surveySaveService.getSurveys(surveyId);
     }
 
-    @GetMapping("/getAll")
-    public List<SurveyResponseDto> getSurveyAll(){
-        return surveyFindService.getAllSurvey();
-    }
+//    @GetMapping("/getAll")
+//    public List<SurveyResponseDto> getSurveyAll(){
+//        return surveyFindService.getAllSurvey();
+//    }
 
     @DeleteMapping("/{surveyId}")
     public BaseResponse<?> deleteSurvey(@PathVariable String surveyId){
@@ -69,11 +71,12 @@ public class SurveyRestController {
     @PostMapping("/answer")
     public ResponseEntity<Void> receiveSurveyAnswer(
             @RequestPart("data") String data,
-            HttpServletRequest request
-    ) throws JsonProcessingException {
+            HttpServletRequest request,
+            @AuthenticationPrincipal MemberDetails memberDetails
+            ) throws JsonProcessingException {
         log.info("[submit answer] dto:{}",data);
         try{
-            surveyAnswerService.answerSurvey(data,request);
+            surveyAnswerService.answerSurvey(data,request,memberDetails);
         }catch (Exception e){
             log.warn(e.getMessage());
         }

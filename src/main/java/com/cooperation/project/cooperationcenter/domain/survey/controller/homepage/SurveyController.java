@@ -10,6 +10,10 @@ import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.
 import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveySaveService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,8 +38,10 @@ public class SurveyController {
     }
 
     @RequestMapping("/list")
-    public String surveyListUser(Model model){
-        List<SurveyResponseDto> surveys = surveyFindService.getAllSurvey();
+    public String surveyListUser(Model model,
+                                 @PageableDefault(size = 9, sort = "createdAt", direction = Sort.Direction.DESC)
+                                 Pageable pageable){
+        Page<SurveyResponseDto> surveys = surveyFindService.getAllSurvey(pageable);
         model.addAttribute("surveys", surveys);
         return surveyPath+"/survey-list-admin";
     }

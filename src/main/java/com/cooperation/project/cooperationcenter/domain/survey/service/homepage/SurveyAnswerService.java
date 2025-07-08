@@ -4,6 +4,7 @@ import com.cooperation.project.cooperationcenter.domain.file.dto.SurveyFileDto;
 import com.cooperation.project.cooperationcenter.domain.file.model.SurveyFileType;
 import com.cooperation.project.cooperationcenter.domain.file.model.SurveyFile;
 import com.cooperation.project.cooperationcenter.domain.file.service.FileService;
+import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.member.repository.MemberRepository;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerRequest;
@@ -44,7 +45,7 @@ public class SurveyAnswerService {
 
 
     @Transactional
-    public void answerSurvey(String data, HttpServletRequest request) throws JsonProcessingException {
+    public void answerSurvey(String data, HttpServletRequest request, MemberDetails memberDetails) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         AnswerRequest.Dto requestDto = objectMapper.readValue(data, AnswerRequest.Dto.class);
 
@@ -54,7 +55,7 @@ public class SurveyAnswerService {
 
         Survey survey = surveyFindService.getSurveyFromId(requestDto.surveyId());
         //fixme 추후 예정
-        Member member = memberRepository.findMemberByEmail("test@test.com").get();
+        Member member = memberRepository.findMemberByEmail(memberDetails.getUsername()).get();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime dateTime = LocalDateTime.parse(requestDto.startTime(), formatter);
