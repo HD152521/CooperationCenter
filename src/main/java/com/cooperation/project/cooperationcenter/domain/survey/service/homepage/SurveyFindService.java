@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -103,7 +104,7 @@ public class SurveyFindService {
         List<Survey> surveys = getAllSurveyFromDB();
         for(Survey survey : surveys){
             LocalDate now = LocalDate.now();
-            int daysLeft = (survey.getEndDate()==null) ? 0 : Period.between(now, survey.getEndDate()).getDays();
+            int daysLeft = (survey.getEndDate()==null) ? 0 :  (int)ChronoUnit.DAYS.between(now, survey.getEndDate());
             boolean isBefore = survey.getStartDate() != null && now.isBefore(survey.getStartDate()) && !now.equals(survey.getStartDate());
             response.add(
                     new SurveyResponseDto(

@@ -150,12 +150,23 @@ public class JwtProvider implements TokenProvider {
             return expiration.after(new Date());
         } catch (ExpiredJwtException e) {
             log.warn("토큰 만료", e);
-            return false;
+            throw e;
         } catch (JwtException | IllegalArgumentException e) {
             log.warn("토큰 검증 오류", e);
-            return false;
+            throw e;
         }
     }
+
+    public void validateTokenOrThrow(String accessToken) {
+        try {
+            jwtParser.parseClaimsJws(accessToken);
+        } catch (ExpiredJwtException e) {
+            throw e;
+        } catch (JwtException | IllegalArgumentException e) {
+            throw e;
+        }
+    }
+
 
     public Authentication getAuthentication(String token){
         String aud = parseAudience(token); // 토큰 Aud에 Member email을 기록하고 있음

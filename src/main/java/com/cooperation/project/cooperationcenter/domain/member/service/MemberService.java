@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,7 +80,7 @@ public class MemberService {
         //성공시 cookie
         TokenResponse tokenResponse = getTokenResponse(response,member);
         memberCookieService.addTokenCookies(response,tokenResponse);
-
+        log.info("login success");
     }
 
     private MemberRequest.SignupDto mappingToDto(String data) throws JsonProcessingException{
@@ -113,7 +114,8 @@ public class MemberService {
         Cookie[] cookies = request.getCookies();
         String accessToken = jwtProvider.resolvAccesseToken(request);
         String refreshToken = jwtProvider.resolveRefreshToken(request);
-        memberCookieService.deleteCookie(response, TokenResponse.of(AccessToken.of(accessToken),RefreshToken.of(refreshToken)));
+        memberCookieService.deleteCookie(response,TokenResponse.of(AccessToken.of(accessToken),RefreshToken.of(refreshToken)));
+        SecurityContextHolder.clearContext();
     }
 
 

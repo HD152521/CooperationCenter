@@ -5,6 +5,7 @@ import com.cooperation.project.cooperationcenter.domain.member.service.MemberDet
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
 import com.cooperation.project.cooperationcenter.global.token.JwtProvider;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,23 +35,14 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         log.info("진입 path:{}",path);
 
-        final String[] WHITELIST_PATHS = {
-                "/" //임시용
+        //note 무시하는 endpoint들
+        final String[] IGNORE_PATHS = {
+                "/css", "/js", "/plugins","/member/login","/member/logout","/member/signup","/api/v1/member"
         };
-        final String[] STYLE_PATHS = {
-                "/css",
-                "/js",
-                "/plugins",
-//                "/" //임시용
+        final String[] BACK_IGNORE_PATHS = {
+                "/api/v1/member"
         };
-
-        for (String allowed : WHITELIST_PATHS) {
-            if (path.startsWith(allowed)) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-        }
-        for (String allowed : STYLE_PATHS) {
+        for (String allowed : IGNORE_PATHS) {
             if (path.startsWith(allowed)) {
                 filterChain.doFilter(request, response);
                 return;
@@ -61,39 +53,32 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
         log.info("멤버 인증 시작!!");
         String token = jwtProvider.resolvAccesseToken(request);
         log.info("최종 token:{}",token);
+        if(token!=null) {
+            try {
+                // 3) 토큰 유효성 검증 (만료도 여기서 체크됨)
+//                if (!jwtProvider.validateToken(token)) log.info("만료임");
 
-        if (token == null) {
-            sendErrorResponse(response, ErrorCode.EMPTY_TOKEN_PROVIDED);
-            return;
-        }
+                jwtProvider.validateTokenOrThrow(token);
 
-        try {
-            // 3) 토큰 유효성 검증 (만료도 여기서 체크됨)
-            if (!jwtProvider.validateToken(token)) {
-                log.info("만료임");
-                sendErrorResponse(response, ErrorCode.EXPIRED_ACCESS_TOKEN);
-                return;
-            }
-
-            //note security context 이번만 사용 Stateless방식
-            Authentication authentication = jwtProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            filterChain.doFilter(request, response);
-
-            //note 컨텍스트를 저장소에 저장 stateful 세션방식
+                //note security context 이번만 사용 Stateless방식
+                Authentication authentication = jwtProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                filterChain.doFilter(request, response);
+                return ;
+                //note 컨텍스트를 저장소에 저장 stateful 세션방식
 //            SecurityContext context = SecurityContextHolder.createEmptyContext();
 //            context.setAuthentication(authentication);
 //            SecurityContextHolder.setContext(context);
 //            securityContextRepository.saveContext(context, request, response);
 //            filterChain.doFilter(request, response);
 
-        } catch (io.jsonwebtoken.ExpiredJwtException ex) {
-            // 만료 예외를 별도로 잡아서도 처리 가능
-            log.warn("authentication에서 오류발생");
-            sendErrorResponse(response, ErrorCode.EXPIRED_ACCESS_TOKEN);
+            } catch (ExpiredJwtException e) {
+                log.warn("authentication에서 오류발생");
+                sendErrorResponse(response, ErrorCode.EXPIRED_ACCESS_TOKEN);
+            }
         }
-
-
+        SecurityContextHolder.clearContext();
+        filterChain.doFilter(request, response);
     }
 
 

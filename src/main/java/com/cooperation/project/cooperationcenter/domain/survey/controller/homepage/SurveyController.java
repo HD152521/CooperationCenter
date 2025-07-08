@@ -15,6 +15,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.List;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/survey")
@@ -32,8 +34,10 @@ public class SurveyController {
     }
 
     @RequestMapping("/list")
-    public String surveyListUser(){
-            return surveyPath+"/survey-list-admin";
+    public String surveyListUser(Model model){
+        List<SurveyResponseDto> surveys = surveyFindService.getAllSurvey();
+        model.addAttribute("surveys", surveys);
+        return surveyPath+"/survey-list-admin";
     }
 
     @RequestMapping("/answer/{surveyId}")

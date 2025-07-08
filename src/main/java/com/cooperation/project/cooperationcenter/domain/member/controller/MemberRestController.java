@@ -1,6 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.member.controller;
 
 
+import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
 import com.cooperation.project.cooperationcenter.domain.member.service.MemberService;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
@@ -13,8 +14,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,9 +34,6 @@ public class MemberRestController {
             @RequestPart(name = "agencyPicture", required = false) MultipartFile agencyPicture,
             @RequestPart(name = "businessCertificate", required = false) MultipartFile businessCertificate
     ) throws JsonProcessingException {
-        log.info("signup request: {}", data);
-        log.info("agencyPicture: {}", agencyPicture != null ? agencyPicture.getOriginalFilename() : "없음");
-        log.info("businessCertificate: {}", businessCertificate != null ? businessCertificate.getOriginalFilename() : "없음");
         try{
             memberService.signup(data,agencyPicture,businessCertificate);
             return BaseResponse.onSuccess("success");
@@ -58,6 +59,21 @@ public class MemberRestController {
             log.warn(e.getMessage());
             return BaseResponse.onFailure(ErrorCode.BAD_REQUEST,null);
         }
+    }
+
+    @PostMapping("/logout")
+    public BaseResponse<?> userLogout(HttpServletRequest request ,HttpServletResponse response){
+        memberService.logout(request,response);
+        return BaseResponse.onSuccess("log out success");
+    }
+
+    @PostMapping("/refresh")
+    public BaseResponse<?> refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException {
+        log.info("come refresh");
+        return memberService.updateRefreshToken(request,response);
     }
 
 }

@@ -29,12 +29,10 @@ public class GlobalModelAttributeAdvice {
     @ModelAttribute("loginMember")
     public MemberResponse.LoginDto addLoginMember(@AuthenticationPrincipal MemberDetails memberDetails) {
         if (memberDetails == null) return null;
-
         String email = memberDetails.getUsername();
         Member member = memberRepository.findMemberByEmail(email).orElseThrow(
                 ()->new BaseException(ErrorCode.MEMBER_NOT_FOUND)
         );
-        MemberResponse.LoginDto response = MemberResponse.LoginDto.from(member);
-        return response; // null일 수 있음
+        return MemberResponse.LoginDto.from(member); // null일 수 있음
     }
 }

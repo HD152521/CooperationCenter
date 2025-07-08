@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -28,6 +29,7 @@ public class SecurityConfig {
     private final SecurityContextRepositoryImpl securityContextRepository;
 
     private final AuthenticationTokenFilter authenticationTokenFilter;
+    private final AuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -45,10 +47,19 @@ public class SecurityConfig {
                                 .requestMatchers("/css/**","/plugins/**","/js/**").permitAll()
 
                                 //fixme 임시용임 밑에는
-                                .requestMatchers("/api/v1/**").permitAll()
-                                .requestMatchers("/**").permitAll()
-                                .requestMatchers("/test/**","/excep/**","/main/**","/admin/login").permitAll()
+//                                .requestMatchers("/api/v1/**").permitAll()
+//                                .requestMatchers("/**").permitAll()
+                                //note 일반 사용자 페이지
+                                .requestMatchers("/home", "/member/signup","/member/login",
+                                        "/member/login","/member/logout", "/admin/login","/agency/list").permitAll()
+                                .requestMatchers("/api/v1/member/**").permitAll()
+
+                                //note admin 페이지
+                                .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 전용
                                 .anyRequest().authenticated()
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(authenticationEntryPoint)
                 )
                 .securityContext((securityContext) -> {
                     securityContext
