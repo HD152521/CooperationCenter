@@ -15,6 +15,9 @@ import com.cooperation.project.cooperationcenter.domain.survey.model.Survey;
 import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyLog;
 import com.cooperation.project.cooperationcenter.domain.survey.repository.AnswerRepository;
 import com.cooperation.project.cooperationcenter.domain.survey.repository.SurveyLogRepository;
+import com.cooperation.project.cooperationcenter.domain.survey.repository.SurveyRepository;
+import com.cooperation.project.cooperationcenter.global.exception.BaseException;
+import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,6 +45,7 @@ public class SurveyAnswerService {
     private final AnswerRepository answerRepository;
     private final SurveyLogRepository surveyLogRepository;
     private final MemberRepository memberRepository;
+    private final SurveyRepository surveyRepository;
 
 
     @Transactional
@@ -54,6 +58,8 @@ public class SurveyAnswerService {
         }
 
         Survey survey = surveyFindService.getSurveyFromId(requestDto.surveyId());
+        if(checkDate(survey)) throw new BaseException(ErrorCode.SURVEY_DATE_NOT_VALID);
+        survey.setParticipantCount();
         //fixme 추후 예정
         Member member = memberRepository.findMemberByEmail(memberDetails.getUsername()).get();
 
@@ -71,9 +77,15 @@ public class SurveyAnswerService {
         List<Answer> savedAnswer = saveAnswer(requestDto,multipartRequest,surveyLog);
         surveyLog.addAnswer(savedAnswer);
         log.info("답변 저장 완료");
-
+        surveyRepository.save(survey);
         surveyLogRepository.save(surveyLog);
         log.info("➡️survey 답변 완료!");
+    }
+
+    public boolean checkDate(Survey survey){
+        LocalDate now = LocalDate.now();
+        return (survey.getStartDate() != null && survey.getEndDate() != null) &&
+                ( !now.isBefore(survey.getStartDate()) && !now.isAfter(survey.getEndDate()) );
     }
 
     @Transactional

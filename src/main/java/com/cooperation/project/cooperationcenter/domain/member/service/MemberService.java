@@ -129,19 +129,17 @@ public class MemberService {
 
         // 2) 리프레시 토큰 유효성 검증
         if (!jwtProvider.validateRefreshToken(refreshToken)) {
+            log.info("refreshtoken vaild failed...");
             return BaseResponse.onFailure(ErrorCode.REFRESH_TOKEN_NOT_VALID,null);
         }
 
         String name = jwtProvider.parseAudience(refreshToken);
         Member member = getMember(name);
 
-        // 3) 토큰에서 Authentication 정보 추출
-        Authentication authentication = jwtProvider.getAuthentication(refreshToken);
+        AccessToken newAccessToken = jwtProvider.generateAccessToken(member);
+        log.info("get new accesstoken from refreshtoken... ");
+        memberCookieService.addAccessTokenCookies(response,newAccessToken.token());
 
-        // 4) 새 Access Token 생성
-        String newAccessToken = jwtProvider.createAccessToken(authentication);
-        AccessToken accessToken = new AccessToken(newAccessToken);
-        //fixme response 값 바꾸기
         return BaseResponse.onSuccess(newAccessToken);
     }
 

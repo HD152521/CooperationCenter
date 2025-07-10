@@ -1,6 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.home.controller;
 
 import com.cooperation.project.cooperationcenter.domain.agency.service.homepage.AgencyService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -14,9 +15,9 @@ public class HomeController {
 
     private final AgencyService agencyService;
 
-    @RequestMapping("/home")
-    public String home(Model model){
-        model.addAttribute("agencyDto",agencyService.getAgencyListForHome());
+    @RequestMapping({"/", "/home"})
+    public String home(Model model, HttpServletRequest request) {
+        model.addAttribute("agencyDto", agencyService.getAgencyListForHome());
         return "/homepage/user/index";
     }
 }

@@ -51,7 +51,7 @@ public class MemberAdminService {
         TokenResponse tokenResponse = getTokenResponse(response,member);
         memberCookieService.addTokenCookies(response,tokenResponse);
         session.setAttribute("member", member);
-        return new MemberResponse.LoginDto(member.getEmail(),member.getPassword());
+        return MemberResponse.LoginDto.from(member);
     }
 
     public Member findMemberByEmail(String email) {
@@ -76,7 +76,7 @@ public class MemberAdminService {
         log.info("cookie삭제");
         session.invalidate();
         log.info("세션삭제");
-        return new MemberResponse.LoginDto(member.getEmail(), member.getPassword());
+        return MemberResponse.LoginDto.from(member);
     }
 
     @NotNull

@@ -6,11 +6,13 @@ import com.cooperation.project.cooperationcenter.global.token.vo.TokenResponse;
 public class MemberResponse {
     public record LoginDto(
             String email,
-            String memberName){
+            String memberName,
+            boolean isAdmin){
         public static LoginDto from(Member member){
             return new LoginDto(
                     member.getEmail(),
-                    member.getMemberName()
+                    member.getMemberName(),
+                    member.getRole().equals(Member.Role.ADMIN)
             );
         }
     }

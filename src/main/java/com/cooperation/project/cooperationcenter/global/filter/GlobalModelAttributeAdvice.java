@@ -27,12 +27,19 @@ public class GlobalModelAttributeAdvice {
     }
 
     @ModelAttribute("loginMember")
-    public MemberResponse.LoginDto addLoginMember(@AuthenticationPrincipal MemberDetails memberDetails) {
-        if (memberDetails == null) return null;
+    public MemberResponse.LoginDto addLoginMember(HttpServletRequest request,@AuthenticationPrincipal MemberDetails memberDetails) {
+        String uri = request.getRequestURI();
+        if (memberDetails == null || uri.startsWith("/api/")) return null;
         String email = memberDetails.getUsername();
         Member member = memberRepository.findMemberByEmail(email).orElseThrow(
                 ()->new BaseException(ErrorCode.MEMBER_NOT_FOUND)
         );
         return MemberResponse.LoginDto.from(member); // null일 수 있음
+    }
+
+    @ModelAttribute("tokenExpired")
+    public boolean addTokenExpiredFlag(HttpServletRequest request) {
+        Object tokenExpired = request.getAttribute("tokenExpired");
+        return tokenExpired != null && (boolean) tokenExpired;
     }
 }

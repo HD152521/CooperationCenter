@@ -37,11 +37,9 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
         //note 무시하는 endpoint들
         final String[] IGNORE_PATHS = {
-                "/css", "/js", "/plugins","/member/login","/member/logout","/member/signup","/api/v1/member","/api/v1/admin"
+                "/css", "/js", "/plugins","/member/login","/member/logout","/member/signup","/api/v1/member","/api/v1/admin","/api/v1/file/img"
         };
-        final String[] BACK_IGNORE_PATHS = {
-                "/api/v1/member"
-        };
+
         for (String allowed : IGNORE_PATHS) {
             if (path.startsWith(allowed)) {
                 filterChain.doFilter(request, response);
@@ -55,9 +53,6 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
         log.info("최종 token:{}",token);
         if(token!=null) {
             try {
-                // 3) 토큰 유효성 검증 (만료도 여기서 체크됨)
-//                if (!jwtProvider.validateToken(token)) log.info("만료임");
-
                 jwtProvider.validateTokenOrThrow(token);
 
                 //note security context 이번만 사용 Stateless방식
@@ -73,8 +68,10 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
 //            filterChain.doFilter(request, response);
 
             } catch (ExpiredJwtException e) {
+                log.warn(e.getMessage());
                 log.warn("authentication에서 오류발생");
-                sendErrorResponse(response, ErrorCode.EXPIRED_ACCESS_TOKEN);
+                request.setAttribute("tokenExpired", true); // 포워드 시 전달용
+//                sendErrorResponse(response, ErrorCode.EXPIRED_ACCESS_TOKEN);
             }
         }
         SecurityContextHolder.clearContext();

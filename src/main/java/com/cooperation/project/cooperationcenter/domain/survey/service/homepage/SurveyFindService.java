@@ -1,5 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.survey.service.homepage;
 
+import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyRequest;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyResponseDto;
 import com.cooperation.project.cooperationcenter.domain.survey.model.*;
 import com.cooperation.project.cooperationcenter.domain.survey.repository.*;
@@ -101,8 +102,8 @@ public class SurveyFindService {
         }
     }
 
-    public Page<SurveyResponseDto> getAllSurvey(Pageable pageable){
-        Page<Survey> surveys = getAllSurveyFromDB(pageable);
+    public Page<SurveyResponseDto> getFilteredSurveysAll(Pageable pageable,SurveyRequest.LogFilterDto condition){
+        Page<Survey> surveys = getSurveyFromCondition(pageable,condition);
         return surveys.map(survey -> {
             LocalDate now = LocalDate.now();
             int daysLeft = (survey.getEndDate() == null) ? 0 : (int) ChronoUnit.DAYS.between(now, survey.getEndDate());
@@ -114,10 +115,18 @@ public class SurveyFindService {
                     survey.getParticipantCount(),
                     daysLeft,
                     survey.getSurveyId(),
-                    isBefore
+                    isBefore,
+                    survey.getStartDate(),
+                    survey.getEndDate()
             );
         });
     }
+
+    public Page<SurveyResponseDto> getFilteredSurveysActive(Pageable pageable,SurveyRequest.LogFilterDto condition){
+        condition = condition.setStatus();
+        return getFilteredSurveysAll(pageable,condition);
+    }
+
 
     public List<Survey> getAllSurveyFromDB(){
         try{
@@ -133,6 +142,15 @@ public class SurveyFindService {
             return surveyRepository.findAll(pageable);
         }catch (Exception e){
             log.warn("get all survey failed...");
+            return null;
+        }
+    }
+
+    public Page<Survey> getSurveyFromCondition(Pageable pageable, SurveyRequest.LogFilterDto condition){
+        try{
+            return surveyRepository.findByFilter(condition.text(),condition.date(), condition.status(),pageable);
+        }catch (Exception e){
+            log.warn("get survey by conditon failed...");
             return null;
         }
     }

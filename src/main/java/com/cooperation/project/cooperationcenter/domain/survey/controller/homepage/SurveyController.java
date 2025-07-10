@@ -1,5 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.survey.controller.homepage;
 
+import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerResponse;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyEditDto;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyRequest;
@@ -14,9 +15,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -40,11 +45,35 @@ public class SurveyController {
     @RequestMapping("/list")
     public String surveyListUser(Model model,
                                  @PageableDefault(size = 9, sort = "createdAt", direction = Sort.Direction.DESC)
-                                 Pageable pageable){
-        Page<SurveyResponseDto> surveys = surveyFindService.getAllSurvey(pageable);
-        model.addAttribute("surveys", surveys);
-        return surveyPath+"/survey-list-admin";
+                                 Pageable pageable,
+                                 @ModelAttribute SurveyRequest.LogFilterDto condition,
+                                 Authentication authentication){
+        log.info("condition:{}",condition);
+
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+        model.addAttribute("condition", condition);
+        if(isAdmin){
+            Page<SurveyResponseDto> surveys = surveyFindService.getFilteredSurveysAll(pageable,condition);
+            model.addAttribute("surveys", surveys);
+            return surveyPath + "/survey-list-admin";
+        }else{
+            Page<SurveyResponseDto> surveys = surveyFindService.getFilteredSurveysActive(pageable,condition);
+            model.addAttribute("surveys", surveys);
+            return surveyPath + "/survey-list-user";
+        }
     }
+
+//    @RequestMapping("/list/filter")
+//    public String surveyListUser(Model model,
+//                                 @PageableDefault(size = 9, sort = "createdAt", direction = Sort.Direction.DESC)
+//                                 Pageable pageable,
+//                                 @RequestBody(required = false) SurveyRequest.LogFilterDto request){
+//        log.info("request:{}",request);
+//        Page<SurveyResponseDto> surveys = surveyFindService.getAllSurvey(pageable,request);
+//        model.addAttribute("surveys", surveys);
+//        return surveyPath+"/survey-list-admin";
+//    }
 
     @RequestMapping("/answer/{surveyId}")
     public String surveyAnswer(@PathVariable String surveyId, Model model){
@@ -52,6 +81,8 @@ public class SurveyController {
         log.info("surveyId:{}",surveyId);
         return surveyPath+"/survey-answer";
     }
+
+    //todo 밑으로는 관리자만
 
     @RequestMapping("/edit/{surveyId}")
     public String editSurvey(@PathVariable String surveyId, Model model){
