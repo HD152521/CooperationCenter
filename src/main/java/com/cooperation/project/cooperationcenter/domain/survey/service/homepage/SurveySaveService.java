@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.HtmlUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -82,7 +83,7 @@ public class SurveySaveService {
             log.warn("설문조사 저장 실패");
         }
     }
-
+//HtmlUtils.htmlEscape(question);
     public List<Question> getQuestionsFromDto(List<QuestionDto> request, Survey survey){
         List<Question> questions = new ArrayList<>();
         int i = 1;
@@ -91,7 +92,7 @@ public class SurveySaveService {
                 //note 원래 있던 질문들
                 Question question = surveyFindService.getQuestion(dto.questionId());
                 if (question!=null) {
-                    question.setQuestion(dto.question());
+                    question.setQuestion(HtmlUtils.htmlEscape(dto.question()));
                     question.setQuestionDescription(dto.description());
                     QuestionType questionType = QuestionType.fromType(dto.type());
                     question.setQuestionType(questionType);
@@ -110,7 +111,7 @@ public class SurveySaveService {
                     .questionDescription(dto.description())
                     .questionType(type)
                     .survey(survey)
-                    .question(dto.question())
+                    .question(HtmlUtils.htmlEscape(dto.question()))
                     .questionOrder(i++)
 
                     .build();
@@ -134,7 +135,7 @@ public class SurveySaveService {
                     //fixme id값 있을 경우
                     QuestionOption questionOption = questionOptionRepository.findQuestionOptionById(optionText.optionId());
                     if(questionOption!=null){
-                        questionOption.setOptionText(optionText.text());
+                        questionOption.setOptionText(HtmlUtils.htmlEscape(optionText.text()));
                         questionOption.setNextQuestionId(optionText.nextQuestion());
                         questionOption.setRealNextQuestionId(optionText.realNextQuestion());
                         questionOptionRepository.save(questionOption);
@@ -147,7 +148,7 @@ public class SurveySaveService {
                     }
 
                     QuestionOption option = QuestionOption.builder()
-                            .text(optionText.text())
+                            .text(HtmlUtils.htmlEscape(optionText.text()))
                             .nextQuestionId(optionText.nextQuestion())
                             .realNextQuestionId(q.getQuestionId())
                             .survey(survey)

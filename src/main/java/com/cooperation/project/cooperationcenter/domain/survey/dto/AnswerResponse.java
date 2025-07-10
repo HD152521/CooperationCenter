@@ -5,6 +5,7 @@ import com.cooperation.project.cooperationcenter.domain.survey.model.Survey;
 import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -58,6 +59,51 @@ public class AnswerResponse {
       }
     }
 
+    public record AnswerPagedDto(
+            String surveyId,
+            String surveyTitle,
+            LocalDate surveyStartDate,
+            LocalDate surveyEndDate,
+            int participantCnt,
+            double finishPercent,
+            int avgSpendTime,
+            Page<LogDto> logs
+    ) {
+        public static AnswerPagedDto from(Survey survey, Page<LogDto> page) {
+            if (page.isEmpty()) {
+                return new AnswerPagedDto(
+                        survey.getSurveyId(),
+                        survey.getSurveyTitle(),
+                        survey.getStartDate(),
+                        survey.getEndDate(),
+                        0,
+                        0,
+                        0,
+                        Page.empty()
+                );
+            }
+
+            int finishCnt = 0;
+            int totalSpendTime = 0;
+            int total = page.getContent().size();
+            for (LogDto log : page.getContent()) {
+                if (log.finishStatus().equals("finish")) finishCnt++;
+                totalSpendTime += log.spendTime();
+            }
+
+            return new AnswerPagedDto(
+                    survey.getSurveyId(),
+                    survey.getSurveyTitle(),
+                    survey.getStartDate(),
+                    survey.getEndDate(),
+                    total,
+                    (double) finishCnt / total * 100,
+                    totalSpendTime / total,
+                    page
+            );
+        }
+    }
+
     public record LogDto(
             String memberName,
             String memberEmail,
@@ -84,6 +130,11 @@ public class AnswerResponse {
             for(SurveyLog s : surveyLogs) dtos.add(from(s));
             return dtos;
         }
+
+        public static Page<LogDto> from(Page<SurveyLog> surveyLogs) {
+            return surveyLogs.map(LogDto::from);
+        }
+
     }
 
     public record AnswerLogDto(

@@ -50,13 +50,15 @@ public class SecurityConfig {
 //                                .requestMatchers("/api/v1/**").permitAll()
 //                                .requestMatchers("/**").permitAll()
                                 //note 일반 사용자 페이지
-                                .requestMatchers("/home", "/member/signup","/member/login",
+                                .requestMatchers("/","/home", "/member/signup","/member/login",
                                         "/member/login","/member/logout", "/admin/login","/agency/list").permitAll()
-                                .requestMatchers("/api/v1/member/**").permitAll()
+                                .requestMatchers("/api/v1/member/**","/api/v1/file/img/**").permitAll()
 
                                 //note admin 페이지
-//                                .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 전용
-                                .requestMatchers("/api/v1/admin/**").permitAll()// 관리자 전용
+                                .requestMatchers("/admin/login").permitAll()
+                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/api/v1/admin/**","/api/v1/survey/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/survey/make","/survey/edit/**","/survey/log/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
@@ -91,7 +93,7 @@ public class SecurityConfig {
 
         configuration.addAllowedOriginPattern("http://localhost:5173");
 //        configuration.addAllowedOriginPattern("https://*.ngrok-free.app");
-        configuration.addAllowedOriginPattern("https://b285-175-195-148-118.ngrok-free.app");
+        configuration.addAllowedOriginPattern("https://11680c706486.ngrok-free.app");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.addExposedHeader("Authorization");

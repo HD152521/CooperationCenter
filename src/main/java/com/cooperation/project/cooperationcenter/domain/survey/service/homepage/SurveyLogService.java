@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,17 @@ public class SurveyLogService {
 
     private final SurveyFindService surveyFindService;
     private final String origin = "http://localhost:8080/api/v1/file/";
+
+    public AnswerResponse.AnswerPagedDto getAnswerLog(String surveyId, Pageable pageable){
+        Survey survey = surveyFindService.getSurveyFromId(surveyId);
+        Page<SurveyLog> surveyLog = surveyFindService.getSurveyLogs(survey,pageable);
+        //status 추가
+        Page<AnswerResponse.LogDto> logs = surveyLog.hasContent()
+                ? AnswerResponse.LogDto.from(surveyLog)
+                : Page.empty();
+
+        return AnswerResponse.AnswerPagedDto.from(survey,logs);
+    }
 
     public AnswerResponse.AnswerDto getAnswerLog(String surveyId){
         Survey survey = surveyFindService.getSurveyFromId(surveyId);
@@ -60,11 +73,12 @@ public class SurveyLogService {
         List<String> questionTexts = questions.stream()
                 .map(q -> toCsvSafe(q.getQuestion()))
                 .toList();
-        String questionLine = String.join(",", questionTexts);
+        String questionLine = "no,"+String.join(",", questionTexts);
         questionLine+="\n";
         System.out.println(questionLine);
         csvBuilder.append(questionLine);
 
+        int i=1;
         for(SurveyLog log : logs){
             List<Answer> answers = surveyFindService.getAnswer(log);
             List<String> answerTexts = answers.stream()
@@ -78,7 +92,60 @@ public class SurveyLogService {
                                 }
                     })
                     .toList();
-            String AnswerLine = String.join(",", answerTexts);
+            String AnswerLine = (i++)+","+String.join(",", answerTexts);
+            AnswerLine+="\n";
+            System.out.println(AnswerLine);
+            csvBuilder.append(AnswerLine);
+        }
+
+        byte[] csvBytes = csvBuilder.toString().getBytes(StandardCharsets.UTF_8);
+        ByteArrayResource resource = new ByteArrayResource(csvBytes);
+
+        // 2. 헤더 설정 및 응답
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=survey-logs.csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .contentLength(csvBytes.length)
+                .body(resource);
+    }
+
+    public ResponseEntity<Resource> extractAllCsv(String surveyId){
+        StringBuilder csvBuilder = new StringBuilder();
+        final String UTF8_BOM = "\uFEFF";  // ← 이게 핵심!
+        csvBuilder.append(UTF8_BOM);
+
+        Survey survey = surveyFindService.getSurveyFromId(surveyId);
+        List<SurveyLog> logs = surveyFindService.getSurveyLogs(survey);
+
+        if(logs == null){
+            //fixme 확인해야함.
+            log.warn("log is null");
+        }
+        List<Question> questions = surveyFindService.getQuestions(survey);
+
+        List<String> questionTexts = questions.stream()
+                .map(q -> toCsvSafe(q.getQuestion()))
+                .toList();
+        String questionLine = "no,"+String.join(",", questionTexts);
+        questionLine+="\n";
+        System.out.println(questionLine);
+        csvBuilder.append(questionLine);
+
+        int i=1;
+        for(SurveyLog log : logs){
+            List<Answer> answers = surveyFindService.getAnswer(log);
+            List<String> answerTexts = answers.stream()
+                    .map(a ->{
+                        if(QuestionType.isFile(a.getAnswerType())){
+                            return "\"=HYPERLINK(\"\""+origin+a.getAnswer().split("_")[0]+"\"\")\"";
+                        }else if(QuestionType.checkType(a.getAnswerType())){
+                            return toCsvSafe(surveyFindService.getAnswerFromMultiple(a));
+                        }else{
+                            return a.getAnswer();
+                        }
+                    })
+                    .toList();
+            String AnswerLine = (i++)+","+String.join(",", answerTexts);
             AnswerLine+="\n";
             System.out.println(AnswerLine);
             csvBuilder.append(AnswerLine);

@@ -28,4 +28,16 @@ public class SurveyRequest {
                     .build();
         }
     }
+
+    public record LogFilterDto(
+            String text,
+            String status,
+            LocalDate date
+    ){
+        public LogFilterDto setStatus(){
+            return new LogFilterDto(
+                    text,"active",date
+            );
+        }
+    }
 }

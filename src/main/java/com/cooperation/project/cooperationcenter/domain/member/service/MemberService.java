@@ -8,6 +8,7 @@ import com.cooperation.project.cooperationcenter.domain.file.model.MemberFile;
 import com.cooperation.project.cooperationcenter.domain.file.model.MemberFileType;
 import com.cooperation.project.cooperationcenter.domain.file.service.FileService;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
+import com.cooperation.project.cooperationcenter.domain.member.dto.MemberResponse;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.member.repository.MemberRepository;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerRequest;
@@ -34,6 +35,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 import static com.cooperation.project.cooperationcenter.global.token.JwtProperties.JWT_REFRESH_TOKEN_COOKIE_NAME;
 
@@ -67,7 +70,16 @@ public class MemberService {
     public void login(MemberRequest.LoginDto request,HttpServletResponse response){
         Member member = memberRepository.findMemberByEmail(request.email())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+        checkLogin(request,member);
+        //성공시 cookie
+        TokenResponse tokenResponse = getTokenResponse(response,member);
+        memberCookieService.addTokenCookies(response,tokenResponse);
+        log.info("login success");
+    }
 
+
+
+    public void checkLogin(MemberRequest.LoginDto request, Member member){
         if (!passwordEncoder.matches(request.password(), member.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
@@ -77,11 +89,8 @@ public class MemberService {
             throw new BaseException(ErrorCode.MEMBER_NOT_ACCEPTED);
         }
 
-        //성공시 cookie
-        TokenResponse tokenResponse = getTokenResponse(response,member);
-        memberCookieService.addTokenCookies(response,tokenResponse);
-        log.info("login success");
     }
+
 
     private MemberRequest.SignupDto mappingToDto(String data) throws JsonProcessingException{
         ObjectMapper objectMapper = new ObjectMapper();
@@ -129,19 +138,17 @@ public class MemberService {
 
         // 2) 리프레시 토큰 유효성 검증
         if (!jwtProvider.validateRefreshToken(refreshToken)) {
+            log.info("refreshtoken vaild failed...");
             return BaseResponse.onFailure(ErrorCode.REFRESH_TOKEN_NOT_VALID,null);
         }
 
         String name = jwtProvider.parseAudience(refreshToken);
         Member member = getMember(name);
 
-        // 3) 토큰에서 Authentication 정보 추출
-        Authentication authentication = jwtProvider.getAuthentication(refreshToken);
+        AccessToken newAccessToken = jwtProvider.generateAccessToken(member);
+        log.info("get new accesstoken from refreshtoken... ");
+        memberCookieService.addAccessTokenCookies(response,newAccessToken.token());
 
-        // 4) 새 Access Token 생성
-        String newAccessToken = jwtProvider.createAccessToken(authentication);
-        AccessToken accessToken = new AccessToken(newAccessToken);
-        //fixme response 값 바꾸기
         return BaseResponse.onSuccess(newAccessToken);
     }
 
@@ -165,5 +172,44 @@ public class MemberService {
             log.warn(e.getMessage());
             return false;
         }
+    }
+
+/*
+        ========================
+       ㅐ                       ㅐ
+       ㅐ                       ㅐ
+       ㅐ    Admin임 밑에는       ㅐ
+       ㅐ                       ㅐ
+       ========================
+ */
+    public void adminLogin(MemberRequest.LoginDto request,HttpServletResponse response){
+        Member member = memberRepository.findMemberByEmail(request.email())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+        if(!member.getRole().isAdmin()) throw new BaseException(ErrorCode.MEMBER_NOT_ADMIN);
+        checkLogin(request,member);
+        //성공시 cookie
+        TokenResponse tokenResponse = getTokenResponse(response,member);
+        memberCookieService.addTokenCookies(response,tokenResponse);
+        log.info("login success");
+    }
+
+    @Transactional
+    public void acceptedMember(String email){
+        Member member = memberRepository.findMemberByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+        member.accept();
+        memberRepository.save(member);
+
+        Agency agency = Agency.fromMember(member);
+        agencyRepository.save(agency);
+    }
+
+    public List<MemberResponse.PendingDto> getPendingList(){
+        List<Member> member = memberRepository.findTop4ByApprovalSignupFalseOrderByCreatedAtDesc();
+        if(member == null){
+            log.warn("가입 승인 대기중인 멤버가 없음.");
+            return null;
+        }
+        return MemberResponse.PendingDto.from(member);
     }
 }

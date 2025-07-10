@@ -30,42 +30,10 @@ public class SurveyRestController {
     private final SurveyAnswerService surveyAnswerService;
     private final SurveyLogService surveyLogService;
 
-    @PostMapping("/make")
-    public void saveSurvey(@RequestBody SurveyRequest.SurveyDto request){
-        log.info("[controller] {}",request.toString());
-        surveySaveService.saveSurvey(request);
-    }
-
     @GetMapping("/{surveyId}")
     public AnswerPageDto getSurvey(@PathVariable String surveyId){
         log.info("[controller] getSurvey 진입 : {}",surveyId);
         return surveySaveService.getSurveys(surveyId);
-    }
-
-//    @GetMapping("/getAll")
-//    public List<SurveyResponseDto> getSurveyAll(){
-//        return surveyFindService.getAllSurvey();
-//    }
-
-    @DeleteMapping("/{surveyId}")
-    public BaseResponse<?> deleteSurvey(@PathVariable String surveyId){
-        log.info("[controller] getSurvey 진입 : {}",surveyId);
-        surveySaveService.deleteSurvey(surveyId);
-        return BaseResponse.onSuccess("success");
-    }
-
-    @PostMapping("/copy/{surveyId}")
-    public BaseResponse<?> copoSurvey(@PathVariable String surveyId){
-        log.info("[controller] getSurvey 진입 : {}",surveyId);
-        surveySaveService.copySurvey(surveyId);
-        return BaseResponse.onSuccess("success");
-    }
-
-    @PatchMapping("/edit")
-    public void editSurvey(@RequestBody SurveyEditDto request){
-        log.info("[controller] getSurvey 진입 : {}",request.surveyId());
-        //fixme 제목 안바뀜
-        surveySaveService.editSurvey(request);
     }
 
     @PostMapping("/answer")
@@ -73,7 +41,7 @@ public class SurveyRestController {
             @RequestPart("data") String data,
             HttpServletRequest request,
             @AuthenticationPrincipal MemberDetails memberDetails
-            ) throws JsonProcessingException {
+    ) throws JsonProcessingException {
         log.info("[submit answer] dto:{}",data);
         try{
             surveyAnswerService.answerSurvey(data,request,memberDetails);
@@ -84,16 +52,49 @@ public class SurveyRestController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/answer/{surveyId}")
+    @PostMapping("/admin/make")
+    public void saveSurvey(@RequestBody SurveyRequest.SurveyDto request){
+        log.info("[controller] {}",request.toString());
+        surveySaveService.saveSurvey(request);
+    }
+
+    @DeleteMapping("/admin/{surveyId}")
+    public BaseResponse<?> deleteSurvey(@PathVariable String surveyId){
+        log.info("[controller] getSurvey 진입 : {}",surveyId);
+        surveySaveService.deleteSurvey(surveyId);
+        return BaseResponse.onSuccess("success");
+    }
+
+    @PostMapping("/admin/copy/{surveyId}")
+    public BaseResponse<?> copySurvey(@PathVariable String surveyId){
+        log.info("[controller] getSurvey 진입 : {}",surveyId);
+        surveySaveService.copySurvey(surveyId);
+        return BaseResponse.onSuccess("success");
+    }
+
+    @PatchMapping("/admin/edit")
+    public void editSurvey(@RequestBody SurveyEditDto request){
+        log.info("[controller] getSurvey 진입 : {}",request.surveyId());
+        //fixme 제목 안바뀜
+        surveySaveService.editSurvey(request);
+    }
+
+    @GetMapping("/admin/answer/{surveyId}")
     public AnswerResponse.AnswerDto getAnswerLog(@PathVariable String surveyId){
         AnswerResponse.AnswerDto result = surveyLogService.getAnswerLog(surveyId);
         log.info("result : {}",result.toString());
         return result;
     }
 
-    @PostMapping("/log/csv")
+    @PostMapping("/admin/log/csv")
     public ResponseEntity<Resource> extractCsv(@RequestBody LogCsv.RequestDto request){
         log.info("[enter extract csv]");
         return surveyLogService.extractCsv(request);
+    }
+
+    @PostMapping("/admin/log/{surveyId}")
+    public ResponseEntity<Resource> extractCsv(@PathVariable String surveyId){
+        log.info("extracy all csv...");
+        return surveyLogService.extractAllCsv(surveyId);
     }
 }
