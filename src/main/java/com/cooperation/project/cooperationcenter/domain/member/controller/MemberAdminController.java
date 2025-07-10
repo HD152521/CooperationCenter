@@ -1,7 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.member.controller;
 
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
-import com.cooperation.project.cooperationcenter.domain.member.service.MemberAdminService;
+import com.cooperation.project.cooperationcenter.domain.member.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -20,19 +20,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/admin")
 public class MemberAdminController {
 
-    private final MemberAdminService memberAdminService;
+    private final MemberService memberService;
 
     @GetMapping("/login")
     public String loginPage(Model model) {
-        return "admin/login";  // templates/index.html
+        return "adminpage/user/login";
     }
 
     @GetMapping("/logout")
-    public String logout(HttpSession session,
-                         HttpServletResponse response, HttpServletRequest request,
-                         @AuthenticationPrincipal MemberDetails memberDetails) {
-        log.info("memberDetails:{}",memberDetails.getUsername());
-        memberAdminService.logout(response, session, memberDetails,request);
+    public String logout(HttpServletResponse response, HttpServletRequest request) {
+        memberService.logout(request,response);
         return "redirect:/admin/login";
     }
 

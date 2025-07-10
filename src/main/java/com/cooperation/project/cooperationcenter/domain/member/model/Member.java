@@ -55,12 +55,12 @@ public class Member extends BaseEntity {
 
     @NotNull private String memberId;
     @NotNull private Role role;
-    @NotNull private boolean isApprovalSignup;
+    @Column(name = "is_approval_signup") @NotNull private boolean approvalSignup;
     @OneToMany(mappedBy = "member")
     private List<SurveyLog> surveyLogs = new ArrayList<>();
 
     public void accept(){
-        this.isApprovalSignup = true;
+        this.approvalSignup = true;
     }
 
     public enum Role {
@@ -71,6 +71,10 @@ public class Member extends BaseEntity {
 
         Role(String role) {
             this.role = role;
+        }
+
+        public boolean isAdmin(){
+            return this.equals(Role.ADMIN);
         }
     }
 
@@ -96,7 +100,7 @@ public class Member extends BaseEntity {
 
                 .memberId(UUID.randomUUID().toString())
                 .role(Role.USER) // 기본값
-                .isApprovalSignup(false) // 가입 승인 대기 상태
+                .approvalSignup(false) // 가입 승인 대기 상태
                 .build();
     }
 

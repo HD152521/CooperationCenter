@@ -2,7 +2,7 @@ package com.cooperation.project.cooperationcenter.domain.member.controller;
 
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
-import com.cooperation.project.cooperationcenter.domain.member.service.MemberAdminService;
+import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.member.service.MemberService;
 import com.cooperation.project.cooperationcenter.global.exception.BaseException;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
@@ -21,24 +21,22 @@ import org.springframework.web.bind.annotation.*;
 public class MemberAdminRestController {
 
     private static final Logger log = LoggerFactory.getLogger(MemberAdminRestController.class);
-    private final MemberAdminService memberAdminService;
+    private final MemberService memberService;
 
     @PostMapping("/login")
-    public BaseResponse<?> login(@RequestBody MemberRequest.LoginDto request, HttpServletResponse response, HttpSession session) throws Exception{
+    public BaseResponse<?> login(@RequestBody MemberRequest.LoginDto request, HttpServletResponse response) throws Exception{
         log.info("id:{}, pw:{}",request.email(),request.password());
-        return BaseResponse.onSuccess(memberAdminService.login(request,response,session));
+        memberService.adminLogin(request,response);
+        return BaseResponse.onSuccess("success");
     }
 
     @PostMapping("/accept/{memberEmail}")
     public BaseResponse<?> acceptMember(@PathVariable String memberEmail){
-        log.info("enter accept");
         try{
-            memberAdminService.acceptedMember(memberEmail);
+            memberService.acceptedMember(memberEmail);
             return BaseResponse.onSuccess("success");
         }catch (Exception e){
             return BaseResponse.onFailure(ErrorCode.BAD_REQUEST,null);
         }
     }
-
-
 }

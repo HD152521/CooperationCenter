@@ -55,9 +55,10 @@ public class SecurityConfig {
                                 .requestMatchers("/api/v1/member/**","/api/v1/file/img/**").permitAll()
 
                                 //note admin 페이지
-//                                .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 전용
-                                .requestMatchers("/api/v1/admin/**","/api/v1/survey/admin/**").hasRole("ADMIN")// 관리자 전용
-                                .requestMatchers("/survey/make","/survey/edit/**","/survey/log/**").hasRole("ADMIN")// 관리자 전용
+                                .requestMatchers("/admin/login").permitAll()
+                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/api/v1/admin/**","/api/v1/survey/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/survey/make","/survey/edit/**","/survey/log/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
