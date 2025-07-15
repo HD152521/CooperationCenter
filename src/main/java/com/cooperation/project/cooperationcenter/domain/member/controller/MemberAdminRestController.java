@@ -32,6 +32,7 @@ public class MemberAdminRestController {
 
     @PostMapping("/accept/{memberEmail}")
     public BaseResponse<?> acceptMember(@PathVariable String memberEmail){
+        log.info("email:{}",memberEmail);
         try{
             memberService.acceptedMember(memberEmail);
             return BaseResponse.onSuccess("success");

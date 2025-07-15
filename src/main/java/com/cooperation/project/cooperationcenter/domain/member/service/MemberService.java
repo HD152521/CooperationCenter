@@ -29,6 +29,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -212,4 +214,16 @@ public class MemberService {
         }
         return MemberResponse.PendingDto.from(member);
     }
+
+    public Page<Member> getMember(Pageable pageable){
+        try{
+            return memberRepository.findAll(pageable);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+
+
 }

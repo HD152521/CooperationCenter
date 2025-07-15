@@ -33,4 +33,9 @@ public class MemberAdminController {
         return "redirect:/admin/login";
     }
 
+    @RequestMapping("/user")
+    public String manageUser(){
+        return "adminpage/user/member/manageUser";
+    }
+
 }

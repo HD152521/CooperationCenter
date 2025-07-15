@@ -2,6 +2,7 @@ package com.cooperation.project.cooperationcenter.domain.member.dto;
 
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.global.token.vo.TokenResponse;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,10 +22,13 @@ public class MemberResponse {
         }
     }
 
+
+    //admin 홈 승인대기
     public record PendingDto(
             String memberName,
             String memberEmail,
             LocalDateTime createdAt
+
     ){
         public static PendingDto from(Member member){
             return new PendingDto(
@@ -38,6 +42,52 @@ public class MemberResponse {
             return member.stream()
                     .map(PendingDto::from)
                     .collect(Collectors.toList());
+        }
+    }
+
+    //admin 유저 페이지
+    public record UserPageDto(
+            int totalUser,
+            int activeUser,
+            int newUser,
+            int pendingUser,
+            Page<UserDto> users
+    ){
+        public static UserPageDto from(List<Member> members){
+//            return UserPageDto(
+//                members.size(),
+//
+//                members,
+//            );
+            return null;
+        }
+    }
+
+    public record UserDto(
+            String userName,
+            String userEmail,
+            LocalDateTime userCreatedAt,
+            LocalDateTime userLastLogin,
+            boolean isApproval
+    ){
+        public static UserDto from(Member member){
+            return new UserDto(
+                    member.getMemberName(),
+                    member.getEmail(),
+                    member.getCreatedAt(),
+                    null,
+                    member.isApprovalSignup()
+            );
+        }
+
+        public static List<UserDto> from(List<Member> members){
+            return members.stream()
+                    .map(UserDto::from)
+                    .collect(Collectors.toList());
+        }
+
+        public static Page<UserDto> from(Page<Member> members){
+            return null;
         }
     }
 }
