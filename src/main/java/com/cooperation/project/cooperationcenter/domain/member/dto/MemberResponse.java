@@ -47,21 +47,12 @@ public class MemberResponse {
 
     //admin 유저 페이지
     public record UserPageDto(
-            int totalUser,
-            int activeUser,
-            int newUser,
-            int pendingUser,
+            long totalUser,
+            long activeUser,
+            long newUser,
+            long pendingUser,
             Page<UserDto> users
-    ){
-        public static UserPageDto from(List<Member> members){
-//            return UserPageDto(
-//                members.size(),
-//
-//                members,
-//            );
-            return null;
-        }
-    }
+    ){}
 
     public record UserDto(
             String userName,

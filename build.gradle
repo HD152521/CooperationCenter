@@ -39,8 +39,16 @@ dependencies {
 
 	//oauth
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	// QueryDSL core
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+	annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+sourceSets.main.java.srcDirs += "build/generated/sources/annotationProcessor/java/main"
