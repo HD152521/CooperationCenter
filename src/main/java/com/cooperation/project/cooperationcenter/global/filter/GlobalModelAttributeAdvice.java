@@ -34,6 +34,9 @@ public class GlobalModelAttributeAdvice {
         Member member = memberRepository.findMemberByEmail(email).orElseThrow(
                 ()->new BaseException(ErrorCode.MEMBER_NOT_FOUND)
         );
+        if(!member.isAccept()) {
+            throw new BaseException(ErrorCode.MEMBER_NOT_ACCEPTED);
+        }
         return MemberResponse.LoginDto.from(member); // null일 수 있음
     }
 

@@ -1,6 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.member.model;
 
 
+import com.cooperation.project.cooperationcenter.domain.agency.model.Agency;
 import com.cooperation.project.cooperationcenter.domain.file.model.MemberFile;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
 import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyLog;
@@ -52,6 +53,9 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "business_certificate_id")
     private MemberFile businessCertificate;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "agency_id")
+    private Agency agency;
 
     @NotNull private String memberId;
     @NotNull private Role role;
@@ -67,8 +71,17 @@ public class Member extends BaseEntity {
         this.status = UserStatus.APPROVED;
     }
 
+    public void pending(){
+        this.approvalSignup = false;
+        this.status = UserStatus.PENDING;
+    }
+
     public boolean isAccept(){
         return (this.status.equals(UserStatus.APPROVED))||isApprovalSignup();
+    }
+
+    public void setAgency(Agency agency){
+        this.agency = agency;
     }
 
     public enum Role {

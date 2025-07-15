@@ -37,6 +37,10 @@ public class Agency extends BaseEntity {
     @JoinColumn(name = "agency_picture_id")
     private MemberFile agencyPicture;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     public static Agency fromMember(
             Member member
     ) {
@@ -48,6 +52,7 @@ public class Agency extends BaseEntity {
                 .agencyPicture(file)
                 .agencyPhone(member.getAgencyPhone())
                 .agencyOwner(member.getMemberName())
+                .member(member)
                 .build();
     }
 }

@@ -81,4 +81,32 @@ public class MemberResponse {
             return null;
         }
     }
+
+    public record DetailDto(
+            String agencyName,
+            String email,
+            String businessNumber,
+            LocalDateTime signupDate,
+            String ownerTel,
+            String ownerName,
+            String address,
+            String businessCertificationURl,
+            String agencyTel,
+            String agencyAddress
+    ){
+        public static DetailDto from(Member member){
+            return new DetailDto(
+                    member.getAgencyName(),
+                    member.getEmail(),
+                    null,
+                    member.getCreatedAt(),
+                    member.getPhoneNumber(),
+                    member.getMemberName(),
+                    member.getAddress1(),
+                    "/api/v1/file/img/"+member.getBusinessCertificate().getFileId(),
+                    member.getAgencyPhone(),
+                    member.getAgencyAddress1()
+            );
+        }
+    }
 }

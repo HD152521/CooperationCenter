@@ -40,4 +40,25 @@ public class MemberAdminRestController {
             return BaseResponse.onFailure(ErrorCode.BAD_REQUEST,null);
         }
     }
+
+    @PostMapping("/pending/{memberEmail}")
+    public BaseResponse<?> pendingMember(@PathVariable String memberEmail){
+        log.info("email:{}",memberEmail);
+        try{
+            memberService.pendingMember(memberEmail);
+            return BaseResponse.onSuccess("success");
+        }catch (Exception e){
+            return BaseResponse.onFailure(ErrorCode.BAD_REQUEST,null);
+        }
+    }
+
+    @GetMapping("/detail/{memberEmail}")
+    public BaseResponse<?> detailMember(@PathVariable String memberEmail){
+        log.info("email:{}",memberEmail);
+        try{
+            return BaseResponse.onSuccess(memberService.detailMember(memberEmail));
+        }catch (Exception e){
+            return BaseResponse.onFailure(ErrorCode.BAD_REQUEST,null);
+        }
+    }
 }

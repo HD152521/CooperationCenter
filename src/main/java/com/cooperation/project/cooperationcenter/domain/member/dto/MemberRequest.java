@@ -43,6 +43,7 @@ public class MemberRequest {
 
     public record UserFilterDto(
             String keyword,
-            String status
+            String status,
+            String date
     ){}
 }

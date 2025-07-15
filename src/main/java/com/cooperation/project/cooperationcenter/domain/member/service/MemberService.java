@@ -89,7 +89,7 @@ public class MemberService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        if(member.isAccept()){
+        if(!member.isAccept()){
             log.warn("아직 승인되지 않은 아이디임.");
             throw new BaseException(ErrorCode.MEMBER_NOT_ACCEPTED);
         }
@@ -203,10 +203,26 @@ public class MemberService {
         Member member = memberRepository.findMemberByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
         member.accept();
+        if(member.getAgency()==null) {
+            Agency agency = Agency.fromMember(member);
+            agencyRepository.save(agency);
+            member.setAgency(agency);
+        }
         memberRepository.save(member);
+    }
 
-        Agency agency = Agency.fromMember(member);
-        agencyRepository.save(agency);
+    @Transactional
+    public void pendingMember(String email){
+        Member member = memberRepository.findMemberByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+        member.pending();
+        memberRepository.save(member);
+    }
+
+    public MemberResponse.DetailDto detailMember(String email){
+        Member member = memberRepository.findMemberByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+        return MemberResponse.DetailDto.from(member);
     }
 
     public List<MemberResponse.PendingDto> getPendingList(){
@@ -231,7 +247,7 @@ public class MemberService {
 
     public Page<MemberResponse.UserDto> findUsersByCondition(MemberRequest.UserFilterDto condition, Pageable pageable) {
         log.info("Get user from dto...");
-        return memberRepository.searchMembers(condition.keyword(), condition.status(), pageable)
+        return memberRepository.searchMembers(condition.keyword(), condition.status(), condition.date(),pageable)
                 .map(MemberResponse.UserDto::from);
     }
 
@@ -240,6 +256,7 @@ public class MemberService {
         LocalDateTime now = LocalDateTime.now();
         return memberRepository.countByCreatedAtBetween(startOfMonth, now);
     }
+
 
 
 
