@@ -36,7 +36,7 @@ public class SurveyRequest {
     ){
         public LogFilterDto setStatus(){
             return new LogFilterDto(
-                    text,"active",date
+                    text,"all",date
             );
         }
     }

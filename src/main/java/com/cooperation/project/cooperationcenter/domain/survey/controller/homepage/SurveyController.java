@@ -53,15 +53,10 @@ public class SurveyController {
         boolean isAdmin = authentication.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
         model.addAttribute("condition", condition);
-        if(isAdmin){
-            Page<SurveyResponseDto> surveys = surveyFindService.getFilteredSurveysAll(pageable,condition);
-            model.addAttribute("surveys", surveys);
-            return surveyPath + "/survey-list-admin";
-        }else{
-            Page<SurveyResponseDto> surveys = surveyFindService.getFilteredSurveysActive(pageable,condition);
-            model.addAttribute("surveys", surveys);
-            return surveyPath + "/survey-list-user";
-        }
+        Page<SurveyResponseDto> surveys = surveyFindService.getFilteredSurveysActive(pageable,condition);
+        model.addAttribute("surveys", surveys);
+        if(isAdmin)return surveyPath + "/survey-list-admin";
+        else return surveyPath + "/survey-list-user";
     }
 
 //    @RequestMapping("/list/filter")

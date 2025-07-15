@@ -10,6 +10,7 @@ import com.cooperation.project.cooperationcenter.domain.file.service.FileService
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberResponse;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
+import com.cooperation.project.cooperationcenter.domain.member.model.UserStatus;
 import com.cooperation.project.cooperationcenter.domain.member.repository.MemberRepository;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerRequest;
 import com.cooperation.project.cooperationcenter.global.exception.BaseException;
@@ -38,6 +39,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.cooperation.project.cooperationcenter.global.token.JwtProperties.JWT_REFRESH_TOKEN_COOKIE_NAME;
@@ -86,7 +89,7 @@ public class MemberService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        if(!member.isApprovalSignup()){
+        if(!member.isAccept()){
             log.warn("아직 승인되지 않은 아이디임.");
             throw new BaseException(ErrorCode.MEMBER_NOT_ACCEPTED);
         }
@@ -200,10 +203,26 @@ public class MemberService {
         Member member = memberRepository.findMemberByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
         member.accept();
+        if(member.getAgency()==null) {
+            Agency agency = Agency.fromMember(member);
+            agencyRepository.save(agency);
+            member.setAgency(agency);
+        }
         memberRepository.save(member);
+    }
 
-        Agency agency = Agency.fromMember(member);
-        agencyRepository.save(agency);
+    @Transactional
+    public void pendingMember(String email){
+        Member member = memberRepository.findMemberByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+        member.pending();
+        memberRepository.save(member);
+    }
+
+    public MemberResponse.DetailDto detailMember(String email){
+        Member member = memberRepository.findMemberByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+        return MemberResponse.DetailDto.from(member);
     }
 
     public List<MemberResponse.PendingDto> getPendingList(){
@@ -215,14 +234,29 @@ public class MemberService {
         return MemberResponse.PendingDto.from(member);
     }
 
-    public Page<Member> getMember(Pageable pageable){
-        try{
-            return memberRepository.findAll(pageable);
-        }catch (Exception e){
-            log.warn(e.getMessage());
-            return null;
-        }
+    public MemberResponse.UserPageDto getMangeUserPage(MemberRequest.UserFilterDto condition, Pageable pageable){
+        log.info("Get manage user page data...");
+        return new MemberResponse.UserPageDto(
+                memberRepository.count(),
+                memberRepository.countByStatus(UserStatus.APPROVED),
+                countNewUsersThisMonth(),
+                memberRepository.countByStatus(UserStatus.PENDING),
+                findUsersByCondition(condition,pageable)
+        );
     }
+
+    public Page<MemberResponse.UserDto> findUsersByCondition(MemberRequest.UserFilterDto condition, Pageable pageable) {
+        log.info("Get user from dto...");
+        return memberRepository.searchMembers(condition.keyword(), condition.status(), condition.date(),pageable)
+                .map(MemberResponse.UserDto::from);
+    }
+
+    public long countNewUsersThisMonth(){
+        LocalDateTime startOfMonth = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+        LocalDateTime now = LocalDateTime.now();
+        return memberRepository.countByCreatedAtBetween(startOfMonth, now);
+    }
+
 
 
 

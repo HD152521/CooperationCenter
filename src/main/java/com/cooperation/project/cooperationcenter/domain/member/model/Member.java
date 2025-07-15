@@ -1,6 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.member.model;
 
 
+import com.cooperation.project.cooperationcenter.domain.agency.model.Agency;
 import com.cooperation.project.cooperationcenter.domain.file.model.MemberFile;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
 import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyLog;
@@ -52,15 +53,35 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "business_certificate_id")
     private MemberFile businessCertificate;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "agency_id")
+    private Agency agency;
 
     @NotNull private String memberId;
     @NotNull private Role role;
     @Column(name = "is_approval_signup") @NotNull private boolean approvalSignup;
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
+
     @OneToMany(mappedBy = "member")
     private List<SurveyLog> surveyLogs = new ArrayList<>();
 
     public void accept(){
         this.approvalSignup = true;
+        this.status = UserStatus.APPROVED;
+    }
+
+    public void pending(){
+        this.approvalSignup = false;
+        this.status = UserStatus.PENDING;
+    }
+
+    public boolean isAccept(){
+        return (this.status.equals(UserStatus.APPROVED))||isApprovalSignup();
+    }
+
+    public void setAgency(Agency agency){
+        this.agency = agency;
     }
 
     public enum Role {
@@ -101,6 +122,7 @@ public class Member extends BaseEntity {
                 .memberId(UUID.randomUUID().toString())
                 .role(Role.USER) // 기본값
                 .approvalSignup(false) // 가입 승인 대기 상태
+                .status(UserStatus.PENDING)
                 .build();
     }
 

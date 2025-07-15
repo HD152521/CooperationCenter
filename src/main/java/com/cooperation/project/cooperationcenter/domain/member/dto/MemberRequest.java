@@ -40,4 +40,10 @@ public class MemberRequest {
             String email,
             String password
     ){}
+
+    public record UserFilterDto(
+            String keyword,
+            String status,
+            String date
+    ){}
 }

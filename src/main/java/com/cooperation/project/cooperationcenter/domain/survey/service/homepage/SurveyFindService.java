@@ -103,6 +103,7 @@ public class SurveyFindService {
     }
 
     public Page<SurveyResponseDto> getFilteredSurveysAll(Pageable pageable,SurveyRequest.LogFilterDto condition){
+        if(condition.status()==null) condition = condition.setStatus();
         Page<Survey> surveys = getSurveyFromCondition(pageable,condition);
         return surveys.map(survey -> {
             LocalDate now = LocalDate.now();
@@ -123,7 +124,6 @@ public class SurveyFindService {
     }
 
     public Page<SurveyResponseDto> getFilteredSurveysActive(Pageable pageable,SurveyRequest.LogFilterDto condition){
-        condition = condition.setStatus();
         return getFilteredSurveysAll(pageable,condition);
     }
 

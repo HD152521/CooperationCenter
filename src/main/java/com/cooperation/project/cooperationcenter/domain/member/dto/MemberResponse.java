@@ -47,21 +47,12 @@ public class MemberResponse {
 
     //admin 유저 페이지
     public record UserPageDto(
-            int totalUser,
-            int activeUser,
-            int newUser,
-            int pendingUser,
+            long totalUser,
+            long activeUser,
+            long newUser,
+            long pendingUser,
             Page<UserDto> users
-    ){
-        public static UserPageDto from(List<Member> members){
-//            return UserPageDto(
-//                members.size(),
-//
-//                members,
-//            );
-            return null;
-        }
-    }
+    ){}
 
     public record UserDto(
             String userName,
@@ -88,6 +79,34 @@ public class MemberResponse {
 
         public static Page<UserDto> from(Page<Member> members){
             return null;
+        }
+    }
+
+    public record DetailDto(
+            String agencyName,
+            String email,
+            String businessNumber,
+            LocalDateTime signupDate,
+            String ownerTel,
+            String ownerName,
+            String address,
+            String businessCertificationURl,
+            String agencyTel,
+            String agencyAddress
+    ){
+        public static DetailDto from(Member member){
+            return new DetailDto(
+                    member.getAgencyName(),
+                    member.getEmail(),
+                    null,
+                    member.getCreatedAt(),
+                    member.getPhoneNumber(),
+                    member.getMemberName(),
+                    member.getAddress1(),
+                    "/api/v1/file/img/"+member.getBusinessCertificate().getFileId(),
+                    member.getAgencyPhone(),
+                    member.getAgencyAddress1()
+            );
         }
     }
 }

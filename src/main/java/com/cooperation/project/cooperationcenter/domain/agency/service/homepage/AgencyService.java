@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,12 +39,14 @@ public class AgencyService {
                 .toList());
     }
 
-    public List<Agency> getAgencyAll(){
-        try{
-            return agencyRepository.findAll();
-        }catch (Exception e){
+    public List<Agency> getAgencyAll() {
+        try {
+            return agencyRepository.findAll().stream()
+                    .filter(agency -> (agency.getMember()==null||agency.getMember().isAccept()))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
             log.warn(e.getMessage());
-            return null;
+            return Collections.emptyList();
         }
     }
 }
