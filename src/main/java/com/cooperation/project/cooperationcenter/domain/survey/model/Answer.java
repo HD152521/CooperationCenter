@@ -1,6 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.survey.model;
 
-import com.cooperation.project.cooperationcenter.domain.file.model.SurveyFile;
+import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -35,7 +35,7 @@ public class Answer extends BaseEntity {
     private LocalDateTime dateAnswer;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "survey_file_id") // Answer 테이블에 외래 키 컬럼 생성됨
-    private SurveyFile surveyFile;
+    private FileAttachment surveyFile;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private SurveyLog surveyLog;
@@ -43,7 +43,7 @@ public class Answer extends BaseEntity {
 
 
     public String getAnswer(){
-        if(QuestionType.isFile(this.answerType)) return surveyFile.getFileName();
+        if(QuestionType.isFile(this.answerType)) return surveyFile.getStoredName();
         else if(QuestionType.checkType(this.answerType)){
             if(answerType.equals(QuestionType.MULTIPLE)){
                 return multiAnswer.split("_")[0];
@@ -61,7 +61,7 @@ public class Answer extends BaseEntity {
     }
 
     @Builder
-    public Answer(int questionId, String questionRealId, String textAnswer,String multiAnswer, LocalDateTime dateAnswer,QuestionType answerType,SurveyLog surveyLog, SurveyFile surveyFile){
+    public Answer(int questionId, String questionRealId, String textAnswer,String multiAnswer, LocalDateTime dateAnswer,QuestionType answerType,SurveyLog surveyLog, FileAttachment surveyFile){
         this.questionId = questionId;
         this.questionRealId = questionRealId;
         this.textAnswer = textAnswer;

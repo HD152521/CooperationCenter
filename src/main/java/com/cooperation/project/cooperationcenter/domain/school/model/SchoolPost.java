@@ -1,10 +1,14 @@
 package com.cooperation.project.cooperationcenter.domain.school.model;
 
+import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -26,8 +30,13 @@ public class SchoolPost extends BaseEntity {
     @Enumerated(EnumType.STRING) private PostStatus status;
     @Enumerated(EnumType.STRING) private PostType type;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
-    private SchoolBoard board;
+    @JoinColumn(name = "school_board")
+    private SchoolBoard schoolBoard;
+
+    @OneToMany(mappedBy = "schoolPost")
+    private List<FileAttachment> files = new ArrayList<>();
 
     @Getter
     public enum PostType {

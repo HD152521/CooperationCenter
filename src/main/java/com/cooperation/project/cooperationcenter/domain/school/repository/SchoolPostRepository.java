@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface SchoolPostRepository extends JpaRepository<SchoolPost,Long> {
-    List<SchoolPost> findByBoard(SchoolBoard schoolBoard);
+    List<SchoolPost> findBySchoolBoard(SchoolBoard schoolBoard);
 }

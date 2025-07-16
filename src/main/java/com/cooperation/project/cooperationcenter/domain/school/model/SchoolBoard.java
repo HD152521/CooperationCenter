@@ -31,7 +31,8 @@ public class SchoolBoard extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private School school;
-    @OneToMany(mappedBy = "school_board")
+
+    @OneToMany(mappedBy = "schoolBoard")
     private List<SchoolPost> posts = new ArrayList<>();
 
 

@@ -66,7 +66,7 @@ public class SchoolFindService {
 
     public List<SchoolPost> loadPostByBoard(SchoolBoard board){
         try{
-            return schoolPostRepository.findByBoard(board);
+            return schoolPostRepository.findBySchoolBoard(board);
         }catch(Exception e){
             log.warn(e.getMessage());
             return Collections.emptyList();
@@ -75,7 +75,7 @@ public class SchoolFindService {
 
     public List<SchoolResponse.SchoolPostDto> loadPostByBoardByDto(SchoolBoard board){
         try{
-            return schoolPostRepository.findByBoard(board).stream()
+            return schoolPostRepository.findBySchoolBoard(board).stream()
                     .map(SchoolResponse.SchoolPostDto::from)
                     .collect(Collectors.toList());
         }catch(Exception e){

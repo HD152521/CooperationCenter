@@ -2,7 +2,7 @@ package com.cooperation.project.cooperationcenter.domain.member.model;
 
 
 import com.cooperation.project.cooperationcenter.domain.agency.model.Agency;
-import com.cooperation.project.cooperationcenter.domain.file.model.MemberFile;
+import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
 import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyLog;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
@@ -47,11 +47,11 @@ public class Member extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "agency_picture_id")
-    private MemberFile agencyPicture;
+    private FileAttachment agencyPicture;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "business_certificate_id")
-    private MemberFile businessCertificate;
+    private FileAttachment businessCertificate;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "agency_id")
@@ -101,8 +101,9 @@ public class Member extends BaseEntity {
 
     public static Member fromDto(
             MemberRequest.SignupDto dto,
-            MemberFile agencyPicture,
-            MemberFile businessCertificate
+            FileAttachment agencyPicture,
+            FileAttachment businessCertificate,
+            String uuid
     ) {
         return Member.builder()
                 .memberName(dto.memberName())
@@ -119,7 +120,7 @@ public class Member extends BaseEntity {
                 .businessCertificate(businessCertificate)
                 .agencyPhone(dto.agencyPhone())
 
-                .memberId(UUID.randomUUID().toString())
+                .memberId(uuid)
                 .role(Role.USER) // 기본값
                 .approvalSignup(false) // 가입 승인 대기 상태
                 .status(UserStatus.PENDING)

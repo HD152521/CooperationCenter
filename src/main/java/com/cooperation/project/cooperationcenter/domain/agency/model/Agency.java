@@ -1,7 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.agency.model;
 
-import com.cooperation.project.cooperationcenter.domain.file.model.MemberFile;
-import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
+import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -35,7 +34,7 @@ public class Agency extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "agency_picture_id")
-    private MemberFile agencyPicture;
+    private FileAttachment agencyPicture;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "member_id")
@@ -44,7 +43,7 @@ public class Agency extends BaseEntity {
     public static Agency fromMember(
             Member member
     ) {
-        MemberFile file = (member.getAgencyPicture()!=null)?member.getAgencyPicture():null;
+        FileAttachment file = (member.getAgencyPicture()!=null)?member.getAgencyPicture():null;
         return Agency.builder()
                 .agencyName(member.getAgencyName())
                 .agencyAddress1(member.getAgencyAddress1())

@@ -3,9 +3,8 @@ package com.cooperation.project.cooperationcenter.domain.member.service;
 
 import com.cooperation.project.cooperationcenter.domain.agency.model.Agency;
 import com.cooperation.project.cooperationcenter.domain.agency.repository.AgencyRepository;
-import com.cooperation.project.cooperationcenter.domain.file.dto.MemberFileDto;
-import com.cooperation.project.cooperationcenter.domain.file.model.MemberFile;
-import com.cooperation.project.cooperationcenter.domain.file.model.MemberFileType;
+import com.cooperation.project.cooperationcenter.domain.file.dto.FileAttachmentDto;
+import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.file.service.FileService;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberResponse;
@@ -42,6 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -63,10 +63,11 @@ public class MemberService {
         MemberRequest.SignupDto request = mappingToDto(data);
         String encodedPassword = passwordEncoder.encode(request.password());
 
-        MemberFile file1 = (agencyPicture==null) ? null : fileService.saveFile(new MemberFileDto(agencyPicture, MemberFileType.PICTURE));
-        MemberFile file2 = (businessCertificate==null) ? null : fileService.saveFile(new MemberFileDto(businessCertificate, MemberFileType.CERTIFICATION));
+        String uuid = UUID.randomUUID().toString();
+        FileAttachment file1 = (agencyPicture==null) ? null : fileService.saveFile(new FileAttachmentDto(agencyPicture,"member",null,uuid,null));
+        FileAttachment file2 = (businessCertificate==null) ? null : fileService.saveFile(new FileAttachmentDto(businessCertificate,"member", null,uuid,null));
 
-        Member member = Member.fromDto(request.withEncodedPassword(encodedPassword),file1,file2);
+        Member member = Member.fromDto(request.withEncodedPassword(encodedPassword),file1,file2,uuid);
         memberRepository.save(member);
     }
 
@@ -79,8 +80,6 @@ public class MemberService {
         memberCookieService.addTokenCookies(response,tokenResponse);
         log.info("login success");
     }
-
-
 
     public void checkLogin(MemberRequest.LoginDto request, Member member){
         if (!passwordEncoder.matches(request.password(), member.getPassword())) {
