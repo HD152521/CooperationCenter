@@ -43,8 +43,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.cooperation.project.cooperationcenter.global.token.JwtProperties.JWT_REFRESH_TOKEN_COOKIE_NAME;
-
 @Service
 @RequiredArgsConstructor
 public class MemberService {
