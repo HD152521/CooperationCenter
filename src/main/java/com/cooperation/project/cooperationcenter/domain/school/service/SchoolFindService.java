@@ -7,6 +7,8 @@ import com.cooperation.project.cooperationcenter.domain.school.model.SchoolPost;
 import com.cooperation.project.cooperationcenter.domain.school.repository.SchoolBoardRepository;
 import com.cooperation.project.cooperationcenter.domain.school.repository.SchoolPostRepository;
 import com.cooperation.project.cooperationcenter.domain.school.repository.SchoolRepository;
+import com.cooperation.project.cooperationcenter.global.exception.BaseException;
+import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,15 @@ public class SchoolFindService {
         }
     }
 
+    public School loadSchoolById(Long id){
+        try{
+            return schoolRepository.findSchoolById(id).orElseThrow(() -> new BaseException(ErrorCode.BAD_REQUEST));
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
     public List<SchoolBoard> loadBoardBySchool(School school){
         try{
             return schoolBoardRepository.findBySchool(school);
@@ -64,6 +75,15 @@ public class SchoolFindService {
         }
     }
 
+    public SchoolBoard loadBoardById(Long boardId){
+            try{
+                return schoolBoardRepository.findSchoolBoardById(boardId).orElseThrow(()-> new BaseException(ErrorCode.BAD_REQUEST));
+            }catch(Exception e){
+                log.warn(e.getMessage());
+                return null;
+            }
+    }
+
     public List<SchoolPost> loadPostByBoard(SchoolBoard board){
         try{
             return schoolPostRepository.findBySchoolBoard(board);
@@ -82,6 +102,13 @@ public class SchoolFindService {
             log.warn(e.getMessage());
             return Collections.emptyList();
         }
+    }
+
+    public List<SchoolResponse.SchoolPageDto> getSchoolPage(){
+        List<School> schools = loadAllSchool();
+        return schools.stream()
+                .map(SchoolResponse.SchoolPageDto::from)
+                .collect(Collectors.toList());
     }
 
 

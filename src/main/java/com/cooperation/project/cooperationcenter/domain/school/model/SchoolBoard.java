@@ -1,6 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.school.model;
 
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
+import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolRequest;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,6 +9,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -35,6 +37,14 @@ public class SchoolBoard extends BaseEntity {
     @OneToMany(mappedBy = "schoolBoard")
     private List<SchoolPost> posts = new ArrayList<>();
 
+    public void setSchool(School school){
+        this.school = school;
+    }
+
+    public void addPost(SchoolPost post) {
+        posts.add(post);
+        post.setBoard(this);
+    }
 
     @Getter
     public enum BoardType {
@@ -46,5 +56,22 @@ public class SchoolBoard extends BaseEntity {
         BoardType(String type) {
             this.type = type;
         }
+
+        public static BoardType from(String type) {
+            return Arrays.stream(BoardType.values())
+                    .filter(t -> t.getType().equalsIgnoreCase(type))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid board type: " + type));
+        }
+    }
+
+    public static SchoolBoard fromDto(SchoolRequest.SchoolBoardDto dto){
+        BoardType type = BoardType.from(dto.boardType());
+        return SchoolBoard.builder()
+                .boardTitle(dto.boardTitle())
+                .realTitle(dto.realTitle())
+                .boardDescription(dto.boardDescription())
+                .type(type)
+                .build();
     }
 }

@@ -11,10 +11,11 @@ public class SchoolResponse {
     public record SchoolDto(
             String koreanName,
             String englishName,
-            String imgUrl
+            String imgUrl,
+            Long schoolId
     ){
         public static SchoolDto from(School school){
-            return new SchoolDto(school.getSchoolKoreanName(), school.getSchoolEnglishName(), school.getLogoUrl());
+            return new SchoolDto(school.getSchoolKoreanName(), school.getSchoolEnglishName(), school.getLogoUrl(), school.getId());
         }
     }
 
@@ -45,8 +46,8 @@ public class SchoolResponse {
             String description,
             String content,
             String status,
-            String type
-
+            String type,
+            int views
     ){
         public static SchoolPostDto from(SchoolPost post){
             return new SchoolPostDto(
@@ -55,13 +56,26 @@ public class SchoolResponse {
                     post.getPostTitle(),
                     post.getContent(),
                     post.getStatus().getStatus(),
-                    post.getType().getType()
+                    post.getType().getType(),
+                    post.getViews()
             );
         }
         public static List<SchoolPostDto> from(List<SchoolPost> posts){
             return posts.stream()
                     .map(SchoolPostDto::from)
                     .collect(Collectors.toList());
+        }
+    }
+
+    public record SchoolPageDto(
+            SchoolDto schoolDto,
+            List<SchoolBoardDto> boardDtos
+    ){
+        public static SchoolPageDto from(School school){
+            return new SchoolPageDto(
+                    SchoolDto.from(school),
+                    SchoolBoardDto.from(school.getBoards())
+            );
         }
     }
 }

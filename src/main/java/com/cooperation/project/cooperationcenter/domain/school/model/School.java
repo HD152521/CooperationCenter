@@ -1,6 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.school.model;
 
 
+import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolRequest;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,5 +31,16 @@ public class School extends BaseEntity {
     @OneToMany(mappedBy = "school")
     private List<SchoolBoard> boards = new ArrayList<>();
 
+    public void addBoard(SchoolBoard board) {
+        boards.add(board);
+        board.setSchool(this);
+    }
 
+    public static School fromDto(SchoolRequest.SchoolDto dto){
+        return School.builder()
+                .schoolEnglishName(dto.schoolEnglishName())
+                .schoolKoreanName(dto.schoolKoreanName())
+                .logoUrl(dto.imgUrl())
+                .build();
+    }
 }
