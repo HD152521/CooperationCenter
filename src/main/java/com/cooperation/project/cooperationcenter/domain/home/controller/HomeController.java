@@ -2,6 +2,7 @@ package com.cooperation.project.cooperationcenter.domain.home.controller;
 
 import com.cooperation.project.cooperationcenter.domain.agency.service.homepage.AgencyService;
 import com.cooperation.project.cooperationcenter.domain.member.service.MemberService;
+import com.cooperation.project.cooperationcenter.domain.school.service.SchoolFindService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,10 +17,12 @@ public class HomeController {
 
     private final AgencyService agencyService;
     private final MemberService memberService;
+    private final SchoolFindService schoolFindService;
 
     @RequestMapping({"/", "/home"})
     public String home(Model model, HttpServletRequest request) {
         model.addAttribute("agencyDto", agencyService.getAgencyListForHome());
+        model.addAttribute("schoolDto", schoolFindService.loadAllSchoolByDto());
         return "/homepage/user/index";
     }
 

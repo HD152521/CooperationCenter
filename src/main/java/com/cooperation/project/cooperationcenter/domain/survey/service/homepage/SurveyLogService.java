@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class SurveyLogService {
 
     private final SurveyFindService surveyFindService;
-    private final String origin = "http://localhost:8080/api/v1/file/";
+    private final String origin = "http://localhost:8080/api/v1/file/survey/";
 
     public AnswerResponse.AnswerPagedDto getAnswerLog(String surveyId, Pageable pageable){
         Survey survey = surveyFindService.getSurveyFromId(surveyId);
