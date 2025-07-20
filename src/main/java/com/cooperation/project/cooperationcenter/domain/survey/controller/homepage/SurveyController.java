@@ -59,17 +59,6 @@ public class SurveyController {
         else return surveyPath + "/survey-list-user";
     }
 
-//    @RequestMapping("/list/filter")
-//    public String surveyListUser(Model model,
-//                                 @PageableDefault(size = 9, sort = "createdAt", direction = Sort.Direction.DESC)
-//                                 Pageable pageable,
-//                                 @RequestBody(required = false) SurveyRequest.LogFilterDto request){
-//        log.info("request:{}",request);
-//        Page<SurveyResponseDto> surveys = surveyFindService.getAllSurvey(pageable,request);
-//        model.addAttribute("surveys", surveys);
-//        return surveyPath+"/survey-list-admin";
-//    }
-
     @RequestMapping("/answer/{surveyId}")
     public String surveyAnswer(@PathVariable String surveyId, Model model){
         model.addAttribute("surveyId", surveyId);

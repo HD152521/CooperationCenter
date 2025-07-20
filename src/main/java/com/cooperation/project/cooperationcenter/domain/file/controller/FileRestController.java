@@ -21,16 +21,16 @@ public class FileRestController {
 
     private final FileService fileService;
 
-    @GetMapping("/{fileId}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileId) throws MalformedURLException {
+    @GetMapping("/{type}/{fileId}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String type,@PathVariable String fileId) throws MalformedURLException {
         log.info("enter file controller");
-        return fileService.loadSurveyFile(fileId);
+        return fileService.loadFile(fileId,type);
     }
 
-    @GetMapping("/img/{fileId}")
-    public ResponseEntity<Resource> viewImage(@PathVariable String fileId) throws IOException {
+    @GetMapping("/img/{type}/{fileId}")
+    public ResponseEntity<Resource> viewImage(@PathVariable String type,@PathVariable String fileId) throws IOException {
         log.info("enter file controller-img");
-        return fileService.viewMemberImage(fileId);
+        return fileService.viewImage(fileId,type);
     }
 
 }

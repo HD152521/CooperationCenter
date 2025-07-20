@@ -103,7 +103,7 @@ public class MemberResponse {
                     member.getPhoneNumber(),
                     member.getMemberName(),
                     member.getAddress1(),
-                    "/api/v1/file/img/"+member.getBusinessCertificate().getFileId(),
+                    "/api/v1/file/img/member/"+member.getBusinessCertificate().getFileId(),
                     member.getAgencyPhone(),
                     member.getAgencyAddress1()
             );

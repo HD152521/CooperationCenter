@@ -1,12 +1,10 @@
 package com.cooperation.project.cooperationcenter.domain.file.service;
 
-import com.cooperation.project.cooperationcenter.domain.file.dto.MemberFileDto;
-import com.cooperation.project.cooperationcenter.domain.file.dto.SurveyFileDto;
-import com.cooperation.project.cooperationcenter.domain.file.model.MemberFile;
-import com.cooperation.project.cooperationcenter.domain.file.model.SurveyFile;
-import com.cooperation.project.cooperationcenter.domain.file.repository.MemberFileRepository;
-import com.cooperation.project.cooperationcenter.domain.file.repository.SurveyFileRepository;
-import com.cooperation.project.cooperationcenter.domain.member.repository.MemberRepository;
+import com.cooperation.project.cooperationcenter.domain.file.dto.FileAttachmentDto;
+import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
+import com.cooperation.project.cooperationcenter.domain.file.model.FileTargetType;
+
+import com.cooperation.project.cooperationcenter.domain.file.repository.FileAttachmentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -25,19 +23,28 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class FileService {
 
-    private final SurveyFileRepository surveyFileRepository;
-    private final MemberFileRepository memberFileRepository;
+    private final FileAttachmentRepository fileAttachmentRepository;
 
-    public SurveyFile saveFile(SurveyFileDto request){
-        String path = "uploads/survey/"+request.surveyId();
-        if(request.surveyFileType()!=null) path+="/"+request.surveyFileType().getFileType();
-        log.info("path:{}",path);
+    public String getPath(FileAttachmentDto request){
+        String type = request.type();
+        FileTargetType fileType = FileTargetType.fromType(type);
+
+        if(fileType.equals(FileTargetType.MEMBER)) return FileTargetType.MEMBER.getFilePath()+request.memberId();
+        else if(fileType.equals(FileTargetType.SCHOOL)) return FileTargetType.SCHOOL.getFilePath()+request.postId();
+        else if(fileType.equals(FileTargetType.SURVEY)) return FileTargetType.SURVEY.getFilePath()+request.surveyId();
+        else return null;
+    }
+
+    public FileAttachment saveFile(FileAttachmentDto request){
+        String path = getPath(request);
+        FileTargetType fileType = FileTargetType.fromType(request.type());
         Path uploadDir = Paths.get(System.getProperty("user.dir"), path);
 
         try {
@@ -46,14 +53,14 @@ public class FileService {
             throw new RuntimeException(e);
         }
 
-        SurveyFile surveyFile = SurveyFile.builder()
-                .filePath(path)
-                .realPath(uploadDir)
-                .surveyFileType(request.surveyFileType())
+        FileAttachment file = FileAttachment.builder()
+                .path(path)
+                .storedPath(uploadDir)
                 .file(request.file())
+                .filetype(fileType)
                 .build();
 
-        Path saved = uploadDir.resolve(surveyFile.getFileName());
+        Path saved = uploadDir.resolve(file.getStoredName());
 
         try {
             request.file().transferTo(saved);
@@ -61,49 +68,22 @@ public class FileService {
             throw new RuntimeException(e);
         }
 
-        return surveyFileRepository.save(surveyFile);
+        return fileAttachmentRepository.save(file);
     }
 
-    public MemberFile saveFile(MemberFileDto request){
-        String path = "uploads/member/"+request.memberFileType().getFileType();
-        Path uploadDir = Paths.get(System.getProperty("user.dir"), path);
-
-        try {
-            Files.createDirectories(uploadDir); // 경로 없으면 생성
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        MemberFile memberFile = MemberFile.builder()
-                .filePath(path)
-                .realPath(uploadDir)
-                .memberFileType(request.memberFileType())
-                .file(request.file())
-                .build();
-
-        Path saved = uploadDir.resolve(memberFile.getFileName());
-
-        try {
-            request.file().transferTo(saved);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return memberFileRepository.save(memberFile);
-    }
-
-    public ResponseEntity<Resource> loadSurveyFile(String fileId) throws MalformedURLException {
-        SurveyFile file = surveyFileRepository.findSurveyFileByFileId(fileId)
+    public ResponseEntity<Resource> loadFile(String fileId,String type) throws MalformedURLException {
+        FileTargetType fileType = FileTargetType.fromType(type);
+        FileAttachment file = fileAttachmentRepository.findByFileIdAndFiletype(fileId,fileType)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."));
 
-        Path filePath = Paths.get(file.getFilePath()).resolve(file.getFileName());
+        Path filePath = Paths.get(file.getPath()).resolve(file.getStoredName());
         Resource resource = new UrlResource(filePath.toUri());
 
         if (!resource.exists() || !resource.isReadable()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 읽을 수 없습니다.");
         }
 
-        String encodedName = UriUtils.encode(file.getFileRealName(), StandardCharsets.UTF_8);
+        String encodedName = UriUtils.encode(file.getOriginalName(), StandardCharsets.UTF_8);
         String contentDisposition = "attachment; filename=\"" + encodedName + "\"";
 
         return ResponseEntity.ok()
@@ -112,19 +92,19 @@ public class FileService {
                 .body(resource);
     }
 
-    public ResponseEntity<Resource> viewMemberImage(String fileId) throws IOException {
-        log.info("파일 읽어옴0");
-        MemberFile file = memberFileRepository.findSurveyFileByFileId(fileId)
+    public ResponseEntity<Resource> viewImage(String fileId,String type) throws IOException {
+        FileTargetType fileType = FileTargetType.fromType(type);
+        FileAttachment file = fileAttachmentRepository.findByFileIdAndFiletype(fileId,fileType)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."));
         log.info("파일 읽어옴1");
-        Path filePath = Paths.get(file.getFilePath()).resolve(file.getFileName());
+        Path filePath = Paths.get(file.getPath()).resolve(file.getStoredName());
         Resource resource = new UrlResource(filePath.toUri());
         log.info("파일 읽어옴2");
         if (!resource.exists() || !resource.isReadable()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 읽을 수 없습니다.");
         }
+
         log.info("파일 읽어옴3");
-        // 파일 확장자에 따라 MIME 타입 설정
         String contentType = Files.probeContentType(filePath);
         if (contentType == null) {
             contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
@@ -134,6 +114,22 @@ public class FileService {
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
                 .body(resource);
+    }
+
+    public void deleteFile(FileAttachment fileAttachment){
+        try{
+            fileAttachmentRepository.delete(fileAttachment);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+        }
+    }
+
+    public void deleteFile(List<FileAttachment> fileAttachments){
+        try{
+            fileAttachmentRepository.deleteAll(fileAttachments);
+        }catch (Exception e) {
+            log.warn(e.getMessage());
+        }
     }
 
 

@@ -1,8 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.survey.service.homepage;
 
-import com.cooperation.project.cooperationcenter.domain.file.dto.SurveyFileDto;
-import com.cooperation.project.cooperationcenter.domain.file.model.SurveyFileType;
-import com.cooperation.project.cooperationcenter.domain.file.model.SurveyFile;
+import com.cooperation.project.cooperationcenter.domain.file.dto.FileAttachmentDto;
+import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.file.service.FileService;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
@@ -58,7 +57,8 @@ public class SurveyAnswerService {
         }
 
         Survey survey = surveyFindService.getSurveyFromId(requestDto.surveyId());
-        if(checkDate(survey)) throw new BaseException(ErrorCode.SURVEY_DATE_NOT_VALID);
+//        if(checkDate(survey)) throw new BaseException(ErrorCode.SURVEY_DATE_NOT_VALID);
+        log.info("checkDate:{}",checkDate(survey));
         survey.setParticipantCount();
         //fixme 추후 예정
         Member member = memberRepository.findMemberByEmail(memberDetails.getUsername()).get();
@@ -91,7 +91,7 @@ public class SurveyAnswerService {
     @Transactional
     protected List<Answer> saveAnswer(AnswerRequest.Dto answerList, MultipartHttpServletRequest multipartRequest,SurveyLog surveyLog){
         List<Answer> saveList = new ArrayList<>();
-        SurveyFile surveyFile=null;
+        FileAttachment surveyFile=null;
         for (AnswerRequest.AnswerDto an : answerList.answers()) {
             if (QuestionType.isFile(an.type())) {
                 surveyFile = saveFile(an,multipartRequest,answerList.surveyId());
@@ -103,7 +103,7 @@ public class SurveyAnswerService {
         return answerRepository.saveAll(saveList);
     }
 
-    private Answer convertToAnswer(AnswerRequest.AnswerDto answer,String surveyId,SurveyFile surveyFile,SurveyLog surveyLog){
+    private Answer convertToAnswer(AnswerRequest.AnswerDto answer,String surveyId,FileAttachment surveyFile,SurveyLog surveyLog){
         log.info(answer.type());
         QuestionType questionType = QuestionType.fromType(answer.type());
         if(questionType==null){
@@ -147,7 +147,7 @@ public class SurveyAnswerService {
         return null;
     }
 
-    private SurveyFile saveFile(AnswerRequest.AnswerDto answer,MultipartHttpServletRequest multipartRequest, String surveyId){
+    private FileAttachment saveFile(AnswerRequest.AnswerDto answer,MultipartHttpServletRequest multipartRequest, String surveyId){
         String key="";
         if (answer.answer() instanceof String str) key = answer.answer().toString();
 
@@ -160,7 +160,7 @@ public class SurveyAnswerService {
             log.info("✅ {} 수신 성공: {}", key, file.getOriginalFilename());
             //key예시 file-0 image-1
             String type = key.split("-")[0];
-            return fileService.saveFile(new SurveyFileDto(file, surveyId, SurveyFileType.fromType(type)));
+            return fileService.saveFile(new FileAttachmentDto(file,"survey", null,null,surveyId));
         }
         return null;
     }
