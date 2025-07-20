@@ -6,7 +6,13 @@ import com.cooperation.project.cooperationcenter.domain.school.service.SchoolSer
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,13 +35,18 @@ public class SchoolAdminRestController {
     }
 
     @PostMapping("/post")
-    public BaseResponse<?> saveBoard(@RequestBody SchoolRequest.SchoolPostDto request){
+    public BaseResponse<?> savePost(@ModelAttribute  SchoolRequest.SchoolPostDto request,
+                                    @RequestPart(required = false) List<MultipartFile> files){
+        log.info("request data:{}",request.toString());
         schoolService.savePost(request);
         return BaseResponse.onSuccess("success");
     }
 
-    @GetMapping("/posts")
-    public BaseResponse<?> getPost(String boardId){
-        return BaseResponse.onSuccess(schoolService.getPost(boardId));
+    @GetMapping("/boards")
+    public BaseResponse<?> getPost(@ModelAttribute SchoolRequest.PostDto request,
+                                   @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+                                   Pageable pageable){
+        log.info("data:{}",request.toString());
+        return BaseResponse.onSuccess(schoolService.getPostByPage(request,pageable));
     }
 }

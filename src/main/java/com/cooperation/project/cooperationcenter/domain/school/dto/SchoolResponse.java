@@ -3,7 +3,10 @@ package com.cooperation.project.cooperationcenter.domain.school.dto;
 import com.cooperation.project.cooperationcenter.domain.school.model.School;
 import com.cooperation.project.cooperationcenter.domain.school.model.SchoolBoard;
 import com.cooperation.project.cooperationcenter.domain.school.model.SchoolPost;
+import org.springframework.data.domain.Page;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,6 +50,7 @@ public class SchoolResponse {
             String content,
             String status,
             String type,
+            LocalDateTime createdAt,
             int views
     ){
         public static SchoolPostDto from(SchoolPost post){
@@ -57,6 +61,7 @@ public class SchoolResponse {
                     post.getContent(),
                     post.getStatus().getStatus(),
                     post.getType().getType(),
+                    post.getCreatedAt(),
                     post.getViews()
             );
         }
@@ -64,6 +69,10 @@ public class SchoolResponse {
             return posts.stream()
                     .map(SchoolPostDto::from)
                     .collect(Collectors.toList());
+        }
+
+        public static Page<SchoolPostDto> from(Page<SchoolPost> posts){
+            return posts.map(SchoolPostDto::from);
         }
     }
 

@@ -16,11 +16,17 @@ public class SchoolRequest {
     ){}
 
     public record SchoolPostDto(
-            Long BoardId,
+            Long boardId,
             String title,
             String description,
             String content,
             String status,
             String type
+    ){}
+
+    public record PostDto(
+            Long boardId,
+            String keyword,
+            String status
     ){}
 }

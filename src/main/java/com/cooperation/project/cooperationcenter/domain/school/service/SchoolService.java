@@ -11,6 +11,8 @@ import com.cooperation.project.cooperationcenter.domain.school.repository.School
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -42,14 +44,14 @@ public class SchoolService {
 
     @Transactional
     public void savePost(SchoolRequest.SchoolPostDto request){
-        SchoolBoard board = schoolFindService.loadBoardById(request.BoardId());
+        SchoolBoard board = schoolFindService.loadBoardById(request.boardId());
         SchoolPost post = SchoolPost.fromDto(request);
         board.addPost(schoolPostRepository.save(post));
     }
 
-    public List<SchoolResponse.SchoolPostDto> getPost(String boardId){
-        List<SchoolResponse.SchoolPostDto> response = new ArrayList<>();
-        return response;
+    public Page<SchoolResponse.SchoolPostDto> getPostByPage(SchoolRequest.PostDto request, Pageable pageable){
+        SchoolBoard board = schoolFindService.loadBoardById(request.boardId());
+        return schoolFindService.loadPostPageByBoardByDto(board,pageable);
     }
 
 

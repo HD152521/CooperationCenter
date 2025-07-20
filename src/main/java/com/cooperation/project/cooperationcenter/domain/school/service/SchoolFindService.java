@@ -11,6 +11,8 @@ import com.cooperation.project.cooperationcenter.global.exception.BaseException;
 import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -93,6 +95,15 @@ public class SchoolFindService {
         }
     }
 
+    public Page<SchoolPost> loadPostByPage(SchoolBoard board, Pageable pageable){
+        try{
+            return schoolPostRepository.findBySchoolBoard(board,pageable);
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
     public List<SchoolResponse.SchoolPostDto> loadPostByBoardByDto(SchoolBoard board){
         try{
             return schoolPostRepository.findBySchoolBoard(board).stream()
@@ -101,6 +112,16 @@ public class SchoolFindService {
         }catch(Exception e){
             log.warn(e.getMessage());
             return Collections.emptyList();
+        }
+    }
+
+    public Page<SchoolResponse.SchoolPostDto> loadPostPageByBoardByDto(SchoolBoard board,Pageable pageable){
+        try{
+            return loadPostByPage(board,pageable)
+                    .map(SchoolResponse.SchoolPostDto::from);
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return null;
         }
     }
 
