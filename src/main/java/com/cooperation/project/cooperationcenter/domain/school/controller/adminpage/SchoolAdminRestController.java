@@ -28,9 +28,16 @@ public class SchoolAdminRestController {
         return BaseResponse.onSuccess("success");
     }
 
+
     @PostMapping("/board")
     public BaseResponse<?> saveBoard(@RequestBody SchoolRequest.SchoolBoardDto request){
         schoolService.saveBoard(request);
+        return BaseResponse.onSuccess("success");
+    }
+
+    @DeleteMapping("/board")
+    public BaseResponse<?> deleteBoard(@RequestBody SchoolRequest.BoardIdDto request){
+        schoolService.deleteBoard(request);
         return BaseResponse.onSuccess("success");
     }
 
@@ -42,7 +49,15 @@ public class SchoolAdminRestController {
         return BaseResponse.onSuccess("success");
     }
 
-    @GetMapping("/boards")
+    @DeleteMapping("/post")
+    public BaseResponse<?> deleteBoard(@RequestBody SchoolRequest.PostIdDto request){
+        schoolService.deletePost(request);
+        return BaseResponse.onSuccess("success");
+    }
+
+
+
+    @GetMapping("/posts")
     public BaseResponse<?> getPost(@ModelAttribute SchoolRequest.PostDto request,
                                    @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
                                    Pageable pageable){

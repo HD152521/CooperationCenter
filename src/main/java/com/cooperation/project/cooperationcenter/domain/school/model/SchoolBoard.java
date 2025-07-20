@@ -46,6 +46,19 @@ public class SchoolBoard extends BaseEntity {
         post.setBoard(this);
     }
 
+    public void deleteSchool(){
+        school.deleteBoard(this);
+        school = null;
+    }
+
+    public void deletePost(SchoolPost post) {
+        posts.remove(post);
+    }
+
+    public void deleteAllPost() {
+        posts.clear();
+    }
+
     @Getter
     public enum BoardType {
         INTRO("INTRO"),

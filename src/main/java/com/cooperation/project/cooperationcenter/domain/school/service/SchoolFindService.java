@@ -86,6 +86,15 @@ public class SchoolFindService {
             }
     }
 
+    public SchoolPost loadPostById(Long postId){
+        try{
+            return schoolPostRepository.findById(postId).orElseThrow(()-> new BaseException(ErrorCode.BAD_REQUEST));
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
     public List<SchoolPost> loadPostByBoard(SchoolBoard board){
         try{
             return schoolPostRepository.findBySchoolBoard(board);

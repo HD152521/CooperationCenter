@@ -24,13 +24,13 @@ public class FileRestController {
     @GetMapping("/{type}/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String type,@PathVariable String fileId) throws MalformedURLException {
         log.info("enter file controller");
-        return fileService.loadSurveyFile(fileId,type);
+        return fileService.loadFile(fileId,type);
     }
 
     @GetMapping("/img/{type}/{fileId}")
     public ResponseEntity<Resource> viewImage(@PathVariable String type,@PathVariable String fileId) throws IOException {
         log.info("enter file controller-img");
-        return fileService.viewMemberImage(fileId,type);
+        return fileService.viewImage(fileId,type);
     }
 
 }

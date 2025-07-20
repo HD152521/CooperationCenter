@@ -18,7 +18,7 @@ import java.util.List;
 @Entity
 @Table(name = "school_post")
 @Builder
-@SQLDelete(sql = "UPDATE school_board SET is_deleted = true, deleted_at = now() where id = ?")
+@SQLDelete(sql = "UPDATE school_post SET is_deleted = true, deleted_at = now() where id = ?")
 @SQLRestriction("is_deleted is FALSE")
 public class SchoolPost extends BaseEntity {
     @Id
@@ -46,12 +46,27 @@ public class SchoolPost extends BaseEntity {
         this.schoolBoard = board;
     }
 
+    public void deleteBoard(){
+        this.schoolBoard.deletePost(this);
+    }
+
     public void addView(){
         this.views++;
     }
 
-    public void addFile(List<FileAttachment> file){
-        this.files.addAll(file);
+    public void addFile(List<FileAttachment> files){
+        files.forEach(file -> file.addPost(this));
+        this.files.addAll(files);
+    }
+
+    public void deleteFile(FileAttachment file) {
+        this.files.remove(file);
+        file.addPost(null); // 연관 관계 정리
+    }
+
+    public void deleteFile(){
+        this.files.forEach(file->file.addPost(null));
+        this.files.clear();
     }
 
     @Getter

@@ -39,6 +39,10 @@ public class FileAttachment extends BaseEntity {
     @JoinColumn(name = "school_post_id", nullable = true)
     private SchoolPost schoolPost;
 
+    public void addPost(SchoolPost schoolPost) {
+        this.schoolPost = schoolPost;
+    }
+
     @Builder
     public FileAttachment(String path, Path storedPath, MultipartFile file,FileTargetType filetype){
         LocalDate now = LocalDate.now();

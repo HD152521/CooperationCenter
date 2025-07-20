@@ -36,6 +36,14 @@ public class School extends BaseEntity {
         board.setSchool(this);
     }
 
+    public void deleteBoard(SchoolBoard board) {
+        boards.remove(board);
+    }
+
+    public void deleteAllBoard() {
+        boards.clear();
+    }
+
     public static School fromDto(SchoolRequest.SchoolDto dto){
         return School.builder()
                 .schoolEnglishName(dto.schoolEnglishName())

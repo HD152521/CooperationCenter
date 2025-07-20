@@ -68,6 +68,34 @@ public class SchoolService {
         return schoolFindService.loadPostPageByBoardByDto(board,pageable);
     }
 
+    @Transactional
+    public void deleteBoard(SchoolRequest.BoardIdDto request){
+        deleteBoard(request.boardId());
+    }
 
+    @Transactional
+    public void deleteBoard(Long boardId){
+        SchoolBoard board = schoolFindService.loadBoardById(boardId);
+        List<SchoolPost> postListCopy = new ArrayList<>(board.getPosts());
+        for (SchoolPost post : postListCopy) deletePost(post.getId());
+        board.deleteSchool();
+        schoolBoardRepository.delete(board);
+    }
+
+    @Transactional
+    public void deletePost(SchoolRequest.PostIdDto request){
+        deletePost(request.postId());
+    }
+
+    @Transactional
+    public void deletePost(long postId){
+        SchoolPost post = schoolFindService.loadPostById(postId);
+        post.deleteBoard();
+        List<FileAttachment> attachments = new ArrayList<>(post.getFiles());
+        post.deleteFile();
+        fileService.deleteFile(attachments);
+        schoolPostRepository.delete(post);
+        log.info("post delete complete");
+    }
 
 }

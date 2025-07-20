@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -70,7 +71,7 @@ public class FileService {
         return fileAttachmentRepository.save(file);
     }
 
-    public ResponseEntity<Resource> loadSurveyFile(String fileId,String type) throws MalformedURLException {
+    public ResponseEntity<Resource> loadFile(String fileId,String type) throws MalformedURLException {
         FileTargetType fileType = FileTargetType.fromType(type);
         FileAttachment file = fileAttachmentRepository.findByFileIdAndFiletype(fileId,fileType)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."));
@@ -91,7 +92,7 @@ public class FileService {
                 .body(resource);
     }
 
-    public ResponseEntity<Resource> viewMemberImage(String fileId,String type) throws IOException {
+    public ResponseEntity<Resource> viewImage(String fileId,String type) throws IOException {
         FileTargetType fileType = FileTargetType.fromType(type);
         FileAttachment file = fileAttachmentRepository.findByFileIdAndFiletype(fileId,fileType)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."));
@@ -113,6 +114,22 @@ public class FileService {
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
                 .body(resource);
+    }
+
+    public void deleteFile(FileAttachment fileAttachment){
+        try{
+            fileAttachmentRepository.delete(fileAttachment);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+        }
+    }
+
+    public void deleteFile(List<FileAttachment> fileAttachments){
+        try{
+            fileAttachmentRepository.deleteAll(fileAttachments);
+        }catch (Exception e) {
+            log.warn(e.getMessage());
+        }
     }
 
 

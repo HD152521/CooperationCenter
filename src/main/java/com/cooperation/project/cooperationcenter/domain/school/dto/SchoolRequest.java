@@ -29,4 +29,12 @@ public class SchoolRequest {
             String keyword,
             String status
     ){}
+
+    public record BoardIdDto(
+            Long boardId
+    ){}
+
+    public record PostIdDto(
+            Long postId
+    ){}
 }
