@@ -7,8 +7,8 @@ import java.util.Arrays;
 @Getter
 public enum FileTargetType {
     MEMBER("MEMBER","uploads/member/"),
-    SCHOOL("SCHOOL","uploads/survey/"),
-    SURVEY("SURVEY","uploads/school/post/");
+    SCHOOL("SCHOOL","uploads/school/post/"),
+    SURVEY("SURVEY","uploads/survey/");
     private final String fileType;
     private final String filePath;
 

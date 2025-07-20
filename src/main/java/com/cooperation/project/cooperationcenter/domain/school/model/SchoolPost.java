@@ -50,6 +50,10 @@ public class SchoolPost extends BaseEntity {
         this.views++;
     }
 
+    public void addFile(List<FileAttachment> file){
+        this.files.addAll(file);
+    }
+
     @Getter
     public enum PostType {
         NORMAL("NORMAL"),
@@ -74,6 +78,7 @@ public class SchoolPost extends BaseEntity {
                 .content(dto.content())
                 .status(status)
                 .type(postType)
+                .files(new ArrayList<>())
                 .build();
     }
 }

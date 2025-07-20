@@ -38,7 +38,7 @@ public class SchoolAdminRestController {
     public BaseResponse<?> savePost(@ModelAttribute  SchoolRequest.SchoolPostDto request,
                                     @RequestPart(required = false) List<MultipartFile> files){
         log.info("request data:{}",request.toString());
-        schoolService.savePost(request);
+        schoolService.savePost(request,files);
         return BaseResponse.onSuccess("success");
     }
 
