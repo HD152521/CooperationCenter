@@ -61,12 +61,14 @@ public class SchoolBoard extends BaseEntity {
 
     @Getter
     public enum BoardType {
-        INTRO("INTRO"),
-        NOTICE("NOTICE");
+        INTRO("INTRO","/homepage/user/school/introTemplate"),
+        NOTICE("NOTICE","/homepage/user/school/postTemplate");
 
         private final String type;
+        private final String path;
 
-        BoardType(String type) {
+        BoardType(String type, String path) {
+            this.path = path;
             this.type = type;
         }
 

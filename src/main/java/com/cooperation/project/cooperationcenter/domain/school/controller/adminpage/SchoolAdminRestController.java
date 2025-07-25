@@ -55,8 +55,6 @@ public class SchoolAdminRestController {
         return BaseResponse.onSuccess("success");
     }
 
-
-
     @GetMapping("/posts")
     public BaseResponse<?> getPost(@ModelAttribute SchoolRequest.PostDto request,
                                    @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)

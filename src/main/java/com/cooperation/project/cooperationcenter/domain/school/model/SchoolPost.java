@@ -27,6 +27,9 @@ public class SchoolPost extends BaseEntity {
 
     private String postTitle;
     private String description;
+
+    @Lob
+    @Column(columnDefinition = "LONGTEXT") // 또는 "TEXT"
     private String content;
 
     @Enumerated(EnumType.STRING) private PostStatus status;

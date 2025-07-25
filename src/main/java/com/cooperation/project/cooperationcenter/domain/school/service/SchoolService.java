@@ -52,14 +52,15 @@ public class SchoolService {
         SchoolBoard board = schoolFindService.loadBoardById(request.boardId());
         SchoolPost post = SchoolPost.fromDto(request);
         post = schoolPostRepository.save(post);
-        List<FileAttachment> attachments = new ArrayList<>();
-        for(MultipartFile file : files){
-            attachments.add(
-                    fileService.saveFile(new FileAttachmentDto(file,"SCHOOL",post.getId().toString(),null,null)
-                    ))
-            ;
+        if (files != null && !files.isEmpty()) {
+            List<FileAttachment> attachments = new ArrayList<>();
+            for (MultipartFile file : files) {
+                attachments.add(
+                        fileService.saveFile(new FileAttachmentDto(file, "SCHOOL", post.getId().toString(), null, null))
+                );
+            }
+            post.addFile(attachments);
         }
-        post.addFile(attachments);
         board.addPost(schoolPostRepository.save(post));
     }
 

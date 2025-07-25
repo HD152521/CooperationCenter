@@ -5,6 +5,7 @@ import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachmen
 import com.cooperation.project.cooperationcenter.domain.file.model.FileTargetType;
 
 import com.cooperation.project.cooperationcenter.domain.file.repository.FileAttachmentRepository;
+import com.cooperation.project.cooperationcenter.domain.school.model.SchoolPost;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
