@@ -175,5 +175,8 @@ public class SchoolFindService {
         return SchoolResponse.PostFileDto.from(loadFileByPost(postId));
     }
 
+    public SchoolResponse.PostDetailDto getDetailPostDto(Long postId){
+        return new SchoolResponse.PostDetailDto(loadPostByIdByDto(postId),loadPostFileByPost(postId));
+    }
 
 }

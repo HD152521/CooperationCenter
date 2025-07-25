@@ -59,7 +59,7 @@ public class SchoolAdminRestController {
 
     @GetMapping("/post")
     public BaseResponse<?> getPost(@RequestParam Long postId){
-        return BaseResponse.onSuccess(schoolFindService.loadPostByIdByDto(postId));
+        return BaseResponse.onSuccess(schoolFindService.getDetailPostDto(postId));
     }
 
     @PatchMapping("/post")

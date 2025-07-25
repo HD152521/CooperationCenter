@@ -107,4 +107,9 @@ public class SchoolResponse {
             return file.stream().map(PostFileDto::from).collect(Collectors.toList());
         }
     }
+
+    public record PostDetailDto(
+            SchoolPostDto post,
+            List<PostFileDto> file
+    ){}
 }
