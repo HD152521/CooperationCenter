@@ -51,8 +51,8 @@ public class SchoolController {
     @RequestMapping("/{school}/board/{boardId}")
     public String schoolBoard(@PathVariable String school,@PathVariable Long boardId,Model model){
         model.addAttribute("school",school);
-        SchoolBoard board = schoolFindService.loadBoardById(boardId);
-        model.addAttribute("postDto",schoolFindService.loadPostByBoardByDto(board));
+        model.addAttribute("boardId",boardId);
+        model.addAttribute("postDto",schoolFindService.loadPostByBoardByDto(schoolFindService.loadBoardById(boardId)));
         return schoolPath+school+"/postTemplate";
     }
 

@@ -2,6 +2,7 @@ package com.cooperation.project.cooperationcenter.domain.school.controller.admin
 
 
 import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolRequest;
+import com.cooperation.project.cooperationcenter.domain.school.service.SchoolFindService;
 import com.cooperation.project.cooperationcenter.domain.school.service.SchoolService;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import java.util.List;
 public class SchoolAdminRestController {
 
     private final SchoolService schoolService;
+    private final SchoolFindService schoolFindService;
 
     @PostMapping("/save")
     public BaseResponse<?> saveSchool(@RequestBody SchoolRequest.SchoolDto request){
@@ -50,8 +52,20 @@ public class SchoolAdminRestController {
     }
 
     @DeleteMapping("/post")
-    public BaseResponse<?> deleteBoard(@RequestBody SchoolRequest.PostIdDto request){
+    public BaseResponse<?> deletePost(@RequestBody SchoolRequest.PostIdDto request){
         schoolService.deletePost(request);
+        return BaseResponse.onSuccess("success");
+    }
+
+    @GetMapping("/post")
+    public BaseResponse<?> getPost(@RequestParam Long postId){
+        return BaseResponse.onSuccess(schoolFindService.loadPostByIdByDto(postId));
+    }
+
+    @PatchMapping("/post")
+    public BaseResponse<?> editBoard(@ModelAttribute  SchoolRequest.SchoolPostDto request,
+                                     @RequestPart(required = false) List<MultipartFile> files){
+        schoolService.editPost(request,files);
         return BaseResponse.onSuccess("success");
     }
 

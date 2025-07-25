@@ -99,4 +99,12 @@ public class SchoolPost extends BaseEntity {
                 .files(new ArrayList<>())
                 .build();
     }
+
+    public void updateFromDto(SchoolRequest.SchoolPostDto dto) {
+        this.postTitle = dto.title();
+        this.description = dto.description();
+        this.content = dto.content();
+        this.status = PostStatus.from(dto.status());
+        this.type = PostType.from(dto.type());
+    }
 }

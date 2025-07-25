@@ -21,7 +21,8 @@ public class SchoolRequest {
             String description,
             String content,
             String status,
-            String type
+            String type,
+            Long postId
     ){}
 
     public record PostDto(
