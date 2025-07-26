@@ -52,6 +52,29 @@ public class SchoolFindService {
         }
     }
 
+    public SchoolResponse.SchoolDto loadSchoolByEnglishNameByDto(String englishName){
+        try{
+            return SchoolResponse.SchoolDto.from(schoolRepository.findSchoolBySchoolEnglishName(englishName).orElseThrow(
+                    () -> new BaseException(ErrorCode.BAD_REQUEST)
+            ));
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public School loadSchoolByEnglishName(String englishName){
+        log.info("loadEnglishName : {}",englishName);
+        try{
+            return schoolRepository.findSchoolBySchoolEnglishName(englishName).orElseThrow(
+                    () -> new BaseException(ErrorCode.BAD_REQUEST)
+            );
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
     public School loadSchoolById(Long id){
         try{
             return schoolRepository.findSchoolById(id).orElseThrow(() -> new BaseException(ErrorCode.BAD_REQUEST));

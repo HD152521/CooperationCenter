@@ -5,6 +5,7 @@ import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRespons
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.member.repository.MemberRepository;
 import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolResponse;
+import com.cooperation.project.cooperationcenter.domain.school.model.School;
 import com.cooperation.project.cooperationcenter.domain.school.service.SchoolFindService;
 import com.cooperation.project.cooperationcenter.global.exception.BaseException;
 import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
@@ -55,9 +56,16 @@ public class GlobalModelAttributeAdvice {
     }
 
     @ModelAttribute("schoolCategory")
-    public List<SchoolResponse.SchoolDto> addSchoolCatogory() {
-        log.info("cnt:{}",schoolFindService.loadAllSchoolByDto().stream()
-                .count());
+    public List<SchoolResponse.SchoolDto> loadSchoolCatogory() {
         return schoolFindService.loadAllSchoolByDto();
+    }
+
+    @ModelAttribute("schoolBoards")
+    public List<SchoolResponse.SchoolBoardDto> loadSchoolBoards(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        if (!uri.startsWith("/school")) return null;
+        String englishName = request.getRequestURI().split("/")[2];
+        School school = schoolFindService.loadSchoolByEnglishName(englishName);
+        return schoolFindService.loadBoardBySchoolByDto(school);
     }
 }
