@@ -1,5 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.school.service;
 
+import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
+import com.cooperation.project.cooperationcenter.domain.file.repository.FileAttachmentRepository;
 import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolResponse;
 import com.cooperation.project.cooperationcenter.domain.school.model.School;
 import com.cooperation.project.cooperationcenter.domain.school.model.SchoolBoard;
@@ -28,9 +30,11 @@ public class SchoolFindService {
     private final SchoolBoardRepository schoolBoardRepository;
     private final SchoolPostRepository schoolPostRepository;
 
+    private final FileAttachmentRepository fileAttachmentRepository;
+
     public List<SchoolResponse.SchoolDto> loadAllSchoolByDto(){
         try{
-            return schoolRepository.findAll().stream()
+            return loadAllSchool().stream()
                     .map(SchoolResponse.SchoolDto::from)
                     .collect(Collectors.toList());
         }catch(Exception e){
@@ -45,6 +49,29 @@ public class SchoolFindService {
         }catch(Exception e){
             log.warn(e.getMessage());
             return Collections.emptyList();
+        }
+    }
+
+    public SchoolResponse.SchoolDto loadSchoolByEnglishNameByDto(String englishName){
+        try{
+            return SchoolResponse.SchoolDto.from(schoolRepository.findSchoolBySchoolEnglishName(englishName).orElseThrow(
+                    () -> new BaseException(ErrorCode.BAD_REQUEST)
+            ));
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public School loadSchoolByEnglishName(String englishName){
+        log.info("loadEnglishName : {}",englishName);
+        try{
+            return schoolRepository.findSchoolBySchoolEnglishName(englishName).orElseThrow(
+                    () -> new BaseException(ErrorCode.BAD_REQUEST)
+            );
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
         }
     }
 
@@ -89,6 +116,15 @@ public class SchoolFindService {
     public SchoolPost loadPostById(Long postId){
         try{
             return schoolPostRepository.findById(postId).orElseThrow(()-> new BaseException(ErrorCode.BAD_REQUEST));
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public SchoolResponse.SchoolPostDto loadPostByIdByDto(Long postId){
+        try{
+            return SchoolResponse.SchoolPostDto.from(loadPostById(postId));
         }catch(Exception e){
             log.warn(e.getMessage());
             return null;
@@ -141,5 +177,29 @@ public class SchoolFindService {
                 .collect(Collectors.toList());
     }
 
+    public List<FileAttachment> loadFileByPost(SchoolPost schoolPost){
+        try{
+            return fileAttachmentRepository.findFileAttachmentsBySchoolPost(schoolPost);
+        }catch (Exception e){
+            log.warn("post file가져오는데 실패");
+            return Collections.emptyList();
+        }
+    }
+
+    public List<FileAttachment> loadFileByPost(long postId){
+        return loadFileByPost(loadPostById(postId));
+    }
+
+    public List<SchoolResponse.PostFileDto> loadPostFileByPost(SchoolPost schoolPost){
+        return SchoolResponse.PostFileDto.from(loadFileByPost(schoolPost));
+    }
+
+    public List<SchoolResponse.PostFileDto> loadPostFileByPost(Long postId){
+        return SchoolResponse.PostFileDto.from(loadFileByPost(postId));
+    }
+
+    public SchoolResponse.PostDetailDto getDetailPostDto(Long postId){
+        return new SchoolResponse.PostDetailDto(loadPostByIdByDto(postId),loadPostFileByPost(postId));
+    }
 
 }

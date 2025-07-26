@@ -5,13 +5,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,6 +32,12 @@ public class FileRestController {
     public ResponseEntity<Resource> viewImage(@PathVariable String type,@PathVariable String fileId) throws IOException {
         log.info("enter file controller-img");
         return fileService.viewImage(fileId,type);
+    }
+
+    @PostMapping("/{type}")
+    public ResponseEntity<?> saveFile(@PathVariable String type,@RequestParam("file-0") MultipartFile file) throws IOException {
+        log.info("save file");
+        return ResponseEntity.ok(fileService.saveSchoolImgAndReturnUrl(type, file));
     }
 
 }

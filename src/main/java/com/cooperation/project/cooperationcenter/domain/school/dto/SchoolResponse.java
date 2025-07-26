@@ -1,9 +1,11 @@
 package com.cooperation.project.cooperationcenter.domain.school.dto;
 
+import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.school.model.School;
 import com.cooperation.project.cooperationcenter.domain.school.model.SchoolBoard;
 import com.cooperation.project.cooperationcenter.domain.school.model.SchoolPost;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -87,4 +89,27 @@ public class SchoolResponse {
             );
         }
     }
+
+    public record PostFileDto(
+            String name,
+            String url,
+            String fileId
+    ){
+        public static PostFileDto from(FileAttachment file){
+            String url = "/api/v1/file/"+file.getFiletype().getFileType()+"/"+file.getFileId();
+            return new PostFileDto(
+                    file.getOriginalName(),
+                    url,
+                    file.getFileId()
+            );
+        }
+        public static List<PostFileDto> from(List<FileAttachment> file){
+            return file.stream().map(PostFileDto::from).collect(Collectors.toList());
+        }
+    }
+
+    public record PostDetailDto(
+            SchoolPostDto post,
+            List<PostFileDto> file
+    ){}
 }

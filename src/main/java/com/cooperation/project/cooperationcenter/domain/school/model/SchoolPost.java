@@ -27,6 +27,9 @@ public class SchoolPost extends BaseEntity {
 
     private String postTitle;
     private String description;
+
+    @Lob
+    @Column(columnDefinition = "LONGTEXT") // 또는 "TEXT"
     private String content;
 
     @Enumerated(EnumType.STRING) private PostStatus status;
@@ -95,5 +98,13 @@ public class SchoolPost extends BaseEntity {
                 .type(postType)
                 .files(new ArrayList<>())
                 .build();
+    }
+
+    public void updateFromDto(SchoolRequest.SchoolPostDto dto) {
+        this.postTitle = dto.title();
+        this.description = dto.description();
+        this.content = dto.content();
+        this.status = PostStatus.from(dto.status());
+        this.type = PostType.from(dto.type());
     }
 }

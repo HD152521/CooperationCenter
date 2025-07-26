@@ -51,16 +51,36 @@ public class SchoolService {
     public void savePost(SchoolRequest.SchoolPostDto request,List<MultipartFile> files){
         SchoolBoard board = schoolFindService.loadBoardById(request.boardId());
         SchoolPost post = SchoolPost.fromDto(request);
+
         post = schoolPostRepository.save(post);
-        List<FileAttachment> attachments = new ArrayList<>();
-        for(MultipartFile file : files){
-            attachments.add(
-                    fileService.saveFile(new FileAttachmentDto(file,"SCHOOL",post.getId().toString(),null,null)
-                    ))
-            ;
+
+        if (files != null && !files.isEmpty()) {
+            List<FileAttachment> attachments = new ArrayList<>();
+            for (MultipartFile file : files) {
+                attachments.add(
+                        fileService.saveFile(new FileAttachmentDto(file, "SCHOOL", post.getId().toString(), null, null))
+                );
+            }
+            post.addFile(attachments);
         }
-        post.addFile(attachments);
         board.addPost(schoolPostRepository.save(post));
+    }
+
+    @Transactional
+    public void editPost(SchoolRequest.SchoolPostDto request,List<MultipartFile> files){
+        SchoolPost post = schoolFindService.loadPostById(request.postId());
+        post.updateFromDto(request);
+
+        //fixme file 부분 있으면 저장 안해야함 수정하기
+        if (files != null && !files.isEmpty() && (post.getFiles() == null || post.getFiles().isEmpty())) {
+            List<FileAttachment> attachments = new ArrayList<>();
+            for (MultipartFile file : files) {
+                attachments.add(
+                        fileService.saveFile(new FileAttachmentDto(file, "SCHOOL", post.getId().toString(), null, null))
+                );
+            }
+            post.addFile(attachments);
+        }
     }
 
     public Page<SchoolResponse.SchoolPostDto> getPostByPage(SchoolRequest.PostDto request, Pageable pageable){
