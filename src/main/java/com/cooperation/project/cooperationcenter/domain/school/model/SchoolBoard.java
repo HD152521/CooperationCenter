@@ -37,6 +37,9 @@ public class SchoolBoard extends BaseEntity {
     @OneToMany(mappedBy = "schoolBoard")
     private List<SchoolPost> posts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "schoolBoard")
+    private List<IntroPost> introPosts = new ArrayList<>();
+
     public void setSchool(School school){
         this.school = school;
     }
@@ -53,6 +56,10 @@ public class SchoolBoard extends BaseEntity {
 
     public void deletePost(SchoolPost post) {
         posts.remove(post);
+    }
+
+    public void deleteIntroPost(IntroPost post) {
+        introPosts.remove(post);
     }
 
     public void deleteAllPost() {

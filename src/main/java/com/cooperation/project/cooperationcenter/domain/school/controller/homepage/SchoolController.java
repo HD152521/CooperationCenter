@@ -50,10 +50,16 @@ public class SchoolController {
 
     @RequestMapping("/{school}/board/{boardId}")
     public String schoolBoard(@PathVariable String school,@PathVariable Long boardId,Model model){
+
         model.addAttribute("school",school);
         model.addAttribute("boardId",boardId);
-        model.addAttribute("postDto",schoolFindService.loadPostByBoardByDto(schoolFindService.loadBoardById(boardId)));
-        return schoolPath+school+"/postTemplate";
+        SchoolBoard schoolBoard = schoolFindService.loadBoardById(boardId);
+        if(schoolBoard.getType().equals(SchoolBoard.BoardType.NOTICE)) {
+            model.addAttribute("postDto", schoolFindService.loadPostByBoardByDto(schoolBoard));
+            return schoolPath + school + "/postTemplate";
+        }else{
+            return schoolPath + school + "/introductionTemplate";
+        }
     }
 
     @RequestMapping("/{school}/board/{boardId}/post/{postId}")

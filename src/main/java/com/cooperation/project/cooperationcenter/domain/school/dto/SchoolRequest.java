@@ -1,5 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.school.dto;
 
+import com.cooperation.project.cooperationcenter.domain.school.model.IntroPost;
+
 public class SchoolRequest {
     public record SchoolDto(
             String schoolKoreanName,
@@ -38,4 +40,16 @@ public class SchoolRequest {
     public record PostIdDto(
             Long postId
     ){}
+
+    public record IntroDto(
+            String title,
+            String content
+    ){
+        public static IntroDto from(IntroPost introPost){
+            return new IntroDto(
+                    introPost.getTitle(),
+                    introPost.getContent()
+            );
+        }
+    }
 }
