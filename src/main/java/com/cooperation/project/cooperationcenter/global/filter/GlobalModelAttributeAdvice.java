@@ -4,20 +4,28 @@ import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberResponse;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.member.repository.MemberRepository;
+import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolResponse;
+import com.cooperation.project.cooperationcenter.domain.school.service.SchoolFindService;
 import com.cooperation.project.cooperationcenter.global.exception.BaseException;
 import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import java.util.List;
+
 @ControllerAdvice
+@Slf4j
 public class GlobalModelAttributeAdvice {
 
     private final MemberRepository memberRepository;
+    private final SchoolFindService schoolFindService;
 
-    public GlobalModelAttributeAdvice(MemberRepository memberRepository) {
+    public GlobalModelAttributeAdvice(MemberRepository memberRepository,SchoolFindService schoolFindService) {
         this.memberRepository = memberRepository;
+        this.schoolFindService = schoolFindService;
     }
 
     @ModelAttribute("requestURI")
@@ -44,5 +52,12 @@ public class GlobalModelAttributeAdvice {
     public boolean addTokenExpiredFlag(HttpServletRequest request) {
         Object tokenExpired = request.getAttribute("tokenExpired");
         return tokenExpired != null && (boolean) tokenExpired;
+    }
+
+    @ModelAttribute("schoolCategory")
+    public List<SchoolResponse.SchoolDto> addSchoolCatogory() {
+        log.info("cnt:{}",schoolFindService.loadAllSchoolByDto().stream()
+                .count());
+        return schoolFindService.loadAllSchoolByDto();
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriUtils;
 
@@ -24,7 +25,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -131,6 +135,47 @@ public class FileService {
         }catch (Exception e) {
             log.warn(e.getMessage());
         }
+    }
+
+    public  Map<String, Object> saveSchoolImgAndReturnUrl(String type, MultipartFile file){
+        log.info("save image enter...");
+        String path = FileTargetType.SCHOOL.getFilePath()+"img";
+        FileTargetType fileType = FileTargetType.fromType(type);
+        Path uploadDir = Paths.get(System.getProperty("user.dir"), path);
+
+        try {
+            Files.createDirectories(uploadDir); // 경로 없으면 생성
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        FileAttachment attachment = FileAttachment.builder()
+                .path(path)
+                .storedPath(uploadDir)
+                .file(file)
+                .filetype(fileType)
+                .build();
+
+        Path saved = uploadDir.resolve(attachment.getStoredName());
+
+        try {
+            file.transferTo(saved);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        fileAttachmentRepository.save(attachment);
+        String url = "/api/v1/file/img/school/"+attachment.getFileId();
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("result", List.of(Map.of(
+                "url", url,
+                "name", attachment.getOriginalName(),
+                "size", attachment.getSize(),
+                "align", "center",
+                "tag", "img"
+        )));
+        return response;
     }
 
 

@@ -34,7 +34,7 @@ public class SchoolFindService {
 
     public List<SchoolResponse.SchoolDto> loadAllSchoolByDto(){
         try{
-            return schoolRepository.findAll().stream()
+            return loadAllSchool().stream()
                     .map(SchoolResponse.SchoolDto::from)
                     .collect(Collectors.toList());
         }catch(Exception e){
