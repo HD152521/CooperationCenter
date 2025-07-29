@@ -1,6 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.school.dto;
 
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
+import com.cooperation.project.cooperationcenter.domain.school.model.IntroPost;
 import com.cooperation.project.cooperationcenter.domain.school.model.School;
 import com.cooperation.project.cooperationcenter.domain.school.model.SchoolBoard;
 import com.cooperation.project.cooperationcenter.domain.school.model.SchoolPost;
@@ -53,6 +54,7 @@ public class SchoolResponse {
             String status,
             String type,
             LocalDateTime createdAt,
+            Long boardId,
             int views
     ){
         public static SchoolPostDto from(SchoolPost post){
@@ -64,6 +66,7 @@ public class SchoolResponse {
                     post.getStatus().getStatus(),
                     post.getType().getType(),
                     post.getCreatedAt(),
+                    post.getSchoolBoard().getId(),
                     post.getViews()
             );
         }
@@ -75,6 +78,18 @@ public class SchoolResponse {
 
         public static Page<SchoolPostDto> from(Page<SchoolPost> posts){
             return posts.map(SchoolPostDto::from);
+        }
+    }
+
+    public record SchoolPostSimpleDto(
+            String title,
+            Long id
+    ){
+        public static SchoolPostSimpleDto from(SchoolPost post){
+            return new SchoolPostSimpleDto(
+                    post.getPostTitle(),
+                    post.getId()
+            );
         }
     }
 
@@ -110,6 +125,26 @@ public class SchoolResponse {
 
     public record PostDetailDto(
             SchoolPostDto post,
-            List<PostFileDto> file
-    ){}
+            List<PostFileDto> file,
+            SchoolPostSimpleDto beforePost,
+            SchoolPostSimpleDto afterPost
+    ){
+    }
+
+
+    public record IntroDto(
+            String title,
+            String content,
+            Long boardId,
+            Long introId
+    ){
+        public static SchoolResponse.IntroDto from(IntroPost introPost){
+            return new SchoolResponse.IntroDto(
+                    introPost.getTitle(),
+                    introPost.getContent(),
+                    introPost.getSchoolBoard().getId(),
+                    introPost.getId()
+            );
+        }
+    }
 }

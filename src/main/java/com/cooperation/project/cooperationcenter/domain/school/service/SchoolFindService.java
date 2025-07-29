@@ -2,10 +2,13 @@ package com.cooperation.project.cooperationcenter.domain.school.service;
 
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.file.repository.FileAttachmentRepository;
+import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolRequest;
 import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolResponse;
+import com.cooperation.project.cooperationcenter.domain.school.model.IntroPost;
 import com.cooperation.project.cooperationcenter.domain.school.model.School;
 import com.cooperation.project.cooperationcenter.domain.school.model.SchoolBoard;
 import com.cooperation.project.cooperationcenter.domain.school.model.SchoolPost;
+import com.cooperation.project.cooperationcenter.domain.school.repository.IntroPostRepository;
 import com.cooperation.project.cooperationcenter.domain.school.repository.SchoolBoardRepository;
 import com.cooperation.project.cooperationcenter.domain.school.repository.SchoolPostRepository;
 import com.cooperation.project.cooperationcenter.domain.school.repository.SchoolRepository;
@@ -29,6 +32,7 @@ public class SchoolFindService {
     private final SchoolRepository schoolRepository;
     private final SchoolBoardRepository schoolBoardRepository;
     private final SchoolPostRepository schoolPostRepository;
+    private final IntroPostRepository introPostRepository;
 
     private final FileAttachmentRepository fileAttachmentRepository;
 
@@ -170,6 +174,65 @@ public class SchoolFindService {
         }
     }
 
+    public SchoolPost getBeforePostById(Long postId, SchoolBoard board){
+        try{
+            return schoolPostRepository.findTopBySchoolBoardAndIdLessThanOrderByIdDesc(board,postId).orElse(null);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public SchoolPost getAfterPostById(Long postId, SchoolBoard board){
+        try{
+            return schoolPostRepository.findTopBySchoolBoardAndIdGreaterThanOrderByIdAsc(board,postId).orElse(null);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+
+    public IntroPost loadIntroById(Long introId){
+        try{
+            return introPostRepository.findIntroPostById(introId).orElseThrow(
+                    () -> new BaseException(ErrorCode.BAD_REQUEST)
+            );
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public SchoolResponse.IntroDto loadIntroByIdByDto(Long introId){
+        try{
+            return SchoolResponse.IntroDto.from(loadIntroById(introId));
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public IntroPost loadIntroByBoard(SchoolBoard schoolBoard){
+        try{
+            return introPostRepository.findIntroPostsBySchoolBoard(schoolBoard).orElseThrow(
+                    () -> new BaseException(ErrorCode.BAD_REQUEST)
+            );
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public SchoolResponse.IntroDto loadIntroByBoardByDto(SchoolBoard schoolBoard){
+        try{
+            return SchoolResponse.IntroDto.from(loadIntroByBoard(schoolBoard));
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
     public List<SchoolResponse.SchoolPageDto> getSchoolPage(){
         List<School> schools = loadAllSchool();
         return schools.stream()
@@ -199,7 +262,16 @@ public class SchoolFindService {
     }
 
     public SchoolResponse.PostDetailDto getDetailPostDto(Long postId){
-        return new SchoolResponse.PostDetailDto(loadPostByIdByDto(postId),loadPostFileByPost(postId));
+        log.info("enter DetailDto");
+        SchoolResponse.SchoolPostDto schoolPost = loadPostByIdByDto(postId);
+        SchoolBoard schoolBoard = loadBoardById(schoolPost.boardId());
+        SchoolPost beforePost = getBeforePostById(postId,schoolBoard);
+        SchoolPost afterPost = getAfterPostById(postId,schoolBoard);
+
+        return new SchoolResponse.PostDetailDto(schoolPost,
+                loadPostFileByPost(postId),
+                (beforePost==null)? null: SchoolResponse.SchoolPostSimpleDto.from(beforePost),
+                (afterPost==null)? null: SchoolResponse.SchoolPostSimpleDto.from(afterPost));
     }
 
 }

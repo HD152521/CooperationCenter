@@ -51,6 +51,14 @@ public class SchoolAdminRestController {
         return BaseResponse.onSuccess("success");
     }
 
+    @PatchMapping("/post")
+    public BaseResponse<?> editBoard(@ModelAttribute  SchoolRequest.SchoolPostDto request,
+                                     @RequestPart(required = false) List<MultipartFile> files){
+        log.info("schoolpostdto:{}",request.toString());
+        schoolService.editPost(request,files);
+        return BaseResponse.onSuccess("success");
+    }
+
     @DeleteMapping("/post")
     public BaseResponse<?> deletePost(@RequestBody SchoolRequest.PostIdDto request){
         schoolService.deletePost(request);
@@ -60,13 +68,6 @@ public class SchoolAdminRestController {
     @GetMapping("/post")
     public BaseResponse<?> getPost(@RequestParam Long postId){
         return BaseResponse.onSuccess(schoolFindService.getDetailPostDto(postId));
-    }
-
-    @PatchMapping("/post")
-    public BaseResponse<?> editBoard(@ModelAttribute  SchoolRequest.SchoolPostDto request,
-                                     @RequestPart(required = false) List<MultipartFile> files){
-        schoolService.editPost(request,files);
-        return BaseResponse.onSuccess("success");
     }
 
     @GetMapping("/posts")

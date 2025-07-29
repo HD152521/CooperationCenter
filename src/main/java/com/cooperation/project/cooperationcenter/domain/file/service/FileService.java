@@ -76,6 +76,18 @@ public class FileService {
         return fileAttachmentRepository.save(file);
     }
 
+    public FileAttachment loadFileAttachment(String fileId,String type){
+        try{
+            FileTargetType fileType = FileTargetType.fromType(type);
+            return fileAttachmentRepository.findByFileIdAndFiletype(fileId,fileType).orElseThrow(
+                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+            );
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
     public ResponseEntity<Resource> loadFile(String fileId,String type) throws MalformedURLException {
         FileTargetType fileType = FileTargetType.fromType(type);
         FileAttachment file = fileAttachmentRepository.findByFileIdAndFiletype(fileId,fileType)

@@ -1,5 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.school.controller.homepage;
 
+import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolResponse;
 import com.cooperation.project.cooperationcenter.domain.school.model.SchoolBoard;
 import com.cooperation.project.cooperationcenter.domain.school.service.SchoolFindService;
 import lombok.RequiredArgsConstructor;
@@ -50,18 +51,36 @@ public class SchoolController {
 
     @RequestMapping("/{school}/board/{boardId}")
     public String schoolBoard(@PathVariable String school,@PathVariable Long boardId,Model model){
+
         model.addAttribute("school",school);
         model.addAttribute("boardId",boardId);
-        model.addAttribute("postDto",schoolFindService.loadPostByBoardByDto(schoolFindService.loadBoardById(boardId)));
-        return schoolPath+school+"/postTemplate";
+        SchoolBoard schoolBoard = schoolFindService.loadBoardById(boardId);
+        if(schoolBoard.getType().equals(SchoolBoard.BoardType.NOTICE)) {
+            model.addAttribute("postDto", schoolFindService.loadPostByBoardByDto(schoolBoard));
+            return schoolPath + school + "/postTemplate";
+        }else{
+            String content = schoolFindService.loadIntroByBoard(schoolBoard).getContent();
+            log.info("content:{}",content);
+            model.addAttribute("content",content);
+            return schoolPath + school + "/introductionTemplate";
+        }
     }
 
     @RequestMapping("/{school}/board/{boardId}/post/{postId}")
     public String schoolpostDeatil(@PathVariable String school,@PathVariable Long boardId,@PathVariable Long postId,Model model){
         model.addAttribute("school",school);
-        model.addAttribute("postDto",schoolFindService.loadPostByIdByDto(postId));
         model.addAttribute("boardId",boardId);
-        model.addAttribute("fileDtos",schoolFindService.loadPostFileByPost(postId));
+        SchoolResponse.PostDetailDto postDetailDto =schoolFindService.getDetailPostDto(postId);
+        log.info("postDetail:{}",postDetailDto);
+        model.addAttribute("postDto",postDetailDto);
         return schoolPath+school+"/postDetailTemplate";
     }
+
+    /*
+    fixme
+     public String sanitize(String html) {
+       return Jsoup.clean(html, Safelist.basicWithImages());
+     }
+        Safelist.basicWithImages() => 태그들 자동 무해화하기
+     */
 }
