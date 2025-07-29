@@ -73,6 +73,7 @@ public class SchoolController {
         SchoolResponse.PostDetailDto postDetailDto =schoolFindService.getDetailPostDto(postId);
         log.info("postDetail:{}",postDetailDto);
         model.addAttribute("postDto",postDetailDto);
+
         return schoolPath+school+"/postDetailTemplate";
     }
 

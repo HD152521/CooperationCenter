@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -261,17 +262,25 @@ public class SchoolFindService {
         return SchoolResponse.PostFileDto.from(loadFileByPost(postId));
     }
 
+    @Transactional
     public SchoolResponse.PostDetailDto getDetailPostDto(Long postId){
         log.info("enter DetailDto");
-        SchoolResponse.SchoolPostDto schoolPost = loadPostByIdByDto(postId);
-        SchoolBoard schoolBoard = loadBoardById(schoolPost.boardId());
+        increasePostView(postId);
+        SchoolPost schoolPost = loadPostById(postId);
+        SchoolResponse.SchoolPostDto dto = SchoolResponse.SchoolPostDto.from(schoolPost);
+        SchoolBoard schoolBoard = schoolPost.getSchoolBoard();
         SchoolPost beforePost = getBeforePostById(postId,schoolBoard);
         SchoolPost afterPost = getAfterPostById(postId,schoolBoard);
 
-        return new SchoolResponse.PostDetailDto(schoolPost,
+        return new SchoolResponse.PostDetailDto(dto,
                 loadPostFileByPost(postId),
                 (beforePost==null)? null: SchoolResponse.SchoolPostSimpleDto.from(beforePost),
                 (afterPost==null)? null: SchoolResponse.SchoolPostSimpleDto.from(afterPost));
+    }
+
+    @Transactional
+    public void increasePostView(Long postId) {
+        schoolPostRepository.incrementViewCount(postId); // 방법 1 사용
     }
 
 }
