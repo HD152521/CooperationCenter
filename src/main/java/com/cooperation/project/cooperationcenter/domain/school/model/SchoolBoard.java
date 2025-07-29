@@ -37,8 +37,9 @@ public class SchoolBoard extends BaseEntity {
     @OneToMany(mappedBy = "schoolBoard")
     private List<SchoolPost> posts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "schoolBoard")
-    private List<IntroPost> introPosts = new ArrayList<>();
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "intro_post_id")
+    private IntroPost introPost;
 
     public void setSchool(School school){
         this.school = school;
@@ -58,8 +59,12 @@ public class SchoolBoard extends BaseEntity {
         posts.remove(post);
     }
 
+    public void setIntroPost(IntroPost introPost) {
+        this.introPost = introPost;
+    }
+
     public void deleteIntroPost(IntroPost post) {
-        introPosts.remove(post);
+        this.introPost=null;
     }
 
     public void deleteAllPost() {

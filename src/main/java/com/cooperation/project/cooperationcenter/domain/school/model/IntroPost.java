@@ -30,11 +30,10 @@ public class IntroPost extends BaseEntity {
     private String content;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "school_board")
+    @OneToOne(mappedBy = "introPost") // 주인 아님
     private SchoolBoard schoolBoard;
 
-    @OneToMany(mappedBy = "schoolPost")
+    @OneToMany(mappedBy = "introPost")
     private List<FileAttachment> files = new ArrayList<>();
 
     public void setBoard(SchoolBoard board){
@@ -45,9 +44,9 @@ public class IntroPost extends BaseEntity {
         this.schoolBoard.deleteIntroPost(this);
     }
 
-    public static SchoolPost fromDto(SchoolRequest.IntroDto dto){
-        return SchoolPost.builder()
-                .postTitle(dto.title())
+    public static IntroPost fromDto(SchoolRequest.IntroDto dto){
+        return IntroPost.builder()
+                .title(dto.title())
                 .content(dto.content())
                 .files(new ArrayList<>())
                 .build();

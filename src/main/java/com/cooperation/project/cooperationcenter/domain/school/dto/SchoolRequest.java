@@ -2,6 +2,8 @@ package com.cooperation.project.cooperationcenter.domain.school.dto;
 
 import com.cooperation.project.cooperationcenter.domain.school.model.IntroPost;
 
+import java.util.List;
+
 public class SchoolRequest {
     public record SchoolDto(
             String schoolKoreanName,
@@ -24,7 +26,8 @@ public class SchoolRequest {
             String content,
             String status,
             String type,
-            Long postId
+            Long postId,
+            List<String> deleteFileIds
     ){}
 
     public record PostDto(
@@ -42,14 +45,9 @@ public class SchoolRequest {
     ){}
 
     public record IntroDto(
+            Long introId,
             String title,
-            String content
-    ){
-        public static IntroDto from(IntroPost introPost){
-            return new IntroDto(
-                    introPost.getTitle(),
-                    introPost.getContent()
-            );
-        }
-    }
+            String content,
+            Long boardId
+    ){}
 }

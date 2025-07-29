@@ -1,5 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.file.model;
 
+import com.cooperation.project.cooperationcenter.domain.school.model.IntroPost;
 import com.cooperation.project.cooperationcenter.domain.school.model.SchoolPost;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -38,6 +39,10 @@ public class FileAttachment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "school_post_id", nullable = true)
     private SchoolPost schoolPost;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "intro_post_id", nullable = true)
+    private IntroPost introPost;
 
     public void addPost(SchoolPost schoolPost) {
         this.schoolPost = schoolPost;

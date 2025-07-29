@@ -14,4 +14,6 @@ public interface SchoolPostRepository extends JpaRepository<SchoolPost,Long> {
     Page<SchoolPost> findBySchoolBoard(SchoolBoard schoolBoard, Pageable pageable);
     @Override
     Optional<SchoolPost> findById(Long id);
+    Optional<SchoolPost> findTopBySchoolBoardAndIdLessThanOrderByIdDesc(SchoolBoard schoolBoard, Long id); // 이전 글
+    Optional<SchoolPost> findTopBySchoolBoardAndIdGreaterThanOrderByIdAsc(SchoolBoard schoolBoard, Long id); // 다음 글
 }
