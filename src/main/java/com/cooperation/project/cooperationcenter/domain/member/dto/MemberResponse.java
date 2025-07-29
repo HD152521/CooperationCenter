@@ -1,5 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.member.dto;
 
+import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.global.token.vo.TokenResponse;
 import org.springframework.data.domain.Page;
@@ -92,9 +93,18 @@ public class MemberResponse {
             String address,
             String businessCertificationURl,
             String agencyTel,
-            String agencyAddress
+            String agencyAddress,
+            String businessCertificationType
     ){
         public static DetailDto from(Member member){
+            FileAttachment file = member.getBusinessCertificate();
+            String type=null;
+            String url = "/api/v1/file/";
+            if(file.getType()!=null){
+                type = file.getType().toString();
+                if(type.equals(FileAttachment.ContentType.IMG.getType())) url+="img/";
+            }
+            url+="member/"+member.getBusinessCertificate().getFileId();
             return new DetailDto(
                     member.getAgencyName(),
                     member.getEmail(),
@@ -103,9 +113,10 @@ public class MemberResponse {
                     member.getPhoneNumber(),
                     member.getMemberName(),
                     member.getAddress1(),
-                    "/api/v1/file/img/member/"+member.getBusinessCertificate().getFileId(),
+                    url,
                     member.getAgencyPhone(),
-                    member.getAgencyAddress1()
+                    member.getAgencyAddress1(),
+                    type
             );
         }
     }

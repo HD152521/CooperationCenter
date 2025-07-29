@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.UUID;
 
 @Getter
@@ -35,6 +36,7 @@ public class FileAttachment extends BaseEntity {
 
     @Transient private Path storedPath;
     @Enumerated(EnumType.STRING) private FileTargetType filetype;
+    @Enumerated(EnumType.STRING) private ContentType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "school_post_id", nullable = true)
@@ -43,6 +45,28 @@ public class FileAttachment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "intro_post_id", nullable = true)
     private IntroPost introPost;
+
+
+
+    @Getter
+    public enum ContentType{
+        IMG("IMG"),
+        FILE("FILE");
+
+        private final String type;
+
+        ContentType(String type){
+            this.type = type;
+        }
+
+        public static ContentType fromType(String fileType){
+            return Arrays.stream(ContentType.values())
+                    .filter(type -> type.getType().equalsIgnoreCase(fileType))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Unknown fileType: " + fileType));
+        }
+
+    }
 
     public void addPost(SchoolPost schoolPost) {
         this.schoolPost = schoolPost;
@@ -58,5 +82,13 @@ public class FileAttachment extends BaseEntity {
         this.size = file.getSize(); //byte 단위임 -> kb하려면 /1024
         this.storedPath = storedPath;
         this.filetype = filetype;
+
+        String contentType = file.getContentType();
+        if (contentType != null && contentType.startsWith("image/")) {
+            this.type = ContentType.IMG;
+        }else{
+            this.type = ContentType.FILE;
+        }
+
     }
 }
