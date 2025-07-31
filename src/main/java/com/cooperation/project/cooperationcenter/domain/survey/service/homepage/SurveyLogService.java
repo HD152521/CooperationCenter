@@ -15,9 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,12 +46,18 @@ public class SurveyLogService {
         return AnswerResponse.AnswerDto.from(survey,logs);
     }
 
-    public AnswerResponse.AnswerLogDto getAnswerLogDetail(String surveyId, String logId){
+    public AnswerResponse.AnswerLogDto getAnswerLogDetail(String logId){
         //Note 질문이랑 답변 문항들 RESPONSE로 보내야함
-        Survey survey = surveyFindService.getSurveyFromId(surveyId);
         SurveyLog surveyLog = surveyFindService.getSurveyLog(logId);
+        Survey survey = surveyLog.getSurvey();
         List<Answer> answers = surveyFindService.getAnswer(surveyLog);
+//        List<Answer> response = new ArrayList<>();
+//        for(int i=0,cnt=1;i<answers.size();cnt++){
+//            if(answers.get(i).getQuestionId()==cnt) response.add(answers.get(i++));
+//            else response.add(null);
+//        }
         log.info("log Detail 조회 완료");
+//        log.info("answer : {}",response.toString());
         return AnswerResponse.AnswerLogDto.from(survey,surveyLog,answers);
     }
 
@@ -81,17 +85,27 @@ public class SurveyLogService {
         int i=1;
         for(SurveyLog log : logs){
             List<Answer> answers = surveyFindService.getAnswer(log);
-            List<String> answerTexts = answers.stream()
-                    .map(a ->{
-                                if(QuestionType.isFile(a.getAnswerType())){
-                                    return "\"=HYPERLINK(\"\""+origin+a.getAnswer().split("_")[0]+"\"\")\"";
-                                }else if(QuestionType.checkType(a.getAnswerType())){
-                                    return toCsvSafe(surveyFindService.getAnswerFromMultiple(a));
-                                }else{
-                                    return a.getAnswer();
-                                }
-                    })
-                    .toList();
+
+            Map<Integer, Answer> answerMap = new TreeMap<>();
+            for (Answer answer : answers) {
+                answerMap.put(answer.getQuestionId(), answer);
+            }
+
+            int maxQuestionId = questions.size();
+
+            List<String> answerTexts = new ArrayList<>(maxQuestionId);
+            for (int j = 1; j <= maxQuestionId; j++) {
+                Answer a = answerMap.get(j);
+                if (a == null) {
+                    answerTexts.add(""); // 빈 칸 처리
+                } else if (QuestionType.isFile(a.getAnswerType())) {
+                    answerTexts.add("\"=HYPERLINK(\"\"" + origin + a.getAnswer().split("_")[0] + "\"\")\"");
+                } else if (QuestionType.checkType(a.getAnswerType())) {
+                    answerTexts.add(toCsvSafe(surveyFindService.getAnswerFromMultiple(a)));
+                } else {
+                    answerTexts.add(a.getAnswer());
+                }
+            }
             String AnswerLine = (i++)+","+String.join(",", answerTexts);
             AnswerLine+="\n";
             System.out.println(AnswerLine);
@@ -133,18 +147,40 @@ public class SurveyLogService {
 
         int i=1;
         for(SurveyLog log : logs){
+//            List<Answer> answers = surveyFindService.getAnswer(log);
+//            List<String> answerTexts = answers.stream()
+//                    .map(a ->{
+//                        if(QuestionType.isFile(a.getAnswerType())){
+//                            return "\"=HYPERLINK(\"\""+origin+a.getAnswer().split("_")[0]+"\"\")\"";
+//                        }else if(QuestionType.checkType(a.getAnswerType())){
+//                            return toCsvSafe(surveyFindService.getAnswerFromMultiple(a));
+//                        }else{
+//                            return a.getAnswer();
+//                        }
+//                    })
+//                    .toList();
             List<Answer> answers = surveyFindService.getAnswer(log);
-            List<String> answerTexts = answers.stream()
-                    .map(a ->{
-                        if(QuestionType.isFile(a.getAnswerType())){
-                            return "\"=HYPERLINK(\"\""+origin+a.getAnswer().split("_")[0]+"\"\")\"";
-                        }else if(QuestionType.checkType(a.getAnswerType())){
-                            return toCsvSafe(surveyFindService.getAnswerFromMultiple(a));
-                        }else{
-                            return a.getAnswer();
-                        }
-                    })
-                    .toList();
+
+            Map<Integer, Answer> answerMap = new TreeMap<>();
+            for (Answer answer : answers) {
+                answerMap.put(answer.getQuestionId(), answer);
+            }
+
+            int maxQuestionId = questions.size();
+
+            List<String> answerTexts = new ArrayList<>(maxQuestionId);
+            for (int j = 1; j <= maxQuestionId; j++) {
+                Answer a = answerMap.get(j);
+                if (a == null) {
+                    answerTexts.add(""); // 빈 칸 처리
+                } else if (QuestionType.isFile(a.getAnswerType())) {
+                    answerTexts.add("\"=HYPERLINK(\"\"" + origin + a.getAnswer().split("_")[0] + "\"\")\"");
+                } else if (QuestionType.checkType(a.getAnswerType())) {
+                    answerTexts.add(toCsvSafe(surveyFindService.getAnswerFromMultiple(a)));
+                } else {
+                    answerTexts.add(a.getAnswer());
+                }
+            }
             String AnswerLine = (i++)+","+String.join(",", answerTexts);
             AnswerLine+="\n";
             System.out.println(AnswerLine);

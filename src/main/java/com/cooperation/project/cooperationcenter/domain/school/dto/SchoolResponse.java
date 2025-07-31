@@ -55,7 +55,8 @@ public class SchoolResponse {
             String type,
             LocalDateTime createdAt,
             Long boardId,
-            int views
+            int views,
+            boolean isFile
     ){
         public static SchoolPostDto from(SchoolPost post){
             return new SchoolPostDto(
@@ -67,7 +68,8 @@ public class SchoolResponse {
                     post.getType().getType(),
                     post.getCreatedAt(),
                     post.getSchoolBoard().getId(),
-                    post.getViews()
+                    post.getViews(),
+                    !post.getFiles().isEmpty()
             );
         }
         public static List<SchoolPostDto> from(List<SchoolPost> posts){

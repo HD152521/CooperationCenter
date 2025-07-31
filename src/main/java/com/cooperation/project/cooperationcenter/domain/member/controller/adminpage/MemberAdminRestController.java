@@ -1,18 +1,13 @@
-package com.cooperation.project.cooperationcenter.domain.member.controller;
+package com.cooperation.project.cooperationcenter.domain.member.controller.adminpage;
 
-import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
-import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.member.service.MemberService;
-import com.cooperation.project.cooperationcenter.global.exception.BaseException;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

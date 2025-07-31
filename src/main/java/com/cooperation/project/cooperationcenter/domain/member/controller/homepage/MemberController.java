@@ -1,4 +1,4 @@
-package com.cooperation.project.cooperationcenter.domain.member.controller;
+package com.cooperation.project.cooperationcenter.domain.member.controller.homepage;
 
 
 import lombok.RequiredArgsConstructor;
@@ -23,4 +23,6 @@ public class MemberController {
     public String login(){
         return memberPath+"/login";
     }
+
+
 }
