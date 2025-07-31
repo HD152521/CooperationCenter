@@ -12,6 +12,7 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,6 +36,26 @@ public class Survey extends BaseEntity {
     private LocalDate startDate;
     private LocalDate endDate;
     private int copyCnt;
+    private boolean share;
+    @Enumerated(EnumType.STRING) private SurveyType surveyType;
+
+    @Getter
+    public enum SurveyType{
+        NORMAL("NORMAL"),
+        STUDENT("STUDENT"),
+        INVOICE("INVOICE");
+
+        private final String type;
+
+        SurveyType(String type){this.type = type;}
+
+        public static SurveyType getSruveyType(String type){
+            return Arrays.stream(SurveyType.values())
+                    .filter(t -> t.getType().equalsIgnoreCase(type))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid board type: " + type));
+        }
+    }
 
     @OneToMany(mappedBy = "survey")
     private final List<Question> questions = new ArrayList<>();
@@ -47,7 +68,7 @@ public class Survey extends BaseEntity {
 
 
     @Builder
-    public Survey(String surveyTitle,String surveyDescription,String owner,LocalDate startDate, LocalDate endDate){
+    public Survey(String surveyTitle,String surveyDescription,String owner,LocalDate startDate, LocalDate endDate,SurveyType surveyType){
         this.surveyDescription = surveyDescription;
         this.surveyTitle = surveyTitle;
         this.participantCount = 0;
@@ -55,6 +76,7 @@ public class Survey extends BaseEntity {
         this.startDate = startDate;
         this.endDate = endDate;
         this.surveyId = UUID.randomUUID().toString();
+        this.surveyType = surveyType;
         this.copyCnt = 0;
     }
 
@@ -101,6 +123,7 @@ public class Survey extends BaseEntity {
         this.surveyTitle = dto.title();
         this.startDate = dto.startDate();
         this.endDate = dto.endDate();
+        this.surveyType = SurveyType.getSruveyType(dto.type());
     }
 
     @Override

@@ -17,14 +17,17 @@ public class SurveyRequest {
             String title,
             List<QuestionDto> questions,
             LocalDate startDate,
-            LocalDate endDate
+            LocalDate endDate,
+            String type
     ){
         public static Survey toEntity(SurveyDto request){
+            Survey.SurveyType type = Survey.SurveyType.getSruveyType(request.type());
             return Survey.builder()
                     .surveyTitle(request.title)
                     .surveyDescription(request.description)
                     .startDate(request.startDate)
                     .endDate(request.endDate)
+                    .surveyType(type)
                     .build();
         }
     }

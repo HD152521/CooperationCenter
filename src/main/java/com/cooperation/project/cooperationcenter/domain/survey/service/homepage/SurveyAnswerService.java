@@ -60,9 +60,8 @@ public class SurveyAnswerService {
 //        if(checkDate(survey)) throw new BaseException(ErrorCode.SURVEY_DATE_NOT_VALID);
         log.info("checkDate:{}",checkDate(survey));
         survey.setParticipantCount();
-        //fixme 추후 예정
-        Member member = memberRepository.findMemberByEmail(memberDetails.getUsername()).get();
 
+        Member member = memberRepository.findMemberByEmail(memberDetails.getUsername()).get();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime dateTime = LocalDateTime.parse(requestDto.startTime(), formatter);
 
@@ -76,10 +75,8 @@ public class SurveyAnswerService {
         //답변 로그를 저장하고 -> 문항들 저장
         List<Answer> savedAnswer = saveAnswer(requestDto,multipartRequest,surveyLog);
         surveyLog.addAnswer(savedAnswer);
-        log.info("답변 저장 완료");
         surveyRepository.save(survey);
         surveyLogRepository.save(surveyLog);
-        log.info("➡️survey 답변 완료!");
     }
 
     public boolean checkDate(Survey survey){

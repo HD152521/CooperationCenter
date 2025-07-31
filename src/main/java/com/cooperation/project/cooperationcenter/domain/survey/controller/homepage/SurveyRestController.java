@@ -97,4 +97,9 @@ public class SurveyRestController {
         log.info("extracy all csv...");
         return surveyLogService.extractAllCsv(surveyId);
     }
+
+    @GetMapping("/template/student")
+    public BaseResponse<?> getStudentTemplate(){
+        return BaseResponse.onSuccess("success");
+    }
 }

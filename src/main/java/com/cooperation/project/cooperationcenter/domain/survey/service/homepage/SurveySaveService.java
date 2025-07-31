@@ -237,6 +237,7 @@ public class SurveySaveService {
                 .owner(original.getOwner())
                 .startDate(original.getStartDate())
                 .endDate(original.getEndDate())
+                .surveyType(original.getSurveyType())
                 .build();
         surveyRepository.save(copy);
 
@@ -265,6 +266,10 @@ public class SurveySaveService {
         }
 
         return copy;
+    }
+
+    public void getStudentTemplate(){
+
     }
 
 }
