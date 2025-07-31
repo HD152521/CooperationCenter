@@ -54,6 +54,9 @@ public class SecurityConfig {
                                         "/member/login","/member/logout", "/admin/login","/agency/list").permitAll()
                                 .requestMatchers("/api/v1/member/**","/api/v1/file/img/**").permitAll()
 
+                                //note 로그인한 사용자
+                                .requestMatchers("/survey/log/detail/**").authenticated()
+
                                 //note admin 페이지
                                 .requestMatchers("/admin/login").permitAll()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")

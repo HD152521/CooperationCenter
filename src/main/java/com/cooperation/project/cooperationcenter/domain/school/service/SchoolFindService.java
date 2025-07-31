@@ -165,6 +165,16 @@ public class SchoolFindService {
         }
     }
 
+    public Page<SchoolResponse.SchoolPostDto> loadPostByBoardByDto(SchoolBoard board,Pageable pageable){
+        try{
+            return schoolPostRepository.findPostsByBoardOrderByNoticeFirst(board.getId(),pageable)
+                    .map(SchoolResponse.SchoolPostDto::from);
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return Page.empty();
+        }
+    }
+
     public Page<SchoolResponse.SchoolPostDto> loadPostPageByBoardByDto(SchoolBoard board,Pageable pageable){
         try{
             return loadPostByPage(board,pageable)

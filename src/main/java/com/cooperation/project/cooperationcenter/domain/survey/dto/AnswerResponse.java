@@ -147,9 +147,6 @@ public class AnswerResponse {
             LogDto logDto
     ){
         public static AnswerLogDto from(Survey survey, SurveyLog surveyLog,List<Answer> answers){
-            for(Answer a : answers){
-                log.info(a.getAnswer());
-            }
             return new AnswerLogDto(
                     survey.getSurveyId(),
                     survey.getSurveyTitle(),
@@ -164,7 +161,8 @@ public class AnswerResponse {
 
     public record AnswerDetailDto(
             String type,
-            String answer
+            String answer,
+            int questionId
     ){
         public static List<AnswerDetailDto> from(List<Answer> answers){
             List<AnswerDetailDto> response = new ArrayList<>();
@@ -173,9 +171,11 @@ public class AnswerResponse {
         }
 
         public static AnswerDetailDto from(Answer answer){
+            if(answer == null) return null;
             return new AnswerDetailDto(
                 answer.getAnswerType().getType(),
-                    answer.getAnswer()
+                    answer.getAnswer(),
+                    answer.getQuestionId()
             );
         }
     }

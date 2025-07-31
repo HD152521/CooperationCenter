@@ -2,21 +2,21 @@ package com.cooperation.project.cooperationcenter.domain.survey.controller.homep
 
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.*;
-import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveyAnswerService;
-import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveyFindService;
-import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveyLogService;
-import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveySaveService;
+import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.*;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.zxing.WriterException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -29,6 +29,7 @@ public class SurveyRestController {
     private final SurveyFindService surveyFindService;
     private final SurveyAnswerService surveyAnswerService;
     private final SurveyLogService surveyLogService;
+    private final SurveyQRService surveyQRService;
 
     @GetMapping("/{surveyId}")
     public AnswerPageDto getSurvey(@PathVariable String surveyId){
@@ -96,5 +97,14 @@ public class SurveyRestController {
     public ResponseEntity<Resource> extractCsv(@PathVariable String surveyId){
         log.info("extracy all csv...");
         return surveyLogService.extractAllCsv(surveyId);
+    }
+
+    @GetMapping("/qr")
+    public Object cerateQR(@RequestParam String url,HttpServletRequest request) throws WriterException, IOException {
+        log.info("url:{}",url);
+        Object Qr = surveyQRService.cerateQR(url,request);
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_PNG)
+                .body(Qr);
     }
 }
