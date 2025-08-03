@@ -12,6 +12,7 @@ import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -38,7 +39,10 @@ public class Member extends BaseEntity {
     @NotNull private String phoneNumber;
     @NotNull private String address1;
     @NotNull private String address2;
+    @NotNull private LocalDate birth;
+//    @Column(nullable = true) private LocalDate birth;
 
+    @NotNull private String agencyOwner;
     @NotNull private String agencyName;
     @NotNull private String agencyAddress1;
     @NotNull private String agencyAddress2;
@@ -119,7 +123,8 @@ public class Member extends BaseEntity {
                 .agencyPicture(agencyPicture)
                 .businessCertificate(businessCertificate)
                 .agencyPhone(dto.agencyPhone())
-
+                .birth(LocalDate.parse(dto.birth()))
+                .agencyOwner(dto.agencyOwner())
                 .memberId(uuid)
                 .role(Role.USER) // 기본값
                 .approvalSignup(false) // 가입 승인 대기 상태

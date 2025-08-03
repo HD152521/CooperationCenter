@@ -75,7 +75,7 @@ public class SurveyController {
         return surveyPath+"/survey-make";
     }
 
-    @RequestMapping("/log/{surveyId}")
+    @RequestMapping("/log/list/{surveyId}")
     public String getSurveyLog(@PathVariable String surveyId,Model model,
                                @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
                                Pageable pageable){
@@ -83,12 +83,14 @@ public class SurveyController {
         return surveyPath+"/survey-answer-log";
     }
 
-    @RequestMapping("/log/{surveyId}/{logId}")
-    public String getSurveyLog(@PathVariable String surveyId,@PathVariable String logId,Model model){
-        model.addAttribute("answerLog",surveyLogService.getAnswerLogDetail(surveyId,logId));
-        AnswerResponse.AnswerLogDto response = surveyLogService.getAnswerLogDetail(surveyId,logId);
+    @RequestMapping("/log/detail/{logId}")
+    public String getSurveyLog(@PathVariable String logId,Model model,Authentication authentication){
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+        model.addAttribute("answerLog",surveyLogService.getAnswerLogDetail(logId));
+        model.addAttribute("isAdmin",isAdmin);
+        AnswerResponse.AnswerLogDto response = surveyLogService.getAnswerLogDetail(logId);
         log.info("{}",response.toString());
         return surveyPath+"/survey-answer-detail";
     }
-
 }

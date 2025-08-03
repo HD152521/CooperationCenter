@@ -5,6 +5,9 @@ import com.cooperation.project.cooperationcenter.domain.school.model.SchoolBoard
 import com.cooperation.project.cooperationcenter.domain.school.service.SchoolFindService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,13 +53,15 @@ public class SchoolController {
     }
 
     @RequestMapping("/{school}/board/{boardId}")
-    public String schoolBoard(@PathVariable String school,@PathVariable Long boardId,Model model){
-
+    public String schoolBoard(@PathVariable String school, @PathVariable Long boardId, Model model,
+                              @PageableDefault(size = 9, sort = "createdAt", direction = Sort.Direction.DESC)
+                              Pageable pageable){
         model.addAttribute("school",school);
         model.addAttribute("boardId",boardId);
         SchoolBoard schoolBoard = schoolFindService.loadBoardById(boardId);
         if(schoolBoard.getType().equals(SchoolBoard.BoardType.NOTICE)) {
-            model.addAttribute("postDto", schoolFindService.loadPostByBoardByDto(schoolBoard));
+//            model.addAttribute("postDto", schoolFindService.loadPostByBoardByDto(schoolBoard));
+            model.addAttribute("postDto", schoolFindService.loadPostByBoardByDto(schoolBoard,pageable));
             return schoolPath + school + "/postTemplate";
         }else{
             String content = schoolFindService.loadIntroByBoard(schoolBoard).getContent();

@@ -108,13 +108,13 @@ public class SurveyAnswerService {
         }
         if (QuestionType.checkType(questionType)) {
             //옵션 질문들
-            return Answer.builder()
-                    .surveyLog(surveyLog)
-                    .answerType(questionType)
-                    .questionId(answer.questionId())
-                    .questionRealId(answer.questionRealId())
-                    .multiAnswer(answer.answer().toString())
-                    .build();
+                return Answer.builder()
+                        .surveyLog(surveyLog)
+                        .answerType(questionType)
+                        .questionId(answer.questionId())
+                        .questionRealId(answer.questionRealId())
+                        .multiAnswer(answer.answer().toString())
+                        .build();
         }else if(QuestionType.isDate(questionType)){
             LocalDateTime dateTime = LocalDate.parse((String)answer.answer()).atStartOfDay();
             return Answer.builder()

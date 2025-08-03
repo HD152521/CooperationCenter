@@ -50,7 +50,7 @@ public class Agency extends BaseEntity {
                 .agencyAddress2(member.getAgencyAddress2())
                 .agencyPicture(file)
                 .agencyPhone(member.getAgencyPhone())
-                .agencyOwner(member.getMemberName())
+                .agencyOwner(member.getAgencyOwner())
                 .member(member)
                 .build();
     }

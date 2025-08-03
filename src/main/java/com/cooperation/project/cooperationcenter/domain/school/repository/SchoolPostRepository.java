@@ -23,4 +23,13 @@ public interface SchoolPostRepository extends JpaRepository<SchoolPost,Long> {
     @Modifying
     @Query("UPDATE SchoolPost p SET p.views = p.views + 1 WHERE p.id = :postId")
     void incrementViewCount(@Param("postId") Long postId);
+
+    @Query("""
+        SELECT p FROM SchoolPost p
+        WHERE p.schoolBoard.id = :boardId
+        ORDER BY 
+            CASE WHEN p.type = com.cooperation.project.cooperationcenter.domain.school.model.SchoolPost.PostType.NOTICE THEN 0 ELSE 1 END,
+            p.createdAt DESC
+    """)
+    Page<SchoolPost> findPostsByBoardOrderByNoticeFirst(@Param("boardId") Long boardId, Pageable pageable);
 }

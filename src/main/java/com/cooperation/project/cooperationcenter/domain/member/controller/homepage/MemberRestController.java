@@ -1,7 +1,6 @@
-package com.cooperation.project.cooperationcenter.domain.member.controller;
+package com.cooperation.project.cooperationcenter.domain.member.controller.homepage;
 
 
-import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
 import com.cooperation.project.cooperationcenter.domain.member.service.MemberService;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
@@ -14,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
