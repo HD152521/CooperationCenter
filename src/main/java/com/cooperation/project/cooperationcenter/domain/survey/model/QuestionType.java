@@ -12,7 +12,7 @@ public enum QuestionType {
     DROPDOWN("DROPDOWN"),
     DATE("DATE"),
     FILE("FILE"),
-    IMAGE("IMAGE"),;
+    IMAGE("IMAGE");
 
     private final String type;
 

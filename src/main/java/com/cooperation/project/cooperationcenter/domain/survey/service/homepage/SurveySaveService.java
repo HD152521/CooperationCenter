@@ -98,6 +98,8 @@ public class SurveySaveService {
                     question.setQuestionType(questionType);
                     question.setOption(QuestionType.checkType(questionType));
                     question.setQuestionOrder(i++);
+                    question.setTemplate(dto.isTemplate());
+                    question.setDomainField(dto.domainField());
                     questions.add(question);
 
                     survey.removeQuestion(question);
@@ -113,6 +115,8 @@ public class SurveySaveService {
                     .survey(survey)
                     .question(HtmlUtils.htmlEscape(dto.question()))
                     .questionOrder(i++)
+                    .template(dto.isTemplate())
+                    .domainField(dto.domainField())
 
                     .build();
             questions.add(question);
@@ -187,8 +191,9 @@ public class SurveySaveService {
                             q.getQuestion(),
                             q.getQuestionDescription(),
                             OptionDto.to(q.getOptions()),
-                            q.getQuestionOrder()
-
+                            q.getQuestionOrder(),
+                            q.isTemplate(),
+                            q.getDomainField()
                     )
             );
         }
@@ -251,6 +256,8 @@ public class SurveySaveService {
                     .isNecessary(originalQ.isNecessary())
                     .question(originalQ.getQuestion())
                     .survey(copy)
+                    .domainField(originalQ.getDomainField())
+                    .template(originalQ.isTemplate())
                     .build();
             questionRepository.save(newQ);
 
@@ -268,8 +275,32 @@ public class SurveySaveService {
         return copy;
     }
 
-    public void getStudentTemplate(){
+    public List<QuestionDto> getTemplate(String type){
+        Survey.SurveyType surveyType = Survey.SurveyType.getSruveyType(type);
+        if(surveyType.equals(Survey.SurveyType.STUDENT)){
+            List<QuestionDto> questions =getStudentTempalte();
+            log.info("questions:{}",questions);
+            return questions;
+        }else{
+            return null;
+        }
+    }
 
+    public List<QuestionDto> getStudentTempalte(){
+        return List.of(
+                new QuestionDto(null, "short", "중국어이름", "", null, 0, true, "chineseName"),
+                new QuestionDto(null, "short", "영문이름", "", null, 0, true, "englishName"),
+                new QuestionDto(null, "date", "생년월일", "", null, 0, true, "birthDate"),
+                new QuestionDto(null, "multiple", "성별", "", List.of(
+                        new OptionDto(0, null, "남성", null),
+                        new OptionDto(0, null, "여성", null)
+                ), 0, true, "gender"),
+                new QuestionDto(null, "short", "학생 메일", "", null, 0, true, "studentEmail"),
+                new QuestionDto(null, "short", "여권 번호", "", null, 0, true, "passportNumber"),
+                new QuestionDto(null, "short", "수험 번호", "", null, 0, true, "examNumber"),
+                new QuestionDto(null, "short", "유학원 담당자 위챗", "", null, 0, true, "agentWechat"),
+                new QuestionDto(null, "short", "유학원 담당자 이메일", "", null, 0, true, "agentEmail")
+        );
     }
 
 }

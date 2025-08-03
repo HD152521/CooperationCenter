@@ -15,7 +15,9 @@ public record QuestionDto(
         String question,
         String description,
         List<OptionDto> options,
-        int questionOrder
+        int questionOrder,
+        boolean isTemplate,
+        String domainField
 ){
     public static List<QuestionDto> to(Survey survey){
         List<QuestionDto> dtos = new ArrayList<>();
@@ -24,7 +26,6 @@ public record QuestionDto(
                 .sorted(Comparator.comparing(Question::getQuestionOrder))
                 .toList();
         for(Question q : questions){
-
             dtos.add(
                     new QuestionDto(
                             q.getQuestionId(),
@@ -32,7 +33,9 @@ public record QuestionDto(
                             q.getQuestion(),
                             q.getQuestionDescription(),
                             OptionDto.to(q.getOptions()),
-                            q.getQuestionOrder()
+                            q.getQuestionOrder(),
+                            q.isTemplate(),
+                            q.getDomainField()
                     )
             );
         }

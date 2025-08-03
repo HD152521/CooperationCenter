@@ -108,8 +108,10 @@ public class SurveyRestController {
                 .body(Qr);
     }
 
-    @GetMapping("/template/student")
-    public BaseResponse<?> getStudentTemplate(){
-        return BaseResponse.onSuccess("success");
+    @GetMapping("/admin/template")
+    public BaseResponse<?> getTemplate(@RequestParam("type") String type){
+        log.info("enter controller type:{}",type);
+        return BaseResponse.onSuccess(surveySaveService.getTemplate(type));
     }
+
 }

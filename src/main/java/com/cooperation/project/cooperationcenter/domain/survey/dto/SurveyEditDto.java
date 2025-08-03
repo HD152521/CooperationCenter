@@ -13,7 +13,7 @@ public record SurveyEditDto (
         List<QuestionDto> questions,
         LocalDate startDate,
         LocalDate endDate,
-        String type,
+        String surveyType,
         String surveyId
 ){
     public static SurveyEditDto to(String surveyid, SurveyFindService surveyFindService){

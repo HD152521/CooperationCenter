@@ -51,6 +51,8 @@ public class SurveyAnswerService {
     public void answerSurvey(String data, HttpServletRequest request, MemberDetails memberDetails) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         AnswerRequest.Dto requestDto = objectMapper.readValue(data, AnswerRequest.Dto.class);
+        log.info("request 매핑완료");
+        log.info("request:{}",requestDto.toString());
 
         if (!(request instanceof MultipartHttpServletRequest multipartRequest)) {
             throw new IllegalStateException("Multipart request expected");
@@ -58,7 +60,6 @@ public class SurveyAnswerService {
 
         Survey survey = surveyFindService.getSurveyFromId(requestDto.surveyId());
 //        if(checkDate(survey)) throw new BaseException(ErrorCode.SURVEY_DATE_NOT_VALID);
-        log.info("checkDate:{}",checkDate(survey));
         survey.setParticipantCount();
 
         Member member = memberRepository.findMemberByEmail(memberDetails.getUsername()).get();
@@ -73,6 +74,7 @@ public class SurveyAnswerService {
                 .build();
 
         //답변 로그를 저장하고 -> 문항들 저장
+        //fixme 여기서 이제 템플릿 형태가 normal이 아니면 student객체 생성해야함.
         List<Answer> savedAnswer = saveAnswer(requestDto,multipartRequest,surveyLog);
         surveyLog.addAnswer(savedAnswer);
         surveyRepository.save(survey);
@@ -89,13 +91,19 @@ public class SurveyAnswerService {
     protected List<Answer> saveAnswer(AnswerRequest.Dto answerList, MultipartHttpServletRequest multipartRequest,SurveyLog surveyLog){
         List<Answer> saveList = new ArrayList<>();
         FileAttachment surveyFile=null;
-        for (AnswerRequest.AnswerDto an : answerList.answers()) {
-            if (QuestionType.isFile(an.type())) {
-                surveyFile = saveFile(an,multipartRequest,answerList.surveyId());
-                //note 파일 저장은 따로 추가하자
+        if(!answerList.answers().isEmpty() && answerList.answers()!=null) {
+            for (AnswerRequest.AnswerDto an : answerList.answers()) {
+                if (QuestionType.isFile(an.type())) {
+                    surveyFile = saveFile(an, multipartRequest, answerList.surveyId());
+                }
+                saveList.add(convertToAnswer(an, answerList.surveyId(), surveyFile, surveyLog));
+                log.info("Q{}: {}", an.questionId(), an.answer());
             }
-            saveList.add(convertToAnswer(an,answerList.surveyId(),surveyFile,surveyLog));
-            log.info("Q{}: {}", an.questionId(), an.answer());
+        }else if(!answerList.templateAnswers().isEmpty() && answerList.templateAnswers()!=null){
+            //todo 템플릿 문항들 이제 매핑 해야함.  템플릿 문항들이 맞는지도 봐야할듯
+            log.info("template널 값 아님");
+            log.info("tempalte 문제들:{}",answerList.templateAnswers());
+
         }
         return answerRepository.saveAll(saveList);
     }

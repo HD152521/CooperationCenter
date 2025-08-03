@@ -43,7 +43,7 @@ public class Survey extends BaseEntity {
     public enum SurveyType{
         NORMAL("NORMAL"),
         STUDENT("STUDENT"),
-        INVOICE("INVOICE");
+        INVOICE("PROMOTION");
 
         private final String type;
 
@@ -123,7 +123,7 @@ public class Survey extends BaseEntity {
         this.surveyTitle = dto.title();
         this.startDate = dto.startDate();
         this.endDate = dto.endDate();
-        this.surveyType = SurveyType.getSruveyType(dto.type());
+        this.surveyType = SurveyType.getSruveyType(dto.surveyType());
     }
 
     @Override

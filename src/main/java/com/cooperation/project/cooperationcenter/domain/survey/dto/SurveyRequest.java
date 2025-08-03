@@ -18,10 +18,10 @@ public class SurveyRequest {
             List<QuestionDto> questions,
             LocalDate startDate,
             LocalDate endDate,
-            String type
+            String surveyType
     ){
         public static Survey toEntity(SurveyDto request){
-            Survey.SurveyType type = Survey.SurveyType.getSruveyType(request.type());
+            Survey.SurveyType type = Survey.SurveyType.getSruveyType(request.surveyType());
             return Survey.builder()
                     .surveyTitle(request.title)
                     .surveyDescription(request.description)
