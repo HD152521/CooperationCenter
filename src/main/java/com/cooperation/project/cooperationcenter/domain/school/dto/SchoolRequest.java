@@ -30,6 +30,16 @@ public class SchoolRequest {
             List<String> deleteFileIds
     ){}
 
+    public record FilePostDto(
+            Long boardId,
+            String title,
+            String description,
+            String status,
+            String type,
+            Long postId,
+            String deleteFileIds
+    ){}
+
     public record PostDto(
             Long boardId,
             String keyword,

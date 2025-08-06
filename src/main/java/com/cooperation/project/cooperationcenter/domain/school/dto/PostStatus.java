@@ -1,4 +1,4 @@
-package com.cooperation.project.cooperationcenter.domain.school.model;
+package com.cooperation.project.cooperationcenter.domain.school.dto;
 
 import lombok.Getter;
 

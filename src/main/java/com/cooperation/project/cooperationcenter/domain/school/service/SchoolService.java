@@ -5,14 +5,8 @@ import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachmen
 import com.cooperation.project.cooperationcenter.domain.file.service.FileService;
 import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolRequest;
 import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolResponse;
-import com.cooperation.project.cooperationcenter.domain.school.model.IntroPost;
-import com.cooperation.project.cooperationcenter.domain.school.model.School;
-import com.cooperation.project.cooperationcenter.domain.school.model.SchoolBoard;
-import com.cooperation.project.cooperationcenter.domain.school.model.SchoolPost;
-import com.cooperation.project.cooperationcenter.domain.school.repository.IntroPostRepository;
-import com.cooperation.project.cooperationcenter.domain.school.repository.SchoolBoardRepository;
-import com.cooperation.project.cooperationcenter.domain.school.repository.SchoolPostRepository;
-import com.cooperation.project.cooperationcenter.domain.school.repository.SchoolRepository;
+import com.cooperation.project.cooperationcenter.domain.school.model.*;
+import com.cooperation.project.cooperationcenter.domain.school.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,10 +27,13 @@ public class SchoolService {
     private final SchoolRepository schoolRepository;
     private final SchoolBoardRepository schoolBoardRepository;
     private final SchoolPostRepository schoolPostRepository;
+    private final IntroPostRepository introPostRepository;
+    private final FilePostRepository filePostRepository;
 
     private final SchoolFindService schoolFindService;
     private final FileService fileService;
-    private final IntroPostRepository introPostRepository;
+
+
 
     @Transactional
     public void saveSchool(SchoolRequest.SchoolDto request){
@@ -140,6 +137,45 @@ public class SchoolService {
         for (SchoolPost post : postListCopy) deletePost(post.getId());
         board.deleteSchool();
         schoolBoardRepository.delete(board);
+    }
+
+    @Transactional
+    public void saveFilePost(SchoolRequest.FilePostDto request,MultipartFile file){
+        SchoolBoard board = schoolFindService.loadBoardById(request.boardId());
+
+        FilePost post = FilePost.fromDto(request);
+        FileAttachment requestFile = fileService.saveFile(new FileAttachmentDto(file, "SCHOOL", post.getId().toString(), null, null));
+        post.setFile(requestFile);
+
+        post = filePostRepository.save(post);
+        board.addFilePost(post);
+    }
+
+    @Transactional
+    public void editFilePost(SchoolRequest.FilePostDto request, MultipartFile requestFile){
+        FilePost post = schoolFindService.loadFilePostById(request.postId());
+        post.updateFormDto(request);
+        //todo  request.deleteFileIds()이거 있는거 삭제하기
+
+        FileAttachment file = post.getFile();
+        if(request.deleteFileIds().equals(file.getFileId())){
+            fileService.deleteFile(file);
+            post.deleteFile();
+        }
+
+        //fixme file 부분 있으면 저장 안해야함 수정하기
+        if (requestFile != null && !requestFile.isEmpty()) {
+            post.setFile(fileService.saveFile(new FileAttachmentDto(requestFile, "SCHOOL", post.getId().toString(), null, null)));
+        }
+    }
+
+    @Transactional
+    public void deleteFilePost(SchoolRequest.PostIdDto request){
+        FilePost post = schoolFindService.loadFilePostById(request.postId());
+        fileService.deleteFile(post.getFile());
+        post.deleteFile();
+        filePostRepository.delete(post);
+        log.info("filePost delete complete");
     }
 
     @Transactional

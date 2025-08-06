@@ -91,7 +91,8 @@ public class MemberResponse {
             String ownerTel,
             String ownerName,
             String address,
-            String businessCertificationURl,
+            String businessCertificationURL,
+            String businessCertificationDownloadURL,
             String agencyTel,
             String agencyAddress,
             String businessCertificationType
@@ -100,11 +101,14 @@ public class MemberResponse {
             FileAttachment file = member.getBusinessCertificate();
             String type=null;
             String url = "/api/v1/file/";
+            String viewUrl = "/api/v1/file/";
             if(file.getType()!=null){
                 type = file.getType().toString();
-                if(type.equals(FileAttachment.ContentType.IMG.getType())) url+="img/";
+                if(type.equals(FileAttachment.ContentType.IMG.getType())) viewUrl+="img/";
+                else if(type.equals(FileAttachment.ContentType.FILE.getType())) viewUrl+="pdf/";
             }
             url+="member/"+member.getBusinessCertificate().getFileId();
+            viewUrl+="member/"+member.getBusinessCertificate().getFileId();
             return new DetailDto(
                     member.getAgencyName(),
                     member.getEmail(),
@@ -113,6 +117,7 @@ public class MemberResponse {
                     member.getPhoneNumber(),
                     member.getMemberName(),
                     member.getAddress1(),
+                    viewUrl,
                     url,
                     member.getAgencyPhone(),
                     member.getAgencyAddress1(),

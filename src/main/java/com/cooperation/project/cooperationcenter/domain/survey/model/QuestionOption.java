@@ -21,6 +21,11 @@ public class QuestionOption extends BaseEntity {
     private int nextQuestionId; //다음 questionid
     private String realNextQuestionId; //다음 questionid
 
+    //note 계층형 구조용
+    private String parentOptionId;
+    private String hierarchyId;
+    private int level;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Survey survey;
@@ -29,12 +34,16 @@ public class QuestionOption extends BaseEntity {
     private Question question;
 
     @Builder
-    public QuestionOption(String text, int nextQuestionId,Question question,Survey survey,String realNextQuestionId){
+    public QuestionOption(String text, int nextQuestionId,Question question,Survey survey,String realNextQuestionId,
+                          String parentOptionId, String hierarchyId, int level){
         this.optionText = text;
         this.nextQuestionId = nextQuestionId;
         this.question = question;
         this.survey = survey;
         this.realNextQuestionId = realNextQuestionId;
+        this.parentOptionId = parentOptionId;
+        this.hierarchyId = hierarchyId;
+        this.level = level;
     }
 
 }

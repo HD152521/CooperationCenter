@@ -60,7 +60,6 @@ public class SchoolController {
         model.addAttribute("boardId",boardId);
         SchoolBoard schoolBoard = schoolFindService.loadBoardById(boardId);
         if(schoolBoard.getType().equals(SchoolBoard.BoardType.NOTICE)) {
-//            model.addAttribute("postDto", schoolFindService.loadPostByBoardByDto(schoolBoard));
             model.addAttribute("postDto", schoolFindService.loadPostByBoardByDto(schoolBoard,pageable));
             return schoolPath + school + "/postTemplate";
         }else{
@@ -69,6 +68,16 @@ public class SchoolController {
             model.addAttribute("content",content);
             return schoolPath + school + "/introductionTemplate";
         }
+    }
+
+    @RequestMapping("/{school}/files/{boardId}")
+    public String schoolFilePost(@PathVariable String school, @PathVariable Long boardId, Model model,
+                              @PageableDefault(size = 8, sort = "createdAt", direction = Sort.Direction.DESC)
+                              Pageable pageable){
+        model.addAttribute("school",school);
+        model.addAttribute("boardId",boardId);
+
+        return schoolPath+school+"/school-board";
     }
 
     @RequestMapping("/{school}/board/{boardId}/post/{postId}")

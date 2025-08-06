@@ -9,14 +9,20 @@ public record OptionDto(
         int nextQuestion,
         String realNextQuestion,
         String text,
-        Long optionId
+        Long optionId,
+        String parentOptionId,
+        String hierarchyId,
+        int level
 ){
     public static OptionDto to(QuestionOption questionOption) {
         return new OptionDto(
                 questionOption.getNextQuestionId(),
                 questionOption.getRealNextQuestionId(),
                 questionOption.getOptionText(),
-                questionOption.getId()
+                questionOption.getId(),
+                questionOption.getParentOptionId(),
+                questionOption.getHierarchyId(),
+                questionOption.getLevel()
         );
     }
 

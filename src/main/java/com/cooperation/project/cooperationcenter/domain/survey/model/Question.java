@@ -42,7 +42,8 @@ public class Question extends BaseEntity {
     private boolean template;
 
     @Builder
-    public Question(QuestionType questionType, String questionDescription, boolean isNecessary, Survey survey,String question,int questionOrder,String domainField,boolean template){
+    public Question(QuestionType questionType, String questionDescription, boolean isNecessary, Survey survey,String question,int questionOrder,String domainField,boolean template
+                    ){
         this.questionType = questionType;
         this.question = question;
         this.questionDescription = questionDescription;

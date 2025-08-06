@@ -1,8 +1,10 @@
 package com.cooperation.project.cooperationcenter.domain.survey.service.homepage;
 
+import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerResponse;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.LogCsv;
 import com.cooperation.project.cooperationcenter.domain.survey.model.*;
+import com.cooperation.project.cooperationcenter.domain.survey.repository.AnswerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
@@ -14,9 +16,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +34,7 @@ public class SurveyLogService {
 
     private final SurveyFindService surveyFindService;
     private final String origin = "http://localhost:8080/api/v1/file/survey/";
+    private final AnswerRepository answerRepository;
 
     public AnswerResponse.AnswerPagedDto getAnswerLog(String surveyId, Pageable pageable){
         Survey survey = surveyFindService.getSurveyFromId(surveyId);
@@ -147,18 +157,6 @@ public class SurveyLogService {
 
         int i=1;
         for(SurveyLog log : logs){
-//            List<Answer> answers = surveyFindService.getAnswer(log);
-//            List<String> answerTexts = answers.stream()
-//                    .map(a ->{
-//                        if(QuestionType.isFile(a.getAnswerType())){
-//                            return "\"=HYPERLINK(\"\""+origin+a.getAnswer().split("_")[0]+"\"\")\"";
-//                        }else if(QuestionType.checkType(a.getAnswerType())){
-//                            return toCsvSafe(surveyFindService.getAnswerFromMultiple(a));
-//                        }else{
-//                            return a.getAnswer();
-//                        }
-//                    })
-//                    .toList();
             List<Answer> answers = surveyFindService.getAnswer(log);
 
             Map<Integer, Answer> answerMap = new TreeMap<>();
@@ -197,6 +195,91 @@ public class SurveyLogService {
                 .contentLength(csvBytes.length)
                 .body(resource);
     }
+
+    public ResponseEntity<byte[]> extractFileStudent(String surveyId){
+        Survey survey = surveyFindService.getSurveyFromId(surveyId);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (ZipOutputStream zos = new ZipOutputStream(baos)) {
+            List<SurveyLog> logs = surveyFindService.getSurveyLogs(survey);
+            int logIndex = 1;
+            for (SurveyLog log : logs) {
+                String memberName = log.getMember().getMemberName();
+                String logFolder = logIndex + "_" + memberName + "/";
+
+                List<Answer> answers = log.getAnswers();
+
+                for (Answer answer : answers) {
+                    if(!(answer.getAnswerType().equals(QuestionType.FILE)||answer.getAnswerType().equals(QuestionType.IMAGE))) continue;
+
+                    FileAttachment file = answer.getSurveyFile();
+                    if (file == null) continue;
+
+                    Path path = Paths.get(file.getPath()).resolve(file.getStoredName());
+                    if (!Files.exists(path)) continue;
+
+                    String fileName = "Q" + answer.getQuestionId() + "_" + file.getOriginalName();
+                    String zipEntryName = logFolder + fileName;
+
+                    zos.putNextEntry(new ZipEntry(zipEntryName));
+                    Files.copy(path, zos);
+                    zos.closeEntry();
+                }
+
+                logIndex++;
+            }
+
+            zos.finish();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        byte[] zipBytes = baos.toByteArray();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + surveyId + "_logs.zip\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .contentLength(zipBytes.length)
+                .body(zipBytes);
+    }
+
+    public ResponseEntity<byte[]> extractFileSurvey(String surveyId){
+        Survey survey =surveyFindService.getSurveyFromId(surveyId);;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (ZipOutputStream zos = new ZipOutputStream(baos)) {
+
+            List<Question> questions = survey.getQuestions();
+
+            for (Question question : questions) {
+                if(!(question.getQuestionType().equals(QuestionType.FILE)||question.getQuestionType().equals(QuestionType.IMAGE))) continue;
+                List<Answer> answers = answerRepository.findAnswerByQuestionRealId(question.getQuestionId());
+                List<FileAttachment> files = answers.stream().map(Answer::getSurveyFile).toList();
+
+                int index = 1;
+                for (FileAttachment file : files) {
+                    Path path = Paths.get(file.getPath()).resolve(file.getStoredName());
+                    if (!Files.exists(path)) continue;
+
+                    String zipEntryName = "Q" + question.getQuestionOrder() + "/" + index + "_" + file.getOriginalName();
+                    zos.putNextEntry(new ZipEntry(zipEntryName));
+                    Files.copy(path, zos);
+                    zos.closeEntry();
+                    index++;
+                }
+            }
+            zos.finish(); // 명시적 종료
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        byte[] zipBytes = baos.toByteArray();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + surveyId + ".zip\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .contentLength(zipBytes.length)
+                .body(zipBytes);
+    }
+
 
     private static String toCsvSafe(String value) {
         if (value == null) return "";

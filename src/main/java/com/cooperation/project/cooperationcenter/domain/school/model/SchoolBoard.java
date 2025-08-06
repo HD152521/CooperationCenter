@@ -37,6 +37,9 @@ public class SchoolBoard extends BaseEntity {
     @OneToMany(mappedBy = "schoolBoard")
     private List<SchoolPost> posts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "schoolBoard")
+    private List<FilePost> filePosts = new ArrayList<>();
+
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "intro_post_id")
     private IntroPost introPost;
@@ -50,6 +53,11 @@ public class SchoolBoard extends BaseEntity {
         post.setBoard(this);
     }
 
+    public void addFilePost(FilePost post){
+        filePosts.add(post);
+
+    }
+
     public void deleteSchool(){
         school.deleteBoard(this);
         school = null;
@@ -58,6 +66,7 @@ public class SchoolBoard extends BaseEntity {
     public void deletePost(SchoolPost post) {
         posts.remove(post);
     }
+    public void deleteFilePost(FilePost post){filePosts.remove(post);}
 
     public void setIntroPost(IntroPost introPost) {
         this.introPost = introPost;
@@ -74,7 +83,8 @@ public class SchoolBoard extends BaseEntity {
     @Getter
     public enum BoardType {
         INTRO("INTRO","/homepage/user/school/introTemplate"),
-        NOTICE("NOTICE","/homepage/user/school/postTemplate");
+        NOTICE("NOTICE","/homepage/user/school/postTemplate"),
+        FILES("FILES","/homepage/user/school/school-board");
 
         private final String type;
         private final String path;

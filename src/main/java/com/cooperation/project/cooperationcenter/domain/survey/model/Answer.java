@@ -52,6 +52,10 @@ public class Answer extends BaseEntity {
                 return Arrays.stream(multiAnswer.replaceAll("[\\[\\]]", "").split(",\\s*"))
                         .map(s -> s.split("_")[0])
                         .collect(Collectors.joining(","));
+            }else if(answerType.equals(QuestionType.HIERARCHY)){
+                return Arrays.stream(multiAnswer.replaceAll("[\\[\\]]", "").split(",\\s*"))
+                        .map(s -> s.split("_")[1])
+                        .collect(Collectors.joining(","));
             }
             return multiAnswer;
         }

@@ -117,10 +117,11 @@ public class SurveySaveService {
                     .questionOrder(i++)
                     .template(dto.isTemplate())
                     .domainField(dto.domainField())
-
                     .build();
             questions.add(question);
             survey.setQuestion(question);
+
+            log.info("questino is Option:{}",question.getOptions());
         }
         return questions;
     }
@@ -128,11 +129,10 @@ public class SurveySaveService {
     @Transactional
     public List<QuestionOption> getQuestionOptionFromDto(List<QuestionDto> requestDtos, List<Question> questions,Survey survey){
         List<QuestionOption> options = new ArrayList<>();
-
         for (int i = 0; i < questions.size(); i++) {
             Question q = questions.get(i);
             QuestionDto dto = requestDtos.get(i);
-
+            log.info("null:{} options:{}",q.isOption(),q.getOptions());
             if (q.isOption()) {
                 for (OptionDto optionText : dto.options()) {
 
@@ -142,6 +142,9 @@ public class SurveySaveService {
                         questionOption.setOptionText(HtmlUtils.htmlEscape(optionText.text()));
                         questionOption.setNextQuestionId(optionText.nextQuestion());
                         questionOption.setRealNextQuestionId(optionText.realNextQuestion());
+                        questionOption.setParentOptionId(optionText.parentOptionId());
+                        questionOption.setLevel(optionText.level());
+                        questionOption.setHierarchyId(optionText.hierarchyId());
                         questionOptionRepository.save(questionOption);
 
                         survey.removeOption(questionOption);
@@ -157,6 +160,9 @@ public class SurveySaveService {
                             .realNextQuestionId(q.getQuestionId())
                             .survey(survey)
                             .question(q)
+                            .parentOptionId(optionText.parentOptionId())
+                            .level(optionText.level())
+                            .hierarchyId(optionText.hierarchyId())
                             .build();
                     options.add(option);
                     q.setOptions(option);
@@ -175,13 +181,13 @@ public class SurveySaveService {
 
         log.info("option empty?:{}",options.isEmpty());
 
-        Map<Long, List<String>> optionMap = new HashMap<>();
-        for (QuestionOption opt : options) {
-            Long questionId = opt.getQuestion().getId();
-            log.info("questionId:{}",questionId);
-            optionMap.computeIfAbsent(questionId, k -> new ArrayList<>())
-                    .add(opt.getOptionText());
-        }
+//        Map<Long, List<String>> optionMap = new HashMap<>();
+//        for (QuestionOption opt : options) {
+//            Long questionId = opt.getQuestion().getId();
+//            log.info("questionId:{}",questionId);
+//            optionMap.computeIfAbsent(questionId, k -> new ArrayList<>())
+//                    .add(opt.getOptionText());
+//        }
 
         for(Question q : questions){
             response.add(
@@ -258,6 +264,7 @@ public class SurveySaveService {
                     .survey(copy)
                     .domainField(originalQ.getDomainField())
                     .template(originalQ.isTemplate())
+                    .questionOrder(originalQ.getQuestionOrder())
                     .build();
             questionRepository.save(newQ);
 
@@ -292,8 +299,8 @@ public class SurveySaveService {
                 new QuestionDto(null, "short", "영문이름", "", null, 0, true, "englishName"),
                 new QuestionDto(null, "date", "생년월일", "", null, 0, true, "birthDate"),
                 new QuestionDto(null, "multiple", "성별", "", List.of(
-                        new OptionDto(0, null, "남성", null),
-                        new OptionDto(0, null, "여성", null)
+                        new OptionDto(0, null, "남성", null,null,null,0),
+                        new OptionDto(0, null, "여성", null,null,null,0)
                 ), 0, true, "gender"),
                 new QuestionDto(null, "short", "학생 메일", "", null, 0, true, "studentEmail"),
                 new QuestionDto(null, "short", "여권 번호", "", null, 0, true, "passportNumber"),

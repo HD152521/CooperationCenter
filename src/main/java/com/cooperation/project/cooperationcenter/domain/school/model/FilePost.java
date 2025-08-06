@@ -9,20 +9,17 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
 @Entity
-@Table(name = "school_post")
+@Table(name = "file_post")
 @Builder
-@SQLDelete(sql = "UPDATE school_post SET is_deleted = true, deleted_at = now() where id = ?")
+@SQLDelete(sql = "UPDATE file_post SET is_deleted = true, deleted_at = now() where id = ?")
 @SQLRestriction("is_deleted is FALSE")
-public class SchoolPost extends BaseEntity {
+public class FilePost extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,68 +27,43 @@ public class SchoolPost extends BaseEntity {
     private String postTitle;
     private String description;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT") // 또는 "TEXT"
-    private String content;
-
     @Enumerated(EnumType.STRING) private PostStatus status;
     @Enumerated(EnumType.STRING) private PostType type;
 
-    private int views;
-
+    private int downloads;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "school_board")
     private SchoolBoard schoolBoard;
 
-    @OneToMany(mappedBy = "schoolPost")
-    private List<FileAttachment> files = new ArrayList<>();
+    @OneToOne
+    private FileAttachment file;
 
-    public void setBoard(SchoolBoard board){
-        this.schoolBoard = board;
-    }
-
-    public void deleteBoard(){
-        this.schoolBoard.deletePost(this);
-    }
-
-    public void addView(){
-        this.views++;
-    }
-
-    public void addFile(List<FileAttachment> files){
-        files.forEach(file -> file.addPost(this));
-        this.files.addAll(files);
-    }
-
-    public void deleteFile(FileAttachment file) {
-        this.files.remove(file);
-        file.addPost(null); // 연관 관계 정리
+    public void setFile(FileAttachment file){
+        this.file = file;
     }
 
     public void deleteFile(){
-        this.files.forEach(file->file.addPost(null));
-        this.files.clear();
+        this.file = null;
     }
 
-    public static SchoolPost fromDto(SchoolRequest.SchoolPostDto dto){
+    public static FilePost fromDto(SchoolRequest.FilePostDto dto){
         PostStatus status = PostStatus.from(dto.status());
         PostType postType = PostType.from(dto.type());
-        return SchoolPost.builder()
+
+        return FilePost.builder()
                 .postTitle(dto.title())
                 .description(dto.description())
-                .content(dto.content())
                 .status(status)
                 .type(postType)
-                .files(new ArrayList<>())
                 .build();
     }
 
-    public void updateFromDto(SchoolRequest.SchoolPostDto dto) {
+    public void updateFormDto(SchoolRequest.FilePostDto dto){
         this.postTitle = dto.title();
         this.description = dto.description();
-        this.content = dto.content();
         this.status = PostStatus.from(dto.status());
         this.type = PostType.from(dto.type());
     }
+
 }

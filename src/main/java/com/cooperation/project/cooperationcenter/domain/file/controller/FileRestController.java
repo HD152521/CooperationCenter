@@ -22,16 +22,25 @@ public class FileRestController {
 
     private final FileService fileService;
 
+    //note 다운로드용
     @GetMapping("/{type}/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String type,@PathVariable String fileId) throws MalformedURLException {
         log.info("enter file controller");
         return fileService.loadFile(fileId,type);
     }
 
+    //note 이미지 뷰용
     @GetMapping("/img/{type}/{fileId}")
     public ResponseEntity<Resource> viewImage(@PathVariable String type,@PathVariable String fileId) throws IOException {
         log.info("enter file controller-img");
         return fileService.viewImage(fileId,type);
+    }
+
+    //note 이미지 뷰용
+    @GetMapping("/pdf/{type}/{fileId}")
+    public ResponseEntity<Resource> viewPdf(@PathVariable String type,@PathVariable String fileId) throws IOException {
+        log.info("enter file controller-img");
+        return fileService.viewPdf(fileId,type);
     }
 
     @PostMapping("/{type}")

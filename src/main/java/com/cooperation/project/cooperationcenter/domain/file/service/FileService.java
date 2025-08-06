@@ -113,26 +113,43 @@ public class FileService {
         FileTargetType fileType = FileTargetType.fromType(type);
         FileAttachment file = fileAttachmentRepository.findByFileIdAndFiletype(fileId,fileType)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."));
-        log.info("파일 읽어옴1");
         Path filePath = Paths.get(file.getPath()).resolve(file.getStoredName());
         Resource resource = new UrlResource(filePath.toUri());
-        log.info("파일 읽어옴2");
         if (!resource.exists() || !resource.isReadable()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 읽을 수 없습니다.");
         }
 
-        log.info("파일 읽어옴3");
         String contentType = Files.probeContentType(filePath);
         if (contentType == null) {
             contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
         }
-        log.info("파일 확장자 확인");
-
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
                 .body(resource);
     }
 
+    public ResponseEntity<Resource> viewPdf(String fileId, String type) throws IOException {
+        FileTargetType fileType = FileTargetType.fromType(type);
+        FileAttachment file = fileAttachmentRepository.findByFileIdAndFiletype(fileId, fileType)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."));
+
+        Path filePath = Paths.get(file.getPath()).resolve(file.getStoredName());
+        Resource resource = new UrlResource(filePath.toUri());
+
+        if (!resource.exists() || !resource.isReadable()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 읽을 수 없습니다.");
+        }
+
+        String contentType = Files.probeContentType(filePath);
+        if (contentType == null) {
+            contentType = MediaType.APPLICATION_PDF_VALUE; // 기본값을 PDF로 설정
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
     public void deleteFile(FileAttachment fileAttachment){
         try{
             fileAttachmentRepository.delete(fileAttachment);
@@ -189,6 +206,4 @@ public class FileService {
         )));
         return response;
     }
-
-
 }

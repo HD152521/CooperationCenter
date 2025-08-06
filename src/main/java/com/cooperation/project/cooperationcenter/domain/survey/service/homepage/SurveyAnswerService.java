@@ -103,6 +103,13 @@ public class SurveyAnswerService {
             //todo 템플릿 문항들 이제 매핑 해야함.  템플릿 문항들이 맞는지도 봐야할듯
             log.info("template널 값 아님");
             log.info("tempalte 문제들:{}",answerList.templateAnswers());
+            for (AnswerRequest.AnswerDto an : answerList.templateAnswers()) {
+                if (QuestionType.isFile(an.type())) {
+                    surveyFile = saveFile(an, multipartRequest, answerList.surveyId());
+                }
+                saveList.add(convertToAnswer(an, answerList.surveyId(), surveyFile, surveyLog));
+                log.info("Q{}: {}", an.questionId(), an.answer());
+            }
 
         }
         return answerRepository.saveAll(saveList);

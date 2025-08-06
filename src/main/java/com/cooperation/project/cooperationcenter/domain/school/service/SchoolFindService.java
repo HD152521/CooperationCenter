@@ -4,14 +4,8 @@ import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachmen
 import com.cooperation.project.cooperationcenter.domain.file.repository.FileAttachmentRepository;
 import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolRequest;
 import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolResponse;
-import com.cooperation.project.cooperationcenter.domain.school.model.IntroPost;
-import com.cooperation.project.cooperationcenter.domain.school.model.School;
-import com.cooperation.project.cooperationcenter.domain.school.model.SchoolBoard;
-import com.cooperation.project.cooperationcenter.domain.school.model.SchoolPost;
-import com.cooperation.project.cooperationcenter.domain.school.repository.IntroPostRepository;
-import com.cooperation.project.cooperationcenter.domain.school.repository.SchoolBoardRepository;
-import com.cooperation.project.cooperationcenter.domain.school.repository.SchoolPostRepository;
-import com.cooperation.project.cooperationcenter.domain.school.repository.SchoolRepository;
+import com.cooperation.project.cooperationcenter.domain.school.model.*;
+import com.cooperation.project.cooperationcenter.domain.school.repository.*;
 import com.cooperation.project.cooperationcenter.global.exception.BaseException;
 import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +28,7 @@ public class SchoolFindService {
     private final SchoolBoardRepository schoolBoardRepository;
     private final SchoolPostRepository schoolPostRepository;
     private final IntroPostRepository introPostRepository;
+    private final FilePostRepository filePostRepository;
 
     private final FileAttachmentRepository fileAttachmentRepository;
 
@@ -287,6 +282,16 @@ public class SchoolFindService {
                 (beforePost==null)? null: SchoolResponse.SchoolPostSimpleDto.from(beforePost),
                 (afterPost==null)? null: SchoolResponse.SchoolPostSimpleDto.from(afterPost));
     }
+
+    public FilePost loadFilePostById(Long postId){
+        try{
+            return filePostRepository.findFilePostById(postId).orElseGet(null);
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
 
     @Transactional
     public void increasePostView(Long postId) {

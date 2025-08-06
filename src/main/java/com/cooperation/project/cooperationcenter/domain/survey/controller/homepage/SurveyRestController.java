@@ -99,6 +99,15 @@ public class SurveyRestController {
         return surveyLogService.extractAllCsv(surveyId);
     }
 
+    @PostMapping("/admin/log/file/student/{surveyId}")
+    public ResponseEntity<byte[]> extractFileStudent(@PathVariable String surveyId){
+        return surveyLogService.extractFileStudent(surveyId);
+    }
+    @PostMapping("/admin/log/file/survey/{surveyId}")
+    public ResponseEntity<byte[]> extractFileSurvey(@PathVariable String surveyId){
+        return surveyLogService.extractFileSurvey(surveyId);
+    }
+
     @GetMapping("/qr")
     public Object cerateQR(@RequestParam String url,HttpServletRequest request) throws WriterException, IOException {
         log.info("url:{}",url);
@@ -113,5 +122,41 @@ public class SurveyRestController {
         log.info("enter controller type:{}",type);
         return BaseResponse.onSuccess(surveySaveService.getTemplate(type));
     }
+
+    //fixme 파일 다운로드 받는 코드임 수정 필요
+//    @GetMapping("/api/v1/survey/{surveyId}/download-answers")
+//    public ResponseEntity<byte[]> downloadAnswersZip(@PathVariable String surveyId) throws IOException {
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        try (ZipOutputStream zos = new ZipOutputStream(baos)) {
+//
+//            List<Question> questions = questionRepository.findBySurveyId(surveyId);
+//
+//            for (Question question : questions) {
+//                List<FileAttachment> files = fileAttachmentRepository.findAllByQuestionId(question.getId());
+//
+//                int index = 1;
+//                for (FileAttachment file : files) {
+//                    Path path = Paths.get(file.getPath()).resolve(file.getStoredName());
+//                    if (!Files.exists(path)) continue;
+//
+//                    String zipEntryName = "Q" + question.getQuestionOrder() + "/" + index + "_" + file.getOriginalName();
+//                    zos.putNextEntry(new ZipEntry(zipEntryName));
+//                    Files.copy(path, zos);
+//                    zos.closeEntry();
+//                    index++;
+//                }
+//            }
+//
+//            zos.finish(); // 명시적 종료
+//        }
+//
+//        byte[] zipBytes = baos.toByteArray();
+//
+//        return ResponseEntity.ok()
+//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + surveyId + ".zip\"")
+//                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+//                .contentLength(zipBytes.length)
+//                .body(zipBytes);
+//    }
 
 }

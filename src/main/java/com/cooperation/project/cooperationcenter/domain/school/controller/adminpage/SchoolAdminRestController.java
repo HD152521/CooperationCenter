@@ -77,4 +77,28 @@ public class SchoolAdminRestController {
         log.info("data:{}",request.toString());
         return BaseResponse.onSuccess(schoolService.getPostByPage(request,pageable));
     }
+
+    @PostMapping("/file")
+    public BaseResponse<?> saveFilePost(@ModelAttribute  SchoolRequest.FilePostDto request,
+                                    @RequestPart(required = false) MultipartFile file){
+        schoolService.saveFilePost(request,file);
+        return BaseResponse.onSuccess("success");
+    }
+
+    @PatchMapping("/post")
+    public BaseResponse<?> editFilePost(@ModelAttribute  SchoolRequest.FilePostDto request,
+                                     @RequestPart(required = false) MultipartFile files){
+        log.info("filePost:{}",request.toString());
+        schoolService.editFilePost(request,files);
+        return BaseResponse.onSuccess("success");
+    }
+
+    @DeleteMapping("/file")
+    public BaseResponse<?> deleteFilePost(@ModelAttribute  SchoolRequest.PostIdDto request){
+        schoolService.deleteFilePost(request);
+        return BaseResponse.onSuccess("success");
+    }
+
+
+
 }
