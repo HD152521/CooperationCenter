@@ -2,11 +2,13 @@ package com.cooperation.project.cooperationcenter.domain.school.controller.admin
 
 
 import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolRequest;
+import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolResponse;
 import com.cooperation.project.cooperationcenter.domain.school.service.SchoolFindService;
 import com.cooperation.project.cooperationcenter.domain.school.service.SchoolService;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -71,21 +73,27 @@ public class SchoolAdminRestController {
     }
 
     @GetMapping("/posts")
-    public BaseResponse<?> getPost(@ModelAttribute SchoolRequest.PostDto request,
+    public BaseResponse<?> getPosts(@ModelAttribute SchoolRequest.PostDto request,
                                    @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
                                    Pageable pageable){
         log.info("data:{}",request.toString());
-        return BaseResponse.onSuccess(schoolService.getPostByPage(request,pageable));
+        Page<SchoolResponse.SchoolPostDto> response = schoolService.getPostByPage(request,pageable);
+        return BaseResponse.onSuccess(response);
     }
 
     @PostMapping("/file")
     public BaseResponse<?> saveFilePost(@ModelAttribute  SchoolRequest.FilePostDto request,
-                                    @RequestPart(required = false) MultipartFile file){
-        schoolService.saveFilePost(request,file);
+                                    @RequestPart(required = false) MultipartFile files){
+        schoolService.saveFilePost(request,files);
         return BaseResponse.onSuccess("success");
     }
 
-    @PatchMapping("/post")
+    @GetMapping("/file")
+    public BaseResponse<?> getFilePost(@RequestParam Long postId){
+        return BaseResponse.onSuccess(schoolFindService.getDetailFilePostDto(postId));
+    }
+
+    @PatchMapping("/file")
     public BaseResponse<?> editFilePost(@ModelAttribute  SchoolRequest.FilePostDto request,
                                      @RequestPart(required = false) MultipartFile files){
         log.info("filePost:{}",request.toString());
@@ -94,7 +102,8 @@ public class SchoolAdminRestController {
     }
 
     @DeleteMapping("/file")
-    public BaseResponse<?> deleteFilePost(@ModelAttribute  SchoolRequest.PostIdDto request){
+    public BaseResponse<?> deleteFilePost(@RequestBody  SchoolRequest.PostIdDto request){
+        log.info("dto:{}",request.toString());
         schoolService.deleteFilePost(request);
         return BaseResponse.onSuccess("success");
     }

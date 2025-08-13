@@ -33,7 +33,6 @@ public class SchoolRequest {
     public record FilePostDto(
             Long boardId,
             String title,
-            String description,
             String status,
             String type,
             Long postId,

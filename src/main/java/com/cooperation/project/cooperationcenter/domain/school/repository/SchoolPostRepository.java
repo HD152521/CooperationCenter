@@ -28,7 +28,7 @@ public interface SchoolPostRepository extends JpaRepository<SchoolPost,Long> {
         SELECT p FROM SchoolPost p
         WHERE p.schoolBoard.id = :boardId
         ORDER BY 
-            CASE WHEN p.type = com.cooperation.project.cooperationcenter.domain.school.model.SchoolPost.PostType.NOTICE THEN 0 ELSE 1 END,
+            CASE WHEN p.type = com.cooperation.project.cooperationcenter.domain.school.dto.PostType.NOTICE THEN 0 ELSE 2 END,
             p.createdAt DESC
     """)
     Page<SchoolPost> findPostsByBoardOrderByNoticeFirst(@Param("boardId") Long boardId, Pageable pageable);

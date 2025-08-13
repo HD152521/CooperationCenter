@@ -149,6 +149,16 @@ public class SchoolFindService {
         }
     }
 
+    public Page<FilePost> loadFilePostByPage(SchoolBoard board, Pageable pageable){
+        try{
+            return filePostRepository.findFilePostBySchoolBoard(board,pageable);
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+
     public List<SchoolResponse.SchoolPostDto> loadPostByBoardByDto(SchoolBoard board){
         try{
             return schoolPostRepository.findBySchoolBoard(board).stream()
@@ -180,6 +190,18 @@ public class SchoolFindService {
         }
     }
 
+    public Page<SchoolResponse.SchoolPostDto> loadFilePostPageByBoardByDto(SchoolBoard board,Pageable pageable){
+        try{
+            return loadFilePostByPage(board,pageable)
+                    .map(SchoolResponse.SchoolPostDto::from);
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+
+
     public SchoolPost getBeforePostById(Long postId, SchoolBoard board){
         try{
             return schoolPostRepository.findTopBySchoolBoardAndIdLessThanOrderByIdDesc(board,postId).orElse(null);
@@ -197,6 +219,26 @@ public class SchoolFindService {
             return null;
         }
     }
+
+    public FilePost getBeforeFilePostById(Long postId, SchoolBoard board){
+        try{
+            return filePostRepository.findTopBySchoolBoardAndIdLessThanOrderByIdDesc(board,postId).orElse(null);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public FilePost getAfterFilePostById(Long postId, SchoolBoard board){
+        try{
+            return filePostRepository.findTopBySchoolBoardAndIdGreaterThanOrderByIdAsc(board,postId).orElse(null);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+
 
 
     public IntroPost loadIntroById(Long introId){
@@ -283,9 +325,30 @@ public class SchoolFindService {
                 (afterPost==null)? null: SchoolResponse.SchoolPostSimpleDto.from(afterPost));
     }
 
+    @Transactional
+    public SchoolResponse.FilePostDetailDto getDetailFilePostDto(Long postId){
+        log.info("enter DetailDto");
+        increasePostView(postId);
+        FilePost filePost = loadFilePostById(postId);
+
+        SchoolResponse.SchoolPostDto dto = SchoolResponse.SchoolPostDto.from(filePost);
+        SchoolBoard schoolBoard = filePost.getSchoolBoard();
+        FilePost beforePost = getBeforeFilePostById(postId,schoolBoard);
+        FilePost afterPost = getAfterFilePostById(postId,schoolBoard);
+
+        return new SchoolResponse.FilePostDetailDto(dto,
+                SchoolResponse.PostFileDto.from(filePost.getFile()),
+                (beforePost==null)? null: SchoolResponse.SchoolPostSimpleDto.from(beforePost),
+                (afterPost==null)? null: SchoolResponse.SchoolPostSimpleDto.from(afterPost));
+    }
+
+
+
     public FilePost loadFilePostById(Long postId){
         try{
-            return filePostRepository.findFilePostById(postId).orElseGet(null);
+            return filePostRepository.findFilePostById(postId).orElseThrow(
+                    () -> new BaseException(ErrorCode.BAD_REQUEST)
+            );
         }catch(Exception e){
             log.warn(e.getMessage());
             return null;

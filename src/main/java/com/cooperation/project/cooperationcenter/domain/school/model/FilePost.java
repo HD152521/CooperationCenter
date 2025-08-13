@@ -39,6 +39,10 @@ public class FilePost extends BaseEntity {
     @OneToOne
     private FileAttachment file;
 
+    public void setBoard(SchoolBoard schoolBoard) {
+        this.schoolBoard = schoolBoard;
+    }
+
     public void setFile(FileAttachment file){
         this.file = file;
     }
@@ -53,7 +57,6 @@ public class FilePost extends BaseEntity {
 
         return FilePost.builder()
                 .postTitle(dto.title())
-                .description(dto.description())
                 .status(status)
                 .type(postType)
                 .build();
@@ -61,7 +64,6 @@ public class FilePost extends BaseEntity {
 
     public void updateFormDto(SchoolRequest.FilePostDto dto){
         this.postTitle = dto.title();
-        this.description = dto.description();
         this.status = PostStatus.from(dto.status());
         this.type = PostType.from(dto.type());
     }

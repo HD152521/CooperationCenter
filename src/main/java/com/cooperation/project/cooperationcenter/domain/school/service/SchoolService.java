@@ -45,6 +45,7 @@ public class SchoolService {
     public void saveBoard(SchoolRequest.SchoolBoardDto request){
         School school = schoolFindService.loadSchoolById(request.schoolId());
         SchoolBoard schoolBoard = SchoolBoard.fromDto(request);
+
         if(schoolBoard.getType().equals(SchoolBoard.BoardType.INTRO)){
             IntroPost introPost = IntroPost.builder()
                     .title(schoolBoard.getBoardTitle())
@@ -122,7 +123,9 @@ public class SchoolService {
 
     public Page<SchoolResponse.SchoolPostDto> getPostByPage(SchoolRequest.PostDto request, Pageable pageable){
         SchoolBoard board = schoolFindService.loadBoardById(request.boardId());
-        return schoolFindService.loadPostPageByBoardByDto(board,pageable);
+        SchoolBoard.BoardType type = board.getType();
+        if(type == SchoolBoard.BoardType.NOTICE) return schoolFindService.loadPostPageByBoardByDto(board,pageable);
+        else return schoolFindService.loadFilePostPageByBoardByDto(board,pageable);
     }
 
     @Transactional
@@ -144,10 +147,10 @@ public class SchoolService {
         SchoolBoard board = schoolFindService.loadBoardById(request.boardId());
 
         FilePost post = FilePost.fromDto(request);
+        post.setBoard(board);
+        post = filePostRepository.saveAndFlush(post); // IDENTITY면 saveAndFlush가 안전
         FileAttachment requestFile = fileService.saveFile(new FileAttachmentDto(file, "SCHOOL", post.getId().toString(), null, null));
         post.setFile(requestFile);
-
-        post = filePostRepository.save(post);
         board.addFilePost(post);
     }
 

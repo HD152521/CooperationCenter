@@ -1,10 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.school.dto;
 
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
-import com.cooperation.project.cooperationcenter.domain.school.model.IntroPost;
-import com.cooperation.project.cooperationcenter.domain.school.model.School;
-import com.cooperation.project.cooperationcenter.domain.school.model.SchoolBoard;
-import com.cooperation.project.cooperationcenter.domain.school.model.SchoolPost;
+import com.cooperation.project.cooperationcenter.domain.school.model.*;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,31 +53,55 @@ public class SchoolResponse {
             LocalDateTime createdAt,
             Long boardId,
             int views,
-            boolean isFile
+            boolean isFile,
+            String postType,
+            String fileId
     ){
-        public static SchoolPostDto from(SchoolPost post){
-            return new SchoolPostDto(
-                    post.getId(),
-                    post.getPostTitle(),
-                    post.getPostTitle(),
-                    post.getContent(),
-                    post.getStatus().getStatus(),
-                    post.getType().getType(),
-                    post.getCreatedAt(),
-                    post.getSchoolBoard().getId(),
-                    post.getViews(),
-                    !post.getFiles().isEmpty()
-            );
-        }
-        public static List<SchoolPostDto> from(List<SchoolPost> posts){
-            return posts.stream()
-                    .map(SchoolPostDto::from)
-                    .collect(Collectors.toList());
-        }
+            public static SchoolPostDto from(SchoolPost post){
+                return new SchoolPostDto(
+                        post.getId(),
+                        post.getPostTitle(),
+                        post.getPostTitle(),
+                        post.getContent(),
+                        post.getStatus().getStatus(),
+                        post.getType().getType(),
+                        post.getCreatedAt(),
+                        post.getSchoolBoard().getId(),
+                        post.getViews(),
+                        !post.getFiles().isEmpty(),
+                        "NOTICE",
+                        null
+                );
+            }
+            public static List<SchoolPostDto> from(List<SchoolPost> posts){
+                return posts.stream()
+                        .map(SchoolPostDto::from)
+                        .collect(Collectors.toList());
+            }
 
-        public static Page<SchoolPostDto> from(Page<SchoolPost> posts){
-            return posts.map(SchoolPostDto::from);
-        }
+            public static Page<SchoolPostDto> fromPostPage(Page<SchoolPost> posts){
+                return posts.map(SchoolPostDto::from);
+            }
+
+            public static SchoolPostDto from(FilePost post){
+                return new SchoolPostDto(
+                        post.getId(),
+                        post.getPostTitle(),
+                        post.getPostTitle(),
+                        null,
+                        post.getStatus().getStatus(),
+                        post.getType().getType(),
+                        post.getCreatedAt(),
+                        post.getSchoolBoard().getId(),
+                        post.getDownloads(),
+                        true,
+                        "FILES",
+                        post.getFile().getFileId()
+                );
+            }
+            public static Page<SchoolPostDto> fromFilePostPage(Page<FilePost> posts){
+                return posts.map(SchoolPostDto::from);
+            }
     }
 
     public record SchoolPostSimpleDto(
@@ -88,6 +109,13 @@ public class SchoolResponse {
             Long id
     ){
         public static SchoolPostSimpleDto from(SchoolPost post){
+            return new SchoolPostSimpleDto(
+                    post.getPostTitle(),
+                    post.getId()
+            );
+        }
+
+        public static SchoolPostSimpleDto from(FilePost post){
             return new SchoolPostSimpleDto(
                     post.getPostTitle(),
                     post.getId()
@@ -133,6 +161,13 @@ public class SchoolResponse {
     ){
     }
 
+    public record FilePostDetailDto(
+            SchoolPostDto post,
+            PostFileDto file,
+            SchoolPostSimpleDto beforePost,
+            SchoolPostSimpleDto afterPost
+    ){
+    }
 
     public record IntroDto(
             String title,

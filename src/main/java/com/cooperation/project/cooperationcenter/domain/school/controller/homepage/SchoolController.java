@@ -62,18 +62,26 @@ public class SchoolController {
         if(schoolBoard.getType().equals(SchoolBoard.BoardType.NOTICE)) {
             model.addAttribute("postDto", schoolFindService.loadPostByBoardByDto(schoolBoard,pageable));
             return schoolPath + school + "/postTemplate";
-        }else{
+        }else if(schoolBoard.getType().equals(SchoolBoard.BoardType.INTRO)){
             String content = schoolFindService.loadIntroByBoard(schoolBoard).getContent();
             log.info("content:{}",content);
             model.addAttribute("content",content);
-            return schoolPath + school + "/introductionTemplate";
+//            return schoolPath + school + "/introductionTemplate";
+            String url = schoolPath + school + "/" +content;
+            log.info("url:{}",url);
+            return url;
         }
+        else if(schoolBoard.getType().equals(SchoolBoard.BoardType.FILES)){
+            model.addAttribute("filePostDto",schoolFindService.loadFilePostPageByBoardByDto(schoolBoard,pageable));
+            return schoolPath + school + "/school-board";
+        }
+        return null;
     }
 
     @RequestMapping("/{school}/files/{boardId}")
     public String schoolFilePost(@PathVariable String school, @PathVariable Long boardId, Model model,
-                              @PageableDefault(size = 8, sort = "createdAt", direction = Sort.Direction.DESC)
-                              Pageable pageable){
+                                 @PageableDefault(size = 8, sort = "createdAt", direction = Sort.Direction.DESC)
+                                 Pageable pageable){
         model.addAttribute("school",school);
         model.addAttribute("boardId",boardId);
 
