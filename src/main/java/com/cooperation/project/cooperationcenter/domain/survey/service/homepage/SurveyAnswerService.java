@@ -6,6 +6,7 @@ import com.cooperation.project.cooperationcenter.domain.file.service.FileService
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.member.repository.MemberRepository;
+import com.cooperation.project.cooperationcenter.domain.student.service.StudentService;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerRequest;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerResponse;
 import com.cooperation.project.cooperationcenter.domain.survey.model.Answer;
@@ -40,6 +41,7 @@ public class SurveyAnswerService {
 
     private final SurveyFindService surveyFindService;
     private final FileService fileService;
+    private final StudentService studentService;
 
     private final AnswerRepository answerRepository;
     private final SurveyLogRepository surveyLogRepository;
@@ -75,7 +77,13 @@ public class SurveyAnswerService {
 
         //답변 로그를 저장하고 -> 문항들 저장
         //fixme 여기서 이제 템플릿 형태가 normal이 아니면 student객체 생성해야함.
+        //학생 추가를 하면서 매핑까지 해야함. 그냥 survey랑 surveyLog만 던지자
+
         List<Answer> savedAnswer = saveAnswer(requestDto,multipartRequest,surveyLog);
+
+        //note 학생으로 변환
+        if(survey.getSurveyType().equals(Survey.SurveyType.STUDENT)) studentService.addStudentBySurvey(survey.getQuestions(),savedAnswer);
+
         surveyLog.addAnswer(savedAnswer);
         surveyRepository.save(survey);
         surveyLogRepository.save(surveyLog);
