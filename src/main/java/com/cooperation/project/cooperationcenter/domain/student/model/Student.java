@@ -38,12 +38,15 @@ public class Student extends BaseEntity {
 
     private String emergencyContactNum;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "member_id", nullable = false) // unique 제거
     private Member member;
-    @OneToOne
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "survey_log_id", nullable = false)
     private SurveyLog surveyLog;
 
-    public Student from(StudentRequest.MappingDto dto){
+    public static Student from(StudentRequest.MappingDto dto,SurveyLog surveyLog,Member member){
         return Student.builder()
                 .chineseName(dto.chineseName())
                 .englishName(dto.englishName())
@@ -55,6 +58,8 @@ public class Student extends BaseEntity {
                 .agentWechat(dto.agentWechat())
                 .agentEmail(dto.agentEmail())
                 .emergencyContactNum(dto.emergencyContactNum())
+                .surveyLog(surveyLog)
+                .member(member)
                 .build();
     }
 

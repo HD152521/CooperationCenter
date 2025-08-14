@@ -74,15 +74,12 @@ public class SurveyAnswerService {
                 .member(member)
                 .startTime(dateTime)
                 .build();
-
-        //답변 로그를 저장하고 -> 문항들 저장
-        //fixme 여기서 이제 템플릿 형태가 normal이 아니면 student객체 생성해야함.
-        //학생 추가를 하면서 매핑까지 해야함. 그냥 survey랑 surveyLog만 던지자
+        surveyLog = surveyLogRepository.save(surveyLog);
 
         List<Answer> savedAnswer = saveAnswer(requestDto,multipartRequest,surveyLog);
 
         //note 학생으로 변환
-        if(survey.getSurveyType().equals(Survey.SurveyType.STUDENT)) studentService.addStudentBySurvey(survey.getQuestions(),savedAnswer);
+        if(survey.getSurveyType().equals(Survey.SurveyType.STUDENT)) studentService.addStudentBySurvey(survey.getQuestions(),savedAnswer,member);
 
         surveyLog.addAnswer(savedAnswer);
         surveyRepository.save(survey);
@@ -107,7 +104,7 @@ public class SurveyAnswerService {
                 saveList.add(convertToAnswer(an, answerList.surveyId(), surveyFile, surveyLog));
                 log.info("Q{}: {}", an.questionId(), an.answer());
             }
-        }else if(!answerList.templateAnswers().isEmpty() && answerList.templateAnswers()!=null){
+        }if(!answerList.templateAnswers().isEmpty() && answerList.templateAnswers()!=null){
             //todo 템플릿 문항들 이제 매핑 해야함.  템플릿 문항들이 맞는지도 봐야할듯
             log.info("template널 값 아님");
             log.info("tempalte 문제들:{}",answerList.templateAnswers());

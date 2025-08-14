@@ -4,6 +4,7 @@ package com.cooperation.project.cooperationcenter.domain.member.model;
 import com.cooperation.project.cooperationcenter.domain.agency.model.Agency;
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
+import com.cooperation.project.cooperationcenter.domain.student.model.Student;
 import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyLog;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -69,6 +70,9 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member")
     private List<SurveyLog> surveyLogs = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Student> students = new ArrayList<>();
 
     public void accept(){
         this.approvalSignup = true;
