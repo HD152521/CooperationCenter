@@ -100,6 +100,7 @@ public class SurveySaveService {
                     question.setQuestionOrder(i++);
                     question.setTemplate(dto.isTemplate());
                     question.setDomainField(dto.domainField());
+                    question.setTemplate(dto.isTemplate());
                     questions.add(question);
 
                     survey.removeQuestion(question);
@@ -117,6 +118,7 @@ public class SurveySaveService {
                     .questionOrder(i++)
                     .template(dto.isTemplate())
                     .domainField(dto.domainField())
+                    .template(dto.isTemplate())
                     .build();
             questions.add(question);
             survey.setQuestion(question);
