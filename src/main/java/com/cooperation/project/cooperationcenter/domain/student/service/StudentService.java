@@ -2,23 +2,26 @@ package com.cooperation.project.cooperationcenter.domain.student.service;
 
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.student.dto.StudentRequest;
+import com.cooperation.project.cooperationcenter.domain.student.dto.StudentResponse;
 import com.cooperation.project.cooperationcenter.domain.student.model.Student;
 import com.cooperation.project.cooperationcenter.domain.student.repository.StudentRepository;
+import com.cooperation.project.cooperationcenter.domain.student.repository.StudentRepositoryCustom;
 import com.cooperation.project.cooperationcenter.domain.survey.model.Answer;
 import com.cooperation.project.cooperationcenter.domain.survey.model.Question;
 import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyLog;
+import com.cooperation.project.cooperationcenter.global.exception.BaseException;
+import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,6 +31,7 @@ import java.util.stream.Collectors;
 public class StudentService {
 
     private final StudentRepository studentRepository;
+    private final StudentRepositoryCustom studentRepositoryCustom;
 
     public void addStudentBySurvey(List<Question> questionList, List<Answer> savedAnswer, Member member){
         log.info("before changing answer to Student");
@@ -92,6 +96,62 @@ public class StudentService {
             studentRepository.save(student);
         }catch (Exception e){
             log.warn(e.getMessage());
+        }
+    }
+
+    public Page<StudentResponse.ListDto> getStudentDtoPageByCondition(StudentRequest.ConditionDto condition, Pageable pageable){
+        try{
+            return StudentResponse.ListDto.from(loadStudentPageByCondition(condition,pageable));
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return Page.empty();
+        }
+    }
+
+    public Page<Student> loadStudentPageByCondition(StudentRequest.ConditionDto condition, Pageable pageable){
+        try{
+            return studentRepositoryCustom.loadStudentByCondition(condition,pageable);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return Page.empty();
+        }
+    }
+
+    public List<StudentResponse.ListDto> getAllStudentDto(){
+        try{
+            return StudentResponse.ListDto.from(loadAllStudent());
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Student> loadAllStudent(){
+        try{
+            return studentRepository.findAll();
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    public StudentResponse.ListDto getStudentDtoById(Long id){
+        try{
+            return StudentResponse.ListDto.from(loadStudentById(id));
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+    
+    public Student loadStudentById(Long id){
+        try{
+            return studentRepository.findById(id).orElseThrow(
+                    () -> new BaseException(ErrorCode._BAD_REQUEST)
+            );
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return null;
         }
     }
 

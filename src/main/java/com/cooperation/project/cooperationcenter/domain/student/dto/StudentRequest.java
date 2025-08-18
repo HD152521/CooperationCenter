@@ -1,5 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.student.dto;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDate;
 
 public class StudentRequest {
@@ -17,6 +19,16 @@ public class StudentRequest {
             String agentEmail,
 
             String emergencyContactNum
+    ){}
+
+    public record ConditionDto(
+            String name,
+            Gender gender,
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate birthStart,
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate birthEnd,
+            String email,
+            String passport,
+            String exam
     ){}
 
 }
