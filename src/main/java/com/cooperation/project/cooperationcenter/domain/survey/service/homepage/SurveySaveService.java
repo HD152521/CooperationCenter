@@ -100,6 +100,7 @@ public class SurveySaveService {
                     question.setQuestionOrder(i++);
                     question.setTemplate(dto.isTemplate());
                     question.setDomainField(dto.domainField());
+                    question.setTemplate(dto.isTemplate());
                     questions.add(question);
 
                     survey.removeQuestion(question);
@@ -117,6 +118,7 @@ public class SurveySaveService {
                     .questionOrder(i++)
                     .template(dto.isTemplate())
                     .domainField(dto.domainField())
+                    .template(dto.isTemplate())
                     .build();
             questions.add(question);
             survey.setQuestion(question);
@@ -285,7 +287,7 @@ public class SurveySaveService {
     public List<QuestionDto> getTemplate(String type){
         Survey.SurveyType surveyType = Survey.SurveyType.getSruveyType(type);
         if(surveyType.equals(Survey.SurveyType.STUDENT)){
-            List<QuestionDto> questions =getStudentTempalte();
+            List<QuestionDto> questions = getStudentTempalte();
             log.info("questions:{}",questions);
             return questions;
         }else{
@@ -306,7 +308,8 @@ public class SurveySaveService {
                 new QuestionDto(null, "short", "여권 번호", "", null, 0, true, "passportNumber"),
                 new QuestionDto(null, "short", "수험 번호", "", null, 0, true, "examNumber"),
                 new QuestionDto(null, "short", "유학원 담당자 위챗", "", null, 0, true, "agentWechat"),
-                new QuestionDto(null, "short", "유학원 담당자 이메일", "", null, 0, true, "agentEmail")
+                new QuestionDto(null, "short", "유학원 담당자 이메일", "", null, 0, true, "agentEmail"),
+                new QuestionDto(null, "short", "긴급연락처", "", null, 0, true, "emergencyContactNum")
         );
     }
 
