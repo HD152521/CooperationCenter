@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class SchoolResponse {
@@ -27,19 +28,21 @@ public class SchoolResponse {
             String boardTitle,
             String realTitle,
             String boardDescription,
-            String boardType
+            String boardType,
+            boolean isActive
     ){
-        public static SchoolBoardDto from(SchoolBoard board){
+        public static SchoolBoardDto from(SchoolBoard board,Long nowId){
             return new SchoolBoardDto(
                     board.getId(),
                     board.getBoardTitle(),
                     board.getRealTitle(),
                     board.getBoardDescription(),
-                    board.getType().getType()
+                    board.getType().getType(),
+                    board.getId().equals(nowId)
             );
         }
-        public static List<SchoolBoardDto> from(List<SchoolBoard> boards){
-            return boards.stream().map(SchoolBoardDto::from).collect(Collectors.toList());
+        public static List<SchoolBoardDto> from(List<SchoolBoard> boards,Long nowId){
+            return boards.stream().map(b -> SchoolBoardDto.from(b, nowId)).toList();
         }
     }
 
@@ -130,7 +133,7 @@ public class SchoolResponse {
         public static SchoolPageDto from(School school){
             return new SchoolPageDto(
                     SchoolDto.from(school),
-                    SchoolBoardDto.from(school.getBoards())
+                    SchoolBoardDto.from(school.getBoards(),null)
             );
         }
     }

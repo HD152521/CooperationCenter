@@ -8,6 +8,7 @@ import com.cooperation.project.cooperationcenter.global.exception.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -123,8 +124,38 @@ public class SurveyFindService {
         });
     }
 
-    public Page<SurveyResponseDto> getFilteredSurveysActive(Pageable pageable,SurveyRequest.LogFilterDto condition){
-        return getFilteredSurveysAll(pageable,condition);
+    public Page<SurveyResponseDto> getFilteredSurveysAllIsActive(Pageable pageable,SurveyRequest.LogFilterDto condition){
+        if (condition.status() == null) condition = condition.setStatus();
+        Page<Survey> surveys = getSurveyFromCondition(pageable, condition);
+
+        LocalDate now = LocalDate.now();
+
+        // stream 으로 바꿔서 종료된 설문 빼고 다시 PageImpl 로 감싸기
+        List<SurveyResponseDto> filtered = surveys.stream()
+                .filter(survey -> survey.getEndDate() == null || !survey.getEndDate().isBefore(now)) // 종료일이 오늘 이전이면 제외
+                .map(survey -> {
+                    int daysLeft = (survey.getEndDate() == null) ? 0 : (int) ChronoUnit.DAYS.between(now, survey.getEndDate());
+                    boolean isBefore = survey.getStartDate() != null && now.isBefore(survey.getStartDate()) && !now.equals(survey.getStartDate());
+
+                    return new SurveyResponseDto(
+                            survey.getSurveyTitle(),
+                            survey.getCreatedAt(),
+                            survey.getParticipantCount(),
+                            daysLeft,
+                            survey.getSurveyId(),
+                            isBefore,
+                            survey.getStartDate(),
+                            survey.getEndDate()
+                    );
+                })
+                .toList();
+
+        return new PageImpl<>(filtered, pageable, filtered.size());
+    }
+
+    public Page<SurveyResponseDto> getFilteredSurveysActive(Pageable pageable,SurveyRequest.LogFilterDto condition,boolean isAdmin){
+        if(isAdmin) return getFilteredSurveysAll(pageable,condition);
+        else return getFilteredSurveysAllIsActive(pageable,condition);
     }
 
 

@@ -93,11 +93,11 @@ public class SchoolFindService {
         }
     }
 
-    public List<SchoolResponse.SchoolBoardDto> loadBoardBySchoolByDto(School school){
+    public List<SchoolResponse.SchoolBoardDto> loadBoardBySchoolByDto(School school,Long nowId){
         try{
             return schoolBoardRepository.findBySchool(school).stream()
-                    .map(SchoolResponse.SchoolBoardDto::from)
-                    .collect(Collectors.toList());
+                    .map(dto -> SchoolResponse.SchoolBoardDto.from(dto,nowId))
+                    .toList();
         }catch(Exception e){
             log.warn(e.getMessage());
             return Collections.emptyList();

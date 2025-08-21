@@ -49,11 +49,10 @@ public class SurveyController {
                                  @ModelAttribute SurveyRequest.LogFilterDto condition,
                                  Authentication authentication){
         log.info("condition:{}",condition);
-
         boolean isAdmin = authentication.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
         model.addAttribute("condition", condition);
-        Page<SurveyResponseDto> surveys = surveyFindService.getFilteredSurveysActive(pageable,condition);
+        Page<SurveyResponseDto> surveys = surveyFindService.getFilteredSurveysActive(pageable,condition,isAdmin);
         model.addAttribute("surveys", surveys);
         if(isAdmin)return surveyPath + "/survey-list-admin";
         else return surveyPath + "/survey-list-user";

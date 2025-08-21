@@ -14,8 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.servlet.HandlerMapping;
 
 import java.util.List;
+import java.util.Map;
 
 @ControllerAdvice
 @Slf4j
@@ -64,8 +66,18 @@ public class GlobalModelAttributeAdvice {
     public List<SchoolResponse.SchoolBoardDto> loadSchoolBoards(HttpServletRequest request) {
         String uri = request.getRequestURI();
         if (!uri.startsWith("/school")) return null;
-        String englishName = request.getRequestURI().split("/")[2];
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> vars = (Map<String, String>)
+                request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+
+        String englishName = (vars != null) ? vars.get("school") : null;
+        Long nowId = null;
+        if (vars != null && vars.get("boardId") != null) {
+            nowId = Long.valueOf(vars.get("boardId"));
+        }
+//        String englishName = request.getRequestURI().split("/")[2];
         School school = schoolFindService.loadSchoolByEnglishName(englishName);
-        return schoolFindService.loadBoardBySchoolByDto(school);
+        return schoolFindService.loadBoardBySchoolByDto(school,nowId);
     }
 }

@@ -21,11 +21,12 @@ public class SurveyAdminController {
 
     private final SurveyFindService surveyFindService;
 
+
     @RequestMapping("/survey")
     public String surveyPage(Model model,
                              @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
                              Pageable pageable){
-        Page<SurveyResponseDto> surveys = surveyFindService.getFilteredSurveysActive(pageable,new SurveyRequest.LogFilterDto(null,null,null));
+        Page<SurveyResponseDto> surveys = surveyFindService.getFilteredSurveysActive(pageable,new SurveyRequest.LogFilterDto(null,null,null),true);
         model.addAttribute("surveys", surveys);
         return "/adminpage/user/survey/manageSurvey";
     }
