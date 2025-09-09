@@ -2,6 +2,7 @@ package com.cooperation.project.cooperationcenter.domain.school.service;
 
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.file.repository.FileAttachmentRepository;
+import com.cooperation.project.cooperationcenter.domain.school.dto.ScheduleType;
 import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolRequest;
 import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolResponse;
 import com.cooperation.project.cooperationcenter.domain.school.model.*;
@@ -29,6 +30,7 @@ public class SchoolFindService {
     private final SchoolPostRepository schoolPostRepository;
     private final IntroPostRepository introPostRepository;
     private final FilePostRepository filePostRepository;
+    private final SchoolScheduleRepository schoolScheduleRepository;
 
     private final FileAttachmentRepository fileAttachmentRepository;
 
@@ -354,6 +356,65 @@ public class SchoolFindService {
             return null;
         }
     }
+
+    public SchoolSchedule loadScheduleById(Long id){
+        try{
+            return schoolScheduleRepository.findById(id).orElseThrow(
+                    () -> new BaseException(ErrorCode.BAD_REQUEST)
+            );
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public SchoolResponse.ScheduleDto getScheduleDtoById(Long id){
+        try{
+            return SchoolResponse.ScheduleDto.from(loadScheduleById(id));
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public List<SchoolSchedule> loadScheduleByBoard(SchoolBoard schoolBoard){
+        try{
+            return schoolScheduleRepository.findSchoolSchedulesBySchoolBoard(schoolBoard);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            log.warn("schedule가져오는거 실패");
+            return Collections.emptyList();
+        }
+    }
+    public List<SchoolResponse.ScheduleDto> loadScheduleDtoByBoard(SchoolBoard schoolBoard){
+        try{
+            return SchoolResponse.ScheduleDto.from(loadScheduleByBoard(schoolBoard));
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            log.warn("dto생성 실패");
+            return Collections.emptyList();
+        }
+    }
+
+    public Page<SchoolSchedule> loadSchedulesPageByCondition(SchoolRequest.ScheduleDto request,Pageable pageable){
+        try{
+            ScheduleType type = (request.type()==null)? null : ScheduleType.from(request.type());
+            return schoolScheduleRepository.findSchedulesByBoardAndFlexibleDate(request.boardId(),request.startDate(),request.endDate(),request.title(),type,pageable);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return Page.empty();
+        }
+    }
+
+    public Page<SchoolResponse.ScheduleDto> getScheduleDtoPageByCondition(SchoolRequest.ScheduleDto request,Pageable pageable){
+        try{
+            return SchoolResponse.ScheduleDto.from(loadSchedulesPageByCondition(request,pageable));
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return Page.empty();
+        }
+    }
+
 
 
     @Transactional

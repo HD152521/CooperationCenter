@@ -28,7 +28,10 @@ public class StudentRequest {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate birthEnd,
             String email,
             String passport,
-            String exam
+            String exam,
+            String surveyLogId,
+            String surveyTitle,
+            String agencyName
     ){}
 
 }

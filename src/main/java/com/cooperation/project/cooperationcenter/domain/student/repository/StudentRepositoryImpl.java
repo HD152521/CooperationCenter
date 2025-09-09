@@ -10,6 +10,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -22,12 +23,13 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class StudentRepositoryImpl implements StudentRepositoryCustom {
 
     private final JPAQueryFactory qf;
 
     @Override
-    public Page<Student> loadStudentByCondition(StudentRequest.ConditionDto c, Pageable pageable) {
+    public Page<Student> loadStudentPageByCondition(StudentRequest.ConditionDto c, Pageable pageable) {
         QStudent st = QStudent.student;
 
         // where 절 재사용을 위해 한 번 구성
@@ -38,7 +40,9 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom {
                 birthLoe(c.birthEnd(), st),
                 emailContains(c.email(), st),
                 passportContains(c.passport(), st),
-                examContains(c.exam(), st)
+                examContains(c.exam(), st),
+                surveyIdEq(c.surveyLogId(), st),
+                memberNameContains(c.agencyName(), st)
         };
 
         // content
@@ -57,7 +61,40 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom {
         return new PageImpl<>(content, pageable, total == null ? 0 : total);
     }
 
+    @Override
+    public List<Student> loadStudentDtoByCondition(StudentRequest.ConditionDto c) {
+        QStudent st = QStudent.student;
+
+        // where 절 재사용을 위해 한 번 구성
+        BooleanExpression[] predicates = new BooleanExpression[] {
+                nameContains(c.name(), st),
+                genderEq(c.gender(), st),
+                birthGoe(c.birthStart(), st),
+                birthLoe(c.birthEnd(), st),
+                emailContains(c.email(), st),
+                passportContains(c.passport(), st),
+                examContains(c.exam(), st),
+                surveyIdEq(c.surveyLogId(), st),
+                memberNameContains(c.agencyName(), st)
+        };
+
+        return qf.selectFrom(st)
+                .where(predicates)
+                .fetch();
+    }
+
     // ===== predicates =====
+
+    private BooleanExpression surveyIdEq(String surveyId, QStudent st) {
+        if (!hasText(surveyId)) return null;
+        return st.surveyLog.survey.surveyId.eq(surveyId);
+    }
+
+    private BooleanExpression memberNameContains(String agencyName, QStudent st) {
+        log.info("agencyName:{}",agencyName);
+        if (!hasText(agencyName)) return null;
+        return st.member.agencyName.containsIgnoreCase(agencyName);
+    }
 
     private BooleanExpression nameContains(String name, QStudent st) {
         if (!hasText(name)) return null;

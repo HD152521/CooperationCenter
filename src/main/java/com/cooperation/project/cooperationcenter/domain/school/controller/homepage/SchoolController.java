@@ -75,6 +75,11 @@ public class SchoolController {
             model.addAttribute("filePostDto",schoolFindService.loadFilePostPageByBoardByDto(schoolBoard,pageable));
             return schoolPath + school + "/school-board";
         }
+        else if(schoolBoard.getType().equals(SchoolBoard.BoardType.SCHEDULE)){
+            log.info("response:{}",schoolFindService.loadScheduleDtoByBoard(schoolBoard));
+            model.addAttribute("SchoolScheduleDto",schoolFindService.loadScheduleDtoByBoard(schoolBoard));
+            return schoolPath + school + "/school-schedule";
+        }
         return null;
     }
 

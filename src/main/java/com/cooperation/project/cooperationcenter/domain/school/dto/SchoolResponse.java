@@ -107,6 +107,34 @@ public class SchoolResponse {
             }
     }
 
+    public record ScheduleDto(
+            String title,
+            LocalDate startDate,
+            LocalDate endDate,
+            String type,
+            Long id
+    ){
+        public static ScheduleDto from(SchoolSchedule schedule){
+            return new ScheduleDto(
+                    schedule.getTitle(),
+                    schedule.getStartDate(),
+                    schedule.getEndDate(),
+                    schedule.getType().getType().toLowerCase(),
+                    schedule.getId()
+            );
+        }
+
+        public static List<ScheduleDto> from(List<SchoolSchedule> schedules){
+            return schedules.stream()
+                    .map(ScheduleDto::from)
+                    .toList();
+        }
+
+        public static Page<ScheduleDto> from(Page<SchoolSchedule> schedules){
+            return schedules.map(ScheduleDto::from);
+        }
+    }
+
     public record SchoolPostSimpleDto(
             String title,
             Long id

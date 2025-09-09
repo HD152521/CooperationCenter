@@ -8,5 +8,6 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface StudentRepositoryCustom {
-    Page<Student> loadStudentByCondition(StudentRequest.ConditionDto condition, Pageable pageable);
+    Page<Student> loadStudentPageByCondition(StudentRequest.ConditionDto condition, Pageable pageable);
+    List<Student> loadStudentDtoByCondition(StudentRequest.ConditionDto condition);
 }

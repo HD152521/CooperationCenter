@@ -2,6 +2,7 @@ package com.cooperation.project.cooperationcenter.domain.school.dto;
 
 import com.cooperation.project.cooperationcenter.domain.school.model.IntroPost;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class SchoolRequest {
@@ -37,6 +38,15 @@ public class SchoolRequest {
             String type,
             Long postId,
             String deleteFileIds
+    ){}
+
+    public record ScheduleDto(
+            Long boardId,
+            String title,
+            LocalDate startDate,
+            LocalDate endDate,
+            String type,
+            Long scheduleId
     ){}
 
     public record PostDto(

@@ -1,6 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.survey.controller.homepage;
 
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
+import com.cooperation.project.cooperationcenter.domain.student.dto.StudentRequest;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.*;
 import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.*;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
@@ -11,6 +12,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,6 +35,14 @@ public class SurveyRestController {
     private final SurveyAnswerService surveyAnswerService;
     private final SurveyLogService surveyLogService;
     private final SurveyQRService surveyQRService;
+
+    @GetMapping("/list")
+    public BaseResponse<?> getSurveyList(@PageableDefault(size = 9, sort = "createdAt", direction = Sort.Direction.DESC)
+                                             Pageable pageable,
+                                         @RequestParam(required = false) String title){
+        log.info("response:{}",surveyFindService.getFilteredSurveysAll(pageable,new SurveyRequest.LogFilterDto(title,null,null)));
+        return BaseResponse.onSuccess(surveyFindService.getFilteredSurveysAll(pageable,new SurveyRequest.LogFilterDto(title,null,null)));
+    }
 
     @GetMapping("/{surveyId}")
     public AnswerPageDto getSurvey(@PathVariable String surveyId){
@@ -122,41 +135,4 @@ public class SurveyRestController {
         log.info("enter controller type:{}",type);
         return BaseResponse.onSuccess(surveySaveService.getTemplate(type));
     }
-
-    //fixme 파일 다운로드 받는 코드임 수정 필요
-//    @GetMapping("/api/v1/survey/{surveyId}/download-answers")
-//    public ResponseEntity<byte[]> downloadAnswersZip(@PathVariable String surveyId) throws IOException {
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-//
-//            List<Question> questions = questionRepository.findBySurveyId(surveyId);
-//
-//            for (Question question : questions) {
-//                List<FileAttachment> files = fileAttachmentRepository.findAllByQuestionId(question.getId());
-//
-//                int index = 1;
-//                for (FileAttachment file : files) {
-//                    Path path = Paths.get(file.getPath()).resolve(file.getStoredName());
-//                    if (!Files.exists(path)) continue;
-//
-//                    String zipEntryName = "Q" + question.getQuestionOrder() + "/" + index + "_" + file.getOriginalName();
-//                    zos.putNextEntry(new ZipEntry(zipEntryName));
-//                    Files.copy(path, zos);
-//                    zos.closeEntry();
-//                    index++;
-//                }
-//            }
-//
-//            zos.finish(); // 명시적 종료
-//        }
-//
-//        byte[] zipBytes = baos.toByteArray();
-//
-//        return ResponseEntity.ok()
-//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + surveyId + ".zip\"")
-//                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-//                .contentLength(zipBytes.length)
-//                .body(zipBytes);
-//    }
-
 }

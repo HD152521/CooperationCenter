@@ -1,6 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.member.dto;
 
 import jakarta.validation.constraints.NotNull;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.web.multipart.MultipartFile;
 
 public class MemberRequest {
@@ -19,7 +20,9 @@ public class MemberRequest {
             @NotNull String agencyName,
             @NotNull String agencyAddress1,
             @NotNull String agencyAddress2,
-            @NotNull String agencyPhone
+            @NotNull String agencyPhone,
+            @NotNull String agencyRegion,
+            @NotNull String agencyEmail
     ){
         public SignupDto withEncodedPassword(String encodedPassword) {
             return new SignupDto(
@@ -35,7 +38,9 @@ public class MemberRequest {
                     this.agencyName,
                     this.agencyAddress1,
                     this.agencyAddress2,
-                    this.agencyPhone
+                    this.agencyPhone,
+                    this.agencyRegion,
+                    this.agencyEmail
             );
         }
     }

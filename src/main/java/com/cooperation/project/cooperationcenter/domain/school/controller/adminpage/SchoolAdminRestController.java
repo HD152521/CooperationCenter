@@ -89,8 +89,8 @@ public class SchoolAdminRestController {
     }
 
     @GetMapping("/file")
-    public BaseResponse<?> getFilePost(@RequestParam Long postId){
-        return BaseResponse.onSuccess(schoolFindService.getDetailFilePostDto(postId));
+    public BaseResponse<?> getFilePost(@ModelAttribute SchoolRequest.PostIdDto request){
+        return BaseResponse.onSuccess(schoolFindService.getDetailFilePostDto(request.postId()));
     }
 
     @PatchMapping("/file")
@@ -110,4 +110,34 @@ public class SchoolAdminRestController {
 
 
 
+    @PostMapping("/schedule")
+    public BaseResponse<?> saveSchedule(@ModelAttribute  SchoolRequest.ScheduleDto request){
+        schoolService.saveSchedule(request);
+        return BaseResponse.onSuccess("success");
+    }
+    @GetMapping("/schedule")
+    public BaseResponse<?> getSchedule(@ModelAttribute SchoolRequest.PostIdDto request){
+        return BaseResponse.onSuccess(schoolFindService.getScheduleDtoById(request.postId()));
+    }
+
+    @GetMapping("/schedules")
+    public BaseResponse<?> getSchedules(@ModelAttribute SchoolRequest.ScheduleDto request,
+                                        @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+                                        Pageable pageable){
+        log.info("request:{}",request.toString());
+        return BaseResponse.onSuccess(schoolFindService.getScheduleDtoPageByCondition(request,pageable));
+    }
+
+    @PatchMapping("/schedule")
+    public BaseResponse<?> updateSchedule(@ModelAttribute  SchoolRequest.ScheduleDto request){
+        schoolService.editSchedule(request);
+        return BaseResponse.onSuccess("");
+    }
+
+    @DeleteMapping("/schedule")
+    public BaseResponse<?> deleteSchedule(@RequestBody SchoolRequest.PostIdDto request){
+        schoolService.deleteSchedule(request);
+        return BaseResponse.onSuccess("");
+    }
 }
+

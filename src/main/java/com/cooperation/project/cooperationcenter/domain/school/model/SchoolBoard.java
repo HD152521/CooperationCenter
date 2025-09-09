@@ -1,6 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.school.model;
 
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
+import com.cooperation.project.cooperationcenter.domain.school.dto.ScheduleType;
 import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolRequest;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -40,6 +41,9 @@ public class SchoolBoard extends BaseEntity {
     @OneToMany(mappedBy = "schoolBoard")
     private List<FilePost> filePosts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "schoolBoard")
+    private List<SchoolSchedule> schedules = new ArrayList<>();
+
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "intro_post_id")
     private IntroPost introPost;
@@ -58,6 +62,11 @@ public class SchoolBoard extends BaseEntity {
 
     }
 
+    public void addSchedule(SchoolSchedule schedule){
+        schedules.add(schedule);
+        schedule.setBoard(this);
+    }
+
     public void deleteSchool(){
         school.deleteBoard(this);
         school = null;
@@ -67,7 +76,7 @@ public class SchoolBoard extends BaseEntity {
         posts.remove(post);
     }
     public void deleteFilePost(FilePost post){filePosts.remove(post);}
-
+    public void deleteSchedule(SchoolSchedule schedule){schedules.remove(schedule);}
     public void setIntroPost(IntroPost introPost) {
         this.introPost = introPost;
     }
@@ -75,16 +84,17 @@ public class SchoolBoard extends BaseEntity {
     public void deleteIntroPost(IntroPost post) {
         this.introPost=null;
     }
-
     public void deleteAllPost() {
         posts.clear();
     }
+    public void deleteAllSchedule(){schedules.clear();}
 
     @Getter
     public enum BoardType {
         INTRO("INTRO","/homepage/user/school/introTemplate"),
         NOTICE("NOTICE","/homepage/user/school/postTemplate"),
-        FILES("FILES","/homepage/user/school/school-board");
+        FILES("FILES","/homepage/user/school/school-board"),
+        SCHEDULE("SCHEDULE","/homepage/user/school/school-board/school-schedule");
 
         private final String type;
         private final String path;

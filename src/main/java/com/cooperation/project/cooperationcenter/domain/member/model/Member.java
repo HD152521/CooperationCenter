@@ -3,6 +3,7 @@ package com.cooperation.project.cooperationcenter.domain.member.model;
 
 import com.cooperation.project.cooperationcenter.domain.agency.model.Agency;
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
+import com.cooperation.project.cooperationcenter.domain.member.dto.AgencyRegion;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
 import com.cooperation.project.cooperationcenter.domain.student.model.Student;
 import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyLog;
@@ -48,7 +49,8 @@ public class Member extends BaseEntity {
     @NotNull private String agencyAddress1;
     @NotNull private String agencyAddress2;
     @NotNull private String agencyPhone;
-//    @NotNull private enum agencyRegion;  fixme 추가해야함.
+    @NotNull private AgencyRegion agencyRegion;
+    @NotNull private String agencyEmail;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "agency_picture_id")
@@ -129,10 +131,12 @@ public class Member extends BaseEntity {
                 .agencyPhone(dto.agencyPhone())
                 .birth(LocalDate.parse(dto.birth()))
                 .agencyOwner(dto.agencyOwner())
+                .agencyEmail(dto.agencyEmail())
                 .memberId(uuid)
                 .role(Role.USER) // 기본값
                 .approvalSignup(false) // 가입 승인 대기 상태
                 .status(UserStatus.PENDING)
+                .agencyRegion(AgencyRegion.fromLabel(dto.agencyRegion()))
                 .build();
     }
 

@@ -25,6 +25,7 @@ public class StudentAdminController {
     public String studentPage(Model model, @ModelAttribute StudentRequest.ConditionDto condition,
                               @PageableDefault(size = 10, sort = "studentId", direction = Sort.Direction.DESC)
                               Pageable pageable){
+        log.info("condition:{}",condition.toString());
         model.addAttribute("condition", condition);
         model.addAttribute("students",studentService.getStudentDtoPageByCondition(condition,pageable));
         return studentPath+"studentList";

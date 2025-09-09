@@ -1,6 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.agency.model;
 
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
+import com.cooperation.project.cooperationcenter.domain.member.dto.AgencyRegion;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -30,7 +31,8 @@ public class Agency extends BaseEntity {
     @NotNull private String agencyAddress2;
     @NotNull private String agencyPhone;
     @NotNull private String agencyOwner;
-//    @NotNull private enum agencyRegion;  fixme 추가해야함.
+    @NotNull private AgencyRegion agencyRegion;
+    @NotNull private String agencyEmail;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "agency_picture_id")
@@ -52,6 +54,8 @@ public class Agency extends BaseEntity {
                 .agencyPhone(member.getAgencyPhone())
                 .agencyOwner(member.getAgencyOwner())
                 .member(member)
+                .agencyRegion(member.getAgencyRegion())
+                .agencyEmail(member.getAgencyEmail())
                 .build();
     }
 }

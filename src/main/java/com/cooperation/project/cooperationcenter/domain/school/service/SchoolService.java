@@ -29,6 +29,7 @@ public class SchoolService {
     private final SchoolPostRepository schoolPostRepository;
     private final IntroPostRepository introPostRepository;
     private final FilePostRepository filePostRepository;
+    private final SchoolScheduleRepository schoolScheduleRepository;
 
     private final SchoolFindService schoolFindService;
     private final FileService fileService;
@@ -74,6 +75,14 @@ public class SchoolService {
             post.addFile(attachments);
         }
         board.addPost(schoolPostRepository.save(post));
+    }
+
+    @Transactional
+    public void saveSchedule(SchoolRequest.ScheduleDto request){
+        SchoolBoard board = schoolFindService.loadBoardById(request.boardId());
+        SchoolSchedule schedule = SchoolSchedule.fromDto(request);
+
+        board.addSchedule(schoolScheduleRepository.save(schedule));
     }
 
     @Transactional
@@ -187,6 +196,22 @@ public class SchoolService {
     }
 
     @Transactional
+    public void editSchedule(SchoolRequest.ScheduleDto request){
+        SchoolSchedule schedule = schoolFindService.loadScheduleById(request.scheduleId());
+        schedule.updateFromDto(request);
+    }
+
+    @Transactional
+    public void deleteSchedule(SchoolRequest.PostIdDto request){
+        SchoolSchedule schedule = schoolFindService.loadScheduleById(request.postId());
+        SchoolBoard board = schedule.getSchoolBoard();
+        board.deleteSchedule(schedule);
+        schedule.setBoard(null);
+
+        schoolScheduleRepository.delete(schedule);
+    }
+
+    @Transactional
     public void deletePost(long postId){
         SchoolPost post = schoolFindService.loadPostById(postId);
         post.deleteBoard();
@@ -195,6 +220,10 @@ public class SchoolService {
         fileService.deleteFile(attachments);
         schoolPostRepository.delete(post);
         log.info("post delete complete");
+    }
+
+    public void getScheduleDto(){
+
     }
 
 }
