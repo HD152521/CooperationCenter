@@ -3,6 +3,7 @@ package com.cooperation.project.cooperationcenter.domain.survey.controller.homep
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
 import com.cooperation.project.cooperationcenter.domain.student.dto.StudentRequest;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.*;
+import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyFolder;
 import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.*;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,35 +36,23 @@ public class SurveyRestController {
     private final SurveyAnswerService surveyAnswerService;
     private final SurveyLogService surveyLogService;
     private final SurveyQRService surveyQRService;
+    private final SurveyFolderService surveyFolderService;
 
-    @GetMapping("/list")
-    public BaseResponse<?> getSurveyList(@PageableDefault(size = 9, sort = "createdAt", direction = Sort.Direction.DESC)
-                                             Pageable pageable,
-                                         @RequestParam(required = false) String title){
-        log.info("response:{}",surveyFindService.getFilteredSurveysAll(pageable,new SurveyRequest.LogFilterDto(title,null,null)));
-        return BaseResponse.onSuccess(surveyFindService.getFilteredSurveysAll(pageable,new SurveyRequest.LogFilterDto(title,null,null)));
-    }
+
+    //Note 설문조사 보여주는 controller
+
+//    @GetMapping("/list")
+//    public BaseResponse<?> getSurveyList(@PageableDefault(size = 9, sort = "createdAt", direction = Sort.Direction.DESC)
+//                                             Pageable pageable,
+//                                         @RequestParam(required = false) String title){
+//        log.info("response:{}",surveyFindService.getFilteredSurveysAll(pageable,new SurveyRequest.LogFilterDto(title,null,null)));
+//        return BaseResponse.onSuccess(surveyFindService.getFilteredSurveysAll(pageable,new SurveyRequest.LogFilterDto(title,null,null)));
+//    }
 
     @GetMapping("/{surveyId}")
     public AnswerPageDto getSurvey(@PathVariable String surveyId){
         log.info("[controller] getSurvey 진입 : {}",surveyId);
         return surveySaveService.getSurveys(surveyId);
-    }
-
-    @PostMapping("/answer")
-    public ResponseEntity<Void> receiveSurveyAnswer(
-            @RequestPart("data") String data,
-            HttpServletRequest request,
-            @AuthenticationPrincipal MemberDetails memberDetails
-    ) throws JsonProcessingException {
-        log.info("[submit answer] dto:{}",data);
-        try{
-            surveyAnswerService.answerSurvey(data,request,memberDetails);
-        }catch (Exception e){
-            log.warn(e.getMessage());
-        }
-        log.info("save answer");
-        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/admin/make")
@@ -86,11 +75,30 @@ public class SurveyRestController {
         return BaseResponse.onSuccess("success");
     }
 
+
     @PatchMapping("/admin/edit")
     public void editSurvey(@RequestBody SurveyEditDto request){
         log.info("[controller] getSurvey 진입 : {}",request.surveyId());
         //fixme 제목 안바뀜
         surveySaveService.editSurvey(request);
+    }
+
+    
+    //note 설문조사 답변 및 로그 확인
+    @PostMapping("/answer")
+    public ResponseEntity<Void> receiveSurveyAnswer(
+            @RequestPart("data") String data,
+            HttpServletRequest request,
+            @AuthenticationPrincipal MemberDetails memberDetails
+    ) throws JsonProcessingException {
+        log.info("[submit answer] dto:{}",data);
+        try{
+            surveyAnswerService.answerSurvey(data,request,memberDetails);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+        }
+        log.info("save answer");
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/admin/answer/{surveyId}")
@@ -134,5 +142,30 @@ public class SurveyRestController {
     public BaseResponse<?> getTemplate(@RequestParam("type") String type){
         log.info("enter controller type:{}",type);
         return BaseResponse.onSuccess(surveySaveService.getTemplate(type));
+    }
+
+    //note 설문조사 폴더용 controller7
+
+    @GetMapping("/admin/folders")
+    public BaseResponse<?> getFolders(){
+        return BaseResponse.onSuccess(surveyFolderService.getSurveyFolderDtos());
+    }
+    //fixme 수정
+    @PostMapping("/admin/folders")
+    public BaseResponse<?> makeFolder(@RequestBody SurveyFolderDto request,@AuthenticationPrincipal MemberDetails memberDetails){
+        surveyFolderService.saveSurveyFolderDto(request,memberDetails);
+        return BaseResponse.onSuccess("success");
+    }
+    //fixme 수정
+    @PatchMapping("/admin/folders/{folderId}")
+    public BaseResponse<?> updateFolder(@RequestBody SurveyFolderDto request){
+        surveyFolderService.updateSurveyFolderDto(request);
+        return BaseResponse.onSuccess("success");
+    }
+
+    @DeleteMapping("/admin/folders/{folderId}")
+    public BaseResponse<?> deleteFolder(@PathVariable String folderId){
+        surveyFolderService.deleteSurveyFolder(folderId);
+        return BaseResponse.onSuccess("success");
     }
 }

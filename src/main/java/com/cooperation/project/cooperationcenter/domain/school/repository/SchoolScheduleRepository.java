@@ -13,26 +13,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface SchoolScheduleRepository extends JpaRepository<SchoolSchedule,Long> {
-//    @Query("""
-//    select s
-//    from SchoolSchedule s
-//    where s.schoolBoard.id = :boardId
-//      and (
-//           (:start is null and :end is null)
-//        or (:start is not null and :end is not null
-//            and s.startDate <= :end
-//            and s.endDate   >= :start)
-//        or (:start is not null and :end is null
-//            and s.startDate >= :start)
-//        or (:start is null and :end is not null
-//            and s.endDate   <= :end)
-//      )
-//      and (
-//           :keyword is null or :keyword = ''
-//        or lower(s.title) like concat('%', lower(:keyword), '%')
-//      )
-//    order by s.startDate desc, s.id desc
-//    """)
 @Query("""
 select s
 from SchoolSchedule s

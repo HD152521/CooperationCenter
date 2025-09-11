@@ -18,7 +18,8 @@ public class SurveyRequest {
             List<QuestionDto> questions,
             LocalDate startDate,
             LocalDate endDate,
-            String surveyType
+            String surveyType,
+            String folderId
     ){
         public static Survey toEntity(SurveyDto request){
             Survey.SurveyType type = Survey.SurveyType.getSruveyType(request.surveyType());

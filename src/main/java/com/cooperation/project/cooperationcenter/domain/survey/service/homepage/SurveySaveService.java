@@ -1,13 +1,13 @@
 package com.cooperation.project.cooperationcenter.domain.survey.service.homepage;
 
 import com.cooperation.project.cooperationcenter.domain.survey.dto.*;
-import com.cooperation.project.cooperationcenter.domain.survey.model.Question;
-import com.cooperation.project.cooperationcenter.domain.survey.model.QuestionOption;
-import com.cooperation.project.cooperationcenter.domain.survey.model.QuestionType;
-import com.cooperation.project.cooperationcenter.domain.survey.model.Survey;
+import com.cooperation.project.cooperationcenter.domain.survey.model.*;
 import com.cooperation.project.cooperationcenter.domain.survey.repository.QuestionOptionRepository;
 import com.cooperation.project.cooperationcenter.domain.survey.repository.QuestionRepository;
+import com.cooperation.project.cooperationcenter.domain.survey.repository.SurveyFolderRepository;
 import com.cooperation.project.cooperationcenter.domain.survey.repository.SurveyRepository;
+import com.cooperation.project.cooperationcenter.global.exception.BaseException;
+import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,14 +30,30 @@ public class SurveySaveService {
     private final QuestionOptionRepository questionOptionRepository;
     private final QuestionRepository questionRepository;
     private final SurveyFindService surveyFindService;
+    private final SurveyFolderRepository surveyFolderRepository;
 
     @Transactional
     public void saveSurvey(SurveyRequest.SurveyDto request){
         log.info("{}",request);
         Survey survey = SurveyRequest.SurveyDto.toEntity(request);
+
+        SurveyFolder surveyFolder = loadSurveyFolderById(request.folderId());
+        survey.setSurveyFolder(surveyFolder);
+
         List<Question> questions = getQuestionsFromDto(request.questions(),survey);
         List<QuestionOption> options = getQuestionOptionFromDto(request.questions(),questions,survey);
         save(survey,questions,options);
+    }
+
+    public SurveyFolder loadSurveyFolderById(String fileId){
+        try{
+            return surveyFolderRepository.findByFolderId(fileId).orElseThrow(
+                    () -> new BaseException(ErrorCode.BAD_REQUEST)
+            );
+        }catch (Exception e) {
+            log.warn(e.getMessage());
+            return null;
+        }
     }
 
     @Transactional
@@ -215,6 +231,7 @@ public class SurveySaveService {
     @Transactional
     public void deleteSurvey(String surveyId){
         Survey survey = surveyFindService.getSurveyFromId(surveyId);
+        SurveyFolder surveyFolder = survey.getSurveyFolder();
         log.info("delete survey:{}",survey.getSurveyId());
         try {
             for (Question question : survey.getQuestions()) {
@@ -235,6 +252,7 @@ public class SurveySaveService {
             log.warn("question 삭제 실패");
         }
 
+        surveyFolder.deleteSurvey(survey);
         surveyRepository.delete(survey);
         log.info("survey delete success...");
     }
@@ -251,6 +269,7 @@ public class SurveySaveService {
                 .startDate(original.getStartDate())
                 .endDate(original.getEndDate())
                 .surveyType(original.getSurveyType())
+                .surveyFolder(original.getSurveyFolder())
                 .build();
         surveyRepository.save(copy);
 

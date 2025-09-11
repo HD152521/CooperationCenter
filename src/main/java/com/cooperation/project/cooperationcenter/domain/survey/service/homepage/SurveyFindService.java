@@ -28,6 +28,7 @@ public class SurveyFindService {
     private final QuestionRepository questionRepository;
     private final SurveyLogRepository surveyLogRepository;
     private final AnswerRepository answerRepository;
+    private final SurveyFolderRepository surveyFolderRepository;
 
     public Survey getSurveyFromId(Long surveyId){
         try{
@@ -103,10 +104,10 @@ public class SurveyFindService {
         }
     }
 
-    public Page<SurveyResponseDto> getFilteredSurveysAll(Pageable pageable,SurveyRequest.LogFilterDto condition){
+    public Page<SurveyResponseDto> getFilteredSurveysAll(Pageable pageable,SurveyRequest.LogFilterDto condition,SurveyFolder surveyFolder){
         if(condition.status()==null) condition = condition.setStatus();
         log.info("conditoin:{}",condition.toString());
-        Page<Survey> surveys = getSurveyFromCondition(pageable,condition);
+        Page<Survey> surveys = getSurveyFromCondition(pageable,condition,surveyFolder);
         return surveys.map(survey -> {
             LocalDate now = LocalDate.now();
             int daysLeft = (survey.getEndDate() == null) ? 0 : (int) ChronoUnit.DAYS.between(now, survey.getEndDate());
@@ -125,9 +126,9 @@ public class SurveyFindService {
         });
     }
 
-    public Page<SurveyResponseDto> getFilteredSurveysAllIsActive(Pageable pageable,SurveyRequest.LogFilterDto condition){
+    public Page<SurveyResponseDto> getFilteredSurveysAllIsActive(Pageable pageable,SurveyRequest.LogFilterDto condition,SurveyFolder surveyFolder){
         if (condition.status() == null) condition = condition.setStatus();
-        Page<Survey> surveys = getSurveyFromCondition(pageable, condition);
+        Page<Survey> surveys = getSurveyFromCondition(pageable, condition,surveyFolder);
 
         LocalDate now = LocalDate.now();
 
@@ -154,9 +155,10 @@ public class SurveyFindService {
         return new PageImpl<>(filtered, pageable, filtered.size());
     }
 
-    public Page<SurveyResponseDto> getFilteredSurveysActive(Pageable pageable,SurveyRequest.LogFilterDto condition,boolean isAdmin){
-        if(isAdmin) return getFilteredSurveysAll(pageable,condition);
-        else return getFilteredSurveysAllIsActive(pageable,condition);
+    public Page<SurveyResponseDto> getFilteredSurveysActive(Pageable pageable,SurveyRequest.LogFilterDto condition,String folderId,boolean isAdmin){
+        SurveyFolder surveyFolder = surveyFolderRepository.findByFolderId(folderId).orElseGet(null);
+        if(isAdmin) return getFilteredSurveysAll(pageable,condition,surveyFolder);
+        else return getFilteredSurveysAllIsActive(pageable,condition,null);
     }
 
 
@@ -178,9 +180,9 @@ public class SurveyFindService {
         }
     }
 
-    public Page<Survey> getSurveyFromCondition(Pageable pageable, SurveyRequest.LogFilterDto condition){
+    public Page<Survey> getSurveyFromCondition(Pageable pageable, SurveyRequest.LogFilterDto condition,SurveyFolder surveyFolder){
         try{
-            return surveyRepository.findByFilter(condition.text(),condition.date(), condition.status(),pageable);
+            return surveyRepository.findByFilter(condition.text(),condition.date(), condition.status(),pageable,surveyFolder);
         }catch (Exception e){
             log.warn("get survey by conditon failed...");
             return null;

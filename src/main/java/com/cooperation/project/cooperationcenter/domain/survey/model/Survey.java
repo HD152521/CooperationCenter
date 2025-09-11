@@ -66,9 +66,19 @@ public class Survey extends BaseEntity {
     @OneToMany(mappedBy = "survey")
     private final List<SurveyLog> surveyLogs = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "survey_folder_id", nullable = false)
+    private SurveyFolder surveyFolder;
+
+
+    public void setSurveyFolder(SurveyFolder surveyFolder){
+        this.surveyFolder = surveyFolder;
+        surveyFolder.addSurvey(this);
+    }
+
 
     @Builder
-    public Survey(String surveyTitle,String surveyDescription,String owner,LocalDate startDate, LocalDate endDate,SurveyType surveyType){
+    public Survey(String surveyTitle,String surveyDescription,String owner,LocalDate startDate, LocalDate endDate,SurveyType surveyType,SurveyFolder surveyFolder){
         this.surveyDescription = surveyDescription;
         this.surveyTitle = surveyTitle;
         this.participantCount = 0;
@@ -77,6 +87,7 @@ public class Survey extends BaseEntity {
         this.endDate = endDate;
         this.surveyId = UUID.randomUUID().toString();
         this.surveyType = surveyType;
+        this.surveyFolder = surveyFolder;
         this.copyCnt = 0;
     }
 

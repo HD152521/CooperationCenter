@@ -16,7 +16,7 @@ public record SurveyEditDto (
         String surveyType,
         String surveyId
 ){
-    public static SurveyEditDto to(String surveyid, SurveyFindService surveyFindService){
+    public static SurveyEditDto from(String surveyid, SurveyFindService surveyFindService){
         Survey survey = surveyFindService.getSurveyFromId(surveyid);
         return new SurveyEditDto(
                 survey.getSurveyDescription(),

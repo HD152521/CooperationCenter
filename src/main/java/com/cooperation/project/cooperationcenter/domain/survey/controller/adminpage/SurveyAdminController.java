@@ -26,7 +26,7 @@ public class SurveyAdminController {
     public String surveyPage(Model model,
                              @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
                              Pageable pageable){
-        Page<SurveyResponseDto> surveys = surveyFindService.getFilteredSurveysActive(pageable,new SurveyRequest.LogFilterDto(null,null,null),true);
+        Page<SurveyResponseDto> surveys = surveyFindService.getFilteredSurveysActive(pageable,new SurveyRequest.LogFilterDto(null,null,null),null,true);
         model.addAttribute("surveys", surveys);
         return "/adminpage/user/survey/manageSurvey";
     }
