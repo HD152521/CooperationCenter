@@ -78,7 +78,7 @@ public class Survey extends BaseEntity {
 
 
     @Builder
-    public Survey(String surveyTitle,String surveyDescription,String owner,LocalDate startDate, LocalDate endDate,SurveyType surveyType,SurveyFolder surveyFolder){
+    public Survey(String surveyTitle,String surveyDescription,String owner,LocalDate startDate, LocalDate endDate,SurveyType surveyType,SurveyFolder surveyFolder,boolean share){
         this.surveyDescription = surveyDescription;
         this.surveyTitle = surveyTitle;
         this.participantCount = 0;
@@ -89,6 +89,7 @@ public class Survey extends BaseEntity {
         this.surveyType = surveyType;
         this.surveyFolder = surveyFolder;
         this.copyCnt = 0;
+        this.share = share;
     }
 
     public void setQuestion(Question question){
@@ -135,6 +136,7 @@ public class Survey extends BaseEntity {
         this.startDate = dto.startDate();
         this.endDate = dto.endDate();
         this.surveyType = SurveyType.getSruveyType(dto.surveyType());
+        this.share = dto.isShare();
     }
 
     @Override

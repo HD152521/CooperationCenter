@@ -7,6 +7,9 @@ import com.cooperation.project.cooperationcenter.domain.member.service.MemberSer
 import com.cooperation.project.cooperationcenter.domain.member.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,8 +24,11 @@ public class MemberProfileController {
     private final String profilePath = "homepage/user/member/";
 
     @RequestMapping("/profile")
-    public String profile(@AuthenticationPrincipal MemberDetails memberDetails, Model model) {
-        Profile.ProfileDto profile = profileService.getProfileDto(memberDetails);
+    public String profile(@AuthenticationPrincipal MemberDetails memberDetails,
+                          Model model,
+                          @PageableDefault(size = 9, sort = "createdAt", direction = Sort.Direction.DESC)
+                              Pageable pageable) {
+        Profile.ProfileDto profile = profileService.getProfileDto(memberDetails,pageable);
         model.addAttribute("profileDto", profile);
         log.info("memberDto:{}", profile.member().toString());
         log.info("memberDto:{}", profile.surveys().toString());

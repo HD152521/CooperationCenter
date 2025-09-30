@@ -22,7 +22,7 @@ public class HomeController {
     @RequestMapping({"/", "/home"})
     public String home(Model model, HttpServletRequest request) {
         model.addAttribute("agencyDto", agencyService.getAgencyListForHome());
-        model.addAttribute("schoolDto", schoolFindService.loadAllSchoolByDto());
+        model.addAttribute("schoolDto", schoolFindService.loadAllSchoolByHomeDto());
         return "/homepage/user/index";
     }
 

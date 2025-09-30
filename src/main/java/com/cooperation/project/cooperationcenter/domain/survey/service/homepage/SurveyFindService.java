@@ -1,10 +1,12 @@
 package com.cooperation.project.cooperationcenter.domain.survey.service.homepage;
 
+import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyRequest;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.SurveyResponseDto;
 import com.cooperation.project.cooperationcenter.domain.survey.model.*;
 import com.cooperation.project.cooperationcenter.domain.survey.repository.*;
 import com.cooperation.project.cooperationcenter.global.exception.BaseException;
+import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -134,7 +136,7 @@ public class SurveyFindService {
 
         // stream 으로 바꿔서 종료된 설문 빼고 다시 PageImpl 로 감싸기
         List<SurveyResponseDto> filtered = surveys.stream()
-                .filter(survey -> survey.getEndDate() == null || !survey.getEndDate().isBefore(now)) // 종료일이 오늘 이전이면 제외
+                .filter(survey -> survey.getEndDate() == null || !survey.getEndDate().isBefore(now) && survey.isShare()) // 종료일이 오늘 이전이면 제외
                 .map(survey -> {
                     int daysLeft = (survey.getEndDate() == null) ? 0 : (int) ChronoUnit.DAYS.between(now, survey.getEndDate());
                     boolean isBefore = survey.getStartDate() != null && now.isBefore(survey.getStartDate()) && !now.equals(survey.getStartDate());
@@ -156,7 +158,14 @@ public class SurveyFindService {
     }
 
     public Page<SurveyResponseDto> getFilteredSurveysActive(Pageable pageable,SurveyRequest.LogFilterDto condition,String folderId,boolean isAdmin){
-        SurveyFolder surveyFolder = surveyFolderRepository.findByFolderId(folderId).orElseGet(null);
+        SurveyFolder surveyFolder=null;
+        try{
+            surveyFolder = surveyFolderRepository.findByFolderId(folderId).orElseThrow(
+                    () -> new BaseException(ErrorCode.BAD_REQUEST)
+            );
+        }catch (Exception e){
+            log.warn(e.getMessage());
+        }
         if(isAdmin) return getFilteredSurveysAll(pageable,condition,surveyFolder);
         else return getFilteredSurveysAllIsActive(pageable,condition,null);
     }
@@ -182,7 +191,7 @@ public class SurveyFindService {
 
     public Page<Survey> getSurveyFromCondition(Pageable pageable, SurveyRequest.LogFilterDto condition,SurveyFolder surveyFolder){
         try{
-            return surveyRepository.findByFilter(condition.text(),condition.date(), condition.status(),pageable,surveyFolder);
+            return surveyRepository.findByFilter(condition.text(),condition.date(), condition.status(),condition.surveyType(),pageable,surveyFolder);
         }catch (Exception e){
             log.warn("get survey by conditon failed...");
             return null;
@@ -223,6 +232,15 @@ public class SurveyFindService {
         try{
             Survey survey = getSurveyFromId(surveyId);
             return surveyLogRepository.findSurveysLogBySurvey(survey);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public Page<SurveyLog> getSurveyLogs(Member member,Pageable pageable){
+        try{
+            return surveyLogRepository.findSurveysLogByMember(member,pageable);
         }catch (Exception e){
             log.warn(e.getMessage());
             return null;

@@ -194,18 +194,11 @@ public class SurveySaveService {
     public AnswerPageDto getSurveys(String surveyId){
         List<QuestionDto> response = new ArrayList<>();
         Survey survey = surveyFindService.getSurveyFromId(surveyId);
+
+        if(!survey.isShare()) return null;
+
         List<Question> questions = surveyFindService.getQuestions(survey);
         List<QuestionOption> options = surveyFindService.getOptions(survey);
-
-        log.info("option empty?:{}",options.isEmpty());
-
-//        Map<Long, List<String>> optionMap = new HashMap<>();
-//        for (QuestionOption opt : options) {
-//            Long questionId = opt.getQuestion().getId();
-//            log.info("questionId:{}",questionId);
-//            optionMap.computeIfAbsent(questionId, k -> new ArrayList<>())
-//                    .add(opt.getOptionText());
-//        }
 
         for(Question q : questions){
             response.add(

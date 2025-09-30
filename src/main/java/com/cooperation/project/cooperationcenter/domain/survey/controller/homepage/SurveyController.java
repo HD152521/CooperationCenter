@@ -75,8 +75,10 @@ public class SurveyController {
 
     @RequestMapping("/edit/{surveyId}")
     public String editSurvey(@PathVariable String surveyId, Model model){
-        model.addAttribute("survey", SurveyEditDto.from(surveyId,surveyFindService));
-        log.info("surveyId:{}",SurveyEditDto.from(surveyId,surveyFindService).toString());
+        SurveyEditDto dto = SurveyEditDto.from(surveyId,surveyFindService);
+        model.addAttribute("survey", dto);
+        model.addAttribute("folderId", dto.folderId());
+        log.info("surveyId:{}",dto.toString());
         return surveyPath+"/survey-make";
     }
 

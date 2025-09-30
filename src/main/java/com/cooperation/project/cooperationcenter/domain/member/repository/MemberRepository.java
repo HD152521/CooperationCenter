@@ -1,5 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.member.repository;
 
+import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.member.model.UserStatus;
 import org.springframework.data.domain.Page;
@@ -7,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,4 +21,9 @@ public interface MemberRepository extends JpaRepository<Member,Long>,MemberRepos
     long count();
     long countByStatus(UserStatus status);
     long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+    long countByBusinessCertificate(FileAttachment file);
+    long countByAgencyPicture(FileAttachment file);
+
+    long countByApprovedDateGreaterThanEqualAndApprovedDateLessThan(LocalDate start,LocalDate end);
+
 }

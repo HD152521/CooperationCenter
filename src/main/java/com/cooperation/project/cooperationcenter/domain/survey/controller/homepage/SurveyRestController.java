@@ -3,6 +3,7 @@ package com.cooperation.project.cooperationcenter.domain.survey.controller.homep
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
 import com.cooperation.project.cooperationcenter.domain.student.dto.StudentRequest;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.*;
+import com.cooperation.project.cooperationcenter.domain.survey.model.Survey;
 import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyFolder;
 import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.*;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
@@ -41,13 +42,14 @@ public class SurveyRestController {
 
     //Note 설문조사 보여주는 controller
 
-//    @GetMapping("/list")
-//    public BaseResponse<?> getSurveyList(@PageableDefault(size = 9, sort = "createdAt", direction = Sort.Direction.DESC)
-//                                             Pageable pageable,
-//                                         @RequestParam(required = false) String title){
-//        log.info("response:{}",surveyFindService.getFilteredSurveysAll(pageable,new SurveyRequest.LogFilterDto(title,null,null)));
-//        return BaseResponse.onSuccess(surveyFindService.getFilteredSurveysAll(pageable,new SurveyRequest.LogFilterDto(title,null,null)));
-//    }
+    @GetMapping("/list")
+    public BaseResponse<?> getSurveyList(@PageableDefault(size = 9, sort = "createdAt", direction = Sort.Direction.DESC)
+                                             Pageable pageable,
+                                         @RequestParam(required = false) String title,
+                                         @RequestParam(required = false) String surveyType){
+        log.info("response:{}",surveyFindService.getFilteredSurveysAll(pageable,new SurveyRequest.LogFilterDto(title,null,null, Survey.SurveyType.getSruveyType(surveyType)),null));
+        return BaseResponse.onSuccess(surveyFindService.getFilteredSurveysAll(pageable,new SurveyRequest.LogFilterDto(title,null,null,Survey.SurveyType.getSruveyType(surveyType)),null));
+    }
 
     @GetMapping("/{surveyId}")
     public AnswerPageDto getSurvey(@PathVariable String surveyId){

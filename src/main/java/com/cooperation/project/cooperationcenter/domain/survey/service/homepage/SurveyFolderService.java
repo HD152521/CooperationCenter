@@ -76,7 +76,6 @@ public class SurveyFolderService {
     public void updateSurveyFolderDto(final SurveyFolderDto surveyFolderDto){
         SurveyFolder surveyFolder = loadSurveyFolderById(surveyFolderDto.folderId());
         surveyFolder.updateFromDto(surveyFolderDto);
-        saveSurveyFolder(surveyFolder);
     }
 
     @Transactional

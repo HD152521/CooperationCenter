@@ -5,6 +5,7 @@ import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.global.token.vo.TokenResponse;
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,7 +60,7 @@ public class MemberResponse {
             String userName,
             String userEmail,
             LocalDateTime userCreatedAt,
-            LocalDateTime userLastLogin,
+            LocalDate userApprovedAt,
             boolean isApproval
     ){
         public static UserDto from(Member member){
@@ -67,7 +68,7 @@ public class MemberResponse {
                     member.getMemberName(),
                     member.getEmail(),
                     member.getCreatedAt(),
-                    null,
+                    member.getApprovedDate(),
                     member.isApprovalSignup()
             );
         }

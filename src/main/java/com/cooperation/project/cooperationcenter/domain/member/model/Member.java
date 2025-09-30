@@ -5,6 +5,7 @@ import com.cooperation.project.cooperationcenter.domain.agency.model.Agency;
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.member.dto.AgencyRegion;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
+import com.cooperation.project.cooperationcenter.domain.member.dto.Profile;
 import com.cooperation.project.cooperationcenter.domain.student.model.Student;
 import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyFolder;
 import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyLog;
@@ -53,15 +54,15 @@ public class Member extends BaseEntity {
     @NotNull private AgencyRegion agencyRegion;
     @NotNull private String agencyEmail;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "agency_picture_id")
     private FileAttachment agencyPicture;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "business_certificate_id")
     private FileAttachment businessCertificate;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "agency_id")
     private Agency agency;
 
@@ -70,6 +71,7 @@ public class Member extends BaseEntity {
     @Column(name = "is_approval_signup") @NotNull private boolean approvalSignup;
     @Enumerated(EnumType.STRING)
     private UserStatus status;
+    private LocalDate approvedDate;
 
     @OneToMany(mappedBy = "member")
     private List<SurveyLog> surveyLogs = new ArrayList<>();
@@ -83,15 +85,25 @@ public class Member extends BaseEntity {
     public void accept(){
         this.approvalSignup = true;
         this.status = UserStatus.APPROVED;
+        this.approvedDate = LocalDate.now();
     }
 
     public void pending(){
         this.approvalSignup = false;
         this.status = UserStatus.PENDING;
+        this.approvedDate = null;
     }
 
     public boolean isAccept(){
         return (this.status.equals(UserStatus.APPROVED))||isApprovalSignup();
+    }
+
+    public void updateBusinessCert(FileAttachment file){
+        this.businessCertificate = file;
+    }
+
+    public void updateAgencyPicture(FileAttachment file){
+        this.agencyPicture = file;
     }
 
     public void setAgency(Agency agency){
@@ -143,5 +155,26 @@ public class Member extends BaseEntity {
                 .agencyRegion(AgencyRegion.fromLabel(dto.agencyRegion()))
                 .build();
     }
+
+    public void updateMember(Profile.MemberDto dto){
+        this.memberName = dto.memberName();
+        this.birth = dto.birth();
+        this.email = dto.email();
+        this.phoneNumber = dto.phoneNumber();
+        this.homePhoneNumber = dto.homePhoneNumber();
+        this.address1 = dto.address1();
+        this.address2 = dto.address2();
+    }
+
+    public void updateAgency(Profile.MemberDto dto){
+        this.agencyName = dto.agencyName();
+        this.agencyAddress1 = dto.agencyAddress1();
+        this.agencyAddress2 = dto.agencyAddress2();
+        this.agencyPhone = dto.agencyPhone();
+        this.agencyOwner = dto.agencyOwner();
+        this.agencyRegion = AgencyRegion.fromLabel(dto.agencyRegion());
+        this.agencyEmail = dto.agencyEmail();
+    }
+
 
 }

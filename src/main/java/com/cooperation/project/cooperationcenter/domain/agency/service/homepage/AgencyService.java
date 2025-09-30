@@ -3,6 +3,7 @@ package com.cooperation.project.cooperationcenter.domain.agency.service.homepage
 import com.cooperation.project.cooperationcenter.domain.agency.dto.AgencyResponse;
 import com.cooperation.project.cooperationcenter.domain.agency.model.Agency;
 import com.cooperation.project.cooperationcenter.domain.agency.repository.AgencyRepository;
+import com.cooperation.project.cooperationcenter.domain.member.dto.AgencyRegion;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -31,11 +32,12 @@ public class AgencyService {
     }
 
     public Page<AgencyResponse.ListDto> getAgencyList(Pageable pageable,String keyword, String region){
+        AgencyRegion agencyRegion = AgencyRegion.fromLabel(region);
         Page<Agency> agencies = getAgencyAllByPage(pageable);
         List<Agency> filtered = agencies.stream()
                 .filter(agency -> (agency.getMember() == null || agency.getMember().isAccept()))
                 .filter(agency -> keyword == null || agency.getAgencyName().toLowerCase().contains(keyword.toLowerCase()))
-                .filter(agency -> region == null || agency.getAgencyAddress1().toLowerCase().contains(region.toLowerCase()))
+                .filter(agency -> agencyRegion == null || agency.getAgencyRegion().equals(agencyRegion))
                 .toList();
         Page<Agency> filteredPage = new PageImpl<>(filtered, pageable, filtered.size());
         return AgencyResponse.ListDto.from(filteredPage);

@@ -40,6 +40,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.UUID;
 
@@ -204,6 +206,7 @@ public class MemberService {
             Agency agency = Agency.fromMember(member);
             agencyRepository.save(agency);
             member.setAgency(agency);
+            //fixme 여기서 이미 있는 유학원이면 추가를 하면 안됨.
         }
         memberRepository.save(member);
     }
@@ -233,11 +236,21 @@ public class MemberService {
 
     public MemberResponse.UserPageDto getMangeUserPage(MemberRequest.UserFilterDto condition, Pageable pageable){
         log.info("Get manage user page data...");
+        YearMonth ym   = YearMonth.now();                 // 이번 달
+        LocalDateTime start = ym.atDay(1).atStartOfDay(); // 이번 달 1일 00:00:00
+        LocalDateTime end   = ym.atEndOfMonth()
+                .atTime(LocalTime.MAX);
+
+        long total = memberRepository.count();
+        long active = memberRepository.countByStatus(UserStatus.APPROVED);
+        long newMember = memberRepository.countByCreatedAtBetween(start,end);
+        long waitMember = memberRepository.countByStatus(UserStatus.PENDING);
+
         return new MemberResponse.UserPageDto(
-                memberRepository.count(),
-                memberRepository.countByStatus(UserStatus.APPROVED),
-                countNewUsersThisMonth(),
-                memberRepository.countByStatus(UserStatus.PENDING),
+                total,
+                active,
+                newMember,
+                waitMember,
                 findUsersByCondition(condition,pageable)
         );
     }
@@ -247,13 +260,6 @@ public class MemberService {
         return memberRepository.searchMembers(condition.keyword(), condition.status(), condition.date(),pageable)
                 .map(MemberResponse.UserDto::from);
     }
-
-    public long countNewUsersThisMonth(){
-        LocalDateTime startOfMonth = LocalDate.now().withDayOfMonth(1).atStartOfDay();
-        LocalDateTime now = LocalDateTime.now();
-        return memberRepository.countByCreatedAtBetween(startOfMonth, now);
-    }
-
 
 
 

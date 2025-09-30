@@ -35,7 +35,9 @@ public class SurveyFolder extends BaseEntity {
 
     private String folderId;
 
-    @OneToMany(mappedBy = "surveyFolder")
+    @OneToMany(mappedBy = "surveyFolder",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            orphanRemoval = false)
     private final List<Survey> surveys = new ArrayList<>();
 
     public void addSurvey(Survey survey){

@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -16,10 +17,46 @@ public class SchoolResponse {
             String koreanName,
             String englishName,
             String imgUrl,
-            Long schoolId
+            Long schoolId,
+            Long firstBoardId
     ){
         public static SchoolDto from(School school){
-            return new SchoolDto(school.getSchoolKoreanName(), school.getSchoolEnglishName(), school.getLogoUrl(), school.getId());
+            Long firstId = (school.getBoards().isEmpty())? 0 : school.getBoards().get(0).getId();
+            return new SchoolDto(school.getSchoolKoreanName(), school.getSchoolEnglishName(), school.getLogoUrl(), school.getId(),firstId);
+        }
+    }
+
+    public record SchoolHomeDto(
+            String koreanName,
+            String englishName,
+            String imgUrl,
+            Long schoolId,
+            List<SchoolCategoryDto> categories
+    ){
+        public static SchoolHomeDto from(School school){
+            return new SchoolHomeDto(
+                    school.getSchoolKoreanName(),
+                    school.getSchoolEnglishName(),
+                    school.getLogoUrl(),
+                    school.getId(),
+                    SchoolCategoryDto.from(school.getBoards())
+            );
+        }
+    }
+
+    public record SchoolCategoryDto(
+            String categoryName,
+            Long boardId
+    ){
+        public static SchoolCategoryDto from(SchoolBoard boards){
+            return new SchoolCategoryDto(
+                    boards.getBoardTitle(),
+                    boards.getId()
+            );
+        }
+
+        public static List<SchoolCategoryDto> from(List<SchoolBoard> boards){
+            return boards.stream().map(SchoolCategoryDto::from).toList();
         }
     }
 
@@ -42,6 +79,7 @@ public class SchoolResponse {
             );
         }
         public static List<SchoolBoardDto> from(List<SchoolBoard> boards,Long nowId){
+            if(boards.isEmpty()) return Collections.emptyList();
             return boards.stream().map(b -> SchoolBoardDto.from(b, nowId)).toList();
         }
     }

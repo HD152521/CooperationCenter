@@ -88,6 +88,17 @@ public class FileService {
         }
     }
 
+    public FileAttachment loadFileAttachment(String fileId,FileTargetType type){
+        try{
+            return fileAttachmentRepository.findByFileIdAndFiletype(fileId,type).orElseThrow(
+                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+            );
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
     public ResponseEntity<Resource> loadFile(String fileId,String type) throws MalformedURLException {
         FileTargetType fileType = FileTargetType.fromType(type);
         FileAttachment file = fileAttachmentRepository.findByFileIdAndFiletype(fileId,fileType)
@@ -161,6 +172,15 @@ public class FileService {
     public void deleteFile(List<FileAttachment> fileAttachments){
         try{
             fileAttachmentRepository.deleteAll(fileAttachments);
+        }catch (Exception e) {
+            log.warn(e.getMessage());
+        }
+    }
+
+    public void deleteFileById(String fileId,FileTargetType type){
+        try{
+            FileAttachment file = loadFileAttachment(fileId,type);
+            fileAttachmentRepository.delete(file);
         }catch (Exception e) {
             log.warn(e.getMessage());
         }

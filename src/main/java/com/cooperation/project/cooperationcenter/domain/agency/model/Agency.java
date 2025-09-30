@@ -2,6 +2,7 @@ package com.cooperation.project.cooperationcenter.domain.agency.model;
 
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.member.dto.AgencyRegion;
+import com.cooperation.project.cooperationcenter.domain.member.dto.Profile;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -34,13 +35,17 @@ public class Agency extends BaseEntity {
     @NotNull private AgencyRegion agencyRegion;
     @NotNull private String agencyEmail;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "agency_picture_id")
     private FileAttachment agencyPicture;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public void updateAgencyPicture(FileAttachment file){
+        this.agencyPicture = file;
+    }
 
     public static Agency fromMember(
             Member member
@@ -57,5 +62,15 @@ public class Agency extends BaseEntity {
                 .agencyRegion(member.getAgencyRegion())
                 .agencyEmail(member.getAgencyEmail())
                 .build();
+    }
+
+    public void updateAgency(Profile.MemberDto dto){
+        this.agencyName = dto.agencyName();
+        this.agencyAddress1 = dto.agencyAddress1();
+        this.agencyAddress2 = dto.agencyAddress2();
+        this.agencyPhone = dto.agencyPhone();
+        this.agencyOwner = dto.agencyOwner();
+        this.agencyRegion = AgencyRegion.fromLabel(dto.agencyRegion());
+        this.agencyEmail = dto.agencyEmail();
     }
 }

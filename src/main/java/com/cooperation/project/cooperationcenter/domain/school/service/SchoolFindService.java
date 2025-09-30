@@ -45,6 +45,17 @@ public class SchoolFindService {
         }
     }
 
+    public List<SchoolResponse.SchoolHomeDto> loadAllSchoolByHomeDto(){
+        try{
+            return loadAllSchool().stream()
+                    .map(SchoolResponse.SchoolHomeDto::from)
+                    .collect(Collectors.toList());
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
     public List<School> loadAllSchool(){
         try{
             return schoolRepository.findAll();
