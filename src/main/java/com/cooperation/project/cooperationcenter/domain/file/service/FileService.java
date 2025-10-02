@@ -1,13 +1,18 @@
 package com.cooperation.project.cooperationcenter.domain.file.service;
 
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.model.ObjectMetadata;
 import com.cooperation.project.cooperationcenter.domain.file.dto.FileAttachmentDto;
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.file.model.FileTargetType;
 
 import com.cooperation.project.cooperationcenter.domain.file.repository.FileAttachmentRepository;
+import com.cooperation.project.cooperationcenter.domain.oss.OssService;
 import com.cooperation.project.cooperationcenter.domain.school.model.SchoolPost;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -17,10 +22,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.springframework.web.util.UriUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,6 +45,9 @@ import java.util.Map;
 public class FileService {
 
     private final FileAttachmentRepository fileAttachmentRepository;
+    private final OSS oss;
+    private final OssService ossService;
+    @Value("${oss.bucket}") private String bucket;
 
     public String getPath(FileAttachmentDto request){
         String type = request.type();
@@ -47,33 +59,45 @@ public class FileService {
         else return null;
     }
 
-    public FileAttachment saveFile(FileAttachmentDto request){
-        String path = getPath(request);
-        FileTargetType fileType = FileTargetType.fromType(request.type());
-        Path uploadDir = Paths.get(System.getProperty("user.dir"), path);
+    /** 파일을 로컬에 저장하지 않고 바로 업로드 */
+    @Transactional
+    public FileAttachment saveFile(FileAttachmentDto request) {
+        MultipartFile file = request.file();
+        try (InputStream in = file.getInputStream()) {
+            String path = getPath(request);
+            FileTargetType fileType = FileTargetType.fromType(request.type());
+            FileAttachment inputFile = saveFileModel(path,file,fileType);
 
-        try {
-            Files.createDirectories(uploadDir); // 경로 없으면 생성
+            String key = String.format("%s/%s",
+                    path, inputFile.getStoredName()); // 예: uploads/uuid_name.png
+
+            ObjectMetadata meta = new ObjectMetadata();
+            meta.setContentLength(file.getSize());
+            if (file.getContentType() != null) meta.setContentType(file.getContentType());
+            meta.setHeader("x-oss-server-side-encryption", "AES256");
+            //            meta.setHeader(OSSHeaders.SERVER_SIDE_ENCRYPTION, "AES256");
+
+            oss.putObject(bucket, key, in, meta);
+            return inputFile;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to upload to OSS", e);
         }
+    }
 
-        FileAttachment file = FileAttachment.builder()
+    @Transactional
+    public FileAttachment saveFileModel(String path, MultipartFile file, FileTargetType type){
+        FileAttachment inputFile = FileAttachment.builder()
                 .path(path)
-                .storedPath(uploadDir)
-                .file(request.file())
-                .filetype(fileType)
+                .storedPath(path)
+                .file(file)
+                .filetype(type)
                 .build();
 
-        Path saved = uploadDir.resolve(file.getStoredName());
+        return fileAttachmentRepository.save(inputFile);
+    }
 
-        try {
-            request.file().transferTo(saved);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return fileAttachmentRepository.save(file);
+    public String getKey(FileAttachment file){
+        return file.getPath();
     }
 
     public FileAttachment loadFileAttachment(String fileId,String type){
@@ -99,70 +123,133 @@ public class FileService {
         }
     }
 
-    public ResponseEntity<Resource> loadFile(String fileId,String type) throws MalformedURLException {
-        FileTargetType fileType = FileTargetType.fromType(type);
-        FileAttachment file = fileAttachmentRepository.findByFileIdAndFiletype(fileId,fileType)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."));
+    public ResponseEntity<Void> loadFile(String fileId,String type) {
+        try{
+            FileTargetType fileType = FileTargetType.fromType(type);
+            FileAttachment file = fileAttachmentRepository.findByFileIdAndFiletype(fileId,fileType)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."));
 
-        Path filePath = Paths.get(file.getPath()).resolve(file.getStoredName());
-        Resource resource = new UrlResource(filePath.toUri());
+            URL url =  getDownloadUrl(file);
 
-        if (!resource.exists() || !resource.isReadable()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 읽을 수 없습니다.");
+            log.info("ket:{}",file.getPath());
+            return ResponseEntity.status(HttpStatus.FOUND) // 302
+                    .location(URI.create(url.toString()))
+                    .build();
+
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return null;
         }
-
-        String encodedName = UriUtils.encode(file.getOriginalName(), StandardCharsets.UTF_8);
-        String contentDisposition = "attachment; filename=\"" + encodedName + "\"";
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(resource);
     }
 
-    public ResponseEntity<Resource> viewImage(String fileId,String type) throws IOException {
-        FileTargetType fileType = FileTargetType.fromType(type);
-        FileAttachment file = fileAttachmentRepository.findByFileIdAndFiletype(fileId,fileType)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."));
-        Path filePath = Paths.get(file.getPath()).resolve(file.getStoredName());
-        Resource resource = new UrlResource(filePath.toUri());
-        if (!resource.exists() || !resource.isReadable()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 읽을 수 없습니다.");
-        }
+    public ResponseEntity<Void> viewFile(String fileId,String type){
+        try{
+            FileTargetType fileType = FileTargetType.fromType(type);
+            FileAttachment file = fileAttachmentRepository.findByFileIdAndFiletype(fileId,fileType)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."));
 
-        String contentType = Files.probeContentType(filePath);
-        if (contentType == null) {
-            contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+            URL url = getViewUrl(file);
+            log.info("ket:{}",file.getPath());
+            return ResponseEntity.status(HttpStatus.FOUND) // 302
+                    .location(URI.create(url.toString()))
+                    .build();
+
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
         }
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .body(resource);
     }
 
-    public ResponseEntity<Resource> viewPdf(String fileId, String type) throws IOException {
-        FileTargetType fileType = FileTargetType.fromType(type);
-        FileAttachment file = fileAttachmentRepository.findByFileIdAndFiletype(fileId, fileType)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."));
+    public ResponseEntity<StreamingResponseBody> viewPdf(String fileId,String type){
+        try{
+            FileTargetType fileType = FileTargetType.fromType(type);
+            FileAttachment file = fileAttachmentRepository.findByFileIdAndFiletype(fileId,fileType)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."));
 
-        Path filePath = Paths.get(file.getPath()).resolve(file.getStoredName());
-        Resource resource = new UrlResource(filePath.toUri());
+            URL url = getViewUrl(file);
+            log.info("ket:{}",file.getPath());
 
-        if (!resource.exists() || !resource.isReadable()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 읽을 수 없습니다.");
+            final String key = file.getPath();
+            final String filename = file.getStoredName();
+            final String contentType = (file.getContentType() != null) ? file.getContentType() : "application/octet-stream";
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType(contentType));       // 예: application/pdf
+            headers.set(HttpHeaders.CONTENT_DISPOSITION, contentDispositionInline(filename));
+            headers.setCacheControl("public, max-age=600");
+
+            StreamingResponseBody body = outputStream -> {
+                try (InputStream in = openObject(key)) {
+                    in.transferTo(outputStream);
+                }
+            };
+
+            return new ResponseEntity<>(body, headers, HttpStatus.OK);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
         }
-
-        String contentType = Files.probeContentType(filePath);
-        if (contentType == null) {
-            contentType = MediaType.APPLICATION_PDF_VALUE; // 기본값을 PDF로 설정
-        }
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
     }
+
+    private String contentDispositionInline(String filename) {
+        String enc = java.net.URLEncoder.encode(filename, java.nio.charset.StandardCharsets.UTF_8)
+                .replace("+", "%20");
+        return "inline; filename=\"" + enc + "\"; filename*=UTF-8''" + enc;
+    }
+
+    public InputStream openObject(String key) {
+        var obj = oss.getObject(bucket, key);
+        return obj.getObjectContent(); // 반드시 호출 측에서 close
+    }
+
+//    public ResponseEntity<Resource> viewImage(String fileId,String type) throws IOException {
+//        FileTargetType fileType = FileTargetType.fromType(type);
+//        FileAttachment file = fileAttachmentRepository.findByFileIdAndFiletype(fileId,fileType)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."));
+//        Path filePath = Paths.get(file.getPath()).resolve(file.getStoredName());
+//        Resource resource = new UrlResource(filePath.toUri());
+//        if (!resource.exists() || !resource.isReadable()) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 읽을 수 없습니다.");
+//        }
+//
+//        String contentType = Files.probeContentType(filePath);
+//        if (contentType == null) {
+//            contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+//        }
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.parseMediaType(contentType))
+//                .body(resource);
+//    }
+//
+//    public ResponseEntity<Resource> viewPdf(String fileId, String type) throws IOException {
+//        FileTargetType fileType = FileTargetType.fromType(type);
+//        FileAttachment file = fileAttachmentRepository.findByFileIdAndFiletype(fileId, fileType)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."));
+//
+//        Path filePath = Paths.get(file.getPath()).resolve(file.getStoredName());
+//        Resource resource = new UrlResource(filePath.toUri());
+//
+//        if (!resource.exists() || !resource.isReadable()) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "파일을 읽을 수 없습니다.");
+//        }
+//
+//        String contentType = Files.probeContentType(filePath);
+//        if (contentType == null) {
+//            contentType = MediaType.APPLICATION_PDF_VALUE; // 기본값을 PDF로 설정
+//        }
+//
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.parseMediaType(contentType))
+//                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+//                .body(resource);
+//    }
+
+    @Transactional
     public void deleteFile(FileAttachment fileAttachment){
         try{
+            if (!oss.doesObjectExist(bucket, fileAttachment.getPath())) return; // 혹은 로그만
+            oss.deleteObject(bucket, fileAttachment.getPath());
+
             fileAttachmentRepository.delete(fileAttachment);
         }catch (Exception e){
             log.warn(e.getMessage());
@@ -180,50 +267,41 @@ public class FileService {
     public void deleteFileById(String fileId,FileTargetType type){
         try{
             FileAttachment file = loadFileAttachment(fileId,type);
-            fileAttachmentRepository.delete(file);
+            deleteFile(file);
         }catch (Exception e) {
             log.warn(e.getMessage());
         }
     }
 
-    public  Map<String, Object> saveSchoolImgAndReturnUrl(String type, MultipartFile file){
+    public URL getViewUrl(FileAttachment file){
+        return ossService.presignedGetUrl(file.getPath(), 15, false, file.getStoredName(), null);
+    }
+
+    public URL getDownloadUrl(FileAttachment file){
+        return ossService.presignedGetUrl(file.getPath(), 15, true, file.getStoredName(), file.getContentType());
+    }
+
+    public  ResponseEntity<Void> saveSchoolImgAndReturnUrl(String type, MultipartFile file){
         log.info("save image enter...");
         String path = FileTargetType.SCHOOL.getFilePath()+"img";
         FileTargetType fileType = FileTargetType.fromType(type);
-        Path uploadDir = Paths.get(System.getProperty("user.dir"), path);
 
-        try {
-            Files.createDirectories(uploadDir); // 경로 없으면 생성
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        FileAttachment attachment = saveFileModel(path,file,fileType);
 
-        FileAttachment attachment = FileAttachment.builder()
-                .path(path)
-                .storedPath(uploadDir)
-                .file(file)
-                .filetype(fileType)
+//        String url = "/api/v1/file/img/school/"+attachment.getFileId();
+//
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("result", List.of(Map.of(
+//                "url", url,
+//                "name", attachment.getOriginalName(),
+//                "size", attachment.getSize(),
+//                "align", "center",
+//                "tag", "img"
+//        )));
+
+        URL url = getViewUrl(attachment);
+        return ResponseEntity.status(HttpStatus.FOUND) // 302
+                .location(URI.create(url.toString()))
                 .build();
-
-        Path saved = uploadDir.resolve(attachment.getStoredName());
-
-        try {
-            file.transferTo(saved);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        fileAttachmentRepository.save(attachment);
-        String url = "/api/v1/file/img/school/"+attachment.getFileId();
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("result", List.of(Map.of(
-                "url", url,
-                "name", attachment.getOriginalName(),
-                "size", attachment.getSize(),
-                "align", "center",
-                "tag", "img"
-        )));
-        return response;
     }
 }

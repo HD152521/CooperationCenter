@@ -33,8 +33,9 @@ public class FileAttachment extends BaseEntity {
     private String storedName;
     private String path;
     private double size;
+    private String contentType;
 
-    @Transient private Path storedPath;
+    @Transient private String storedPath;
     @Enumerated(EnumType.STRING) private FileTargetType filetype;
     @Enumerated(EnumType.STRING) private ContentType type;
 
@@ -45,8 +46,6 @@ public class FileAttachment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "intro_post_id", nullable = true)
     private IntroPost introPost;
-
-
 
     @Getter
     public enum ContentType{
@@ -73,17 +72,22 @@ public class FileAttachment extends BaseEntity {
     }
 
     @Builder
-    public FileAttachment(String path, Path storedPath, MultipartFile file,FileTargetType filetype){
+    public FileAttachment(String path, String storedPath, MultipartFile file,FileTargetType filetype){
+
+        String safeName = java.util.Objects.requireNonNullElse(file.getOriginalFilename(), "file");
+        safeName = safeName.replaceAll("[\\r\\n]", "");
+
         LocalDate now = LocalDate.now();
         this.fileId = UUID.randomUUID().toString();
-        this.originalName = file.getOriginalFilename();
-        this.storedName = this.fileId+"_"+originalName+"_"+now;
-        this.path = path;
-        this.size = file.getSize(); //byte 단위임 -> kb하려면 /1024
-        this.storedPath = storedPath;
-        this.filetype = filetype;
+        this.originalName = safeName;
 
-        String contentType = file.getContentType();
+        this.storedName = this.fileId+"_"+originalName+"_"+now;
+        this.path = path+"/"+this.storedName;
+        this.size = file.getSize(); //byte 단위임 -> kb하려면 /1024
+
+        this.storedPath = storedPath+"/"+this.storedName;
+        this.filetype = filetype;
+        this.contentType = file.getContentType();
         if (contentType != null && contentType.startsWith("image/")) {
             this.type = ContentType.IMG;
         }else{

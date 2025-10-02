@@ -6,6 +6,10 @@ build/
 !**/src/test/**/build/
 **/src/main/resources
 !**/src/main/resources/application.yml
+src/main/resources/application-local.yml
+*.env
+.env
+
 uploads
 ### STS ###
 .apt_generated
