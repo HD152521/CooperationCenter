@@ -9,6 +9,8 @@ public record SurveyResponseDto(
         int participant,
         int lastDate,
         String surveyId,
-        boolean isBefore
+        boolean isBefore,
+        LocalDate startDate,
+        LocalDate endDate
 ) {
 }

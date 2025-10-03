@@ -43,8 +43,19 @@ public class MemberCookieService {
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
     }
 
+    public void addAccessTokenCookies(HttpServletResponse response, String accessToken) {
+        ResponseCookie accessCookie = ResponseCookie.from(JWT_ACCESS_TOKEN_COOKIE_NAME, accessToken)
+                .httpOnly(true)            // JS 접근 차단
+                .secure(true)              // HTTPS 전용
+                .path("/")                 // 전체 경로에 대해 전송
+                .maxAge(ACCESS_TOKEN_EXPIRE_TIME) // 만료 시간
+                .sameSite("None")        // CSRF 방어
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+    }
+
     private void addRefreshCookies(HttpServletResponse response, TokenResponse tokenResponse) {
-        ResponseCookie refreshCookie = ResponseCookie.from(JWT_REFRESH_TOKEN_COOKIE_NAME, tokenResponse.accessToken().token())
+        ResponseCookie refreshCookie = ResponseCookie.from(JWT_REFRESH_TOKEN_COOKIE_NAME, tokenResponse.refreshToken().token())
                 .httpOnly(true)
                 .secure(true)
                 .path("/")      // 리프레시 전용 엔드포인트에만 전송

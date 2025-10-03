@@ -26,6 +26,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 
@@ -38,7 +39,7 @@ import static com.cooperation.project.cooperationcenter.global.token.JwtProperti
 public class JwtProvider implements TokenProvider {
 
     private final SecretKey SECRET_KEY;
-    private final String ISS = "github.com/SophistRing";
+    private final String ISS = "github.com/cooperationCenter";
     private final MemberDetailsService memberDetailsService;
     private final JwtParser jwtParser;
 
@@ -54,7 +55,7 @@ public class JwtProvider implements TokenProvider {
         //fixme jwtParser수정하기
         this.jwtParser = Jwts
                 .parser()
-                .setSigningKey(this.SECRET_KEY)
+                .verifyWith(this.SECRET_KEY)
                 .build();
     }
 
@@ -70,13 +71,15 @@ public class JwtProvider implements TokenProvider {
 
         byte[] keyBytes = Base64.getDecoder().decode(SECRET_KEY.getEncoded());  // Base64 디코딩
         Key key = Keys.hmacShaKeyFor(keyBytes);
+        Date now = new Date(); // 한번만 생성
+        Date expiry = new Date(now.getTime()+ACCESS_TOKEN_EXPIRE_TIME);
 
         String token = Jwts.builder()
                 .claim("type", "access")
                 .issuer(ISS)
                 .audience().add(email).and()
-                .issuedAt(new Date())
-                .expiration(new Date(new Date().getTime() + ACCESS_TOKEN_EXPIRE_TIME))
+                .issuedAt(now)
+                .expiration(expiry)
                 .signWith(SECRET_KEY)
                 .compact();
 
@@ -96,12 +99,17 @@ public class JwtProvider implements TokenProvider {
         byte[] keyBytes = Base64.getDecoder().decode(SECRET_KEY.getEncoded());  // Base64 디코딩
         Key key = Keys.hmacShaKeyFor(keyBytes);
 
+        Date now = new Date(); // 한번만 생성
+        Date expiry = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
+        Date loginExpiry = new Date(now.getTime() + LOGIN_EXPIRE_TIME);
+
         String token = Jwts.builder()
                 .claim("type", "refresh")
+                .claim("loginLimit", loginExpiry)
                 .issuer(ISS)
                 .audience().add(email).and()
-                .issuedAt(new Date())
-                .expiration(new Date(new Date().getTime() + REFRESH_TOKEN_EXPIRE_TIME))
+                .issuedAt(now)
+                .expiration(expiry)
                 .signWith(SECRET_KEY)
                 .compact();
 
@@ -141,21 +149,32 @@ public class JwtProvider implements TokenProvider {
         log.info("validToken 진입");
         try {
             // 서명·만료 검증을 동시에 수행
-            Jws<Claims> jws = jwtParser.parseClaimsJws(accessToken);
+            Jws<Claims> jws = jwtParser.parseSignedClaims(accessToken);
 
-            Date expiration = jws.getBody().getExpiration();
+            Date expiration = jws.getPayload().getExpiration();
             log.info("validToken: {}", expiration.after(new Date()));
             log.info("expiration: {}", expiration);
 
             return expiration.after(new Date());
         } catch (ExpiredJwtException e) {
             log.warn("토큰 만료", e);
-            return false;
+            throw e;
         } catch (JwtException | IllegalArgumentException e) {
             log.warn("토큰 검증 오류", e);
-            return false;
+            throw e;
         }
     }
+
+    public void validateTokenOrThrow(String accessToken) {
+        try {
+            jwtParser.parseSignedClaims(accessToken);
+        } catch (ExpiredJwtException e) {
+            throw e;
+        } catch (JwtException | IllegalArgumentException e) {
+            throw e;
+        }
+    }
+
 
     public Authentication getAuthentication(String token){
         String aud = parseAudience(token); // 토큰 Aud에 Member email을 기록하고 있음
@@ -174,23 +193,12 @@ public class JwtProvider implements TokenProvider {
 
     public boolean validateRefreshToken(String token) {
         try {
-            jwtParser.parseClaimsJws(token);  // 만료나 서명 오류 시 예외 발생
+            jwtParser.parseSignedClaims(token);  // 만료나 서명 오류 시 예외 발생
             return true;
         } catch (JwtException | IllegalArgumentException e) {
+            log.warn(e.getMessage());
             return false;
         }
-    }
-
-    public String createAccessToken(Authentication auth) {
-        Date now = new Date();
-        Date expiry = new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME * 1000);
-        return Jwts.builder()
-                .setSubject(auth.getName())
-                .claim("roles", auth.getAuthorities())
-                .setIssuedAt(now)
-                .setExpiration(expiry)
-                .signWith(SECRET_KEY)      // Keys.hmacShaKeyFor 방식으로 세팅된 키
-                .compact();
     }
 
     public String resolvAccesseToken(HttpServletRequest request) {

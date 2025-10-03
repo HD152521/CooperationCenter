@@ -1,11 +1,12 @@
 package com.cooperation.project.cooperationcenter.domain.survey.service.homepage;
 
-import com.cooperation.project.cooperationcenter.domain.file.dto.SurveyFileDto;
-import com.cooperation.project.cooperationcenter.domain.file.model.SurveyFileType;
-import com.cooperation.project.cooperationcenter.domain.file.model.SurveyFile;
+import com.cooperation.project.cooperationcenter.domain.file.dto.FileAttachmentDto;
+import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.file.service.FileService;
+import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.member.repository.MemberRepository;
+import com.cooperation.project.cooperationcenter.domain.student.service.StudentService;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerRequest;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerResponse;
 import com.cooperation.project.cooperationcenter.domain.survey.model.Answer;
@@ -14,6 +15,9 @@ import com.cooperation.project.cooperationcenter.domain.survey.model.Survey;
 import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyLog;
 import com.cooperation.project.cooperationcenter.domain.survey.repository.AnswerRepository;
 import com.cooperation.project.cooperationcenter.domain.survey.repository.SurveyLogRepository;
+import com.cooperation.project.cooperationcenter.domain.survey.repository.SurveyRepository;
+import com.cooperation.project.cooperationcenter.global.exception.BaseException;
+import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,25 +41,30 @@ public class SurveyAnswerService {
 
     private final SurveyFindService surveyFindService;
     private final FileService fileService;
+    private final StudentService studentService;
 
     private final AnswerRepository answerRepository;
     private final SurveyLogRepository surveyLogRepository;
     private final MemberRepository memberRepository;
+    private final SurveyRepository surveyRepository;
 
 
     @Transactional
-    public void answerSurvey(String data, HttpServletRequest request) throws JsonProcessingException {
+    public void answerSurvey(String data, HttpServletRequest request, MemberDetails memberDetails) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         AnswerRequest.Dto requestDto = objectMapper.readValue(data, AnswerRequest.Dto.class);
+        log.info("request 매핑완료");
+        log.info("request:{}",requestDto.toString());
 
         if (!(request instanceof MultipartHttpServletRequest multipartRequest)) {
             throw new IllegalStateException("Multipart request expected");
         }
 
         Survey survey = surveyFindService.getSurveyFromId(requestDto.surveyId());
-        //fixme 추후 예정
-        Member member = memberRepository.findMemberByEmail("test@test.com").get();
+//        if(checkDate(survey)) throw new BaseException(ErrorCode.SURVEY_DATE_NOT_VALID);
+        survey.setParticipantCount();
 
+        Member member = memberRepository.findMemberByEmail(memberDetails.getUsername()).get();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime dateTime = LocalDateTime.parse(requestDto.startTime(), formatter);
 
@@ -65,45 +74,53 @@ public class SurveyAnswerService {
                 .member(member)
                 .startTime(dateTime)
                 .build();
+        surveyLog = surveyLogRepository.save(surveyLog);
 
-        //답변 로그를 저장하고 -> 문항들 저장
         List<Answer> savedAnswer = saveAnswer(requestDto,multipartRequest,surveyLog);
+
+        //note 학생으로 변환
+        if(survey.getSurveyType().equals(Survey.SurveyType.STUDENT)) studentService.addStudentBySurvey(survey.getQuestions(),savedAnswer,member);
+
         surveyLog.addAnswer(savedAnswer);
-        log.info("답변 저장 완료");
-
+        surveyRepository.save(survey);
         surveyLogRepository.save(surveyLog);
-        log.info("➡️survey 답변 완료!");
     }
 
-    public AnswerResponse.AnswerDto getAnswerLog(String surveyId){
-        Survey survey = surveyFindService.getSurveyFromId(surveyId);
-        List<SurveyLog> surveyLog = surveyFindService.getSurveyLogs(survey);
-        //status 추가
-        List<AnswerResponse.LogDto> logs = new ArrayList<>();
-        if(!surveyLog.isEmpty())  logs = AnswerResponse.LogDto.from(surveyLog);
-        return AnswerResponse.AnswerDto.from(survey,logs);
+    public boolean checkDate(Survey survey){
+        LocalDate now = LocalDate.now();
+        return (survey.getStartDate() != null && survey.getEndDate() != null) &&
+                ( !now.isBefore(survey.getStartDate()) && !now.isAfter(survey.getEndDate()) );
     }
-
-
-
-
 
     @Transactional
     protected List<Answer> saveAnswer(AnswerRequest.Dto answerList, MultipartHttpServletRequest multipartRequest,SurveyLog surveyLog){
         List<Answer> saveList = new ArrayList<>();
-        SurveyFile surveyFile=null;
-        for (AnswerRequest.AnswerDto an : answerList.answers()) {
-            if (QuestionType.isFile(an.type())) {
-                surveyFile = saveFile(an,multipartRequest,answerList.surveyId());
-                //note 파일 저장은 따로 추가하자
+        FileAttachment surveyFile=null;
+        if(!answerList.answers().isEmpty() && answerList.answers()!=null) {
+            for (AnswerRequest.AnswerDto an : answerList.answers()) {
+                if (QuestionType.isFile(an.type())) {
+                    surveyFile = saveFile(an, multipartRequest, answerList.surveyId());
+                }
+                saveList.add(convertToAnswer(an, answerList.surveyId(), surveyFile, surveyLog));
+                log.info("Q{}: {}", an.questionId(), an.answer());
             }
-            saveList.add(convertToAnswer(an,answerList.surveyId(),surveyFile,surveyLog));
-            log.info("Q{}: {}", an.questionId(), an.answer());
+        }if(!answerList.templateAnswers().isEmpty() && answerList.templateAnswers()!=null){
+            //todo 템플릿 문항들 이제 매핑 해야함.  템플릿 문항들이 맞는지도 봐야할듯
+            log.info("template널 값 아님");
+            log.info("tempalte 문제들:{}",answerList.templateAnswers());
+            for (AnswerRequest.AnswerDto an : answerList.templateAnswers()) {
+                if (QuestionType.isFile(an.type())) {
+                    surveyFile = saveFile(an, multipartRequest, answerList.surveyId());
+                }
+                saveList.add(convertToAnswer(an, answerList.surveyId(), surveyFile, surveyLog));
+                log.info("Q{}: {}", an.questionId(), an.answer());
+            }
+
         }
         return answerRepository.saveAll(saveList);
     }
 
-    private Answer convertToAnswer(AnswerRequest.AnswerDto answer,String surveyId,SurveyFile surveyFile,SurveyLog surveyLog){
+    private Answer convertToAnswer(AnswerRequest.AnswerDto answer,String surveyId,FileAttachment surveyFile,SurveyLog surveyLog){
         log.info(answer.type());
         QuestionType questionType = QuestionType.fromType(answer.type());
         if(questionType==null){
@@ -111,13 +128,13 @@ public class SurveyAnswerService {
         }
         if (QuestionType.checkType(questionType)) {
             //옵션 질문들
-            return Answer.builder()
-                    .surveyLog(surveyLog)
-                    .answerType(questionType)
-                    .questionId(answer.questionId())
-                    .questionRealId(answer.questionRealId())
-                    .multiAnswer(answer.answer().toString())
-                    .build();
+                return Answer.builder()
+                        .surveyLog(surveyLog)
+                        .answerType(questionType)
+                        .questionId(answer.questionId())
+                        .questionRealId(answer.questionRealId())
+                        .multiAnswer(answer.answer().toString())
+                        .build();
         }else if(QuestionType.isDate(questionType)){
             LocalDateTime dateTime = LocalDate.parse((String)answer.answer()).atStartOfDay();
             return Answer.builder()
@@ -147,16 +164,7 @@ public class SurveyAnswerService {
         return null;
     }
 
-    public AnswerResponse.AnswerLogDto getAnswerLogDetail(String surveyId, String logId){
-        //Note 질문이랑 답변 문항들 RESPONSE로 보내야함
-        Survey survey = surveyFindService.getSurveyFromId(surveyId);
-        SurveyLog surveyLog = surveyFindService.getSurveyLog(logId);
-        List<Answer> answers = surveyFindService.getAnswer(surveyLog);
-        log.info("log Detail 조회 완료");
-        return AnswerResponse.AnswerLogDto.from(survey,surveyLog,answers);
-    }
-
-    private SurveyFile saveFile(AnswerRequest.AnswerDto answer,MultipartHttpServletRequest multipartRequest, String surveyId){
+    private FileAttachment saveFile(AnswerRequest.AnswerDto answer,MultipartHttpServletRequest multipartRequest, String surveyId){
         String key="";
         if (answer.answer() instanceof String str) key = answer.answer().toString();
 
@@ -169,7 +177,7 @@ public class SurveyAnswerService {
             log.info("✅ {} 수신 성공: {}", key, file.getOriginalFilename());
             //key예시 file-0 image-1
             String type = key.split("-")[0];
-            return fileService.saveFile(new SurveyFileDto(file, surveyId, SurveyFileType.fromType(type)));
+            return fileService.saveFile(new FileAttachmentDto(file,"survey", null,null,surveyId));
         }
         return null;
     }

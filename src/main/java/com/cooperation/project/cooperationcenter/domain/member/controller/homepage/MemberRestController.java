@@ -1,4 +1,4 @@
-package com.cooperation.project.cooperationcenter.domain.member.controller;
+package com.cooperation.project.cooperationcenter.domain.member.controller.homepage;
 
 
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/member")
@@ -30,9 +32,6 @@ public class MemberRestController {
             @RequestPart(name = "agencyPicture", required = false) MultipartFile agencyPicture,
             @RequestPart(name = "businessCertificate", required = false) MultipartFile businessCertificate
     ) throws JsonProcessingException {
-        log.info("signup request: {}", data);
-        log.info("agencyPicture: {}", agencyPicture != null ? agencyPicture.getOriginalFilename() : "없음");
-        log.info("businessCertificate: {}", businessCertificate != null ? businessCertificate.getOriginalFilename() : "없음");
         try{
             memberService.signup(data,agencyPicture,businessCertificate);
             return BaseResponse.onSuccess("success");
@@ -58,6 +57,21 @@ public class MemberRestController {
             log.warn(e.getMessage());
             return BaseResponse.onFailure(ErrorCode.BAD_REQUEST,null);
         }
+    }
+
+    @PostMapping("/logout")
+    public BaseResponse<?> userLogout(HttpServletRequest request ,HttpServletResponse response){
+        memberService.logout(request,response);
+        return BaseResponse.onSuccess("log out success");
+    }
+
+    @PostMapping("/refresh")
+    public BaseResponse<?> refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException {
+        log.info("come refresh");
+        return memberService.updateRefreshToken(request,response);
     }
 
 }

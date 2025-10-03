@@ -1,17 +1,18 @@
 package com.cooperation.project.cooperationcenter.domain.survey.service.homepage;
 
 import com.cooperation.project.cooperationcenter.domain.survey.dto.*;
-import com.cooperation.project.cooperationcenter.domain.survey.model.Question;
-import com.cooperation.project.cooperationcenter.domain.survey.model.QuestionOption;
-import com.cooperation.project.cooperationcenter.domain.survey.model.QuestionType;
-import com.cooperation.project.cooperationcenter.domain.survey.model.Survey;
+import com.cooperation.project.cooperationcenter.domain.survey.model.*;
 import com.cooperation.project.cooperationcenter.domain.survey.repository.QuestionOptionRepository;
 import com.cooperation.project.cooperationcenter.domain.survey.repository.QuestionRepository;
+import com.cooperation.project.cooperationcenter.domain.survey.repository.SurveyFolderRepository;
 import com.cooperation.project.cooperationcenter.domain.survey.repository.SurveyRepository;
+import com.cooperation.project.cooperationcenter.global.exception.BaseException;
+import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.HtmlUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,14 +30,30 @@ public class SurveySaveService {
     private final QuestionOptionRepository questionOptionRepository;
     private final QuestionRepository questionRepository;
     private final SurveyFindService surveyFindService;
+    private final SurveyFolderRepository surveyFolderRepository;
 
     @Transactional
     public void saveSurvey(SurveyRequest.SurveyDto request){
         log.info("{}",request);
         Survey survey = SurveyRequest.SurveyDto.toEntity(request);
+
+        SurveyFolder surveyFolder = loadSurveyFolderById(request.folderId());
+        survey.setSurveyFolder(surveyFolder);
+
         List<Question> questions = getQuestionsFromDto(request.questions(),survey);
         List<QuestionOption> options = getQuestionOptionFromDto(request.questions(),questions,survey);
         save(survey,questions,options);
+    }
+
+    public SurveyFolder loadSurveyFolderById(String fileId){
+        try{
+            return surveyFolderRepository.findByFolderId(fileId).orElseThrow(
+                    () -> new BaseException(ErrorCode.BAD_REQUEST)
+            );
+        }catch (Exception e) {
+            log.warn(e.getMessage());
+            return null;
+        }
     }
 
     @Transactional
@@ -82,7 +99,7 @@ public class SurveySaveService {
             log.warn("설문조사 저장 실패");
         }
     }
-
+//HtmlUtils.htmlEscape(question);
     public List<Question> getQuestionsFromDto(List<QuestionDto> request, Survey survey){
         List<Question> questions = new ArrayList<>();
         int i = 1;
@@ -91,12 +108,15 @@ public class SurveySaveService {
                 //note 원래 있던 질문들
                 Question question = surveyFindService.getQuestion(dto.questionId());
                 if (question!=null) {
-                    question.setQuestion(dto.question());
+                    question.setQuestion(HtmlUtils.htmlEscape(dto.question()));
                     question.setQuestionDescription(dto.description());
                     QuestionType questionType = QuestionType.fromType(dto.type());
                     question.setQuestionType(questionType);
                     question.setOption(QuestionType.checkType(questionType));
                     question.setQuestionOrder(i++);
+                    question.setTemplate(dto.isTemplate());
+                    question.setDomainField(dto.domainField());
+                    question.setTemplate(dto.isTemplate());
                     questions.add(question);
 
                     survey.removeQuestion(question);
@@ -110,12 +130,16 @@ public class SurveySaveService {
                     .questionDescription(dto.description())
                     .questionType(type)
                     .survey(survey)
-                    .question(dto.question())
+                    .question(HtmlUtils.htmlEscape(dto.question()))
                     .questionOrder(i++)
-
+                    .template(dto.isTemplate())
+                    .domainField(dto.domainField())
+                    .template(dto.isTemplate())
                     .build();
             questions.add(question);
             survey.setQuestion(question);
+
+            log.info("questino is Option:{}",question.getOptions());
         }
         return questions;
     }
@@ -123,20 +147,22 @@ public class SurveySaveService {
     @Transactional
     public List<QuestionOption> getQuestionOptionFromDto(List<QuestionDto> requestDtos, List<Question> questions,Survey survey){
         List<QuestionOption> options = new ArrayList<>();
-
         for (int i = 0; i < questions.size(); i++) {
             Question q = questions.get(i);
             QuestionDto dto = requestDtos.get(i);
-
+            log.info("null:{} options:{}",q.isOption(),q.getOptions());
             if (q.isOption()) {
                 for (OptionDto optionText : dto.options()) {
 
                     //fixme id값 있을 경우
                     QuestionOption questionOption = questionOptionRepository.findQuestionOptionById(optionText.optionId());
                     if(questionOption!=null){
-                        questionOption.setOptionText(optionText.text());
+                        questionOption.setOptionText(HtmlUtils.htmlEscape(optionText.text()));
                         questionOption.setNextQuestionId(optionText.nextQuestion());
                         questionOption.setRealNextQuestionId(optionText.realNextQuestion());
+                        questionOption.setParentOptionId(optionText.parentOptionId());
+                        questionOption.setLevel(optionText.level());
+                        questionOption.setHierarchyId(optionText.hierarchyId());
                         questionOptionRepository.save(questionOption);
 
                         survey.removeOption(questionOption);
@@ -147,11 +173,14 @@ public class SurveySaveService {
                     }
 
                     QuestionOption option = QuestionOption.builder()
-                            .text(optionText.text())
+                            .text(HtmlUtils.htmlEscape(optionText.text()))
                             .nextQuestionId(optionText.nextQuestion())
                             .realNextQuestionId(q.getQuestionId())
                             .survey(survey)
                             .question(q)
+                            .parentOptionId(optionText.parentOptionId())
+                            .level(optionText.level())
+                            .hierarchyId(optionText.hierarchyId())
                             .build();
                     options.add(option);
                     q.setOptions(option);
@@ -165,18 +194,11 @@ public class SurveySaveService {
     public AnswerPageDto getSurveys(String surveyId){
         List<QuestionDto> response = new ArrayList<>();
         Survey survey = surveyFindService.getSurveyFromId(surveyId);
+
+        if(!survey.isShare()) return null;
+
         List<Question> questions = surveyFindService.getQuestions(survey);
         List<QuestionOption> options = surveyFindService.getOptions(survey);
-
-        log.info("option empty?:{}",options.isEmpty());
-
-        Map<Long, List<String>> optionMap = new HashMap<>();
-        for (QuestionOption opt : options) {
-            Long questionId = opt.getQuestion().getId();
-            log.info("questionId:{}",questionId);
-            optionMap.computeIfAbsent(questionId, k -> new ArrayList<>())
-                    .add(opt.getOptionText());
-        }
 
         for(Question q : questions){
             response.add(
@@ -186,8 +208,9 @@ public class SurveySaveService {
                             q.getQuestion(),
                             q.getQuestionDescription(),
                             OptionDto.to(q.getOptions()),
-                            q.getQuestionOrder()
-
+                            q.getQuestionOrder(),
+                            q.isTemplate(),
+                            q.getDomainField()
                     )
             );
         }
@@ -201,6 +224,7 @@ public class SurveySaveService {
     @Transactional
     public void deleteSurvey(String surveyId){
         Survey survey = surveyFindService.getSurveyFromId(surveyId);
+        SurveyFolder surveyFolder = survey.getSurveyFolder();
         log.info("delete survey:{}",survey.getSurveyId());
         try {
             for (Question question : survey.getQuestions()) {
@@ -221,6 +245,7 @@ public class SurveySaveService {
             log.warn("question 삭제 실패");
         }
 
+        surveyFolder.deleteSurvey(survey);
         surveyRepository.delete(survey);
         log.info("survey delete success...");
     }
@@ -236,6 +261,8 @@ public class SurveySaveService {
                 .owner(original.getOwner())
                 .startDate(original.getStartDate())
                 .endDate(original.getEndDate())
+                .surveyType(original.getSurveyType())
+                .surveyFolder(original.getSurveyFolder())
                 .build();
         surveyRepository.save(copy);
 
@@ -249,6 +276,9 @@ public class SurveySaveService {
                     .isNecessary(originalQ.isNecessary())
                     .question(originalQ.getQuestion())
                     .survey(copy)
+                    .domainField(originalQ.getDomainField())
+                    .template(originalQ.isTemplate())
+                    .questionOrder(originalQ.getQuestionOrder())
                     .build();
             questionRepository.save(newQ);
 
@@ -264,6 +294,35 @@ public class SurveySaveService {
         }
 
         return copy;
+    }
+
+    public List<QuestionDto> getTemplate(String type){
+        Survey.SurveyType surveyType = Survey.SurveyType.getSruveyType(type);
+        if(surveyType.equals(Survey.SurveyType.STUDENT)){
+            List<QuestionDto> questions = getStudentTempalte();
+            log.info("questions:{}",questions);
+            return questions;
+        }else{
+            return null;
+        }
+    }
+
+    public List<QuestionDto> getStudentTempalte(){
+        return List.of(
+                new QuestionDto(null, "short", "중국어이름", "", null, 0, true, "chineseName"),
+                new QuestionDto(null, "short", "영문이름", "", null, 0, true, "englishName"),
+                new QuestionDto(null, "date", "생년월일", "", null, 0, true, "birthDate"),
+                new QuestionDto(null, "multiple", "성별", "", List.of(
+                        new OptionDto(0, null, "남성", null,null,null,0),
+                        new OptionDto(0, null, "여성", null,null,null,0)
+                ), 0, true, "gender"),
+                new QuestionDto(null, "short", "학생 메일", "", null, 0, true, "studentEmail"),
+                new QuestionDto(null, "short", "여권 번호", "", null, 0, true, "passportNumber"),
+                new QuestionDto(null, "short", "수험 번호", "", null, 0, true, "examNumber"),
+                new QuestionDto(null, "short", "유학원 담당자 위챗", "", null, 0, true, "agentWechat"),
+                new QuestionDto(null, "short", "유학원 담당자 이메일", "", null, 0, true, "agentEmail"),
+                new QuestionDto(null, "short", "긴급연락처", "", null, 0, true, "emergencyContactNum")
+        );
     }
 
 }

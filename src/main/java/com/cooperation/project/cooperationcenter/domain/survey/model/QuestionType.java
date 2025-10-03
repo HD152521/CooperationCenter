@@ -12,7 +12,8 @@ public enum QuestionType {
     DROPDOWN("DROPDOWN"),
     DATE("DATE"),
     FILE("FILE"),
-    IMAGE("IMAGE"),;
+    IMAGE("IMAGE"),
+    HIERARCHY("hierarchy");
 
     private final String type;
 
@@ -35,7 +36,7 @@ public enum QuestionType {
     }
 
     public static boolean checkType(QuestionType type){
-        if(type.equals(MULTIPLE) || type.equals(MULTIPLECHECK) || type.equals(DROPDOWN)) return true;
+        if(type.equals(MULTIPLE) || type.equals(MULTIPLECHECK) || type.equals(DROPDOWN) || type.equals(HIERARCHY)) return true;
         return false;
     }
 

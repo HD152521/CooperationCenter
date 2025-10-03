@@ -1,8 +1,10 @@
 package com.cooperation.project.cooperationcenter.domain.agency.model;
 
-import com.cooperation.project.cooperationcenter.domain.file.model.MemberFile;
-import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
+import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
+import com.cooperation.project.cooperationcenter.domain.member.dto.AgencyRegion;
+import com.cooperation.project.cooperationcenter.domain.member.dto.Profile;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
+import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -19,7 +21,7 @@ import java.util.UUID;
 @Builder
 @SQLDelete(sql = "UPDATE agency SET is_deleted = true, deleted_at = now() where id = ?")
 @SQLRestriction("is_deleted is FALSE")
-public class Agency {
+public class Agency extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,21 +30,47 @@ public class Agency {
     private String agencyName;
     @NotNull private String agencyAddress1;
     @NotNull private String agencyAddress2;
-//    @NotNull private enum agencyRegion;  fixme 추가해야함.
+    @NotNull private String agencyPhone;
+    @NotNull private String agencyOwner;
+    @NotNull private AgencyRegion agencyRegion;
+    @NotNull private String agencyEmail;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "agency_picture_id")
-    private MemberFile agencyPicture;
+    private FileAttachment agencyPicture;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    public void updateAgencyPicture(FileAttachment file){
+        this.agencyPicture = file;
+    }
 
     public static Agency fromMember(
             Member member
     ) {
-        MemberFile file = (member.getAgencyPicture()!=null)?member.getAgencyPicture():null;
+        FileAttachment file = (member.getAgencyPicture()!=null)?member.getAgencyPicture():null;
         return Agency.builder()
                 .agencyName(member.getAgencyName())
                 .agencyAddress1(member.getAgencyAddress1())
                 .agencyAddress2(member.getAgencyAddress2())
                 .agencyPicture(file)
+                .agencyPhone(member.getAgencyPhone())
+                .agencyOwner(member.getAgencyOwner())
+                .member(member)
+                .agencyRegion(member.getAgencyRegion())
+                .agencyEmail(member.getAgencyEmail())
                 .build();
+    }
+
+    public void updateAgency(Profile.MemberDto dto){
+        this.agencyName = dto.agencyName();
+        this.agencyAddress1 = dto.agencyAddress1();
+        this.agencyAddress2 = dto.agencyAddress2();
+        this.agencyPhone = dto.agencyPhone();
+        this.agencyOwner = dto.agencyOwner();
+        this.agencyRegion = AgencyRegion.fromLabel(dto.agencyRegion());
+        this.agencyEmail = dto.agencyEmail();
     }
 }

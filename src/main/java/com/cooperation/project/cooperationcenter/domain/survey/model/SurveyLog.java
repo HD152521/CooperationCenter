@@ -2,6 +2,7 @@ package com.cooperation.project.cooperationcenter.domain.survey.model;
 
 
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
+import com.cooperation.project.cooperationcenter.domain.student.model.Student;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -38,6 +39,9 @@ public class SurveyLog extends BaseEntity {
 
     @OneToMany(mappedBy = "surveyLog")
     private List<Answer> answers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "surveyLog")
+    private List<Student> students = new ArrayList<>();
 
     private LocalDateTime startTime;
 

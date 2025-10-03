@@ -38,9 +38,12 @@ public class Question extends BaseEntity {
     private boolean isNecessary;
     private boolean isOption;
     private int questionOrder;
+    private String domainField;
+    private boolean template;
 
     @Builder
-    public Question(QuestionType questionType, String questionDescription, boolean isNecessary, Survey survey,String question,int questionOrder){
+    public Question(QuestionType questionType, String questionDescription, boolean isNecessary, Survey survey,String question,int questionOrder,String domainField,boolean template
+                    ){
         this.questionType = questionType;
         this.question = question;
         this.questionDescription = questionDescription;
@@ -49,6 +52,8 @@ public class Question extends BaseEntity {
         this.isOption = QuestionType.checkType(questionType);
         this.questionId = UUID.randomUUID().toString();
         this.questionOrder = questionOrder;
+        this.domainField = domainField;
+        this.template = template;
     }
 
     public void setOptions(QuestionOption option) {

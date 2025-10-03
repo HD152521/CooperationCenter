@@ -1,6 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.survey.model;
 
-import com.cooperation.project.cooperationcenter.domain.file.model.SurveyFile;
+import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -12,6 +12,7 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
@@ -34,7 +35,7 @@ public class Answer extends BaseEntity {
     private LocalDateTime dateAnswer;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "survey_file_id") // Answer 테이블에 외래 키 컬럼 생성됨
-    private SurveyFile surveyFile;
+    private FileAttachment surveyFile;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private SurveyLog surveyLog;
@@ -42,7 +43,7 @@ public class Answer extends BaseEntity {
 
 
     public String getAnswer(){
-        if(QuestionType.isFile(this.answerType)) return surveyFile.getFileName();
+        if(QuestionType.isFile(this.answerType)) return surveyFile.getStoredName();
         else if(QuestionType.checkType(this.answerType)){
             if(answerType.equals(QuestionType.MULTIPLE)){
                 return multiAnswer.split("_")[0];
@@ -50,6 +51,10 @@ public class Answer extends BaseEntity {
             else if(answerType.equals(QuestionType.MULTIPLECHECK)){
                 return Arrays.stream(multiAnswer.replaceAll("[\\[\\]]", "").split(",\\s*"))
                         .map(s -> s.split("_")[0])
+                        .collect(Collectors.joining(","));
+            }else if(answerType.equals(QuestionType.HIERARCHY)){
+                return Arrays.stream(multiAnswer.replaceAll("[\\[\\]]", "").split(",\\s*"))
+                        .map(s -> s.split("_")[1])
                         .collect(Collectors.joining(","));
             }
             return multiAnswer;
@@ -60,7 +65,7 @@ public class Answer extends BaseEntity {
     }
 
     @Builder
-    public Answer(int questionId, String questionRealId, String textAnswer,String multiAnswer, LocalDateTime dateAnswer,QuestionType answerType,SurveyLog surveyLog, SurveyFile surveyFile){
+    public Answer(int questionId, String questionRealId, String textAnswer,String multiAnswer, LocalDateTime dateAnswer,QuestionType answerType,SurveyLog surveyLog, FileAttachment surveyFile){
         this.questionId = questionId;
         this.questionRealId = questionRealId;
         this.textAnswer = textAnswer;

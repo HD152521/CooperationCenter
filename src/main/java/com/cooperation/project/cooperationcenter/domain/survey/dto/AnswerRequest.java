@@ -6,6 +6,7 @@ public class AnswerRequest {
     public record Dto(
             String surveyId,
             List<AnswerDto> answers,
+            List<AnswerDto> templateAnswers,
             String startTime,
             int questionCnt
     ){}
@@ -14,6 +15,7 @@ public class AnswerRequest {
         int questionId,
         String type,
         Object answer,
-        String questionRealId
+        String questionRealId,
+        String domainField
     ){}
 }

@@ -13,9 +13,12 @@ public record SurveyEditDto (
         List<QuestionDto> questions,
         LocalDate startDate,
         LocalDate endDate,
-        String surveyId
+        String surveyType,
+        String surveyId,
+        boolean isShare,
+        String folderId
 ){
-    public static SurveyEditDto to(String surveyid, SurveyFindService surveyFindService){
+    public static SurveyEditDto from(String surveyid, SurveyFindService surveyFindService){
         Survey survey = surveyFindService.getSurveyFromId(surveyid);
         return new SurveyEditDto(
                 survey.getSurveyDescription(),
@@ -23,7 +26,10 @@ public record SurveyEditDto (
                 QuestionDto.to(survey),
                 survey.getStartDate(),
                 survey.getEndDate(),
-                surveyid
+                survey.getSurveyType().getType(),
+                surveyid,
+                survey.isShare(),
+                survey.getSurveyFolder().getFolderId()
         );
     }
 }

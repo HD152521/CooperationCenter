@@ -1,44 +1,26 @@
 spring:
   application:
-    name:
-      CooperationCenter
+    name: CooperationCenter
   thymeleaf:
-    prefix:
-      classpath:/templates/
-    suffix:
-      .html
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/cooperationcenter?autoReconnect=true&allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&createDatabaseIfNotExist=true
-    username: CooperationCenter
-    password: cooperationcenter123!@#
+    prefix: classpath:/templates/
+    suffix: .html
 
   jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
+    show-sql: false           # 공통 기본값은 조용하게
     properties:
       hibernate.jdbc.batch_size: 100
       hibernate.order_inserts: true
       hibernate.order_updates: true
-      hibernate:
-        format_sql: true
-    database-platform: org.hibernate.dialect.MySQLDialect
-  mysql:
-    charset: utf8mb4
-    collation: utf8mb4_unicode_ci
+      hibernate.format_sql: false
+
   servlet:
     multipart:
       enabled: true
       max-file-size: 10MB
       max-request-size: 20MB
 
-
-jwt:
-  secret: ZGZsbTJwM2ttZndlb2lmbjEzOTRnbnVxZWYxMjM1Zmdhc2RmZzQ0NHdkZjM0YXNkZjhhc2RmOTM0ZA==
-
 server:
-  port: ${PORT:8080}
+  port: ${PORT:8081}
   servlet:
     encoding:
       enabled: true
