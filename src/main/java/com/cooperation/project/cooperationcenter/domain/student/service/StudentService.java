@@ -76,7 +76,15 @@ public class StudentService {
             if(!q.isTemplate()) continue;
             String domainField = q.getDomainField();
             Answer answer = answerByQid.get(q.getQuestionId());
+            if(answer == null){
+                log.warn("템플릿 문항에 대한 답변이 없습니다. questionId:{}, question:{}", q.getQuestionId(), q.getQuestion());
+                continue;
+            }
             String generateAnswer = answer.getAnswer();
+            if(generateAnswer == null){
+                log.warn("템플릿 문항 답변 값이 null 입니다. questionId:{}, question:{}", q.getQuestionId(), q.getQuestion());
+                continue;
+            }
 
             domainMap.put(domainField,generateAnswer);
         }
