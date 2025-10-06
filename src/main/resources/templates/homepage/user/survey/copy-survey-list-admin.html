@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>설문조사 목록</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: "#4F46E5", secondary: "#6366F1" },
+                    borderRadius: {
+                        none: "0px",
+                        sm: "4px",
+                        DEFAULT: "8px",
+                        md: "12px",
+                        lg: "16px",
+                        xl: "20px",
+                        "2xl": "24px",
+                        "3xl": "32px",
+                        full: "9999px",
+                        button: "8px",
+                    },
+                },
+            },
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+            rel="stylesheet"
+    />
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+            rel="stylesheet"
+    />
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+        }
+        .survey-card {
+            transition: all 0.3s ease;
+        }
+        .survey-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+        }
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .tooltip {
+            position: absolute;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s ease, visibility 0.2s;
+            z-index: 50;
+        }
+        .tooltip-trigger:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .custom-date-input::-webkit-calendar-picker-indicator {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+<div
+        id="delete-confirm-modal"
+        class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50"
+>
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 mx-4">
+        <div class="text-center mb-5">
+            <div
+                    class="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-red-100 text-red-500 mb-4"
+            >
+                <i class="ri-delete-bin-line ri-xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">설문조사 삭제</h3>
+            <p class="text-gray-500">
+                정말로 이 설문조사를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+            </p>
+        </div>
+        <div class="flex space-x-3">
+            <button
+                    id="cancel-delete"
+                    class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-button whitespace-nowrap"
+            >
+                취소
+            </button>
+            <button
+                    id="confirm-delete"
+                    class="flex-1 px-4 py-2 bg-red-500 text-white rounded-button whitespace-nowrap"
+            >
+                삭제
+            </button>
+        </div>
+    </div>
+</div>
+<div
+        id="copy-confirm-modal"
+        class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50"
+>
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 mx-4">
+        <div class="text-center mb-5">
+            <div
+                    class="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-blue-100 text-blue-500 mb-4"
+            >
+                <i class="ri-file-copy-line"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">설문조사 복사</h3>
+            <p class="text-gray-500">
+                설문조사를 복사 하시겠습니까?
+            </p>
+        </div>
+        <div class="flex space-x-3">
+            <button
+                    id="cancel-copy"
+                    class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-button whitespace-nowrap"
+            >
+                취소
+            </button>
+            <button
+                    id="confirm-copy"
+                    class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-button whitespace-nowrap"
+            >
+                복사
+            </button>
+        </div>
+    </div>
+</div>
+<header th:replace="~{/homepage/common/survey-nav :: survey-nav}"></header>
+<!--<header class="bg-white border-b border-gray-200 sticky top-0 z-10">-->
+<!--    <div class="container mx-auto px-4">-->
+<!--        <div class="flex items-center justify-between h-16">-->
+<!--            <div class="flex items-center">-->
+<!--                <div class="text-2xl font-['Pacifico'] text-primary mr-8">logo</div>-->
+<!--                <div class="flex space-x-1">-->
+<!--                    <button-->
+<!--                            class="px-4 py-2 text-gray-500 hover:text-gray-700 font-medium"-->
+<!--                    >-->
+<!--                        <a href="/home">-->
+<!--                            홈-->
+<!--                        </a>-->
+<!--                    </button>-->
+<!--                    <button-->
+<!--                            class="px-4 py-2 text-primary border-b-2 border-primary font-medium"-->
+<!--                    >-->
+<!--                        <a href="/survey/list">-->
+<!--                            설문조사 목록-->
+<!--                        </a>-->
+<!--                    </button>-->
+<!--                    <button-->
+<!--                            class="px-4 py-2 text-gray-500 hover:text-gray-700 font-medium"-->
+<!--                    >-->
+<!--                        <a href="/survey/make">-->
+<!--                            설문조사 생성-->
+<!--                        </a>-->
+<!--                    </button>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="flex items-center space-x-4">-->
+<!--                <div-->
+<!--                        class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 relative"-->
+<!--                >-->
+<!--                    <i class="ri-notification-3-line"></i>-->
+<!--                    <span-->
+<!--                            class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white"-->
+<!--                    ></span>-->
+<!--                </div>-->
+<!--                <div-->
+<!--                        class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white"-->
+<!--                >-->
+<!--                    <span>관</span>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</header>-->
+<main class="container mx-auto px-4 py-6">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold">설문조사 목록</h1>
+        <a
+                href="/survey/make"
+                data-readdy="true"
+                class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap flex items-center"
+        >
+            <i class="ri-add-line mr-2"></i>
+            새 설문조사 만들기
+        </a>
+    </div>
+    <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+        <div
+                class="flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-4"
+        >
+            <div class="flex-1 relative">
+                <input
+                        type="text"
+                        placeholder="설문조사 제목 검색"
+                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"
+                />
+                <div
+                        class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 flex items-center justify-center text-gray-400"
+                >
+                    <i class="ri-search-line"></i>
+                </div>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <div class="relative">
+                    <select
+                            class="appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"
+                    >
+                        <option value="all">모든 상태</option>
+                        <option value="before">진행 전</option>
+                        <option value="active">진행 중</option>
+                        <option value="ended">종료</option>
+                    </select>
+                    <div
+                            class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-500"
+                    >
+                        <i class="ri-arrow-down-s-line"></i>
+                    </div>
+                </div>
+                <div class="relative">
+                    <input
+                            type="date"
+                            class="custom-date-input appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"
+                    />
+                </div>
+<!--                <div class="relative" id="advanced-filter">-->
+<!--                    <button-->
+<!--                            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-button whitespace-nowrap flex items-center"-->
+<!--                            id="filter-button"-->
+<!--                    >-->
+<!--                        <i class="ri-filter-3-line mr-2"></i>-->
+<!--                        필터-->
+<!--                    </button>-->
+<!--                    <div-->
+<!--                            class="hidden absolute right-0 top-full mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-20"-->
+<!--                            id="filter-dropdown"-->
+<!--                    >-->
+<!--                        <div class="p-4">-->
+<!--                            <h3 class="text-lg font-semibold mb-4">고급 필터</h3>-->
+<!--                            <div class="space-y-4">-->
+<!--                                <div>-->
+<!--                                    <label-->
+<!--                                            class="block text-sm font-medium text-gray-700 mb-1"-->
+<!--                                    >응답 수 범위</label-->
+<!--                                    >-->
+<!--                                    <div class="flex items-center space-x-2">-->
+<!--                                        <input-->
+<!--                                                type="number"-->
+<!--                                                min="0"-->
+<!--                                                placeholder="최소"-->
+<!--                                                class="w-24 px-3 py-1.5 border border-gray-300 rounded text-sm"-->
+<!--                                                id="response-min"-->
+<!--                                        />-->
+<!--                                        <span class="text-gray-500">-</span>-->
+<!--                                        <input-->
+<!--                                                type="number"-->
+<!--                                                min="0"-->
+<!--                                                placeholder="최대"-->
+<!--                                                class="w-24 px-3 py-1.5 border border-gray-300 rounded text-sm"-->
+<!--                                                id="response-max"-->
+<!--                                        />-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div>-->
+<!--                                    <label-->
+<!--                                            class="block text-sm font-medium text-gray-700 mb-1"-->
+<!--                                    >생성일 기간</label-->
+<!--                                    >-->
+<!--                                    <div class="flex items-center space-x-2">-->
+<!--                                        <input-->
+<!--                                                type="date"-->
+<!--                                                class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm"-->
+<!--                                                id="created-start"-->
+<!--                                        />-->
+<!--                                        <span class="text-gray-500">-</span>-->
+<!--                                        <input-->
+<!--                                                type="date"-->
+<!--                                                class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm"-->
+<!--                                                id="created-end"-->
+<!--                                        />-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div>-->
+<!--                                    <label-->
+<!--                                            class="block text-sm font-medium text-gray-700 mb-1"-->
+<!--                                    >종료일 기간</label-->
+<!--                                    >-->
+<!--                                    <div class="flex items-center space-x-2">-->
+<!--                                        <input-->
+<!--                                                type="date"-->
+<!--                                                class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm"-->
+<!--                                                id="end-start"-->
+<!--                                        />-->
+<!--                                        <span class="text-gray-500">-</span>-->
+<!--                                        <input-->
+<!--                                                type="date"-->
+<!--                                                class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm"-->
+<!--                                                id="end-end"-->
+<!--                                        />-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div>-->
+<!--                                    <label-->
+<!--                                            class="block text-sm font-medium text-gray-700 mb-1"-->
+<!--                                    >정렬</label-->
+<!--                                    >-->
+<!--                                    <select-->
+<!--                                            class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm"-->
+<!--                                            id="sort-option"-->
+<!--                                    >-->
+<!--                                        <option value="newest">최신순</option>-->
+<!--                                        <option value="oldest">오래된순</option>-->
+<!--                                        <option value="responses">응답 수</option>-->
+<!--                                    </select>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <div class="flex justify-end space-x-2 mt-6 pt-4 border-t">-->
+<!--                                <button-->
+<!--                                        class="px-4 py-2 text-gray-700 bg-gray-100 rounded-button text-sm"-->
+<!--                                        id="reset-filter"-->
+<!--                                >-->
+<!--                                    초기화-->
+<!--                                </button>-->
+<!--                                <button-->
+<!--                                        class="px-4 py-2 text-white bg-primary rounded-button text-sm"-->
+<!--                                        id="apply-filter"-->
+<!--                                >-->
+<!--                                    적용-->
+<!--                                </button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+            </div>
+        </div>
+    </div>
+    <div id="survey-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+    </div>
+    <div class="mt-8 flex justify-center">
+        <nav class="inline-flex rounded-md shadow">
+            <button
+                    class="px-3 py-2 rounded-l-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50"
+            >
+                <i class="ri-arrow-left-s-line"></i>
+            </button>
+            <button
+                    class="px-4 py-2 border-t border-b border-gray-300 bg-primary text-white"
+            >
+                1
+            </button>
+            <button
+                    class="px-4 py-2 border-t border-b border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+            >
+                2
+            </button>
+            <button
+                    class="px-3 py-2 rounded-r-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50"
+            >
+                <i class="ri-arrow-right-s-line"></i>
+            </button>
+        </nav>
+    </div>
+</main>
+<script id="delete-modal-management">
+    document.addEventListener("DOMContentLoaded", function () {
+        const deleteModal = document.getElementById("delete-confirm-modal");
+        const cancelDeleteBtn = document.getElementById("cancel-delete");
+        const confirmDeleteBtn = document.getElementById("confirm-delete");
+        let surveyToDelete = null;
+
+        function openDeleteModal(surveyCard) {
+            surveyToDelete = surveyCard;
+            deleteModal.classList.remove("hidden");
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeDeleteModal() {
+            deleteModal.classList.add("hidden");
+            document.body.style.overflow = "";
+            surveyToDelete = null;
+        }
+
+        // 이벤트 위임으로 모든 삭제 버튼 처리
+            document.addEventListener("click", function (event) {
+                const deleteBtn = event.target.closest(".delete-survey-btn");
+                if (deleteBtn) {
+                    const surveyCard = deleteBtn.closest(".survey-card");
+                    if (surveyCard) {
+                        console.log("삭제할 카드:", surveyCard);
+                        openDeleteModal(surveyCard);
+                    }
+                }
+            });
+
+        cancelDeleteBtn.addEventListener("click", closeDeleteModal);
+        confirmDeleteBtn.addEventListener("click", function () {
+            console.log(surveyToDelete);
+            if (surveyToDelete) {
+                const surveyId = surveyToDelete.dataset.surveyId;
+                console.log(surveyId);
+                if(surveyId){
+                    console.log("fetch하기전");
+                    fetch(`/api/v1/survey/${surveyId}`, {
+                        method: "DELETE"
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                surveyToDelete.remove();  // 화면에서 제거
+                                closeDeleteModal();       // 모달 닫기
+                                alert("삭제되었습니다.");
+                            } else {
+                                closeDeleteModal();
+                                alert("삭제 실패");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("삭제 중 오류:", error);
+                            alert("서버 오류로 삭제에 실패했습니다.");
+                        });
+                }
+            }
+        });
+
+        deleteModal.addEventListener("click", function (event) {
+            if (event.target === deleteModal) {
+                closeDeleteModal();
+            }
+        });
+    });
+</script>
+<script id="copy-modal-management">
+    document.addEventListener("DOMContentLoaded", function () {
+        const copyModal = document.getElementById("copy-confirm-modal");
+        const cancelCopyBtn = document.getElementById("cancel-copy");
+        const confirmCopyBtn = document.getElementById("confirm-copy");
+        let surveyToCopy = null;
+
+        function openCopyModal(surveyCard) {
+            surveyToCopy = surveyCard;
+            copyModal.classList.remove("hidden");
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeCopyModal() {
+            copyModal.classList.add("hidden");
+            document.body.style.overflow = "";
+            surveyToCopy = null;
+        }
+
+        // 이벤트 위임으로 모든 삭제 버튼 처리
+        document.addEventListener("click", function (event) {
+            const copyBtn = event.target.closest(".copy-survey-btn");
+            if (copyBtn) {
+                const surveyCard = copyBtn.closest(".survey-card");
+                if (surveyCard) {
+                    console.log("삭제할 카드:", surveyCard);
+                    openCopyModal(surveyCard);
+                }
+            }
+        });
+
+        cancelCopyBtn.addEventListener("click", closeCopyModal);
+        confirmCopyBtn.addEventListener("click", function () {
+            console.log(surveyToCopy);
+            if (surveyToCopy) {
+                const surveyId = surveyToCopy.dataset.surveyId;
+                console.log(surveyId);
+                if(surveyId){
+                    console.log("fetch하기전");
+                    fetch(`/api/v1/survey/copy/${surveyId}`, {
+                        method: "POST"
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                surveyToCopy.remove();  // 화면에서 제거
+                                closeCopyModal();       // 모달 닫기
+                                alert("복사되었습니다.");
+                                location.reload();
+                            } else {
+                                closeCopyModal();
+                                alert("복사 실패");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("복사 중 오류:", error);
+                            alert("서버 오류로 복사에 실패했습니다.");
+                        });
+                }
+            }
+        });
+
+        copyModal.addEventListener("click", function (event) {
+            if (event.target === copyModal) {
+                closeCopyModal();
+            }
+        });
+    });
+</script>
+<script id="survey-filter-management">
+    document.addEventListener("DOMContentLoaded", function () {
+        const statusFilter = document.querySelector("select");
+        const dateFilter = document.querySelector('input[type="date"]');
+        const searchInput = document.querySelector(
+            'input[placeholder="설문조사 제목 검색"]',
+        );
+        // 현재 날짜 설정
+        const today = new Date();
+        const formattedDate = today.toISOString().split("T")[0];
+        dateFilter.value = formattedDate;
+
+        // 필터 적용 함수
+        function applyFilters() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const status = statusFilter.value;
+            const date = dateFilter.value;
+
+            const surveyCards = document.querySelectorAll(".survey-card");
+            surveyCards.forEach((card) => {
+                let visible = true;
+                // 제목 검색
+                const title = card.querySelector("h3").textContent.toLowerCase();
+                if (searchTerm && !title.includes(searchTerm)) {
+                    visible = false;
+                }
+                // 상태 필터
+                if (status !== "all") {
+                    const statusBadge = card.querySelector("span").textContent;
+                    if (
+                        (status === "active" && statusBadge !== "진행 중") ||
+                        (status === "ended" && statusBadge !== "종료") ||
+                        (status === "before" && statusBadge !== "진행 전")
+                    ) {
+                        visible = false;
+                    }
+                }
+                // 날짜 필터 (간단한 구현)
+
+
+                // 카드 표시/숨김
+                card.style.display = visible ? "" : "none";
+            });
+            // 정렬 적용
+            const surveyContainer = document.querySelector(".grid");
+            const sortedCards = Array.from(surveyContainer.children);
+            sortedCards.sort((a, b) => {
+                if (sort === "newest" || sort === "oldest") {
+                    const dateA = new Date(
+                        a
+                            .querySelector(".ri-calendar-line")
+                            .nextElementSibling.textContent.replace("생성일: ", ""),
+                    );
+                    const dateB = new Date(
+                        b
+                            .querySelector(".ri-calendar-line")
+                            .nextElementSibling.textContent.replace("생성일: ", ""),
+                    );
+                    return sort === "newest" ? dateB - dateA : dateA - dateB;
+                } else if (sort === "responses") {
+                    const responsesA = parseInt(
+                        a
+                            .querySelector(".ri-user-line")
+                            .nextElementSibling.textContent.match(/\d+/)[0],
+                    );
+                    const responsesB = parseInt(
+                        b
+                            .querySelector(".ri-user-line")
+                            .nextElementSibling.textContent.match(/\d+/)[0],
+                    );
+                    return responsesB - responsesA;
+                }
+            });
+            sortedCards.forEach((card) => {
+                surveyContainer.appendChild(card);
+            });
+            filterDropdown.classList.add("hidden");
+        }
+        // 이벤트 리스너 설정
+        searchInput.addEventListener("input", applyFilters);
+        statusFilter.addEventListener("change", applyFilters);
+        dateFilter.addEventListener("change", applyFilters);
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const container = document.getElementById("survey-list-container");
+
+        fetch("/api/v1/survey/getAll") // ←  리스트 반환하는 API 엔드포인트
+            .then((res) => res.json())
+            .then((data) => {
+                if (!Array.isArray(data)) {
+                    throw new Error("Invalid response format");
+                }
+
+                container.innerHTML = "";
+
+                data.forEach((survey) => {
+                    const card = document.createElement("div");
+                    card.className = "survey-card bg-white rounded-lg shadow-sm overflow-hidden";
+
+                    const surveyId = survey.surveyId;
+                    card.dataset.surveyId = surveyId;
+                    const createdDate = new Date(survey.createdAt);
+                    const formattedDate = createdDate.toLocaleDateString("ko-KR", {
+                        year: "numeric", month: "long", day: "numeric"
+                    });
+                    const isBefore = survey.isBefore;
+                    const status = isBefore ? "진행 전" : (survey.lastDate > 0 ? "진행 중" : "종료");
+
+                    const badgeClass = isBefore ? "bg-blue-100 text-white-800" : (survey.lastDate > 0
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800");
+
+                    card.innerHTML = `
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-3">
+                                <h3 class="text-lg font-bold text-gray-900 line-clamp-2">
+                                    ${survey.title}
+                                </h3>
+                                <span class="px-2 py-1 ${badgeClass} text-xs font-medium rounded-full">${status}</span>
+                            </div>
+                            <div class="space-y-2 mb-4 text-sm text-gray-500">
+                                <div class="flex items-center">
+                                    <i class="ri-calendar-line mr-2"></i>
+                                    <span>생성일: ${formattedDate}</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="ri-user-line mr-2"></i>
+                                    <span>응답 수: ${survey.participant}명</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="ri-time-line mr-2"></i>
+                                    <span>
+                                      ${survey.isBefore
+                                                            ? "시작 안함"
+                                                            : (survey.lastDate > 0
+                                                                ? `남은 기간: ${survey.lastDate}일`
+                                                                : "종료일 지남")}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between border-t border-gray-100 pt-4">
+                                <div class="flex space-x-1">
+                                    <div class="tooltip-trigger">
+                                        <a
+                                                href="/survey/edit/${surveyId}"
+                                                data-readdy="true"
+                                                class="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 text-gray-600"
+                                        >
+                                            <i class="ri-edit-line"></i>
+                                        </a>
+                                        <div
+                                                class="tooltip bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full mb-2 left-1/2 transform -translate-x-1/2"
+                                        >
+                                            편집
+                                        </div>
+                                    </div>
+                                    <div class="tooltip-trigger">
+                                        <button
+                                                class="copy-survey-btn w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 text-gray-600"
+                                        >
+                                            <i class="ri-file-copy-line"></i>
+                                        </button>
+                                        <div
+                                                class="tooltip bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full mb-2 left-1/2 transform -translate-x-1/2"
+                                        >
+                                            복제
+                                        </div>
+                                    </div>
+                                    <div class="tooltip-trigger">
+                                        <button
+                                                class="delete-survey-btn w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 text-gray-600"
+                                        >
+                                            <i class="ri-delete-bin-line"></i>
+                                        </button>
+                                        <div
+                                                class="tooltip bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full mb-2 left-1/2 transform -translate-x-1/2"
+                                        >
+                                            삭제
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <form action="/survey/answer/${surveyId}" method="post">
+                                        <input type="hidden" name="surveyId" value="${surveyId}">
+                                        <button class="px-3 py-1 bg-white text-blue-600 border border-blue-600 text-sm rounded whitespace-nowrap hover:bg-blue-50 transition-colors">
+                                            설문
+                                        </button>
+                                    </form>
+                                    <form action="/survey/log/${surveyId}" method="post">
+                                        <input type="hidden" name="surveyId" value="${surveyId}">
+                                        <button class="px-3 py-1 bg-primary text-white text-sm rounded-button whitespace-nowrap">
+                                            결과
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                `;
+
+                    container.appendChild(card);
+                });
+            })
+            .catch((err) => {
+                console.error("설문조사 불러오기 실패:", err);
+                container.innerHTML = "<p class='text-gray-500'>설문조사를 불러오는 데 실패했습니다.</p>";
+            });
+    });
+</script>
+<script>
+
+</script>
+</body>
+</html>

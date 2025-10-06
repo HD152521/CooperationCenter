@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>응답자 상세 정보</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16">
+    </script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: "#4f46e5", secondary: "#6366f1" },
+                    borderRadius: {
+                        none: "0px",
+                        sm: "4px",
+                        DEFAULT: "8px",
+                        md: "12px",
+                        lg: "16px",
+                        xl: "20px",
+                        "2xl": "24px",
+                        "3xl": "32px",
+                        full: "9999px",
+                        button: "8px",
+                    },
+                },
+            },
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js">
+    </script>
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+            background-color: #f9fafb;
+        }
+        .custom-radio {
+            position: relative;
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid #d1d5db;
+            background-color: white;
+            transition: all 0.2s ease;
+        }
+        .custom-radio.checked {
+            border-color: #4f46e5;
+        }
+        .custom-radio.checked::after {
+            content: '';
+            position: absolute;
+            left: 3px;
+            top: 3px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #4f46e5;
+        }
+        .custom-range {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e5e7eb;
+            outline: none;
+        }
+        .custom-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4f46e5;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .custom-range::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4f46e5;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+<!-- 헤더 -->
+<header class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between">
+            <div th:if="${isAdmin}" class="flex items-center gap-4">
+                <a th:href="@{'/survey/log/list/'+${answerLog.surveyId}}" class="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+                    <i class="ri-arrow-left-line"></i>
+                    <span>응답 목록으로 돌아가기</span>
+                </a>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-sm text-gray-500" th:text="${answerLog.logDto.submitTime}" >2025년 7월 1일 화요일</div>
+                <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                    <i class="ri-user-line text-gray-600"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- 메인 콘텐츠 -->
+<main class="flex-grow">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- 응답자 기본 정보 -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <div class="flex flex-col md:flex-row justify-between gap-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900" th:text="${answerLog.surveyTitle}" >고객 만족도 조사 2025</h1>
+                    <p class="text-sm text-gray-500 mt-1" th:text="${answerLog.surveyStartDate}+' ~ '+${answerLog.surveyEndDate}">2025.06.20 - 2025.07.01</p>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <button class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-button text-gray-700 hover:bg-gray-50 whitespace-nowrap">
+                        <i class="ri-file-excel-line"></i>
+                        <span>Excel 내보내기</span>
+                    </button>
+                    <button class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-button text-gray-700 hover:bg-gray-50 whitespace-nowrap">
+                        <i class="ri-printer-line"></i>
+                        <span>인쇄</span>
+                    </button>
+                </div>
+            </div>
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <div class="text-sm text-gray-500">응답자</div>
+                    <div class="mt-1 text-lg font-medium text-gray-900" th:text="${answerLog.logDto.memberName}">김민준</div>
+                    <div class="text-sm text-gray-500" th:text="${answerLog.logDto.memberEmail}">minjun@example.com</div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <div class="text-sm text-gray-500">응답 완료 시간</div>
+                    <div class="mt-1 text-lg font-medium text-gray-900" th:text="${answerLog.logDto.submitTime}">2025.06.26 09:23</div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <div class="text-sm text-gray-500">총 소요 시간</div>
+                    <div class="mt-1 text-lg font-medium text-gray-900" th:text="${answerLog.logDto.spendTime / 60} + '분 ' + (${answerLog.logDto.spendTime} % 60) + '초'">5분 32초</div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <div class="text-sm text-gray-500">응답 상태</div>
+                    <div class="mt-1 flex items-center">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">완료</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="space-y-6">
+            <!-- 응답 내용 -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-lg font-medium text-gray-900 mb-6">응답 내용</h2>
+                <div class="space-y-8" th:each="an, iterStat : ${answerLog.answer}">
+                    <div class="space-y-4">
+                        <h3 class="text-base font-medium text-gray-900" th:text="'Q' + ${an.questionId} + '. ' + ${answerLog.questions[an.questionId - 1].question}"></h3>
+
+                        <!-- SHORT, PARAGRAPH, ESSAY -->
+                        <div th:if="${answerLog.questions[an.questionId - 1].type == 'SHORT' or  answerLog.questions[an.questionId - 1].type == 'ESSAY'}">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <p class="text-sm text-gray-700" th:text="${an.answer}">답변</p>
+                            </div>
+                        </div>
+
+                        <!-- MULTIPLE -->
+                        <div th:if="${answerLog.questions[an.questionId - 1].type == 'MULTIPLE'}" class="space-y-3">
+                            <div th:each="opt, idx : ${answerLog.questions[an.questionId - 1].options}" class="flex items-center">
+                                <div class="custom-radio"
+                                     th:classappend="${((idx.index).toString()) == an.answer} ? ' checked' : ''">
+                                </div>
+                                <span class="ml-2 text-sm"
+                                      th:classappend="${((idx.index).toString()) == an.answer} ? ' font-medium text-primary' : ' text-gray-600'"
+                                      th:text="${opt.text}">옵션</span>
+                            </div>
+                        </div>
+
+                        <!-- MULTIPLECHECK -->
+                        <div th:if="${answerLog.questions[an.questionId - 1].type == 'multiple-checkbox'}" class="space-y-3">
+                            <label th:each="opt, stat : ${answerLog.questions[an.questionId - 1].options}" class="custom-checkbox flex items-center">
+                                <!-- 박스 스타일 -->
+                                <span class="w-5 h-5 border-2 rounded flex items-center justify-center mr-3 relative"
+                                      th:with="selectedVals=${(an.answer ?: '').split(',')}"
+                                      th:style="${#arrays.contains(selectedVals, stat.index.toString())}
+                                          ? 'background-color: rgb(79, 70, 229); border-color: rgb(79, 70, 229);'
+                                          : 'background-color: white; border-color: #d1d5db;'">
+
+                                    <!-- 체크 아이콘 -->
+                                    <span class="absolute text-white"
+                                          th:style="${#arrays.contains(selectedVals, stat.index.toString())} ? 'opacity: 1;' : 'opacity: 0;'">
+                                        <i class="ri-check-line text-xs"></i>
+                                    </span>
+                                </span>
+                                <!-- 텍스트 -->
+                                <span class="text-gray-700" th:text="${opt.text}">옵션</span>
+                            </label>
+                        </div>
+
+
+                        <!-- DROPDOWN -->
+                        <div th:if="${answerLog.questions[an.questionId - 1].type == 'DROPDOWN'}">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <p class="text-sm text-gray-700" th:text="${an.answer}">선택된 항목</p>
+                            </div>
+                        </div>
+
+                        <!-- DATE -->
+                        <div th:if="${answerLog.questions[an.questionId - 1].type == 'DATE'}">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <p class="text-sm text-gray-700" th:text="${an.answer}">날짜</p>
+                            </div>
+                        </div>
+
+                        <!-- FILE -->
+                        <div th:if="${answerLog.questions[an.questionId - 1].type == 'FILE' or answerLog.questions[an.questionId - 1].type == 'IMAGE'}">
+                            <div class="bg-gray-50 p-4 rounded-lg uploaded-file"
+                                 th:attr="data-fullname=${an.answer}">
+                            </div>
+                        </div>
+
+<!--                        Hierarchy-->
+                        <div th:if="${answerLog.questions[an.questionId - 1].type == 'hierarchy'}" class="text-gray-700">
+                            <span th:with="hierarchyList=${(an.answer ?: '').split(',')}">
+                                <span th:each="item, iterStat : ${hierarchyList}">
+                                    <span th:text="${item}"></span>
+                                    <span th:if="${!iterStat.last}"> &gt; </span> <!-- > 기호 -->
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- 하단 네비게이션 -->
+<!--    <div class="mt-6 flex justify-between items-center bg-white rounded-lg shadow p-4">-->
+<!--        <button class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-button text-gray-700 hover:bg-gray-50 whitespace-nowrap">-->
+<!--            <i class="ri-arrow-left-line"></i>-->
+<!--            <span>이전 응답자</span>-->
+<!--        </button>-->
+<!--        <div class="text-sm text-gray-500">-->
+<!--            42명 중 15번째-->
+<!--        </div>-->
+<!--        <button class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-button text-gray-700 hover:bg-gray-50 whitespace-nowrap">-->
+<!--            <span>다음 응답자</span>-->
+<!--            <i class="ri-arrow-right-line"></i>-->
+<!--        </button>-->
+<!--    </div>-->
+</main>
+<script src="/js/homepage/url.js"></script>
+<script>
+    function parseUuidAndFilename(fullName) {
+        const underscoreIndex = fullName.indexOf('_');
+        if (underscoreIndex === -1) {
+            return { uuid: fullName, filename: '' };
+        }
+
+        const uuid = fullName.substring(0, underscoreIndex);
+        const filename = fullName.substring(underscoreIndex + 1);
+        return { uuid, filename };
+    }
+
+    document.querySelectorAll('.uploaded-file').forEach(div => {
+        const fullName = div.dataset.fullname;
+        const { uuid, filename } = parseUuidAndFilename(fullName);
+
+        const link = document.createElement("a");
+        link.href = `${fileUrl}/survey/${uuid}`;
+        link.textContent = filename || '파일 다운로드';
+        link.className = "text-sm text-blue-600 underline";
+        link.target = "_blank";
+
+        div.appendChild(link);
+    });
+</script>
+</body>
+</html>

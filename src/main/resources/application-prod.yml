@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT:3306}/${DB_NAME}?autoReconnect=true&allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none          # 운영 DB는 마이그레이션 툴 사용 권장(Flyway/Liquibase)
+    show-sql: false
+    properties:
+      hibernate.format_sql: false
+  mysql:
+    charset: utf8mb4
+    collation: utf8mb4_unicode_ci
+
+jwt:
+  secret: ${JWT_SECRET}
+
+oss:
+  endpoint: ${OSS_ACCESS_END_POINT}
+  bucket: ${OSS_ACCESS_BUCKET_NAME}
+  accessKeyId: ${OSS_ACCESS_KEY_ID}
+  accessKeySecret: ${OSS_ACCESS_KEY_SECRET}

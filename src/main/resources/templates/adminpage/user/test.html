@@ -1,0 +1,50 @@
+<!--&lt;!&ndash; 1. CSS & Script 추가 &ndash;&gt;-->
+<!--<link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">-->
+<!--<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>-->
+
+<!--&lt;!&ndash; 2. 에디터 생성 &ndash;&gt;-->
+<!--<div id="editor"></div>-->
+<!--<script>-->
+<!--    const editor = new toastui.Editor({-->
+<!--        el: document.querySelector('#editor'),-->
+<!--        height: '400px',-->
+<!--        initialEditType: 'wysiwyg', // 또는 'markdown'-->
+<!--        previewStyle: 'vertical',-->
+<!--    });-->
+
+<!--    // 내용 가져오기-->
+<!--    const content = editor.getHTML();  // 또는 getMarkdown()-->
+<!--</script>-->
+
+<!--todo-->
+<script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
+
+<textarea id="editor"></textarea>
+
+<script>
+    ClassicEditor
+        .create(document.querySelector('#editor'), {
+            ckfinder: {
+                // 이미지를 업로드할 백엔드 URL
+                uploadUrl: '/upload/image'  // 여기에 백엔드 이미지 업로드 API 작성
+            }
+        })
+        .catch(error => {
+            console.error(error);
+        });
+</script>
+
+<!--todo-->
+
+<!--<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>-->
+
+<!--<textarea id="editor"></textarea>-->
+
+<!--<script>-->
+<!--    tinymce.init({-->
+<!--        selector: '#editor',-->
+<!--        plugins: 'image table link code lists',-->
+<!--        toolbar: 'undo redo | formatselect | bold italic underline | image link table | alignleft aligncenter alignright | code',-->
+<!--        height: 400-->
+<!--    });-->
+<!--</script>-->

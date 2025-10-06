@@ -1,0 +1,136 @@
+    <nav class="bg-white shadow-sm fixed w-full z-10" th:fragment="nav-user">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="#" class="flex-shrink-0 flex items-center">
+                        <span class="text-2xl font-['Pacifico'] text-primary">logo</span>
+                    </a>
+                    <div class="hidden sm:ml-10 sm:flex sm:space-x-8">
+                        <a
+                                href="/home"
+                                th:classappend="${requestURI == '/home' ? 'border-primary text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}"
+                                class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                        >
+                            홈
+                        </a>
+                        <div id="university-dropdown" class="relative">
+                            <button
+                                    id="university-button"
+                                    th:classappend="${requestURI.startsWith('/school') ? 'border-primary text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}"
+                                    class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                            >
+                                대학교
+                                <i class="ri-arrow-down-s-line ml-1"></i>
+                            </button>
+                            <div
+                                    id="university-menu"
+                                    class="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg py-2 w-48 hidden transition duration-200"
+                            >
+                                <a th:each="school : ${schoolCategory}"
+                                   th:href="@{'/school/' + ${school.englishName} + '/board/'+${school.firstBoardId}}"
+                                   th:text="${school.koreanName}"
+                                   class="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-primary">
+                                </a>
+                            </div>
+                        </div>
+                        <a
+                                href="/agency/list"
+                                th:classappend="${requestURI.startsWith('/agency') ? 'border-primary text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}"
+                                class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                        >
+                            유학원
+                        </a>
+                        <a
+                                th:if="${loginMember != null}"
+                                href="/survey/list"
+                                th:classappend="${requestURI.startsWith('/survey') ? 'border-primary text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}"
+                                class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                        >
+                            설문조사
+                        </a>
+                    </div>
+                </div>
+                <div class=""
+                     th:class="${requestURI.startsWith('/profile') || loginMember == null}?
+                            'hidden sm:ml-6 sm:flex sm:items-center' :
+                            'w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white'"
+                >
+                    <button
+                        id="web-login-button"
+                        th:class="${requestURI.startsWith('/profile') || loginMember == null} ?
+                          'bg-indigo-600 text-white px-4 py-2 !rounded-button whitespace-nowrap' :
+                          'text-sm font-medium w-full h-full flex items-center justify-center'"
+                        th:text="${loginMember == null ?
+                          '로그인' :
+                          (#strings.startsWith(requestURI, '/profile') ? '로그아웃' : loginMember.memberName.substring(0, 1))}">
+                    </button>
+
+                </div>
+                <div class="flex items-center sm:hidden">
+                    <button
+                            type="button"
+                            class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
+                            id="mobile-menu-button"
+                    >
+                        <span class="sr-only">메뉴 열기</span>
+                        <div class="w-6 h-6 flex items-center justify-center">
+                            <i class="ri-menu-line ri-lg"></i>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- 모바일 메뉴 -->
+        <div class="sm:hidden hidden" id="mobile-menu">
+            <div class="pt-2 pb-3 space-y-1">
+                <a
+                        href="/home"
+                        th:classappend="${requestURI == '/home' ? 'bg-primary-50 border-primary text-primary' : 'text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'}"
+                        class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+                >
+                    홈
+                </a>
+                <details class="group">
+                    <summary class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        대학교
+                        <i class="ri-arrow-down-s-line group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="ml-4 mt-2 space-y-1" th:each="school : ${schoolCategory}">
+                        <a th:href="@{'/school/' + ${school.englishName} + '/board/1'}"
+                           th:text="${school.koreanName}"
+                           class="block text-gray-600 hover:text-primary">
+                        </a>
+                    </div>
+                </details>
+                <a
+                        href="/agency/list"
+                        th:classappend="${requestURI.startsWith('/agency') ? 'bg-primary-50 border-primary text-primary' : 'text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'}"
+                        class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+                >
+                    유학원
+                </a>
+                <a
+                        th:if="${loginMember != null}"
+                        href="/survey/list"
+                        th:classappend="${requestURI.startsWith('/survey') ? 'bg-primary-50 border-primary text-primary' : 'text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'}"
+                        class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+                >
+                    설문조사
+                </a>
+            </div>
+            <div class="pt-4 pb-3 border-t border-gray-200">
+                <div class="flex items-center px-4">
+                    <button
+                            class="w-full bg-primary text-white px-4 py-2 !rounded-button whitespace-nowrap"
+                            id="mobile-login-button"
+                            th:text="${loginMember == null} ? '로그인' : '로그아웃'"
+                    >
+                        로그인
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script src="/js/homepage/login.js" defer></script>
+        <script src="/js/homepage/nav-user.js" defer></script>
+    </nav>
