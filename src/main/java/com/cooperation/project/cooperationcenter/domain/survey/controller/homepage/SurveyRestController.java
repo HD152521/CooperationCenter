@@ -52,15 +52,17 @@ public class SurveyRestController {
     }
 
     @GetMapping("/{surveyId}")
-    public AnswerPageDto getSurvey(@PathVariable String surveyId){
+    public BaseResponse<?> getSurvey(@PathVariable String surveyId){
         log.info("[controller] getSurvey 진입 : {}",surveyId);
-        return surveySaveService.getSurveys(surveyId);
+        log.info("response:{}",surveySaveService.getSurveys(surveyId).toString());
+        return BaseResponse.onSuccess(surveySaveService.getSurveys(surveyId));
     }
 
     @PostMapping("/admin/make")
-    public void saveSurvey(@RequestBody SurveyRequest.SurveyDto request){
+    public BaseResponse<?> saveSurvey(@RequestBody SurveyRequest.SurveyDto request){
         log.info("[controller] {}",request.toString());
         surveySaveService.saveSurvey(request);
+        return BaseResponse.onSuccess("success");
     }
 
     @DeleteMapping("/admin/{surveyId}")
@@ -79,10 +81,11 @@ public class SurveyRestController {
 
 
     @PatchMapping("/admin/edit")
-    public void editSurvey(@RequestBody SurveyEditDto request){
+    public BaseResponse<?> editSurvey(@RequestBody SurveyEditDto request){
         log.info("[controller] getSurvey 진입 : {}",request.surveyId());
         //fixme 제목 안바뀜
         surveySaveService.editSurvey(request);
+        return BaseResponse.onSuccess("success");
     }
 
     
@@ -104,10 +107,10 @@ public class SurveyRestController {
     }
 
     @GetMapping("/admin/answer/{surveyId}")
-    public AnswerResponse.AnswerDto getAnswerLog(@PathVariable String surveyId){
+    public BaseResponse<?> getAnswerLog(@PathVariable String surveyId){
         AnswerResponse.AnswerDto result = surveyLogService.getAnswerLog(surveyId);
         log.info("result : {}",result.toString());
-        return result;
+        return BaseResponse.onSuccess(result);
     }
 
     @PostMapping("/admin/log/csv")

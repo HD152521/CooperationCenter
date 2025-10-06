@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>404 - 페이지를 찾을 수 없습니다</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: "#57b5e7", secondary: "#8dd3c7" },
+                    borderRadius: {
+                        none: "0px",
+                        sm: "4px",
+                        DEFAULT: "8px",
+                        md: "12px",
+                        lg: "16px",
+                        xl: "20px",
+                        "2xl": "24px",
+                        "3xl": "32px",
+                        full: "9999px",
+                        button: "8px",
+                    },
+                },
+            },
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+            rel="stylesheet"
+    />
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
+    <style>
+        :where([class^="ri-"])::before {
+            content: "\f3c2";
+        }
+        .floating-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        .floating-animation:nth-child(odd) {
+            animation-delay: -1.5s;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #57b5e7, #8dd3c7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body
+        class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4"
+>
+<div class="max-w-4xl w-full text-center">
+    <div class="relative">
+        <div
+                class="absolute inset-0 flex items-center justify-center opacity-10"
+        >
+            <div
+                    class="w-96 h-96 rounded-full bg-gradient-to-r from-primary to-secondary blur-3xl"
+            ></div>
+        </div>
+
+        <div class="relative z-10">
+            <div class="mb-8">
+                <h1 class="text-9xl font-bold gradient-text mb-4 tracking-tight">
+                    404
+                </h1>
+                <div class="flex justify-center space-x-8 mb-8">
+                    <div
+                            class="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center floating-animation"
+                    >
+                        <i class="ri-question-line text-2xl text-primary"></i>
+                    </div>
+                    <div
+                            class="w-20 h-20 bg-secondary/20 rounded-full flex items-center justify-center floating-animation"
+                    >
+                        <i class="ri-search-line text-3xl text-secondary"></i>
+                    </div>
+                    <div
+                            class="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center floating-animation"
+                    >
+                        <i class="ri-map-pin-line text-2xl text-primary"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-12">
+                <img
+                        src="https://readdy.ai/api/search-image?query=modern%20minimalist%20illustration%20of%20a%20person%20looking%20through%20telescope%20searching%20for%20something%20in%20a%20clean%20white%20space%20with%20soft%20blue%20and%20mint%20green%20accents%2C%20flat%20design%20style%2C%20friendly%20and%20approachable%20atmosphere&width=600&height=400&seq=404-illustration&orientation=landscape"
+                        alt="404 일러스트레이션"
+                        class="w-full max-w-md mx-auto rounded-2xl shadow-lg object-cover"
+                />
+            </div>
+
+            <div class="mb-12">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">
+                    페이지를 찾을 수 없습니다
+                </h2>
+                <p
+                        class="text-xl text-gray-600 mb-6 max-w-2xl mx-auto leading-relaxed"
+                >
+                    요청하신 페이지가 존재하지 않거나 이동되었을 수 있습니다.<br />
+                    URL을 다시 확인하시거나 아래 버튼을 통해 다른 페이지로 이동해
+                    주세요.
+                </p>
+            </div>
+
+            <div
+                    class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
+            >
+                <button
+                        class="bg-primary hover:bg-primary/90 text-white px-8 py-4 !rounded-button font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg whitespace-nowrap flex items-center gap-2"
+                >
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-home-line text-lg"></i>
+                    </div>
+                    홈으로 돌아가기
+                </button>
+                <button
+                        class="bg-white hover:bg-gray-50 text-gray-700 px-8 py-4 !rounded-button font-semibold border-2 border-gray-200 transition-all duration-300 transform hover:scale-105 shadow-lg whitespace-nowrap flex items-center gap-2"
+                >
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-arrow-left-line text-lg"></i>
+                    </div>
+                    이전 페이지로
+                </button>
+            </div>
+
+            <div
+                    class="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-white/20"
+            >
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">
+                    도움이 필요하신가요?
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <div
+                                class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4"
+                        >
+                            <i class="ri-customer-service-line text-2xl text-primary"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">고객 지원</h4>
+                        <p class="text-gray-600 text-sm">
+                            문의사항이 있으시면 언제든지 연락해 주세요
+                        </p>
+                    </div>
+                    <div class="text-center">
+                        <div
+                                class="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4"
+                        >
+                            <i class="ri-book-open-line text-2xl text-secondary"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">도움말</h4>
+                        <p class="text-gray-600 text-sm">
+                            자주 묻는 질문과 사용 가이드를 확인하세요
+                        </p>
+                    </div>
+                    <div class="text-center">
+                        <div
+                                class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4"
+                        >
+                            <i class="ri-mail-line text-2xl text-primary"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">이메일 문의</h4>
+                        <p class="text-gray-600 text-sm">
+                            support@example.com으로 문의해 주세요
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12 text-center">
+                <div class="font-['Pacifico'] text-2xl text-primary mb-2">logo</div>
+                <p class="text-gray-500 text-sm">© 2025 logo. 모든 권리 보유.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script id="button-interactions">
+    document.addEventListener("DOMContentLoaded", function () {
+        const homeButton = document.querySelector("button:first-of-type");
+        const backButton = document.querySelector("button:nth-of-type(2)");
+
+        homeButton.addEventListener("click", function () {
+            window.location.href = "/";
+        });
+
+        backButton.addEventListener("click", function () {
+            window.history.back();
+        });
+    });
+</script>
+
+<script id="floating-animations">
+    document.addEventListener("DOMContentLoaded", function () {
+        const floatingElements = document.querySelectorAll(".floating-animation");
+
+        floatingElements.forEach((element, index) => {
+            element.style.animationDelay = `${index * 0.5}s`;
+        });
+    });
+</script>
+</body>
+</html>

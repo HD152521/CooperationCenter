@@ -1,6 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.agency.controller.homepage;
 
 import com.cooperation.project.cooperationcenter.domain.member.dto.AgencyRegion;
+import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,9 +17,9 @@ import java.util.List;
 @Slf4j
 public class AgencyRestController {
     @GetMapping("/region")
-    public List<String> getRegionList(){
-        return Arrays.stream(AgencyRegion.values())
+    public BaseResponse<?> getRegionList(){
+        return BaseResponse.onSuccess(Arrays.stream(AgencyRegion.values())
                 .map(AgencyRegion::getLabel)
-                .toList();
+                .toList());
     }
 }

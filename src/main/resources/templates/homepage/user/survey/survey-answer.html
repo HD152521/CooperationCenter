@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>설문조사 참여</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config={theme:{extend:{colors:{primary:'#4F46E5',secondary:'#6366F1'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+        }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .custom-radio input:checked + span {
+            border-color: #4F46E5;
+        }
+        .custom-radio input:checked + span:before {
+            transform: scale(1);
+        }
+        .custom-checkbox input:checked + span {
+            border-color: #4F46E5;
+            background-color: #4F46E5;
+        }
+        .custom-checkbox input:checked + span:before {
+            opacity: 1;
+        }
+        .rating-item input:checked + label {
+            color: #4F46E5;
+            border-color: #4F46E5;
+            background-color: rgba(79, 70, 229, 0.1);
+        }
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+<header class="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center h-16">
+            <a href="/survey/list" data-readdy="true" class="flex items-center text-gray-600 hover:text-primary">
+                <i class="ri-arrow-left-line mr-2"></i>
+                <span>설문조사 목록으로 돌아가기</span>
+            </a>
+            <div class="mx-auto text-lg font-medium"></div>
+            <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white">
+                <span>관</span>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="w-full bg-white shadow-sm progress-wrapper">
+    <div class="container mx-auto px-4 py-2">
+        <div class="relative h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div class="progress-bar absolute top-0 left-0 h-full bg-primary rounded-full" style="width: 20%"></div>
+        </div>
+        <div class="flex justify-between text-sm text-gray-500 mt-1">
+            <span id="progress-count">1/7 문항</span>
+            <span id="progress-text">14% 완료</span>
+        </div>
+    </div>
+</div>
+<main class="container mx-auto px-4 py-6 max-w-3xl">
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">제목</h1>
+            <p class="text-gray-600 mb-4">설명</p>
+            <div class="flex items-center text-sm text-gray-500 space-x-6">
+<!--                <div class="flex items-center">-->
+<!--                    <i class="ri-time-line mr-2"></i>-->
+<!--                    <span data-time>예상 소요 시간: 약 5분</span>-->
+<!--                </div>-->
+<!--                <div class="flex items-center">-->
+<!--                    <i class="ri-question-line mr-2"></i>-->
+<!--                    <span data-count>총 0개 문항</span>-->
+<!--                </div>-->
+            </div>
+        </div>
+        <form id="survey-form" enctype="multipart/form-data">
+            <div id="questions-container">
+
+            </div>
+
+            <div class="flex flex-col items-center mt-8">
+                <button type="submit" class="px-6 py-3 bg-primary text-white font-medium rounded-button whitespace-nowrap hover:bg-primary/90 transition-colors">
+                    제출하기
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+<script id="survey-interaction">
+// 글자수 카운트 기능
+        function initializeSurveyInteractions() {
+            // 글자 수 카운트
+            document.querySelectorAll('textarea[name^="q"]').forEach((textarea) => {
+                textarea.addEventListener('input', function () {
+                    let charCount = textarea.closest('.question-container')?.querySelector('.char-count')
+                        || document.getElementById('charCount');
+                    if (!charCount) return;
+
+                    const count = this.value.length;
+                    charCount.textContent = count > 500 ? 500 : count;
+
+                    if (count > 500) this.value = this.value.substring(0, 500);
+
+                    updateProgress();
+                });
+            });
+
+            // 파일 입력
+            document.querySelectorAll('input[type="file"]').forEach((fileInput) => {
+                const type = fileInput.dataset.type; // file or image
+                const container = fileInput.closest('.space-y-3');
+                console.log(container);
+                const fileNameDisplay = type === "image"
+                    ? container?.querySelector('.image-input')
+                    : container?.querySelector('.file-name');
+                console.log(fileNameDisplay);
+
+                if (fileNameDisplay) {
+                    fileInput.addEventListener("change", function () {
+                        console.log("파일 변환됨");
+                        fileNameDisplay.textContent = this.files.length > 0
+                            ? `선택된 파일: ${this.files[0].name}`
+                            : '';
+                        updateProgress();
+                    });
+                }
+            });
+
+            // 라디오 버튼 스타일 처리
+            document.querySelectorAll('.custom-radio input[type="radio"]').forEach((input) => {
+                input.addEventListener('change', function () {
+                    const name = this.getAttribute('name');
+                    document.querySelectorAll(`.custom-radio input[name="${name}"]`).forEach((radio) => {
+                        const span = radio.nextElementSibling?.querySelector('span');
+                        if (span) {
+                            span.style.transform = radio.checked ? 'scale(1)' : 'scale(0)';
+                        }
+                    });
+                    updateProgress();
+                });
+            });
+
+            // 체크박스 스타일 처리
+            document.querySelectorAll('.custom-checkbox input[type="checkbox"]').forEach((input) => {
+                input.addEventListener('change', function () {
+                    const span = this.nextElementSibling?.querySelector('span');
+                    if (span) {
+                        span.style.opacity = this.checked ? '1' : '0';
+                        this.nextElementSibling.style.backgroundColor = this.checked ? '#4F46E5' : 'transparent';
+                        this.nextElementSibling.style.borderColor = this.checked ? '#4F46E5' : '#D1D5DB';
+                    }
+                    updateProgress();
+                });
+            });
+
+            // 드롭다운
+            document.querySelectorAll('select').forEach((select) => {
+                select.addEventListener('change', updateProgress);
+            });
+
+            // 텍스트 입력 필드
+            document.querySelectorAll('input[type="text"]').forEach((input) => {
+                input.addEventListener('input', updateProgress);
+            });
+
+            // 날짜 선택
+            document.querySelectorAll('input[type="date"]').forEach((input) => {
+                input.addEventListener('change', updateProgress);
+            });
+            updateProgress();
+        }
+
+        // 진행 상태바 상단 고정 스타일 적용 (선택적으로 호출 가능)
+        document.addEventListener("DOMContentLoaded", function () {
+            const progressWrapper = document.querySelector('.progress-wrapper');
+            if (progressWrapper) {
+                progressWrapper.style.position = 'sticky';
+                progressWrapper.style.top = '0';
+                progressWrapper.style.zIndex = '50';
+                progressWrapper.style.backgroundColor = 'white';
+            }
+        });
+
+        function updateProgress() {
+            const allQuestionEls = Array.from(document.querySelectorAll('[id^="question-"]'));
+            const visibleQuestionEls = allQuestionEls.filter(q => q.style.display !== 'none');
+
+            let answeredRequired = 0;
+            let totalRequired = 0;
+
+            visibleQuestionEls.forEach(qEl => {
+                const idx = parseInt(qEl.id.split('-')[1])-1; // question-3 → 3
+                const q = window.questions[idx];
+                if (!q) return;
+                totalRequired++;
+
+                const name = `q${idx}`;
+                const inputs = document.querySelectorAll(`[name="${name}"]`);
+
+                let isAnswered = false;
+                if (q.type === 'multiple' || q.type === 'multiplecheck') {
+                    isAnswered = Array.from(inputs).some(input => input.checked);
+                } else if (['dropdown', 'short', 'essay', 'date'].includes(q.type)) {
+                    isAnswered = inputs[0] && inputs[0].value.trim() !== '';
+                } else if (q.type === 'file') {
+                    isAnswered = inputs[0] && inputs[0].files.length > 0;
+                } else if (q.type === 'image') {
+                    isAnswered = inputs[0] && inputs[0].files.length > 0;
+                }
+
+                if (isAnswered) answeredRequired++;
+            });
+
+            const progressPercent = totalRequired === 0 ? 100 : (answeredRequired / totalRequired) * 100;
+
+            const progressBar = document.querySelector('.progress-bar');
+            if (progressBar) {
+                progressBar.style.width = `${progressPercent}%`;
+            }
+
+            const progressCount = document.getElementById('progress-count');
+            if (progressCount) {
+                progressCount.textContent = `${answeredRequired}/${totalRequired} 문항`;
+            }
+
+            const progressText = document.getElementById('progress-text');
+            if (progressText) {
+                progressText.textContent = `${Math.round(progressPercent)}% 완료`;
+            }
+        }
+
+</script>
+<script src="/js/homepage/url.js"></script>
+<script th:inline="javascript"  >
+    //note API받아오는 코드
+    document.addEventListener('DOMContentLoaded', loadSurvey);
+    async function loadSurvey() {
+        try {
+            const surveyId = [[${surveyId}]];
+            const response = await fetch(`${surveyUrl}/${surveyId}`); // ← 필요시 ID 파라미터 수정
+            const text = await response.text();
+            if (!response.ok) {
+                let errMsg = `${response.status} ${response.statusText}`;
+                try {
+                    const e = text ? JSON.parse(text) : null;
+                    if (e?.message) errMsg = e.message;
+                } catch {}
+                showFatalError(errMsg);
+                return;
+            }
+
+            if (!text || !text.trim()) {
+                showFatalError('해당 신청 페이지는 공개 금지 상태입니다.');
+                return;
+            }
+            const jsonText = JSON.parse(text);
+            const data = jsonText.result;
+            const now = new Date();
+
+            const yyyy = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            const hh = String(now.getHours()).padStart(2, '0');
+            const min = String(now.getMinutes()).padStart(2, '0');
+            const ss = String(now.getSeconds()).padStart(2, '0');
+
+            window.time = `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
+            window.questions = data.questions;
+            renderSurveyHeader(data.title, data.description);
+            renderQuestions(data.questions);
+            setHierarchy();
+            initializeSurveyInteractions(); // 이벤트 연결
+            setUpJumpHandlers();
+            updateProgress(); // 초기 진행률 설정
+        } catch (err) {
+            console.error("설문 로딩 오류:", err);
+        }
+    }
+    function setHierarchy(){
+        window.hierarchyStore = {};
+
+        window.questions.forEach((q, idx) => {
+            if (q.type === 'hierarchy') {
+                const store = {
+                    firstHierarchyData: [],
+                    secondHierarchyData: {},
+                    thirdHierarchyData: {}
+                };
+
+                q.options.forEach(opt => {
+                    const { hierarchyId, parentOptionId, text, optionId } = opt;
+                    const level = opt.level;
+
+                    const node = {
+                        id: hierarchyId,
+                        text: text,
+                        optionId: optionId
+                    };
+
+                    if (level === 1) {
+                        store.firstHierarchyData.push(node);
+                    } else if (level === 2) {
+                        if (!store.secondHierarchyData[parentOptionId]) {
+                            store.secondHierarchyData[parentOptionId] = [];
+                        }
+                        store.secondHierarchyData[parentOptionId].push(node);
+                    } else if (level === 3) {
+                        if (!store.thirdHierarchyData[parentOptionId]) {
+                            store.thirdHierarchyData[parentOptionId] = [];
+                        }
+                        store.thirdHierarchyData[parentOptionId].push(node);
+                    }
+                });
+
+                window.hierarchyStore[idx] = store; // question index 기반
+            }
+        });
+
+
+        for (const key in window.hierarchyStore) {
+            const store = window.hierarchyStore[key];
+            console.log(`질문 인덱스 ${key}:`, store);
+
+            console.log("  ➤ 1단계:", store.firstHierarchyData);
+            console.log("  ➤ 2단계:", store.secondHierarchyData);
+            console.log("  ➤ 3단계:", store.thirdHierarchyData);
+        }
+
+        document.querySelectorAll('.hierarchy-group').forEach(group => {
+            console.log(group);
+            const questionId = group.getAttribute("name").match(/\d+/)?.[0];
+            console.log(questionId);
+            const store = window.hierarchyStore?.[questionId];
+
+            if (!store || !store.firstHierarchyData) return;
+
+            const level1 = group.querySelector('[data-level="1"]');
+            const level2 = group.querySelector('[data-level="2"]');
+            const level3 = group.querySelector('[data-level="3"]');
+
+            store.firstHierarchyData.forEach(opt => {
+                const o = document.createElement('option');
+                o.value = opt.id;
+                o.textContent = opt.text;
+                o.setAttribute('data-option-id', opt.optionId);
+                level1.appendChild(o);
+            });
+
+            level1.addEventListener('change', () => {
+                const selected = level1.value;
+
+                level2.innerHTML = `<option value="">2단계 선택</option>`;
+                level3.innerHTML = `<option value="">3단계 선택</option>`;
+                level2.disabled = true;
+                level3.disabled = true;
+
+                if (store.secondHierarchyData?.[selected]) {
+                    store.secondHierarchyData[selected].forEach(opt => {
+                        const o = document.createElement('option');
+                        o.value = opt.id;
+                        o.textContent = opt.text;
+                        o.setAttribute('data-option-id', opt.optionId);
+                        level2.appendChild(o);
+                    });
+                    level2.disabled = false;
+                }
+            });
+
+            level2.addEventListener('change', () => {
+                const selected = level2.value;
+
+                level3.innerHTML = `<option value="">3단계 선택</option>`;
+                level3.disabled = true;
+
+                if (store.thirdHierarchyData?.[selected]) {
+                    store.thirdHierarchyData[selected].forEach(opt => {
+                        const o = document.createElement('option');
+                        o.value = opt.id;
+                        o.textContent = opt.text;
+                        o.setAttribute('data-option-id', opt.optionId);
+                        level3.appendChild(o);
+                    });
+                    level3.disabled = false;
+                }
+            });
+        });
+
+    }
+
+    function renderSurveyHeader(title, description) {
+        const titleEl = document.querySelector('h1');
+        const descEl = document.querySelector('p.text-gray-600');
+
+        titleEl.textContent = title;
+        descEl.textContent = description;
+    }
+</script>
+<script>
+    //note 질문 가져와서 넣어주는 코드
+    function renderQuestions(questions) {
+        const container = document.getElementById('questions-container');
+        container.innerHTML = '';
+
+        questions.forEach((q, idx) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'bg-white border border-gray-200 rounded-lg p-5 mb-6';
+            wrapper.id = `question-${idx+1}`;
+            //<span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-sm font-medium mr-3 flex-shrink-0">${idx + 1}</span>
+
+            const header = `
+            <div class="flex items-start mb-4">
+
+                <div class="flex justify-between w-full">
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-1">${q.question}</h3>
+                        <p class="text-sm text-gray-500">${q.description}</p>
+                    </div>
+                    ${q.required ? '<span class="text-red-500 text-sm ml-4">* 필수</span>' : ''}
+                </div>
+            </div>
+        `;
+
+            let body = '';
+            if (q.type === 'short') {
+                body = `<input name="q${idx}" type="text" class="w-full px-4 py-2 border border-gray-300 rounded" placeholder="답변 입력">`;
+            } else if (q.type === 'essay') {
+                body = `<div>
+                            <textarea name="q${idx}" id="essay" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded" placeholder="답변 입력"></textarea>
+                            <div class="text-right mt-2 text-sm text-gray-500">
+                                <span id="charCount">0</span>/500자
+                            </div>
+                        </div>`;
+            } else if (q.type === 'multiple') {
+                body = q.options.map(opt => `
+                <label class="custom-radio flex items-center">
+                    <input type="radio" name="q${idx}" class="sr-only" data-next-question="${opt.nextQuestion}">
+                    <span class="w-5 h-5 border-2 border-gray-300 rounded-full flex items-center justify-center mr-3 relative">
+                        <span class="absolute w-3 h-3 bg-primary rounded-full transform scale-0 transition-transform"></span>
+                    </span>
+                    <span class="text-gray-700">${opt.text}</span>
+                </label>
+            `).join('');
+            } else if (q.type === 'multiplecheck') {
+                body = q.options.map(opt => `
+                <label class="custom-checkbox flex items-center">
+                    <input type="checkbox" name="q${idx}" class="sr-only" data-next-question="${opt.nextQuestion}">
+                    <span class="w-5 h-5 border-2 border-gray-300 rounded flex items-center justify-center mr-3 relative">
+                        <span class="absolute opacity-0 text-white">
+                            <i class="ri-check-line text-xs"></i>
+                        </span>
+                    </span>
+                    <span class="text-gray-700">${opt.text}</span>
+                </label>
+            `).join('');
+            } else if (q.type === 'dropdown') {
+                const options = q.options.map(opt => `<option value="${opt.text}" data-next-question="${opt.nextQuestion}">${opt.text}</option>`).join('');
+                body = `
+                <select name="q${idx}" class="w-full px-4 py-2 border border-gray-300 rounded" >
+                    <option value="">선택하세요</option>
+                    ${options}
+                </select>
+            `;
+            } else if (q.type === 'date') {
+                body = `
+                <input type="date" name="q${idx}" class="w-full px-4 py-2 border border-gray-300 rounded">
+            `;
+            } else if (q.type === 'file') {
+                body = `
+                <input type="file" name="q${idx}" id="file-input" data-type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" class="sr-only">
+                <label for="file-input" class="flex items-center justify-center px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                    <i class="ri-upload-2-line mr-2"></i>
+                    <span class="text-gray-600">파일 선택 또는 드래그하여 업로드</span>
+                </label>
+                <div id="file-name" class=" file-name mt-2 text-sm text-gray-500"></div>
+            `;
+            }
+            else if (q.type === 'image') {
+                body = `
+                <input type="file" name="q${idx}" id="image-input" data-type="image" accept="image/*" class="sr-only">
+                <label for="image-input" class="flex items-center justify-center px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                    <i class="ri-image-line mr-2"></i>
+                    <span class="text-gray-600">이미지 선택 또는 드래그하여 업로드</span>
+                </label>
+                <div id="image-input" class="image-input mt-2 text-sm text-gray-500"></div>
+            `;
+            }else if (q.type === 'hierarchy') {
+                body = `
+        <div class="flex gap-4 hierarchy-group" name="q${idx}">
+        <select class="hierarchy-select px-4 py-2 border border-gray-300 rounded" data-level="1">
+            <option value="">1단계 선택</option>
+        </select>
+        <select class="hierarchy-select px-4 py-2 border border-gray-300 rounded" data-level="2" disabled>
+            <option value="">2단계 선택</option>
+        </select>
+        <select class="hierarchy-select px-4 py-2 border border-gray-300 rounded" data-level="3" disabled>
+            <option value="">3단계 선택</option>
+        </select>
+    </div>
+    `;
+            }
+
+            wrapper.innerHTML = header + `<div class="space-y-3">${body}</div>`;
+            container.appendChild(wrapper);
+        });
+    }
+</script>
+<script>
+        function setUpJumpHandlers() {
+            const allQuestions = Array.from(document.querySelectorAll('[id^="question-"]'));
+
+            function handleJump(e, nextIdxStr) {
+                const nextIdx = parseInt(nextIdxStr);
+                if (isNaN(nextIdx)) return;
+
+                const currentWrapper = e.target.closest('[id^="question-"]');
+                if (!currentWrapper) return;
+
+                const currentId = currentWrapper.id; // e.g., "question-3"
+                const currentIdx = parseInt(currentId.split('-')[1]);
+
+                if (isNaN(currentIdx)) return;
+
+                // 모든 문항 순회하면서 처리
+                allQuestions.forEach(el => {
+                    const elIdx = parseInt(el.id.split('-')[1]);
+
+                    // 현재 문항은 항상 보여야 함
+                    if (elIdx === currentIdx || elIdx === nextIdx) {
+                        el.style.display = '';
+                    }
+                    // currentIdx < idx < nextIdx → 숨김
+                    else if (elIdx > currentIdx && elIdx < nextIdx) {
+                        el.style.display = 'none';
+                    }
+                });
+
+                const target = document.getElementById(`question-${nextIdx}`);
+                if (target) {
+                    const topOffset = 80; // progress bar 높이보다 약간 더 여유있게
+                    const top = target.getBoundingClientRect().top + window.scrollY - topOffset;
+
+                    window.scrollTo({
+                        top,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+
+            document.querySelectorAll('input[type="radio"]').forEach(input => {
+                input.addEventListener('change', (e) => {
+                    handleJump(e, e.target.dataset.nextQuestion);
+                    updateProgress();
+                });
+            });
+
+            document.querySelectorAll('select').forEach(select => {
+                select.addEventListener('change', (e) => {
+                    const selectedOption = e.target.options[e.target.selectedIndex];
+                    const next = selectedOption.dataset.nextQuestion;
+
+                    const currentWrapper = e.target.closest('[id^="question-"]');
+                    if (!currentWrapper) return;
+                    const currentIdx = parseInt(currentWrapper.id.split('-')[1]);
+
+                    if (!next || selectedOption.value === '' || selectedOption.text === '선택하세요') {
+                        // 이전에 숨겼던 문항들 중 currentIdx 이후 것만 다시 보임
+                        allQuestions.forEach(el => {
+                            const elIdx = parseInt(el.id.split('-')[1]);
+                            if (elIdx > currentIdx) {
+                                el.style.display = '';
+                            }
+                        });
+                    } else {
+                        handleJump(e, next);
+                    }
+
+                    updateProgress();
+                });
+            });
+        }
+</script>
+
+<script id="submitForm" th:inline="javascript">
+    const form = document.getElementById('survey-form');
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        let status = true;
+        let isValid = true;
+        const answers = [];
+        const templateAnswers=[];
+        let questionCnt = 0;
+        for (let idx = 0; idx < window.questions.length; idx++) {
+            const q = window.questions[idx];
+            const optionName = `q${idx}`;
+            const problemName = `question-${idx+1}`;
+            const inputs = document.querySelectorAll(`[name="${optionName}"]`);
+            const problem = document.querySelector(`#${problemName}`);
+            const qRealId = q.questionId;
+            const type = q.type;
+            const domainField = q.domainField;
+
+            if(getComputedStyle(problem).display === 'none') {
+                continue;
+            }
+            questionCnt++;
+            let valid = false;
+            let answerValue = null;
+
+            if (type === 'multiple') {
+                const selected = Array.from(inputs).find(input => input.checked);
+                valid = !!selected;
+                status = (valid&&status);
+                // if (valid) answerValue = selected.nextElementSibling?.nextElementSibling?.textContent || selected.value;
+                if (valid) {
+                    const inputsArray = Array.from(inputs);
+                    const index = inputsArray.indexOf(selected); // 선택된 input의 index
+                    const text = selected.nextElementSibling?.nextElementSibling?.textContent || selected.value;
+                    answerValue = `${index}_${text}`;
+                }
+            } else if (type === 'multiplecheck') {
+                const selected = Array.from(inputs).filter(input => input.checked);
+                valid = selected.length > 0;
+                status = (valid&&status);
+                // if (valid) answerValue = selected.map(input => input.nextElementSibling?.nextElementSibling?.textContent || input.value);
+                if (valid) {
+                    answerValue = selected.map(input => {
+                        const inputsArray = Array.from(inputs);
+                        const index = inputsArray.indexOf(input);
+                        const text = input.nextElementSibling?.nextElementSibling?.textContent || input.value;
+                        return `${index}_${text}`;
+                    });
+                }
+            } else if (['dropdown', 'short', 'essay', 'date'].includes(type)) {
+                const input = inputs[0];
+                valid = input && input.value.trim() !== '';
+                status = (valid&&status);
+                if (valid) answerValue = input.value.trim();
+            } else if (type === 'file') {
+                const input = inputs[0];
+                valid = input && input.files.length > 0;
+                status = (valid&&status);
+                if (valid) answerValue = "file-"+idx;
+            } else if (type === 'image') {
+                const input = inputs[0];
+                valid = input && input.files.length > 0;
+                status = (valid&&status);
+                if (valid) answerValue = "image-"+idx;
+            }else if (type === 'hierarchy') {
+                const selects = problem.querySelectorAll('select');
+                const values = Array.from(selects).map(s => {
+                    const selected = s.options[s.selectedIndex];
+                    const optionId = selected?.getAttribute("data-option-id");
+                    // const value = selected?.value;
+                    const text = selected?.textContent || selected?.text;
+                    // return optionId && value ? `${optionId}_${value}` : null;
+                    return (optionId) ? `${optionId}_${text}` : null;
+
+                }).filter(Boolean);
+
+                valid = validateHierarchySelects(selects);
+                status = (valid&&status);
+                if (valid) answerValue = values;
+            }
+
+
+            if (!valid) {
+                isValid = false;
+                const section = inputs[0]?.closest('.bg-white.border') ||
+                    inputs[0]?.closest('.bg-white.border-gray-200') ||
+                    document.getElementById(`question-${idx + 1}`);
+
+                if (section) {
+                    section.classList.add('border-red-500');
+                    setTimeout(() => section.classList.remove('border-red-500'), 2000);
+                }
+            }
+
+            if(window.questions[idx].isTemplate){
+                templateAnswers.push({
+                    questionId: idx + 1,
+                    type: type,
+                    answer: answerValue,
+                    questionRealId:qRealId,
+                    domainField:domainField
+                })
+            }else{
+                answers.push({
+                    questionId: idx + 1,
+                    type: type,
+                    answer: answerValue,
+                    questionRealId:qRealId
+                });
+            }
+
+
+        }
+        const fileMap = collectFiles();
+
+        if (!status){
+            alert("올바르지 않음");
+            return;
+        }
+
+        try {
+            const surveyId = [[${surveyId}]];
+
+            const formData = new FormData();
+            formData.append('data', JSON.stringify({
+                surveyId: surveyId,
+                answers: answers,
+                templateAnswers: templateAnswers,
+                startTime : window.time,
+                questionCnt : questionCnt
+            }));
+
+            for (const [questionId, file] of Object.entries(fileMap)) {
+                const matched = answers.find(ans => ans.questionId-1 === Number(questionId));
+
+                if (!matched) {
+                    console.warn(`❗ questionId ${questionId} 에 해당하는 답변을 찾을 수 없습니다.`);
+                } else {
+                    const type = matched.type;
+
+                    if (type === "image") {
+                        formData.append(`image-${questionId}`, file);
+                    } else if (type === "file") {
+                        formData.append(`file-${questionId}`, file);
+                    }
+                }
+            }
+
+            const response = await fetch(`${surveyUrl}/answer`, {
+                method: 'POST',
+                body: formData
+            });
+
+            console.log("🔍 response 객체:", response);
+
+// 개별 정보 출력
+            console.log("✅ 상태 코드:", response.status);       // ex: 200, 500
+            console.log("✅ 성공 여부:", response.ok);           // true/false
+            console.log("✅ 상태 메시지:", response.statusText); // ex: OK, Internal Server Error
+
+            if (response.ok) {
+                const successMessage = document.createElement('div');
+                successMessage.className = 'fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50';
+                successMessage.innerHTML = `
+                <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+                    <div class="flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-600 mx-auto mb-4">
+                        <i class="ri-check-line text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-center mb-2">설문조사가 제출되었습니다</h3>
+                    <p class="text-gray-600 text-center mb-6">소중한 의견에 감사드립니다.</p>
+                    <div class="flex justify-center">
+                        <a href="/survey/list" class="px-6 py-2 bg-primary text-white font-medium rounded-button whitespace-nowrap hover:bg-primary/90 transition-colors">
+                            목록으로 돌아가기
+                        </a>
+                    </div>
+                </div>
+            `;
+                document.body.appendChild(successMessage);
+                setTimeout(() => {
+                    window.location.href = "/survey/list";
+                }, 3000);
+            } else {
+                alert("제출에 실패했습니다.");
+            }
+        } catch (error) {
+            console.error("제출 중 오류:", error);
+            alert("제출 중 오류가 발생했습니다.");
+        }
+    });
+
+    function validateHierarchySelects(selects) {
+        for (const select of selects) {
+            const hasRealOptions = Array.from(select.options).some(opt => opt.value !== "");
+            if (hasRealOptions && !select.value) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function collectFiles() {
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        const fileMap = {};
+
+        fileInputs.forEach(input => {
+            console.log("파일 변환중")
+            const nameAttr = input.getAttribute('name'); // ex: q7
+            const match = nameAttr && nameAttr.match(/^q(\d+)$/); // 정규식으로 숫자 추출
+
+            if (match) {
+                console.log(match[1]);
+                const questionId = match[1]; // 숫자 문자열 (ex: "7")
+
+                if (input.files.length > 0) {
+                    // 단일 파일만 처리 (여러 개면 배열로 확장 가능)
+                    fileMap[questionId] = input.files[0];
+                }
+            }
+        });
+
+        return fileMap;
+    }
+</script>
+
+
+<script th:inline="javascript">
+    function showFatalError(message) {
+        // 진행바/내용 숨기고 에러 카드만 노출
+        const progress = document.querySelector('.progress-wrapper');
+        if (progress) progress.style.display = 'none';
+
+        const main = document.querySelector('main');
+        if (main) {
+            main.innerHTML = `
+        <div class="container mx-auto px-4 py-16">
+          <div class="bg-white rounded-lg shadow-sm p-8 text-center">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 text-red-500 flex items-center justify-center">
+              <i class="ri-error-warning-line text-2xl"></i>
+            </div>
+            <h2 class="text-xl font-bold mb-2">페이지가 잘못되었습니다.</h2>
+            <p class="text-gray-600 mb-6">${message || '요청하신 설문을 불러올 수 없습니다.'}</p>
+            <a href="/survey/list" class="px-5 py-2 bg-primary text-white rounded-button">목록으로 돌아가기</a>
+          </div>
+        </div>`;
+        }
+    }
+</script>
+
+</body>
+</html>

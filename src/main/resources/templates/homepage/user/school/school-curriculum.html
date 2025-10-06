@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>학교 과정 소개 - 국제 프로그램</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+            rel="stylesheet"
+    />
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+            rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3b82f6",
+                        secondary: "#6b7280",
+                    },
+                    borderRadius: {
+                        none: "0px",
+                        sm: "4px",
+                        DEFAULT: "8px",
+                        md: "12px",
+                        lg: "16px",
+                        xl: "20px",
+                        "2xl": "24px",
+                        "3xl": "32px",
+                        full: "9999px",
+                        button: "8px",
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .nav-item.active {
+            border-left: 4px solid #3b82f6;
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        .nav-item:hover:not(.active) {
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+        .tab-button.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .program-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.1), 0 4px 6px -2px rgba(59, 130, 246, 0.05);
+            border-color: #3b82f6;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .accordion-content.active {
+            max-height: 1000px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+<!-- 상단 배너 -->
+<nav th:replace="~{/homepage/common/nav-user :: nav-user}"></nav>
+
+<!-- 메인 콘텐츠 영역 -->
+<div class="container mx-auto px-4 py-8 pt-16 flex flex-col md:flex-row gap-8">
+    <!-- 좌측 네비게이션 -->
+    <div th:replace="~{/homepage/user/school/school-left-sidebar :: school-left}"></div>
+
+    <!-- 우측 메인 콘텐츠 (학교 과정 소개) -->
+    <main class="flex-grow">
+        <!-- 헤더 및 검색 -->
+        <div class="bg-white rounded shadow p-6 mb-6">
+            <div
+                    class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4"
+            >
+                <h2 class="text-2xl font-bold text-gray-800">학교 과정 소개</h2>
+                <div class="relative">
+                    <input
+                            type="search"
+                            placeholder="과정 검색"
+                            class="pl-10 pr-4 py-2 w-full md:w-64 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                    />
+                    <div
+                            class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400"
+                    >
+                        <i class="ri-search-line"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 과정 필터 탭 -->
+            <div
+                    class="flex items-center border border-gray-300 rounded-full p-1 mb-6 overflow-x-auto"
+            >
+                <button
+                        class="tab-button active px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap !rounded-button"
+                >
+                    전체 과정
+                </button>
+                <button
+                        class="tab-button px-4 py-1.5 rounded-full text-sm font-medium text-gray-700 whitespace-nowrap !rounded-button"
+                >
+                    학사 과정
+                </button>
+                <button
+                        class="tab-button px-4 py-1.5 rounded-full text-sm font-medium text-gray-700 whitespace-nowrap !rounded-button"
+                >
+                    석사 과정
+                </button>
+                <button
+                        class="tab-button px-4 py-1.5 rounded-full text-sm font-medium text-gray-700 whitespace-nowrap !rounded-button"
+                >
+                    박사 과정
+                </button>
+                <button
+                        class="tab-button px-4 py-1.5 rounded-full text-sm font-medium text-gray-700 whitespace-nowrap !rounded-button"
+                >
+                    어학 과정
+                </button>
+                <button
+                        class="tab-button px-4 py-1.5 rounded-full text-sm font-medium text-gray-700 whitespace-nowrap !rounded-button"
+                >
+                    교환학생
+                </button>
+            </div>
+
+            <!-- 과정 비교 기능 -->
+            <div
+                    class="flex items-center justify-between bg-blue-50 p-4 rounded-lg"
+            >
+                <div class="flex items-center gap-3">
+                    <div
+                            class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-primary"
+                    >
+                        <div class="w-5 h-5 flex items-center justify-center">
+                            <i class="ri-scales-3-line"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-800">과정 비교하기</h3>
+                        <p class="text-sm text-gray-600">
+                            관심 있는 과정을 선택하여 비교해 보세요
+                        </p>
+                    </div>
+                </div>
+                <button
+                        class="px-4 py-2 bg-white border border-primary text-primary rounded hover:bg-blue-50 text-sm whitespace-nowrap !rounded-button"
+                >
+                    비교하기
+                </button>
+            </div>
+        </div>
+
+        <!-- 학위 과정 섹션 -->
+        <div class="bg-white rounded shadow p-6 mb-6">
+            <h3
+                    class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2"
+            >
+                <div class="w-6 h-6 flex items-center justify-center text-primary">
+                    <i class="ri-graduation-cap-line"></i>
+                </div>
+                학위 과정
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- 학사 과정 카드 -->
+                <div
+                        class="program-card border border-gray-200 rounded-lg overflow-hidden transition-all duration-300"
+                >
+                    <div class="h-40 bg-blue-500 relative overflow-hidden">
+                        <div
+                                class="absolute inset-0"
+                                style="background-image: url('https://readdy.ai/api/search-image?query=university%20campus%20with%20students%20walking%20between%20modern%20buildings%2C%20bright%20sunny%20day%2C%20academic%20atmosphere%2C%20high%20quality%20professional%20photograph&width=400&height=160&seq=1&orientation=landscape'); background-size: cover; background-position: center;"
+                        ></div>
+                        <div
+                                class="absolute inset-0 bg-gradient-to-t from-blue-900/70 to-transparent"
+                        ></div>
+                        <div class="absolute bottom-4 left-4 text-white">
+                            <h4 class="text-xl font-bold">학사 과정</h4>
+                            <p class="text-sm">Bachelor's Degree Programs</p>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                  <span
+                          class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium"
+                  >4년 과정</span
+                  >
+                            <span
+                                    class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium"
+                            >신입생 모집중</span
+                            >
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            다양한 전공 분야에서 기초부터 심화까지 체계적인 교육을
+                            제공하는 4년제 학사 학위 과정입니다.
+                        </p>
+                        <div class="space-y-2 mb-4">
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">총 130학점 이수 필요</p>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    교양, 전공기초, 전공심화 과목 구성
+                                </p>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    국제 교환학생 프로그램 참여 가능
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                                class="w-full px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 text-sm mt-2 whitespace-nowrap !rounded-button"
+                        >
+                            자세히 보기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 석사 과정 카드 -->
+                <div
+                        class="program-card border border-gray-200 rounded-lg overflow-hidden transition-all duration-300"
+                >
+                    <div class="h-40 bg-indigo-500 relative overflow-hidden">
+                        <div
+                                class="absolute inset-0"
+                                style="background-image: url('https://readdy.ai/api/search-image?query=graduate%20students%20in%20discussion%20with%20professor%20in%20modern%20university%20library%2C%20academic%20research%20environment%2C%20professional%20education%20photograph&width=400&height=160&seq=2&orientation=landscape'); background-size: cover; background-position: center;"
+                        ></div>
+                        <div
+                                class="absolute inset-0 bg-gradient-to-t from-indigo-900/70 to-transparent"
+                        ></div>
+                        <div class="absolute bottom-4 left-4 text-white">
+                            <h4 class="text-xl font-bold">석사 과정</h4>
+                            <p class="text-sm">Master's Degree Programs</p>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                  <span
+                          class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs font-medium"
+                  >2년 과정</span
+                  >
+                            <span
+                                    class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium"
+                            >신입생 모집중</span
+                            >
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            전문 분야의 심화 연구와 실무 역량을 강화하는 석사 학위
+                            과정으로, 학문적 전문성을 키울 수 있습니다.
+                        </p>
+                        <div class="space-y-2 mb-4">
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    총 24학점 이수 및 논문 작성
+                                </p>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    연구 중심 또는 실무 중심 트랙 선택
+                                </p>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    국제 학술 교류 및 연구 프로젝트 참여
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                                class="w-full px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 text-sm mt-2 whitespace-nowrap !rounded-button"
+                        >
+                            자세히 보기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 박사 과정 카드 -->
+                <div
+                        class="program-card border border-gray-200 rounded-lg overflow-hidden transition-all duration-300"
+                >
+                    <div class="h-40 bg-purple-500 relative overflow-hidden">
+                        <div
+                                class="absolute inset-0"
+                                style="background-image: url('https://readdy.ai/api/search-image?query=doctoral%20student%20conducting%20research%20in%20advanced%20laboratory%2C%20scientific%20equipment%2C%20serious%20academic%20environment%2C%20professional%20education%20photograph&width=400&height=160&seq=3&orientation=landscape'); background-size: cover; background-position: center;"
+                        ></div>
+                        <div
+                                class="absolute inset-0 bg-gradient-to-t from-purple-900/70 to-transparent"
+                        ></div>
+                        <div class="absolute bottom-4 left-4 text-white">
+                            <h4 class="text-xl font-bold">박사 과정</h4>
+                            <p class="text-sm">Doctoral Degree Programs</p>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                  <span
+                          class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-medium"
+                  >3-5년 과정</span
+                  >
+                            <span
+                                    class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium"
+                            >신입생 모집중</span
+                            >
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            학문적 깊이와 독창적 연구 능력을 개발하는 최고 수준의 학위
+                            과정으로, 해당 분야의 전문가로 성장할 수 있습니다.
+                        </p>
+                        <div class="space-y-2 mb-4">
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    36학점 이수 및 박사 논문 작성
+                                </p>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    독립적 연구 프로젝트 수행
+                                </p>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    국제 학술지 논문 게재 및 학회 발표
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                                class="w-full px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 text-sm mt-2 whitespace-nowrap !rounded-button"
+                        >
+                            자세히 보기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 전공 분야 섹션 -->
+        <div class="bg-white rounded shadow p-6 mb-6">
+            <h3
+                    class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2"
+            >
+                <div class="w-6 h-6 flex items-center justify-center text-primary">
+                    <i class="ri-book-open-line"></i>
+                </div>
+                전공 분야
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 인문사회 계열 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <div class="bg-blue-50 p-4 flex items-center gap-3">
+                        <div
+                                class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600"
+                        >
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-book-2-line"></i>
+                            </div>
+                        </div>
+                        <h4 class="text-lg font-bold text-gray-800">인문사회 계열</h4>
+                    </div>
+                    <div class="p-4">
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-3">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-checkbox-circle-line"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800">경영학과</p>
+                                    <p class="text-sm text-gray-600">
+                                        경영전략, 마케팅, 재무관리, 국제경영 등
+                                    </p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-checkbox-circle-line"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800">국제학과</p>
+                                    <p class="text-sm text-gray-600">
+                                        국제관계, 국제경제, 지역학, 외교정책 등
+                                    </p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-checkbox-circle-line"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800">
+                                        미디어커뮤니케이션학과
+                                    </p>
+                                    <p class="text-sm text-gray-600">
+                                        디지털미디어, 저널리즘, 광고홍보, 영상제작 등
+                                    </p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-checkbox-circle-line"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800">심리학과</p>
+                                    <p class="text-sm text-gray-600">
+                                        임상심리, 상담심리, 발달심리, 인지심리 등
+                                    </p>
+                                </div>
+                            </li>
+                        </ul>
+                        <button
+                                class="mt-4 px-4 py-2 border border-primary text-primary rounded hover:bg-blue-50 text-sm whitespace-nowrap !rounded-button"
+                        >
+                            전체 전공 보기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 자연과학 계열 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <div class="bg-green-50 p-4 flex items-center gap-3">
+                        <div
+                                class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600"
+                        >
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-flask-line"></i>
+                            </div>
+                        </div>
+                        <h4 class="text-lg font-bold text-gray-800">자연과학 계열</h4>
+                    </div>
+                    <div class="p-4">
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-3">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-checkbox-circle-line"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800">생명과학과</p>
+                                    <p class="text-sm text-gray-600">
+                                        분자생물학, 생화학, 유전학, 생태학 등
+                                    </p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-checkbox-circle-line"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800">화학과</p>
+                                    <p class="text-sm text-gray-600">
+                                        유기화학, 무기화학, 물리화학, 분석화학 등
+                                    </p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-checkbox-circle-line"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800">물리학과</p>
+                                    <p class="text-sm text-gray-600">
+                                        입자물리, 양자역학, 천체물리, 응용물리 등
+                                    </p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-checkbox-circle-line"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800">수학과</p>
+                                    <p class="text-sm text-gray-600">
+                                        대수학, 해석학, 기하학, 통계학 등
+                                    </p>
+                                </div>
+                            </li>
+                        </ul>
+                        <button
+                                class="mt-4 px-4 py-2 border border-primary text-primary rounded hover:bg-blue-50 text-sm whitespace-nowrap !rounded-button"
+                        >
+                            전체 전공 보기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 공학 계열 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <div class="bg-orange-50 p-4 flex items-center gap-3">
+                        <div
+                                class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center text-orange-600"
+                        >
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-tools-line"></i>
+                            </div>
+                        </div>
+                        <h4 class="text-lg font-bold text-gray-800">공학 계열</h4>
+                    </div>
+                    <div class="p-4">
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-3">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-checkbox-circle-line"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800">컴퓨터공학과</p>
+                                    <p class="text-sm text-gray-600">
+                                        인공지능, 소프트웨어공학, 데이터베이스, 네트워크 등
+                                    </p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-checkbox-circle-line"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800">전자공학과</p>
+                                    <p class="text-sm text-gray-600">
+                                        반도체, 통신시스템, 로봇공학, 제어시스템 등
+                                    </p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-checkbox-circle-line"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800">기계공학과</p>
+                                    <p class="text-sm text-gray-600">
+                                        열역학, 유체역학, 자동차공학, 항공우주공학 등
+                                    </p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-checkbox-circle-line"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800">화학공학과</p>
+                                    <p class="text-sm text-gray-600">
+                                        공정설계, 에너지공학, 생명화학공학, 재료공학 등
+                                    </p>
+                                </div>
+                            </li>
+                        </ul>
+                        <button
+                                class="mt-4 px-4 py-2 border border-primary text-primary rounded hover:bg-blue-50 text-sm whitespace-nowrap !rounded-button"
+                        >
+                            전체 전공 보기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 예체능 계열 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <div class="bg-purple-50 p-4 flex items-center gap-3">
+                        <div
+                                class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600"
+                        >
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-palette-line"></i>
+                            </div>
+                        </div>
+                        <h4 class="text-lg font-bold text-gray-800">예체능 계열</h4>
+                    </div>
+                    <div class="p-4">
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-3">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-checkbox-circle-line"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800">시각디자인학과</p>
+                                    <p class="text-sm text-gray-600">
+                                        그래픽디자인, UI/UX, 브랜딩, 타이포그래피 등
+                                    </p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-checkbox-circle-line"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800">음악학과</p>
+                                    <p class="text-sm text-gray-600">
+                                        성악, 피아노, 관현악, 작곡 등
+                                    </p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-checkbox-circle-line"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800">영화영상학과</p>
+                                    <p class="text-sm text-gray-600">
+                                        영화제작, 시나리오, 영상편집, 다큐멘터리 등
+                                    </p>
+                                </div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-checkbox-circle-line"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800">체육학과</p>
+                                    <p class="text-sm text-gray-600">
+                                        스포츠과학, 스포츠경영, 스포츠의학, 코칭 등
+                                    </p>
+                                </div>
+                            </li>
+                        </ul>
+                        <button
+                                class="mt-4 px-4 py-2 border border-primary text-primary rounded hover:bg-blue-50 text-sm whitespace-nowrap !rounded-button"
+                        >
+                            전체 전공 보기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 특별 프로그램 섹션 -->
+        <div class="bg-white rounded shadow p-6 mb-6">
+            <h3
+                    class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2"
+            >
+                <div class="w-6 h-6 flex items-center justify-center text-primary">
+                    <i class="ri-global-line"></i>
+                </div>
+                특별 프로그램
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 국제 학생 전용 프로그램 -->
+                <div
+                        class="program-card border border-gray-200 rounded-lg overflow-hidden transition-all duration-300"
+                >
+                    <div class="h-40 bg-indigo-500 relative overflow-hidden">
+                        <div
+                                class="absolute inset-0"
+                                style="background-image: url('https://readdy.ai/api/search-image?query=diverse%20international%20students%20from%20different%20countries%20studying%20together%20in%20modern%20university%20campus%2C%20multicultural%20education%2C%20bright%20atmosphere%2C%20professional%20education%20photograph&width=400&height=160&seq=4&orientation=landscape'); background-size: cover; background-position: center;"
+                        ></div>
+                        <div
+                                class="absolute inset-0 bg-gradient-to-t from-indigo-900/70 to-transparent"
+                        ></div>
+                        <div class="absolute bottom-4 left-4 text-white">
+                            <h4 class="text-xl font-bold">국제 학생 전용 프로그램</h4>
+                            <p class="text-sm">International Student Programs</p>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                  <span
+                          class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs font-medium"
+                  >다양한 기간</span
+                  >
+                            <span
+                                    class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium"
+                            >신입생 모집중</span
+                            >
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            국제 학생들을 위한 맞춤형 프로그램으로, 한국 문화 체험과
+                            학문적 성장을 동시에 지원합니다.
+                        </p>
+                        <div class="space-y-2 mb-4">
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">한국어 집중 교육 과정</p>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    문화 적응 지원 및 멘토링 시스템
+                                </p>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    국제 학생 전용 장학금 제도
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                                class="w-full px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 text-sm mt-2 whitespace-nowrap !rounded-button"
+                        >
+                            자세히 보기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 어학 과정 -->
+                <div
+                        class="program-card border border-gray-200 rounded-lg overflow-hidden transition-all duration-300"
+                >
+                    <div class="h-40 bg-green-500 relative overflow-hidden">
+                        <div
+                                class="absolute inset-0"
+                                style="background-image: url('https://readdy.ai/api/search-image?query=language%20learning%20classroom%20with%20diverse%20students%20practicing%20conversation%2C%20interactive%20language%20education%2C%20bright%20modern%20classroom%2C%20professional%20education%20photograph&width=400&height=160&seq=5&orientation=landscape'); background-size: cover; background-position: center;"
+                        ></div>
+                        <div
+                                class="absolute inset-0 bg-gradient-to-t from-green-900/70 to-transparent"
+                        ></div>
+                        <div class="absolute bottom-4 left-4 text-white">
+                            <h4 class="text-xl font-bold">어학 과정</h4>
+                            <p class="text-sm">Language Programs</p>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                  <span
+                          class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium"
+                  >10주 과정</span
+                  >
+                            <span
+                                    class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium"
+                            >연중 4회 개강</span
+                            >
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            한국어 및 다양한 외국어 학습을 위한 집중 어학 과정으로,
+                            실용적인 언어 능력을 향상시킵니다.
+                        </p>
+                        <div class="space-y-2 mb-4">
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    한국어 6단계 레벨별 교육
+                                </p>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    영어, 중국어, 일본어 등 다양한 언어 과정
+                                </p>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    TOPIK, TOEFL, IELTS 등 시험 대비 과정
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                                class="w-full px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 text-sm mt-2 whitespace-nowrap !rounded-button"
+                        >
+                            자세히 보기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 교환 학생 프로그램 -->
+                <div
+                        class="program-card border border-gray-200 rounded-lg overflow-hidden transition-all duration-300"
+                >
+                    <div class="h-40 bg-orange-500 relative overflow-hidden">
+                        <div
+                                class="absolute inset-0"
+                                style="background-image: url('https://readdy.ai/api/search-image?query=exchange%20students%20from%20different%20countries%20exploring%20campus%20together%2C%20international%20education%20experience%2C%20cultural%20exchange%20program%2C%20professional%20education%20photograph&width=400&height=160&seq=6&orientation=landscape'); background-size: cover; background-position: center;"
+                        ></div>
+                        <div
+                                class="absolute inset-0 bg-gradient-to-t from-orange-900/70 to-transparent"
+                        ></div>
+                        <div class="absolute bottom-4 left-4 text-white">
+                            <h4 class="text-xl font-bold">교환 학생 프로그램</h4>
+                            <p class="text-sm">Exchange Student Programs</p>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                  <span
+                          class="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs font-medium"
+                  >1-2학기</span
+                  >
+                            <span
+                                    class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium"
+                            >30개국 협력</span
+                            >
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            전 세계 유수 대학과의 교환학생 프로그램을 통해 글로벌 경험을
+                            쌓고 학점을 인정받을 수 있습니다.
+                        </p>
+                        <div class="space-y-2 mb-4">
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    200여개 협력 대학 네트워크
+                                </p>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    학비 면제 혜택 (본교 등록금만 납부)
+                                </p>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    교환학생 장학금 지원 프로그램
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                                class="w-full px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 text-sm mt-2 whitespace-nowrap !rounded-button"
+                        >
+                            자세히 보기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 단기 연수 프로그램 -->
+                <div
+                        class="program-card border border-gray-200 rounded-lg overflow-hidden transition-all duration-300"
+                >
+                    <div class="h-40 bg-teal-500 relative overflow-hidden">
+                        <div
+                                class="absolute inset-0"
+                                style="background-image: url('https://readdy.ai/api/search-image?query=short-term%20study%20abroad%20program%2C%20students%20on%20cultural%20excursion%20in%20Korea%2C%20visiting%20historical%20sites%2C%20professional%20education%20photograph&width=400&height=160&seq=7&orientation=landscape'); background-size: cover; background-position: center;"
+                        ></div>
+                        <div
+                                class="absolute inset-0 bg-gradient-to-t from-teal-900/70 to-transparent"
+                        ></div>
+                        <div class="absolute bottom-4 left-4 text-white">
+                            <h4 class="text-xl font-bold">단기 연수 프로그램</h4>
+                            <p class="text-sm">Short-term Training Programs</p>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                  <span
+                          class="px-2 py-1 bg-teal-100 text-teal-700 rounded text-xs font-medium"
+                  >2-8주</span
+                  >
+                            <span
+                                    class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-medium"
+                            >방학 기간</span
+                            >
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">
+                            방학 기간을 활용한 단기 집중 연수 프로그램으로, 학업과 문화
+                            체험을 동시에 경험할 수 있습니다.
+                        </p>
+                        <div class="space-y-2 mb-4">
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    여름/겨울 계절학기 프로그램
+                                </p>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    한국 문화 체험 및 현장 학습
+                                </p>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <div
+                                        class="w-5 h-5 flex items-center justify-center text-primary mt-0.5"
+                                >
+                                    <i class="ri-check-line"></i>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    전공 분야별 특화 단기 과정
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                                class="w-full px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 text-sm mt-2 whitespace-nowrap !rounded-button"
+                        >
+                            자세히 보기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 과정 상세 정보 섹션 -->
+        <div class="bg-white rounded shadow p-6 mb-6">
+            <h3
+                    class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2"
+            >
+                <div class="w-6 h-6 flex items-center justify-center text-primary">
+                    <i class="ri-information-line"></i>
+                </div>
+                과정 상세 정보
+            </h3>
+
+            <!-- 아코디언 메뉴 -->
+            <div class="space-y-4">
+                <!-- 입학 요건 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <button
+                            class="accordion-header w-full p-4 flex items-center justify-between bg-gray-50 hover:bg-gray-100 transition-colors"
+                    >
+                        <div class="flex items-center gap-3">
+                            <div
+                                    class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-primary"
+                            >
+                                <div class="w-4 h-4 flex items-center justify-center">
+                                    <i class="ri-file-list-3-line"></i>
+                                </div>
+                            </div>
+                            <h4 class="font-medium text-gray-800">입학 요건</h4>
+                        </div>
+                        <div
+                                class="w-5 h-5 flex items-center justify-center text-gray-500 accordion-icon"
+                        >
+                            <i class="ri-arrow-down-s-line"></i>
+                        </div>
+                    </button>
+                    <div class="accordion-content p-4 border-t border-gray-200">
+                        <div class="space-y-4">
+                            <div>
+                                <h5 class="font-medium text-gray-800 mb-2">학사 과정</h5>
+                                <ul class="space-y-2 text-sm text-gray-700 pl-5">
+                                    <li class="list-disc">
+                                        고등학교 졸업(예정)자 또는 동등 학력 소지자
+                                    </li>
+                                    <li class="list-disc">
+                                        TOPIK 3급 이상 또는 영어 공인 성적(TOEFL iBT 80, IELTS
+                                        6.0 이상)
+                                    </li>
+                                    <li class="list-disc">
+                                        전형 방법: 서류 심사 및 면접(필요시)
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-800 mb-2">석사 과정</h5>
+                                <ul class="space-y-2 text-sm text-gray-700 pl-5">
+                                    <li class="list-disc">학사학위 소지자 또는 취득예정자</li>
+                                    <li class="list-disc">
+                                        TOPIK 4급 이상 또는 영어 공인 성적(TOEFL iBT 90, IELTS
+                                        6.5 이상)
+                                    </li>
+                                    <li class="list-disc">
+                                        전형 방법: 서류 심사, 면접, 필요시 전공 시험
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-800 mb-2">박사 과정</h5>
+                                <ul class="space-y-2 text-sm text-gray-700 pl-5">
+                                    <li class="list-disc">석사학위 소지자 또는 취득예정자</li>
+                                    <li class="list-disc">
+                                        TOPIK 5급 이상 또는 영어 공인 성적(TOEFL iBT 100, IELTS
+                                        7.0 이상)
+                                    </li>
+                                    <li class="list-disc">
+                                        연구 계획서 및 석사 논문 요약본 제출
+                                    </li>
+                                    <li class="list-disc">
+                                        전형 방법: 서류 심사, 심층 면접, 연구 역량 평가
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 과정 기간 및 학사 일정 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <button
+                            class="accordion-header w-full p-4 flex items-center justify-between bg-gray-50 hover:bg-gray-100 transition-colors"
+                    >
+                        <div class="flex items-center gap-3">
+                            <div
+                                    class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600"
+                            >
+                                <div class="w-4 h-4 flex items-center justify-center">
+                                    <i class="ri-calendar-line"></i>
+                                </div>
+                            </div>
+                            <h4 class="font-medium text-gray-800">
+                                과정 기간 및 학사 일정
+                            </h4>
+                        </div>
+                        <div
+                                class="w-5 h-5 flex items-center justify-center text-gray-500 accordion-icon"
+                        >
+                            <i class="ri-arrow-down-s-line"></i>
+                        </div>
+                    </button>
+                    <div class="accordion-content p-4 border-t border-gray-200">
+                        <div class="space-y-4">
+                            <div>
+                                <h5 class="font-medium text-gray-800 mb-2">
+                                    학위 과정 기간
+                                </h5>
+                                <ul class="space-y-2 text-sm text-gray-700 pl-5">
+                                    <li class="list-disc">학사 과정: 4년 (8학기)</li>
+                                    <li class="list-disc">석사 과정: 2년 (4학기)</li>
+                                    <li class="list-disc">
+                                        박사 과정: 3년 (6학기) ~ 5년 (10학기)
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-800 mb-2">학기 일정</h5>
+                                <ul class="space-y-2 text-sm text-gray-700 pl-5">
+                                    <li class="list-disc">1학기: 3월 초 ~ 6월 중순</li>
+                                    <li class="list-disc">여름학기: 6월 말 ~ 8월 중순</li>
+                                    <li class="list-disc">2학기: 9월 초 ~ 12월 중순</li>
+                                    <li class="list-disc">겨울학기: 12월 말 ~ 2월 중순</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-800 mb-2">
+                                    주요 학사 일정
+                                </h5>
+                                <ul class="space-y-2 text-sm text-gray-700 pl-5">
+                                    <li class="list-disc">
+                                        신입생 오리엔테이션: 2월 말, 8월 말
+                                    </li>
+                                    <li class="list-disc">수강신청 기간: 개강 2주 전</li>
+                                    <li class="list-disc">중간고사: 학기 8주차</li>
+                                    <li class="list-disc">기말고사: 학기 16주차</li>
+                                    <li class="list-disc">방학: 7월~8월, 1월~2월</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 주요 교과목 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <button
+                            class="accordion-header w-full p-4 flex items-center justify-between bg-gray-50 hover:bg-gray-100 transition-colors"
+                    >
+                        <div class="flex items-center gap-3">
+                            <div
+                                    class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-600"
+                            >
+                                <div class="w-4 h-4 flex items-center justify-center">
+                                    <i class="ri-book-open-line"></i>
+                                </div>
+                            </div>
+                            <h4 class="font-medium text-gray-800">주요 교과목</h4>
+                        </div>
+                        <div
+                                class="w-5 h-5 flex items-center justify-center text-gray-500 accordion-icon"
+                        >
+                            <i class="ri-arrow-down-s-line"></i>
+                        </div>
+                    </button>
+                    <div class="accordion-content p-4 border-t border-gray-200">
+                        <div class="space-y-4">
+                            <div>
+                                <h5 class="font-medium text-gray-800 mb-2">
+                                    공통 교양 과목
+                                </h5>
+                                <ul class="space-y-2 text-sm text-gray-700 pl-5">
+                                    <li class="list-disc">대학 글쓰기, 비판적 사고와 토론</li>
+                                    <li class="list-disc">
+                                        세계 문화의 이해, 과학과 기술의 이해
+                                    </li>
+                                    <li class="list-disc">
+                                        외국어(영어, 중국어, 일본어 등), 컴퓨터 활용
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-800 mb-2">
+                                    전공 기초 과목 (예: 경영학)
+                                </h5>
+                                <ul class="space-y-2 text-sm text-gray-700 pl-5">
+                                    <li class="list-disc">
+                                        경영학원론, 회계원리, 경제학원론
+                                    </li>
+                                    <li class="list-disc">
+                                        통계학, 마케팅의 이해, 조직행동론
+                                    </li>
+                                    <li class="list-disc">
+                                        국제경영의 이해, 재무관리, 생산관리
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-800 mb-2">
+                                    전공 심화 과목 (예: 컴퓨터공학)
+                                </h5>
+                                <ul class="space-y-2 text-sm text-gray-700 pl-5">
+                                    <li class="list-disc">자료구조, 알고리즘, 운영체제</li>
+                                    <li class="list-disc">
+                                        데이터베이스, 컴퓨터네트워크, 소프트웨어공학
+                                    </li>
+                                    <li class="list-disc">
+                                        인공지능, 머신러닝, 컴퓨터그래픽스
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-800 mb-2">
+                                    대학원 과목 (예: 국제학)
+                                </h5>
+                                <ul class="space-y-2 text-sm text-gray-700 pl-5">
+                                    <li class="list-disc">
+                                        국제관계이론, 국제정치경제, 지역연구방법론
+                                    </li>
+                                    <li class="list-disc">
+                                        글로벌 거버넌스, 국제협력과 개발, 국제법
+                                    </li>
+                                    <li class="list-disc">
+                                        연구방법론, 논문작성법, 학술세미나
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 취득 가능 자격증 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <button
+                            class="accordion-header w-full p-4 flex items-center justify-between bg-gray-50 hover:bg-gray-100 transition-colors"
+                    >
+                        <div class="flex items-center gap-3">
+                            <div
+                                    class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600"
+                            >
+                                <div class="w-4 h-4 flex items-center justify-center">
+                                    <i class="ri-award-line"></i>
+                                </div>
+                            </div>
+                            <h4 class="font-medium text-gray-800">취득 가능 자격증</h4>
+                        </div>
+                        <div
+                                class="w-5 h-5 flex items-center justify-center text-gray-500 accordion-icon"
+                        >
+                            <i class="ri-arrow-down-s-line"></i>
+                        </div>
+                    </button>
+                    <div class="accordion-content p-4 border-t border-gray-200">
+                        <div class="space-y-4">
+                            <div>
+                                <h5 class="font-medium text-gray-800 mb-2">
+                                    경영/경제 분야
+                                </h5>
+                                <ul class="space-y-2 text-sm text-gray-700 pl-5">
+                                    <li class="list-disc">공인회계사(CPA), 세무사, 관세사</li>
+                                    <li class="list-disc">
+                                        국제무역사, 경영지도사, 증권분석사
+                                    </li>
+                                    <li class="list-disc">
+                                        TOEIC, TOEFL, IELTS 등 어학 자격증
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-800 mb-2">IT/공학 분야</h5>
+                                <ul class="space-y-2 text-sm text-gray-700 pl-5">
+                                    <li class="list-disc">
+                                        정보처리기사, 정보보안기사, 네트워크관리사
+                                    </li>
+                                    <li class="list-disc">
+                                        데이터분석전문가, 클라우드 자격증(AWS, Azure)
+                                    </li>
+                                    <li class="list-disc">
+                                        CCNA, MCSA, Oracle 등 국제 IT 자격증
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-800 mb-2">
+                                    어학/교육 분야
+                                </h5>
+                                <ul class="space-y-2 text-sm text-gray-700 pl-5">
+                                    <li class="list-disc">한국어교원자격증(2급, 3급)</li>
+                                    <li class="list-disc">TESOL, CELTA 등 영어교육 자격증</li>
+                                    <li class="list-disc">통번역사 자격증, 관광통역안내사</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-800 mb-2">예체능 분야</h5>
+                                <ul class="space-y-2 text-sm text-gray-700 pl-5">
+                                    <li class="list-disc">
+                                        문화예술교육사, 무용지도자, 체육지도자
+                                    </li>
+                                    <li class="list-disc">
+                                        시각디자인기사, 컬러리스트, 웹디자인기능사
+                                    </li>
+                                    <li class="list-disc">
+                                        멀티미디어콘텐츠제작전문가, 게임그래픽전문가
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 담당자 연락처 섹션 -->
+        <div class="bg-white rounded shadow p-6 mb-6">
+            <h3
+                    class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2"
+            >
+                <div class="w-6 h-6 flex items-center justify-center text-primary">
+                    <i class="ri-contacts-line"></i>
+                </div>
+                과정별 담당자 연락처
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 학위 과정 담당자 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <div class="bg-blue-50 p-4">
+                        <h4 class="font-bold text-gray-800">학위 과정 담당자</h4>
+                    </div>
+                    <div class="p-4 space-y-4">
+                        <div class="flex items-start gap-4">
+                            <div
+                                    class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-primary flex-shrink-0"
+                            >
+                                <div class="w-6 h-6 flex items-center justify-center">
+                                    <i class="ri-user-3-line"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-800">김민지 교수</h5>
+                                <p class="text-sm text-gray-600">학사 과정 담당</p>
+                                <div class="mt-2 space-y-1 text-sm">
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                                class="w-4 h-4 flex items-center justify-center text-primary"
+                                        >
+                                            <i class="ri-mail-line"></i>
+                                        </div>
+                                        <span class="text-gray-700"
+                                        >bachelor@university.ac.kr</span
+                                        >
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                                class="w-4 h-4 flex items-center justify-center text-primary"
+                                        >
+                                            <i class="ri-phone-line"></i>
+                                        </div>
+                                        <span class="text-gray-700">02-1234-5678</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                                class="w-4 h-4 flex items-center justify-center text-primary"
+                                        >
+                                            <i class="ri-map-pin-line"></i>
+                                        </div>
+                                        <span class="text-gray-700">국제교류관 205호</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4">
+                            <div
+                                    class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 flex-shrink-0"
+                            >
+                                <div class="w-6 h-6 flex items-center justify-center">
+                                    <i class="ri-user-3-line"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-800">이준호 교수</h5>
+                                <p class="text-sm text-gray-600">석사/박사 과정 담당</p>
+                                <div class="mt-2 space-y-1 text-sm">
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                                class="w-4 h-4 flex items-center justify-center text-primary"
+                                        >
+                                            <i class="ri-mail-line"></i>
+                                        </div>
+                                        <span class="text-gray-700"
+                                        >graduate@university.ac.kr</span
+                                        >
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                                class="w-4 h-4 flex items-center justify-center text-primary"
+                                        >
+                                            <i class="ri-phone-line"></i>
+                                        </div>
+                                        <span class="text-gray-700">02-1234-5679</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                                class="w-4 h-4 flex items-center justify-center text-primary"
+                                        >
+                                            <i class="ri-map-pin-line"></i>
+                                        </div>
+                                        <span class="text-gray-700">국제교류관 206호</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 특별 프로그램 담당자 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <div class="bg-green-50 p-4">
+                        <h4 class="font-bold text-gray-800">특별 프로그램 담당자</h4>
+                    </div>
+                    <div class="p-4 space-y-4">
+                        <div class="flex items-start gap-4">
+                            <div
+                                    class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 flex-shrink-0"
+                            >
+                                <div class="w-6 h-6 flex items-center justify-center">
+                                    <i class="ri-user-3-line"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-800">박소연 교수</h5>
+                                <p class="text-sm text-gray-600">어학 과정 담당</p>
+                                <div class="mt-2 space-y-1 text-sm">
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                                class="w-4 h-4 flex items-center justify-center text-primary"
+                                        >
+                                            <i class="ri-mail-line"></i>
+                                        </div>
+                                        <span class="text-gray-700"
+                                        >language@university.ac.kr</span
+                                        >
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                                class="w-4 h-4 flex items-center justify-center text-primary"
+                                        >
+                                            <i class="ri-phone-line"></i>
+                                        </div>
+                                        <span class="text-gray-700">02-1234-5680</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                                class="w-4 h-4 flex items-center justify-center text-primary"
+                                        >
+                                            <i class="ri-map-pin-line"></i>
+                                        </div>
+                                        <span class="text-gray-700">국제교류관 207호</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4">
+                            <div
+                                    class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 flex-shrink-0"
+                            >
+                                <div class="w-6 h-6 flex items-center justify-center">
+                                    <i class="ri-user-3-line"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-800">최현우 교수</h5>
+                                <p class="text-sm text-gray-600">교환학생/단기연수 담당</p>
+                                <div class="mt-2 space-y-1 text-sm">
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                                class="w-4 h-4 flex items-center justify-center text-primary"
+                                        >
+                                            <i class="ri-mail-line"></i>
+                                        </div>
+                                        <span class="text-gray-700"
+                                        >exchange@university.ac.kr</span
+                                        >
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                                class="w-4 h-4 flex items-center justify-center text-primary"
+                                        >
+                                            <i class="ri-phone-line"></i>
+                                        </div>
+                                        <span class="text-gray-700">02-1234-5681</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                                class="w-4 h-4 flex items-center justify-center text-primary"
+                                        >
+                                            <i class="ri-map-pin-line"></i>
+                                        </div>
+                                        <span class="text-gray-700">국제교류관 208호</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 상담 예약 버튼 -->
+            <div class="flex justify-center mt-4">
+                <button
+                        class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 text-sm font-medium flex items-center gap-2 whitespace-nowrap !rounded-button"
+                >
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-calendar-check-line"></i>
+                    </div>
+                    <span>과정 상담 예약하기</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 자주 묻는 질문 섹션 -->
+        <div class="bg-white rounded shadow p-6 mb-6">
+            <h3
+                    class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2"
+            >
+                <div class="w-6 h-6 flex items-center justify-center text-primary">
+                    <i class="ri-question-answer-line"></i>
+                </div>
+                자주 묻는 질문
+            </h3>
+
+            <div class="space-y-4">
+                <!-- FAQ 아이템 1 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <button
+                            class="faq-header w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                    >
+                        <h4 class="font-medium text-gray-800">
+                            국제 학생이 지원할 수 있는 장학금 제도가 있나요?
+                        </h4>
+                        <div
+                                class="w-5 h-5 flex items-center justify-center text-gray-500 faq-icon"
+                        >
+                            <i class="ri-add-line"></i>
+                        </div>
+                    </button>
+                    <div
+                            class="faq-content hidden p-4 border-t border-gray-200 bg-gray-50"
+                    >
+                        <p class="text-gray-700">
+                            네, 다양한 장학금 제도가 있습니다. 국제 학생을 위한 입학
+                            장학금, 성적 우수 장학금, TOPIK 성적 우수 장학금, 국가별 지원
+                            장학금 등이 있으며, 자세한 내용은 국제교류처 홈페이지에서
+                            확인하실 수 있습니다. 또한 한국 정부에서 제공하는 GKS(Global
+                            Korea Scholarship) 장학금도 지원 가능합니다.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ 아이템 2 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <button
+                            class="faq-header w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                    >
+                        <h4 class="font-medium text-gray-800">
+                            영어로 진행되는 강의가 있나요?
+                        </h4>
+                        <div
+                                class="w-5 h-5 flex items-center justify-center text-gray-500 faq-icon"
+                        >
+                            <i class="ri-add-line"></i>
+                        </div>
+                    </button>
+                    <div
+                            class="faq-content hidden p-4 border-t border-gray-200 bg-gray-50"
+                    >
+                        <p class="text-gray-700">
+                            네, 본교에서는 다양한 영어 강의를 제공하고 있습니다. 특히
+                            국제학부, 경영학과, 컴퓨터공학과 등에서는 전체 교과목의 30%
+                            이상이 영어로 진행됩니다. 또한 국제 학생을 위한 특별
+                            프로그램은 대부분 영어로 진행되며, 학기별 영어 강의 목록은
+                            수강신청 기간 전에 공지됩니다.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ 아이템 3 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <button
+                            class="faq-header w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                    >
+                        <h4 class="font-medium text-gray-800">
+                            기숙사 신청은 어떻게 하나요?
+                        </h4>
+                        <div
+                                class="w-5 h-5 flex items-center justify-center text-gray-500 faq-icon"
+                        >
+                            <i class="ri-add-line"></i>
+                        </div>
+                    </button>
+                    <div
+                            class="faq-content hidden p-4 border-t border-gray-200 bg-gray-50"
+                    >
+                        <p class="text-gray-700">
+                            기숙사 신청은 입학 허가를 받은 후 온라인으로 진행됩니다. 국제
+                            학생의 경우 우선 배정을 받을 수 있으며, 1인실, 2인실, 4인실 등
+                            다양한 옵션이 있습니다. 신청 기간은 보통 학기 시작 2개월
+                            전부터이며, 조기에 마감될 수 있으니 입학 허가를 받으신 후 바로
+                            신청하시는 것을 권장합니다. 기숙사비는 방 유형에 따라 다르며,
+                            식비는 별도로 청구됩니다.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ 아이템 4 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <button
+                            class="faq-header w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                    >
+                        <h4 class="font-medium text-gray-800">
+                            비자 발급 지원을 받을 수 있나요?
+                        </h4>
+                        <div
+                                class="w-5 h-5 flex items-center justify-center text-gray-500 faq-icon"
+                        >
+                            <i class="ri-add-line"></i>
+                        </div>
+                    </button>
+                    <div
+                            class="faq-content hidden p-4 border-t border-gray-200 bg-gray-50"
+                    >
+                        <p class="text-gray-700">
+                            네, 국제교류처에서 비자 발급에 필요한 표준입학허가서를
+                            발급해드리며, 비자 신청 과정에 대한 안내를 제공합니다. 또한
+                            학기 중에 정기적으로 비자 연장, 체류자격 변경 등에 관한
+                            워크숍을 개최하고 있으며, 개인적인 비자 상담도 가능합니다.
+                            입국 전 비자 관련 문의는 international@university.ac.kr로
+                            연락주시기 바랍니다.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ 아이템 5 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <button
+                            class="faq-header w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                    >
+                        <h4 class="font-medium text-gray-800">
+                            한국어를 전혀 모르는데 입학이 가능한가요?
+                        </h4>
+                        <div
+                                class="w-5 h-5 flex items-center justify-center text-gray-500 faq-icon"
+                        >
+                            <i class="ri-add-line"></i>
+                        </div>
+                    </button>
+                    <div
+                            class="faq-content hidden p-4 border-t border-gray-200 bg-gray-50"
+                    >
+                        <p class="text-gray-700">
+                            한국어 능력에 따라 다양한 입학 경로가 있습니다. 영어 전용
+                            과정의 경우 한국어 능력 없이 영어 성적만으로 입학이
+                            가능합니다. 일반 학위 과정은 TOPIK 성적이 필요하지만, 조건부
+                            입학을 통해 먼저 본교 한국어 교육원에서 일정 기간 한국어를
+                            학습한 후 본 과정에 입학할 수도 있습니다. 자세한 내용은
+                            희망하시는 학과에 문의하시기 바랍니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 더 많은 질문 버튼 -->
+            <div class="flex justify-center mt-6">
+                <button
+                        class="px-6 py-2 border border-gray-300 rounded hover:bg-gray-50 text-sm font-medium text-gray-700 flex items-center gap-2 whitespace-nowrap !rounded-button"
+                >
+                    <span>더 많은 질문 보기</span>
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-arrow-right-s-line"></i>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- 관심 과정 저장 섹션 -->
+        <div class="bg-blue-50 rounded-lg p-6 mb-6">
+            <div
+                    class="flex flex-col md:flex-row items-center justify-between gap-4"
+            >
+                <div class="flex items-center gap-4">
+                    <div
+                            class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-primary"
+                    >
+                        <div class="w-6 h-6 flex items-center justify-center">
+                            <i class="ri-bookmark-line"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-800">
+                            관심 있는 과정을 저장하세요
+                        </h3>
+                        <p class="text-gray-600">
+                            나중에 쉽게 찾아볼 수 있도록 관심 과정을 저장하고 업데이트
+                            소식을 받아보세요.
+                        </p>
+                    </div>
+                </div>
+                <button
+                        class="px-6 py-3 bg-primary text-white rounded hover:bg-primary/90 text-sm font-medium whitespace-nowrap !rounded-button"
+                >
+                    관심 과정 저장하기
+                </button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- 푸터 -->
+<footer class="bg-gray-800 text-white py-8 w-full mt-auto">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+                <h3 class="text-lg font-bold mb-4">대학교 국제 프로그램</h3>
+                <p class="text-gray-300 text-sm">
+                    글로벌 인재 양성을 위한 최고의 교육 환경을 제공합니다. 다양한 국제
+                    프로그램을 통해 세계 각국의 학생들과 함께 성장하세요.
+                </p>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold mb-4">연락처</h3>
+                <ul class="space-y-2 text-sm text-gray-300">
+                    <li class="flex items-center gap-2">
+                        <div class="w-5 h-5 flex items-center justify-center">
+                            <i class="ri-map-pin-line"></i>
+                        </div>
+                        <span>서울특별시 강남구 대학로 123</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <div class="w-5 h-5 flex items-center justify-center">
+                            <i class="ri-phone-line"></i>
+                        </div>
+                        <span>02-1234-5678</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <div class="w-5 h-5 flex items-center justify-center">
+                            <i class="ri-mail-line"></i>
+                        </div>
+                        <span>international@university.ac.kr</span>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold mb-4">빠른 링크</h3>
+                <ul class="space-y-2 text-sm text-gray-300">
+                    <li>
+                        <a href="#" class="hover:text-primary">대학교 메인 홈페이지</a>
+                    </li>
+                    <li><a href="#" class="hover:text-primary">학사 일정</a></li>
+                    <li><a href="#" class="hover:text-primary">도서관</a></li>
+                    <li><a href="#" class="hover:text-primary">캠퍼스 맵</a></li>
+                    <li><a href="#" class="hover:text-primary">커뮤니티</a></li>
+                </ul>
+            </div>
+        </div>
+        <div
+                class="border-t border-gray-700 mt-8 pt-6 text-center text-sm text-gray-400"
+        >
+            <p>© 2025 대학교 국제 프로그램. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<script id="tabsScript">
+    document.addEventListener("DOMContentLoaded", function () {
+        const tabButtons = document.querySelectorAll(".tab-button");
+        tabButtons.forEach((button) => {
+            button.addEventListener("click", function () {
+                tabButtons.forEach((btn) => btn.classList.remove("active"));
+                this.classList.add("active");
+            });
+        });
+    });
+</script>
+
+<script id="accordionScript">
+    document.addEventListener("DOMContentLoaded", function () {
+        const accordionHeaders = document.querySelectorAll(".accordion-header");
+        accordionHeaders.forEach((header) => {
+            header.addEventListener("click", function () {
+                const content = this.nextElementSibling;
+                const icon = this.querySelector(".accordion-icon i");
+
+                if (content.classList.contains("active")) {
+                    content.classList.remove("active");
+                    icon.classList.remove("ri-arrow-up-s-line");
+                    icon.classList.add("ri-arrow-down-s-line");
+                } else {
+                    content.classList.add("active");
+                    icon.classList.remove("ri-arrow-down-s-line");
+                    icon.classList.add("ri-arrow-up-s-line");
+                }
+            });
+        });
+    });
+</script>
+
+<script id="faqScript">
+    document.addEventListener("DOMContentLoaded", function () {
+        const faqHeaders = document.querySelectorAll(".faq-header");
+        faqHeaders.forEach((header) => {
+            header.addEventListener("click", function () {
+                const content = this.nextElementSibling;
+                const icon = this.querySelector(".faq-icon i");
+                if (content.classList.contains("hidden")) {
+                    content.classList.remove("hidden");
+                    icon.classList.remove("ri-add-line");
+                    icon.classList.add("ri-subtract-line");
+                } else {
+                    content.classList.add("hidden");
+                    icon.classList.remove("ri-subtract-line");
+                    icon.classList.add("ri-add-line");
+                }
+            });
+        });
+    });
+</script>
+<script src="/js/homepage/login.js"></script>
+<script src="/js/homepage/nav-user.js"></script>
+</body>
+</html>
