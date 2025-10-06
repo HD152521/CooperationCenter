@@ -51,7 +51,7 @@
                 <i class="ri-arrow-left-line mr-2"></i>
                 <span>설문조사 목록으로 돌아가기</span>
             </a>
-            <div class="mx-auto text-lg font-medium">설문조사</div>
+            <div class="mx-auto text-lg font-medium"></div>
             <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white">
                 <span>관</span>
             </div>
@@ -265,7 +265,8 @@
                 showFatalError('해당 신청 페이지는 공개 금지 상태입니다.');
                 return;
             }
-            const data = JSON.parse(text);
+            const jsonText = JSON.parse(text);
+            const data = jsonText.result;
             const now = new Date();
 
             const yyyy = now.getFullYear();

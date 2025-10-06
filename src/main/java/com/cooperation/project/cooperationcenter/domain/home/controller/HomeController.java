@@ -32,4 +32,6 @@ public class HomeController {
         log.info("pendingDto:{}",memberService.getPendingList().toString());
         return "/adminpage/user/index";
     }
+
+
 }

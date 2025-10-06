@@ -42,9 +42,9 @@ public class MemberRestController {
     }
 
     @GetMapping("/check-id")
-    public ResponseEntity<Boolean> checkDuplicateId(@RequestParam String username) {
+    public BaseResponse<?> checkDuplicateId(@RequestParam String username) {
         boolean isDuplicate = memberService.isUsernameTaken(username);
-        return ResponseEntity.ok(isDuplicate);
+        return BaseResponse.onSuccess(isDuplicate);
     }
 
     @PostMapping("/login")
