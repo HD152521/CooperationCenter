@@ -44,6 +44,7 @@ public class MemberRestController {
     @GetMapping("/check-id")
     public BaseResponse<?> checkDuplicateId(@RequestParam String username) {
         boolean isDuplicate = memberService.isUsernameTaken(username);
+        log.info("response:{}",isDuplicate);
         return BaseResponse.onSuccess(isDuplicate);
     }
 

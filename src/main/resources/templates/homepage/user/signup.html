@@ -1107,7 +1107,9 @@
                             }
                             return response.json();  // true 또는 false
                         })
-                        .then(isDuplicate => {
+                        .then( data => {
+                            const isDuplicate = data.result;
+                            console.log(isDuplicate);
                             if (isDuplicate) {
                                 usernameStatus.textContent = "이미 사용 중인 아이디입니다.";
                                 usernameStatus.className = "mt-1 text-sm text-red-600";

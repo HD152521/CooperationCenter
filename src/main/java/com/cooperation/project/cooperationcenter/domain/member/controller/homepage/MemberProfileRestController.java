@@ -25,6 +25,17 @@ public class MemberProfileRestController {
         return BaseResponse.onSuccess("success");
     }
 
+
+    @PostMapping
+    public BaseResponse<?> makeUpdatePasswordUrl(){
+        return BaseResponse.onSuccess("success");
+    }
+
+    @PatchMapping("/reset/password")
+    public BaseResponse<?> updatePassword(){
+        return BaseResponse.onSuccess("success");
+    }
+
     @PatchMapping("/agency")
     public BaseResponse<?> updateAgencyInfo(@RequestBody Profile.MemberDto request, @AuthenticationPrincipal MemberDetails memberDetails){
         log.info("request:{}",request.toString());

@@ -37,7 +37,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
         //note 무시하는 endpoint들
         final String[] IGNORE_PATHS = {
-                "/css", "/js", "/plugins","/member/login","/member/logout","/member/signup","/api/v1/member","/api/v1/admin","/api/v1/file/img","/admin/login"
+                "/css", "/js", "/plugins","/member/login","/member/logout","/member/signup","/api/v1/member","/api/v1/admin","/api/v1/file/img","/admin/login","/favicon.ico"
         };
 
         for (String allowed : IGNORE_PATHS) {
