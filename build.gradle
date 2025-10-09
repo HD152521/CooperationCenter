@@ -20,6 +20,7 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	compileOnly 'org.projectlombok:lombok'
@@ -56,6 +57,11 @@ dependencies {
 	testImplementation 'org.testcontainers:mysql:1.20.1'
 
 	implementation 'com.aliyun.oss:aliyun-sdk-oss:3.17.4'
+
+	//mail전송
+	implementation 'com.squareup.okhttp3:okhttp:4.11.0'
+	implementation "org.springframework.boot:spring-boot-starter-mail"
+
 }
 
 tasks.named('test') {

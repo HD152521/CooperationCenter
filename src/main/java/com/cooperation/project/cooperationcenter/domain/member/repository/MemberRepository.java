@@ -17,6 +17,7 @@ public interface MemberRepository extends JpaRepository<Member,Long>,MemberRepos
     Boolean existsMemberByEmail(String email);
     List<Member> findTop4ByApprovalSignupFalseOrderByCreatedAtDesc();
     Page<Member> findByStatus(UserStatus status, Pageable pageable);
+    Member findMemberByEmailAndMemberName(String email, String name);
 
     long count();
     long countByStatus(UserStatus status);

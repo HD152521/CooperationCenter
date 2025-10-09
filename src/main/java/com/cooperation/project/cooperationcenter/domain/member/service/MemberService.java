@@ -8,9 +8,12 @@ import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachmen
 import com.cooperation.project.cooperationcenter.domain.file.service.FileService;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberResponse;
+import com.cooperation.project.cooperationcenter.domain.member.dto.UpdatePasswordDto;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
+import com.cooperation.project.cooperationcenter.domain.member.model.PasswordResetToken;
 import com.cooperation.project.cooperationcenter.domain.member.model.UserStatus;
 import com.cooperation.project.cooperationcenter.domain.member.repository.MemberRepository;
+import com.cooperation.project.cooperationcenter.domain.member.repository.PasswordResetTokenRepository;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerRequest;
 import com.cooperation.project.cooperationcenter.global.exception.BaseException;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
@@ -53,9 +56,11 @@ public class MemberService {
     private final MemberCookieService memberCookieService;
     private final JwtProvider jwtProvider;
     private final FileService fileService;
+    private final MailgunService mailgunService;
 
     private final MemberRepository memberRepository;
     private final AgencyRepository agencyRepository;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -75,7 +80,7 @@ public class MemberService {
 
     public void login(MemberRequest.LoginDto request,HttpServletResponse response){
         Member member = memberRepository.findMemberByEmail(request.email())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+                .orElseThrow(() -> new BaseException(ErrorCode.EMAIL_NOT_FOUND));
         checkLogin(request,member);
         //성공시 cookie
         TokenResponse tokenResponse = getTokenResponse(response,member);
@@ -85,14 +90,13 @@ public class MemberService {
 
     public void checkLogin(MemberRequest.LoginDto request, Member member){
         if (!passwordEncoder.matches(request.password(), member.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new BaseException(ErrorCode.PASSWORD_ERROR);
         }
 
         if(!member.isAccept()){
             log.warn("아직 승인되지 않은 아이디임.");
             throw new BaseException(ErrorCode.MEMBER_NOT_ACCEPTED);
         }
-
     }
 
 
@@ -178,6 +182,55 @@ public class MemberService {
             return false;
         }
     }
+
+    @Transactional
+    public void resetPassword(UpdatePasswordDto.PasswordCheckDto dto) throws Exception {
+        PasswordResetToken resetToken = passwordResetTokenRepository.findPasswordResetTokenByToken(dto.resetToken());
+        Member member = resetToken.getMember();
+
+        if(resetToken.isExpired()){
+            log.warn("사용시간이 지난 토큰임");
+            throw new BaseException(ErrorCode.INVALID_TOKEN);
+        }
+        if(resetToken.isUsed()){
+            log.warn("이미 사용된 토큰임");
+            throw new BaseException(ErrorCode.INVALID_TOKEN);
+        }
+
+        String encodedPassword =  passwordEncoder.encode(dto.newPassword());
+        member.updatePassword(encodedPassword);
+
+        memberRepository.save(member);
+    }
+
+
+    public String makeUpdatePasswordUrl(Member member){
+        PasswordResetToken token = passwordResetTokenRepository.findPasswordResetTokenByMember(member);
+        if (token != null) {
+            token.update();
+            passwordResetTokenRepository.save(token);
+        } else {
+            token = new PasswordResetToken(member);
+            passwordResetTokenRepository.save(token);
+        }
+        //fixme 도메인 수정해야함.
+        return "https://localhost:8080/member/password/reset?token=" + token.getToken();
+    }
+
+    public void sendEmail(UpdatePasswordDto.CheckEmailDto dto) throws Exception {
+        Member member = memberRepository.findMemberByEmailAndMemberName(dto.email(),dto.name());
+        String resetLink = makeUpdatePasswordUrl(member);
+        String html = "<h3>비밀번호 재설정 안내</h3>"
+                + "<p>아래 링크를 클릭하여 비밀번호를 재설정하세요:</p>"
+                + "<a href=\"" + resetLink + "\">비밀번호 재설정</a>";
+
+        mailgunService.sendHtmlMessage(
+                member.getEmail(),
+                "비밀번호 재설정 안내",
+                html
+        );
+    }
+
 
 /*
         ========================

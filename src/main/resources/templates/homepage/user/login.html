@@ -120,7 +120,7 @@
                         >비밀번호</label
                         >
                         <a
-                                href="#"
+                                href="/member/password/forgot"
                                 class="text-xs text-primary hover:text-primary-dark"
                         >
                             비밀번호 찾기
@@ -246,98 +246,107 @@
     </div>
 </footer>
 <script id="login">
-    const form = document.querySelector("form");
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.querySelector("form");
 
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault(); // 폼 기본 제출 막기
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
 
-        const loginDto = {
-            email: email,
-            password: password
-        };
+            const loginDto = { email, password };
 
-        try {
-            const response = await fetch(memberUrl+"/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(loginDto)
-            });
-
-            const responseBody = await response.json();
-
-            if (response.ok && responseBody.isSuccess) {
-                // 로그인 성공 시 처리
-                console.log("✅ 로그인 성공");
-                const modal = document.createElement("div");
-                modal.className =
-                    "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
-                modal.innerHTML = `
-      <div class="bg-white rounded-lg p-8 max-w-sm w-full mx-4 relative transform transition-all">
-      <div class="text-center">
-      <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-      <i class="ri-checkbox-circle-line text-3xl text-green-500"></i>
-      </div>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">로그인 성공!</h3>
-      <p class="text-sm text-gray-500 mb-6">환영합니다. 로그인이 완료되었습니다.</p>
-      <button type="button" class="w-full inline-flex justify-center !rounded-button px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none whitespace-nowrap">
-      확인
-      </button>
-      </div>
-      </div>
-      `;
-                document.body.appendChild(modal);
-                const confirmButton = modal.querySelector("button");
-                confirmButton.addEventListener("click", () => {
-                    modal.remove();
-                    window.location.href = "/home"; // 원하는 페이지로 리다이렉트
-                });
-                modal.addEventListener("click", (e) => {
-                    if (e.target === modal) {
-                        modal.remove();
-                        window.location.href = "/home"; // 원하는 페이지로 리다이렉트
-                    }
+            try {
+                const response = await fetch(memberUrl + "/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(loginDto)
                 });
 
+                const responseBody = await response.json();
 
-            } else {
-                // 실패 시 오류 메시지 출력
-                console.warn("❌ 로그인 실패:", responseBody.message || "알 수 없는 오류");
-                const modal = document.createElement("div");
-                modal.className =
-                    "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
-                modal.innerHTML = `
-      <div class="bg-white rounded-lg p-8 max-w-sm w-full mx-4 relative transform transition-all">
-      <div class="text-center">
-      <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-      <i class="ri-close-circle-line text-3xl text-red-500"></i>
-      </div>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">로그인 실패</h3>
-      <p class="text-sm text-gray-500 mb-6">이메일/아이디 또는 비밀번호를 확인해주세요.</p>
-      <button type="button" class="w-full inline-flex justify-center !rounded-button px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none whitespace-nowrap">
-      다시 시도
-      </button>
-      </div>
-      </div>
-      `;
-                document.body.appendChild(modal);
-                const retryButton = modal.querySelector("button");
-                retryButton.addEventListener("click", () => {
-                    modal.remove();
+                // ✅ 로그인 성공
+                if (response.ok && responseBody.isSuccess) {
+                    showModal({
+                        type: "success",
+                        title: "로그인 성공!",
+                        message: "환영합니다. 로그인이 완료되었습니다.",
+                        buttonText: "확인",
+                        onClose: () => window.location.href = "/home"
+                    });
+                    return;
+                }
+
+                // ✅ 로그인 실패 (BaseResponse.isSuccess=false)
+                console.warn("❌ 로그인 실패:", responseBody);
+
+                let errorMessage = "로그인에 실패했습니다. 잠시 후 다시 시도해주세요.";
+                console.log("responseBody:"+responseBody);
+                if (responseBody.message) errorMessage = responseBody.message;
+
+
+                showModal({
+                    type: "error",
+                    title: "로그인 실패",
+                    message: errorMessage,
+                    buttonText: "다시 시도"
                 });
-                modal.addEventListener("click", (e) => {
-                    if (e.target === modal) {
-                        modal.remove();
-                    }
+
+            } catch (err) {
+                console.error("🚨 네트워크 또는 서버 오류:", err);
+                showModal({
+                    type: "error",
+                    title: "서버 오류",
+                    message: "로그인 중 오류가 발생했습니다. 네트워크 상태를 확인해주세요.",
+                    buttonText: "확인"
                 });
             }
-        } catch (err) {
-            console.error("🚨 네트워크 또는 서버 오류:", err);
-            alert("로그인 중 오류가 발생했습니다.");
+        });
+
+        function showModal({ type, title, message, buttonText, onClose }) {
+            const modal = document.createElement("div");
+            modal.className =
+                "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+
+            const iconClass =
+                type === "success"
+                    ? "ri-checkbox-circle-line text-green-500 bg-green-100"
+                    : "ri-close-circle-line text-red-500 bg-red-100";
+
+            modal.innerHTML = `
+      <div class="bg-white rounded-lg p-8 max-w-sm w-full mx-4 relative transform transition-all">
+        <div class="text-center">
+          <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${iconClass}">
+            <i class="ri-${type === "success" ? "checkbox-circle-line" : "close-circle-line"} text-3xl"></i>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">${title}</h3>
+          <p class="text-sm text-gray-500 mb-6">${message}</p>
+          <button type="button"
+            class="w-full inline-flex justify-center !rounded-button px-4 py-2 text-sm font-medium text-white ${
+                type === "success" ? "bg-primary hover:bg-primary-dark" : "bg-red-500 hover:bg-red-600"
+            } focus:outline-none whitespace-nowrap">
+            ${buttonText}
+          </button>
+        </div>
+      </div>`;
+
+            document.body.appendChild(modal);
+
+            const button = modal.querySelector("button");
+            button.addEventListener("click", () => {
+                modal.remove();
+                if (onClose) onClose();
+            });
+
+            modal.addEventListener("click", (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                    if (onClose) onClose();
+                }
+            });
         }
     });
 </script>

@@ -106,6 +106,10 @@ public class Member extends BaseEntity {
         this.agencyPicture = file;
     }
 
+    public void updatePassword(String password){
+        this.password = password;
+    }
+
     public void setAgency(Agency agency){
         this.agency = agency;
     }
