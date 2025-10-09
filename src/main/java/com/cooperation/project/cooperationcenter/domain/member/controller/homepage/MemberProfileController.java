@@ -34,5 +34,6 @@ public class MemberProfileController {
         log.info("memberDto:{}", profile.surveys().toString());
         return profilePath+"profile";
     }
+
 }
 

@@ -163,22 +163,28 @@
                                     />
                                 </div>
                                 <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-500 mb-1">주소</label>
-
+                                    <div class="flex items-center justify-between mb-1">
+                                        <label class="block text-sm font-medium text-gray-500">주소</label>
+                                        <button
+                                                type="button"
+                                                class="text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-button transition"
+                                                onclick="openPostcode('member')"
+                                        >
+                                            한국 주소 검색
+                                        </button>
+                                    </div>
                                     <input
-                                            name="editAddress1"
                                             id="editAddress1"
                                             class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
-                                            th:value="${profileDto.member.address1}"
                                             placeholder="기본 주소"
+                                            th:value="${profileDto.member.address1}"
+                                            readonly
                                     />
-
                                     <input
-                                            name="editAddress2"
                                             id="editAddress2"
                                             class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
+                                            placeholder="상세 주소"
                                             th:value="${profileDto.member.address2}"
-                                            placeholder="상세주소"
                                     />
                                 </div>
                             </div>
@@ -313,11 +319,30 @@
                                 </div>
 
                                 <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-500 mb-1">주소</label>
-                                    <input id="editAgencyAddress1" class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
-                                           placeholder="기본 주소" th:value="${profileDto.member.agencyAddress1}">
-                                    <input id="editAgencyAddress2" class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
-                                           placeholder="상세 주소" th:value="${profileDto.member.agencyAddress2}">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <label class="block text-sm font-medium text-gray-500">주소</label>
+                                        <button
+                                                type="button"
+                                                class="text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-button transition"
+                                                onclick="openPostcode('member')"
+                                        >
+                                            한국 주소 검색
+                                        </button>
+                                    </div>
+
+                                    <input
+                                            id="editAgencyAddress1"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
+                                            placeholder="기본 주소"
+                                            th:value="${profileDto.member.agencyAddress1}"
+                                            readonly
+                                    />
+                                    <input
+                                            id="editAgencyAddress2"
+                                            class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
+                                            placeholder="상세 주소"
+                                            th:value="${profileDto.member.agencyAddress2}"
+                                    />
                                 </div>
                             </div>
                         </form>
@@ -1028,6 +1053,47 @@
             acceptPdf: false
         });
     })();
+</script>
+<div id="postcode-layer" class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] w-[360px] h-[480px] border border-gray-300 bg-white shadow-lg rounded-lg">
+    <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
+        <h4 class="font-semibold text-gray-700">주소 검색</h4>
+        <button id="closePostcode" onclick="closePostcode()" class="text-gray-500 hover:text-gray-700">
+            <i class="ri-close-line ri-lg"></i>
+        </button>
+    </div>
+    <div id="postcode-wrap" class="w-full h-[400px]"></div>
+</div>
+
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+    // address field
+    const addrEl = document.getElementById('editAddress1');
+    const agencyAddrEl = document.getElementById('editAgencyAddress1');
+    const layer = document.getElementById('postcode-layer');
+    const wrap = document.getElementById('postcode-wrap');
+
+    function openPostcode(type) {
+        layer.classList.remove('hidden');
+        new daum.Postcode({
+            oncomplete: function(data) {
+                const addr = data.roadAddress || data.jibunAddress;
+                if (type === 'member') {
+                    addrEl.value = addr;
+                    document.getElementById('editAddress2').focus();
+                } else if (type === 'agency') {
+                    agencyAddrEl.value = addr;
+                    document.getElementById('editAgencyAddress2').focus();
+                }
+                closePostcode();
+            },
+            width: '100%',
+            height: '100%'
+        }).embed(wrap);
+    }
+
+    function closePostcode() {
+        layer.classList.add('hidden');
+    }
 </script>
 </body>
 </html>

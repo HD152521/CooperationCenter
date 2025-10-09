@@ -54,7 +54,7 @@ public class SecurityConfig {
                                         "/member/login","/member/logout", "/admin/login","/agency/list").permitAll()
                                 .requestMatchers("/api/v1/member/**","/api/v1/file/img/**").permitAll()
                                 .requestMatchers("/school/**","/api/v1/file/school/**").permitAll()
-                                .requestMatchers("/check/**").permitAll()
+                                .requestMatchers("/check/**","/member/password/**","/api/v1/member/reset/**").permitAll()
 
 
                                 //note 로그인한 사용자

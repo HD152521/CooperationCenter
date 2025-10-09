@@ -2,6 +2,7 @@ package com.cooperation.project.cooperationcenter.domain.member.controller.homep
 
 
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
+import com.cooperation.project.cooperationcenter.domain.member.dto.UpdatePasswordDto;
 import com.cooperation.project.cooperationcenter.domain.member.service.MemberService;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
@@ -50,14 +51,9 @@ public class MemberRestController {
 
     @PostMapping("/login")
     public BaseResponse<?> login(@RequestBody MemberRequest.LoginDto request, HttpServletResponse response){
-        try{
             memberService.login(request,response);
             log.info("loginSuccess");
             return BaseResponse.onSuccess("success");
-        }catch (Exception e){
-            log.warn(e.getMessage());
-            return BaseResponse.onFailure(ErrorCode.BAD_REQUEST,null);
-        }
     }
 
     @PostMapping("/logout")
@@ -73,6 +69,21 @@ public class MemberRestController {
     ) throws IOException {
         log.info("come refresh");
         return memberService.updateRefreshToken(request,response);
+    }
+
+    //fixme 확인하면 비밀번호 수정하는 HTML이어야함. 수정 필요
+    @PostMapping("/reset/email")
+    public BaseResponse<?> sendPasswordResetEmail(@RequestBody UpdatePasswordDto.CheckEmailDto request) throws Exception {
+        log.info("request:{}",request.toString());
+        memberService.sendEmail(request);
+        return BaseResponse.onSuccess("success");
+    }
+
+    @PostMapping("/reset/password")
+    public BaseResponse<?> updatePassword(@RequestBody UpdatePasswordDto.PasswordCheckDto request) throws Exception {
+        log.info("request:{}",request.toString());
+        memberService.resetPassword(request);
+        return BaseResponse.onSuccess("success");
     }
 
 }

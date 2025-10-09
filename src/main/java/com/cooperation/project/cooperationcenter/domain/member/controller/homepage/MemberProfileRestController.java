@@ -2,6 +2,8 @@ package com.cooperation.project.cooperationcenter.domain.member.controller.homep
 
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
 import com.cooperation.project.cooperationcenter.domain.member.dto.Profile;
+import com.cooperation.project.cooperationcenter.domain.member.dto.UpdatePasswordDto;
+import com.cooperation.project.cooperationcenter.domain.member.service.MemberService;
 import com.cooperation.project.cooperationcenter.domain.member.service.ProfileService;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,22 +19,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class MemberProfileRestController {
 
     public final ProfileService profileService;
+    private final MemberService memberService;
 
     @PatchMapping("/member")
     public BaseResponse<?> updateMemberInfo(@RequestBody Profile.MemberDto request, @AuthenticationPrincipal MemberDetails memberDetails){
+
         log.info("request:{}",request.toString());
         profileService.updateMember(request,memberDetails);
-        return BaseResponse.onSuccess("success");
-    }
-
-
-    @PostMapping
-    public BaseResponse<?> makeUpdatePasswordUrl(){
-        return BaseResponse.onSuccess("success");
-    }
-
-    @PatchMapping("/reset/password")
-    public BaseResponse<?> updatePassword(){
         return BaseResponse.onSuccess("success");
     }
 
