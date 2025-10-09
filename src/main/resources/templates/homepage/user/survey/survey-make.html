@@ -588,18 +588,7 @@
                                 </h4>
                             </div>
                             <div class="p-2 max-h-64 overflow-y-auto" data-options-container="1">
-                                <div class="hierarchy-option selected" data-option-id="1-1">
-                                    <input type="text" value="옵션1" placeholder="옵션명 입력">
-                                    <button class="absolute top-2 right-2 w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100" data-delete-option>
-                                        <i class="ri-close-line text-xs"></i>
-                                    </button>
-                                </div>
-                                <div class="hierarchy-option" data-option-id="1-2">
-                                    <input type="text" value="옵션2" placeholder="옵션명 입력">
-                                    <button class="absolute top-2 right-2 w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100" data-delete-option>
-                                        <i class="ri-close-line text-xs"></i>
-                                    </button>
-                                </div>
+
                             </div>
                         </div>
 
@@ -614,12 +603,7 @@
                                 </h4>
                             </div>
                             <div class="p-2 max-h-64 overflow-y-auto" data-options-container="2">
-<!--                                <div class="hierarchy-option selected" data-option-id="2-1" data-parent="1-1">-->
-<!--                                    <input type="text" value="컴퓨터공학과" placeholder="옵션명 입력">-->
-<!--                                    <button class="absolute top-2 right-2 w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100" data-delete-option>-->
-<!--                                        <i class="ri-close-line text-xs"></i>-->
-<!--                                    </button>-->
-<!--                                </div>-->
+
                             </div>
                         </div>
 
@@ -634,12 +618,7 @@
                                 </h4>
                             </div>
                             <div class="p-2 max-h-64 overflow-y-auto" data-options-container="3">
-<!--                                <div class="hierarchy-option selected" data-option-id="3-1" data-parent="2-1">-->
-<!--                                    <input type="text" value="소프트웨어공학" placeholder="옵션명 입력">-->
-<!--                                    <button class="absolute top-2 right-2 w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100" data-delete-option>-->
-<!--                                        <i class="ri-close-line text-xs"></i>-->
-<!--                                    </button>-->
-<!--                                </div>-->
+
                             </div>
                         </div>
                     </div>
@@ -831,19 +810,16 @@
 
         function initHierarchy(questionId) {
             hierarchyStore[questionId] = {
-                firstHierarchyData: [
-                    { id: "1-1", text: "옵션" },
-                    { id: "1-2", text: "옵션" }
-                ],
+                firstHierarchyData: [],
                 hierarchyData: {},
                 hierarchySubData: {},
                 selectedOptions: {
-                    1: "1-1",
+                    1: null,
                     2: null,
                     3: null,
                 },
                 hierarchyOptionCount: {
-                    1: 2,
+                    1: 0,
                     2: 0,
                     3: 0,
                 }
@@ -851,7 +827,7 @@
         }window.initHierarchy = initHierarchy;
 
         function getStore(questionId) {
-            console.log("en=ter");
+            console.log("enter");
             if (!hierarchyStore[questionId]) {
                 initHierarchy(questionId);
             }
@@ -894,7 +870,6 @@
                 const currentSelectedId = store.selectedOptions[level];
                 const allOptions = container.querySelectorAll(".hierarchy-option");
                 let selectedFound = false;
-                console.log("test1");
                 allOptions.forEach(opt => {
                     const optId = opt.getAttribute("data-option-id");
                     if (optId === currentSelectedId) {
@@ -902,7 +877,6 @@
                         selectedFound = true;
                     }
                 });
-                console.log("test2");
                 // 선택된 게 없으면 첫 번째를 기본 선택으로
                 if (!selectedFound) {
                     const firstOption = container.querySelector(".hierarchy-option");
@@ -911,8 +885,6 @@
                         store.selectedOptions[level] = firstOption.getAttribute("data-option-id");
                     }
                 }
-
-                console.log("ㅇ나요");
                 // 다음 단계 업데이트
                 if (level < 3) {
                     const questionContainer = container.closest(".question-container");
@@ -939,31 +911,39 @@
                 !event.target.closest("button") &&
                 !event.target.matches("input")
             ) {
+                // ✅ 현재 column(계층)을 정확히 찾기
                 const levelElement = option.closest("[data-level]");
                 const level = parseInt(levelElement.getAttribute("data-level"));
                 const questionContainer = option.closest(".question-container");
-                const container = questionContainer.querySelector(`[data-options-container="${level}"]`);
+
+                // ✅ container를 column 내부에서 찾기 (핵심 수정)
+                const container = levelElement.querySelector(`[data-options-container="${level}"]`);
+
                 const questionId = questionContainer.getAttribute("data-question-id");
                 if (!levelElement || !container) return;
-
 
                 const optionId = option.getAttribute("data-option-id");
                 const store = getStore(questionId);
 
+                // ✅ 선택 상태 갱신
                 container.querySelectorAll(".hierarchy-option").forEach((opt) => {
                     opt.classList.remove("selected");
                 });
                 option.classList.add("selected");
 
                 store.selectedOptions[level] = optionId;
-                console.log("secelt level:"+level);
-                console.log("secelt optionId:"+optionId);
-                const tmpContainer = questionContainer.querySelectorAll(`[data-options-container]`);
-                const nowContainer = questionContainer.querySelector(`[data-options-container="${level}"]`);
-                if(level<3){
-                    updateHierarchyColumn(level+1, optionId, tmpContainer[level], questionId);
-                }
+                console.log(`✅ 선택됨: level=${level}, optionId=${optionId}`);
 
+                // ✅ 다음 단계 갱신
+                if (level < 3) {
+                    const nextColumn = questionContainer.querySelector(
+                        `[data-level="${level + 1}"]`
+                    );
+                    const nextContainer = nextColumn.querySelector(
+                        `[data-options-container="${level + 1}"]`
+                    );
+                    updateHierarchyColumn(level + 1, optionId, nextContainer, questionId);
+                }
             }
         });
 
@@ -983,6 +963,7 @@
 
                 if (level === 1) {
                     store.firstHierarchyData.push({ id: newOptionId, text: newOptionText });
+                    store.hierarchyOptionCount[level]++;
                     updateHierarchyColumn(level, null, container, questionId);
                 } else {
                     const parentId = store.selectedOptions[level - 1];

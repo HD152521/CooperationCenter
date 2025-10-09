@@ -3,8 +3,10 @@ package com.cooperation.project.cooperationcenter.domain.oss;
 import com.aliyun.oss.HttpMethod;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.model.GeneratePresignedUrlRequest;
+import com.aliyun.oss.model.OSSObject;
 import com.aliyun.oss.model.ObjectMetadata;
 import com.beust.jcommander.internal.Nullable;
+import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +27,6 @@ public class OssService {
     private final OSS oss;
     @Value("${oss.bucket}") private String bucket;
 
-    /** 파일을 로컬에 저장하지 않고 바로 업로드 */
     public String upload(String keyPrefix, MultipartFile file) {
         try (InputStream in = file.getInputStream()) {
             // 업로드될 키(버킷 내부 경로) 생성
@@ -93,4 +94,19 @@ public class OssService {
 
         return oss.generatePresignedUrl(req);
     }
+
+    public boolean isFileExist(FileAttachment file) {
+        boolean result = oss.doesObjectExist(bucket, file.getPath());
+        log.info("object isExist:{}",result);
+        return result;
+    }
+
+
+    public OSSObject getObject(FileAttachment file){
+        log.info("getting object...");
+        return oss.getObject(bucket, file.getPath());
+    }
+
+
+
 }

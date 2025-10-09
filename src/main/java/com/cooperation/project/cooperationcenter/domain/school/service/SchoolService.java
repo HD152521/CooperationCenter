@@ -50,7 +50,7 @@ public class SchoolService {
         if(schoolBoard.getType().equals(SchoolBoard.BoardType.INTRO)){
             IntroPost introPost = IntroPost.builder()
                     .title(schoolBoard.getBoardTitle())
-                    .content(null)
+                    .content("introductionTemplate")
                     .schoolBoard(schoolBoard)
                     .build();
             schoolBoard.setIntroPost(introPost);

@@ -218,8 +218,14 @@
                         </div>
 
                         <!-- FILE -->
-                        <div th:if="${answerLog.questions[an.questionId - 1].type == 'FILE' or answerLog.questions[an.questionId - 1].type == 'IMAGE'}">
-                            <div class="bg-gray-50 p-4 rounded-lg uploaded-file"
+                        <div th:if="${answerLog.questions[an.questionId - 1].type == 'FILE'}">
+                            <div class="bg-gray-50 p-4 rounded-lg uploaded-pdf"
+                                 th:attr="data-fullname=${an.answer}">
+                            </div>
+                        </div>
+
+                        <div th:if="${answerLog.questions[an.questionId - 1].type == 'IMAGE'}">
+                            <div class="bg-gray-50 p-4 rounded-lg uploaded-image"
                                  th:attr="data-fullname=${an.answer}">
                             </div>
                         </div>
@@ -267,17 +273,46 @@
         return { uuid, filename };
     }
 
-    document.querySelectorAll('.uploaded-file').forEach(div => {
+    document.querySelectorAll('.uploaded-pdf').forEach(div => {
         const fullName = div.dataset.fullname;
         const { uuid, filename } = parseUuidAndFilename(fullName);
 
+        // PDF 미리보기 블록
+        const container = document.createElement("div");
+        container.className = "flex flex-col items-center justify-center text-gray-500 border border-gray-200 rounded-lg p-4 bg-gray-50";
+
+        const icon = document.createElement("i");
+        icon.className = "ri-file-pdf-2-line text-5xl mb-2 text-red-500";
+
         const link = document.createElement("a");
-        link.href = `${fileUrl}/survey/${uuid}`;
-        link.textContent = filename || '파일 다운로드';
+        link.href = `${fileUrl}/pdf/survey/${uuid}`;
+        link.textContent = filename ? `${filename} (미리보기)` : "PDF 미리보기";
         link.className = "text-sm text-blue-600 underline";
         link.target = "_blank";
 
-        div.appendChild(link);
+        container.appendChild(icon);
+        container.appendChild(link);
+
+        div.innerHTML = ""; // 기존 내용 제거
+        div.appendChild(container);
+    });
+
+    document.querySelectorAll('.uploaded-image').forEach(div => {
+        const fullName = div.dataset.fullname;
+        const { uuid, filename } = parseUuidAndFilename(fullName);
+
+        // 이미지 미리보기
+        const container = document.createElement("div");
+        container.className = "border border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center aspect-[4/3]";
+
+        const img = document.createElement("img");
+        img.src = `${fileUrl}/survey/${uuid}`;
+        img.alt = filename || "이미지 미리보기";
+        img.className = "max-h-full max-w-full object-contain";
+
+        container.appendChild(img);
+        div.innerHTML = "";
+        div.appendChild(container);
     });
 </script>
 </body>

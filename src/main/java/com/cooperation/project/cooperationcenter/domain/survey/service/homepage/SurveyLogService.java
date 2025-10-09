@@ -1,6 +1,8 @@
 package com.cooperation.project.cooperationcenter.domain.survey.service.homepage;
 
+import com.aliyun.oss.model.OSSObject;
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
+import com.cooperation.project.cooperationcenter.domain.oss.OssService;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerResponse;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.LogCsv;
 import com.cooperation.project.cooperationcenter.domain.survey.model.*;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,6 +38,7 @@ public class SurveyLogService {
     private final SurveyFindService surveyFindService;
     private final String origin = "http://localhost:8080/api/v1/file/survey/";
     private final AnswerRepository answerRepository;
+    private final OssService ossService;
 
     public AnswerResponse.AnswerPagedDto getAnswerLog(String surveyId, Pageable pageable){
         Survey survey = surveyFindService.getSurveyFromId(surveyId);
@@ -197,6 +201,7 @@ public class SurveyLogService {
     }
 
     public ResponseEntity<byte[]> extractFileStudent(String surveyId){
+        log.info("학생 폴더 출력 start...");
         Survey survey = surveyFindService.getSurveyFromId(surveyId);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
@@ -209,31 +214,39 @@ public class SurveyLogService {
                 List<Answer> answers = log.getAnswers();
 
                 for (Answer answer : answers) {
+                    System.out.println("teset: "+answer.getAnswerType());
                     if(!(answer.getAnswerType().equals(QuestionType.FILE)||answer.getAnswerType().equals(QuestionType.IMAGE))) continue;
 
                     FileAttachment file = answer.getSurveyFile();
-                    if (file == null) continue;
+                    System.out.println("filename:"+file.getStoredName());
 
-                    Path path = Paths.get(file.getPath()).resolve(file.getStoredName());
-                    if (!Files.exists(path)) continue;
+                    if(!ossService.isFileExist(file)){
+                        System.out.println("해당 파일 없음");
+                        continue;
+                    }
+
 
                     String fileName = "Q" + answer.getQuestionId() + "_" + file.getOriginalName();
                     String zipEntryName = logFolder + fileName;
-
                     zos.putNextEntry(new ZipEntry(zipEntryName));
-                    Files.copy(path, zos);
+
+                    try (OSSObject ossObject = ossService.getObject(file);
+                         InputStream inputStream = ossObject.getObjectContent()) {
+                        inputStream.transferTo(zos);
+                    }
                     zos.closeEntry();
                 }
-
                 logIndex++;
             }
-
             zos.finish();
+
         } catch (IOException e) {
+            log.warn(e.getMessage());
             throw new RuntimeException(e);
         }
 
         byte[] zipBytes = baos.toByteArray();
+        log.info("zip 생성 완료");
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + surveyId + "_logs.zip\"")
@@ -243,6 +256,7 @@ public class SurveyLogService {
     }
 
     public ResponseEntity<byte[]> extractFileSurvey(String surveyId){
+        log.info("설문조사 폴더 출력 start...");
         Survey survey =surveyFindService.getSurveyFromId(surveyId);;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
@@ -256,22 +270,32 @@ public class SurveyLogService {
 
                 int index = 1;
                 for (FileAttachment file : files) {
-                    Path path = Paths.get(file.getPath()).resolve(file.getStoredName());
-                    if (!Files.exists(path)) continue;
+
+                    if(!ossService.isFileExist(file)){
+                        System.out.println("해당 파일 없음");
+                        continue;
+                    }
 
                     String zipEntryName = "Q" + question.getQuestionOrder() + "/" + index + "_" + file.getOriginalName();
                     zos.putNextEntry(new ZipEntry(zipEntryName));
-                    Files.copy(path, zos);
+
+                    try (OSSObject ossObject = ossService.getObject(file);
+                         InputStream inputStream = ossObject.getObjectContent()) {
+                        inputStream.transferTo(zos);
+                    }
+
                     zos.closeEntry();
                     index++;
                 }
             }
             zos.finish(); // 명시적 종료
         } catch (IOException e) {
+            log.warn(e.getMessage());
             throw new RuntimeException(e);
         }
 
         byte[] zipBytes = baos.toByteArray();
+        log.info("zip 생성 완료");
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + surveyId + ".zip\"")
