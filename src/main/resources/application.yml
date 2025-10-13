@@ -34,7 +34,7 @@ spring:
 
 
 server:
-  port: ${PORT:8080}
+  port: ${PORT:8081}
   servlet:
     encoding:
       enabled: true
@@ -45,3 +45,8 @@ mailgun:
   domain: ${MALIGUN_DOMAIN}
   api-key: ${MALIGUN_APIKEY}
   from-email: ${MALIGUN_FROMEMAIL}
+
+tencent:
+  map:
+    suggestion-url: ${TENCENT_URL}
+    api-key: ${TENCENT_API_KEY}

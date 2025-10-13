@@ -214,7 +214,7 @@ public class MemberService {
             passwordResetTokenRepository.save(token);
         }
         //fixme 도메인 수정해야함.
-        return "https://localhost:8080/member/password/reset?token=" + token.getToken();
+        return "https://localhost:8081/member/password/reset?token=" + token.getToken();
     }
 
     public void sendEmail(UpdatePasswordDto.CheckEmailDto dto) throws Exception {
