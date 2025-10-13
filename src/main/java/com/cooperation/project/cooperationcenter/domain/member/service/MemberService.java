@@ -220,14 +220,11 @@ public class MemberService {
     public void sendEmail(UpdatePasswordDto.CheckEmailDto dto) throws Exception {
         Member member = memberRepository.findMemberByEmailAndMemberName(dto.email(),dto.name());
         String resetLink = makeUpdatePasswordUrl(member);
-        String html = "<h3>비밀번호 재설정 안내</h3>"
-                + "<p>아래 링크를 클릭하여 비밀번호를 재설정하세요:</p>"
-                + "<a href=\"" + resetLink + "\">비밀번호 재설정</a>";
 
         mailgunService.sendHtmlMessage(
                 member.getEmail(),
                 "비밀번호 재설정 안내",
-                html
+                resetLink
         );
     }
 
