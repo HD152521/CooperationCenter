@@ -57,6 +57,7 @@ public class MemberService {
     private final JwtProvider jwtProvider;
     private final FileService fileService;
     private final MailgunService mailgunService;
+    private final LoginLogService loginLogService;
 
     private final MemberRepository memberRepository;
     private final AgencyRepository agencyRepository;
@@ -78,14 +79,18 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    public void login(MemberRequest.LoginDto request,HttpServletResponse response){
-        Member member = memberRepository.findMemberByEmail(request.email())
+    public void login(MemberRequest.LoginDto requestDto,HttpServletResponse response,HttpServletRequest request){
+        Member member = memberRepository.findMemberByEmail(requestDto.email())
                 .orElseThrow(() -> new BaseException(ErrorCode.EMAIL_NOT_FOUND));
-        checkLogin(request,member);
+        checkLogin(requestDto,member);
         //성공시 cookie
         TokenResponse tokenResponse = getTokenResponse(response,member);
         memberCookieService.addTokenCookies(response,tokenResponse);
         log.info("login success");
+
+        //로그인 정보 기록
+        loginLogService.recordLogin(member,true,request);
+
     }
 
     public void checkLogin(MemberRequest.LoginDto request, Member member){

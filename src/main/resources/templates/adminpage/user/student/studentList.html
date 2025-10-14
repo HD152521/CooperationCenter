@@ -347,15 +347,17 @@
                     </thead>
                     <tbody id="student-table-body">
                     <tr class="student-table-row"
-                        th:each="s : ${students}"
+                        th:each="s, stat : ${students}"
                         th:attr="
-        data-student-id=${s.studentId},
-        data-chinese-name=${s.chineseName},
-        data-english-name=${s.englishName},
-        data-birth-date=${#temporals.format(s.birthDate,'yyyy-MM-dd')},
-        data-gender=${s.gender != null ? s.gender.name() : ''}
+                                data-student-id=${s.studentId},
+                                data-chinese-name=${s.chineseName},
+                                data-english-name=${s.englishName},
+                                data-birth-date=${#temporals.format(s.birthDate,'yyyy-MM-dd')},
+                                data-gender=${s.gender != null ? s.gender.name() : ''}
       ">
-                        <td class="px-3 py-2 text-gray-300">#<span >1</span></td>
+                        <td class="px-3 py-2 text-gray-300">
+                            #<span th:text="${students.number * students.size + stat.index + 1}">1</span>
+                        </td>
 
                         <td class="px-3 py-2 text-white font-medium"
                             th:text="${s.chineseName ?: '-'}">-</td>

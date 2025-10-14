@@ -50,8 +50,8 @@ public class MemberRestController {
     }
 
     @PostMapping("/login")
-    public BaseResponse<?> login(@RequestBody MemberRequest.LoginDto request, HttpServletResponse response){
-            memberService.login(request,response);
+    public BaseResponse<?> login(@RequestBody MemberRequest.LoginDto requestDto, HttpServletResponse response,HttpServletRequest request){
+            memberService.login(requestDto,response,request);
             log.info("loginSuccess");
             return BaseResponse.onSuccess("success");
     }
