@@ -10,6 +10,13 @@ spring:
     show-sql: false
     properties:
       hibernate.format_sql: false
+
+#    show-sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
+#        dialect: org.hibernate.dialect.MySQL8Dialect
+
   mysql:
     charset: utf8mb4
     collation: utf8mb4_unicode_ci
@@ -22,3 +29,8 @@ oss:
   bucket: ${OSS_ACCESS_BUCKET_NAME}
   accessKeyId: ${OSS_ACCESS_KEY_ID}
   accessKeySecret: ${OSS_ACCESS_KEY_SECRET}
+
+
+app:
+  origin:
+    url: "http://localhost:8081"

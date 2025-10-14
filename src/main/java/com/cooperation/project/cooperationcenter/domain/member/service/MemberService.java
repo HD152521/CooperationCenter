@@ -8,9 +8,12 @@ import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachmen
 import com.cooperation.project.cooperationcenter.domain.file.service.FileService;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberResponse;
+import com.cooperation.project.cooperationcenter.domain.member.dto.UpdatePasswordDto;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
+import com.cooperation.project.cooperationcenter.domain.member.model.PasswordResetToken;
 import com.cooperation.project.cooperationcenter.domain.member.model.UserStatus;
 import com.cooperation.project.cooperationcenter.domain.member.repository.MemberRepository;
+import com.cooperation.project.cooperationcenter.domain.member.repository.PasswordResetTokenRepository;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerRequest;
 import com.cooperation.project.cooperationcenter.global.exception.BaseException;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
@@ -29,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -53,12 +57,18 @@ public class MemberService {
     private final MemberCookieService memberCookieService;
     private final JwtProvider jwtProvider;
     private final FileService fileService;
+    private final MailgunService mailgunService;
+    private final LoginLogService loginLogService;
 
     private final MemberRepository memberRepository;
     private final AgencyRepository agencyRepository;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Value("${app.origin.url}")
+    private String origin;
 
     @Transactional
     public void signup(String data, MultipartFile agencyPicture,MultipartFile businessCertificate) throws Exception{
@@ -73,26 +83,29 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    public void login(MemberRequest.LoginDto request,HttpServletResponse response){
-        Member member = memberRepository.findMemberByEmail(request.email())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
-        checkLogin(request,member);
+    public void login(MemberRequest.LoginDto requestDto,HttpServletResponse response,HttpServletRequest request){
+        Member member = memberRepository.findMemberByEmail(requestDto.email())
+                .orElseThrow(() -> new BaseException(ErrorCode.EMAIL_NOT_FOUND));
+        checkLogin(requestDto,member);
         //성공시 cookie
         TokenResponse tokenResponse = getTokenResponse(response,member);
         memberCookieService.addTokenCookies(response,tokenResponse);
         log.info("login success");
+
+        //로그인 정보 기록
+        loginLogService.recordLogin(member,true,request);
+
     }
 
     public void checkLogin(MemberRequest.LoginDto request, Member member){
         if (!passwordEncoder.matches(request.password(), member.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new BaseException(ErrorCode.PASSWORD_ERROR);
         }
 
         if(!member.isAccept()){
             log.warn("아직 승인되지 않은 아이디임.");
             throw new BaseException(ErrorCode.MEMBER_NOT_ACCEPTED);
         }
-
     }
 
 
@@ -171,12 +184,59 @@ public class MemberService {
 
     public boolean isUsernameTaken(String username){
         try{
+            log.info("username:{}",username);
             return memberRepository.existsMemberByEmail(username);
         }catch (Exception e){
             log.warn(e.getMessage());
             return false;
         }
     }
+
+    @Transactional
+    public void resetPassword(UpdatePasswordDto.PasswordCheckDto dto) throws Exception {
+        PasswordResetToken resetToken = passwordResetTokenRepository.findPasswordResetTokenByToken(dto.resetToken());
+        Member member = resetToken.getMember();
+
+        if(resetToken.isExpired()){
+            log.warn("사용시간이 지난 토큰임");
+            throw new BaseException(ErrorCode.INVALID_TOKEN);
+        }
+        if(resetToken.isUsed()){
+            log.warn("이미 사용된 토큰임");
+            throw new BaseException(ErrorCode.INVALID_TOKEN);
+        }
+
+        String encodedPassword =  passwordEncoder.encode(dto.newPassword());
+        member.updatePassword(encodedPassword);
+
+        memberRepository.save(member);
+    }
+
+
+    public String makeUpdatePasswordUrl(Member member){
+        PasswordResetToken token = passwordResetTokenRepository.findPasswordResetTokenByMember(member);
+        if (token != null) {
+            token.update();
+            passwordResetTokenRepository.save(token);
+        } else {
+            token = new PasswordResetToken(member);
+            passwordResetTokenRepository.save(token);
+        }
+        //fixme 도메인 수정해야함.
+        return origin+"/member/password/reset?token=" + token.getToken();
+    }
+
+    public void sendEmail(UpdatePasswordDto.CheckEmailDto dto) throws Exception {
+        Member member = memberRepository.findMemberByEmailAndMemberName(dto.email(),dto.name());
+        String resetLink = makeUpdatePasswordUrl(member);
+
+        mailgunService.sendHtmlMessage(
+                member.getEmail(),
+                "비밀번호 재설정 안내",
+                resetLink
+        );
+    }
+
 
 /*
         ========================

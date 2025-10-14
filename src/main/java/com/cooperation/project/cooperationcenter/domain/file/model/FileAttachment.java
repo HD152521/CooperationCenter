@@ -81,7 +81,7 @@ public class FileAttachment extends BaseEntity {
         this.fileId = UUID.randomUUID().toString();
         this.originalName = safeName;
 
-        this.storedName = this.fileId+"_"+originalName+"_"+now;
+        this.storedName = this.fileId+"_"+now+"_"+originalName;
         this.path = path+"/"+this.storedName;
         this.size = file.getSize(); //byte 단위임 -> kb하려면 /1024
 

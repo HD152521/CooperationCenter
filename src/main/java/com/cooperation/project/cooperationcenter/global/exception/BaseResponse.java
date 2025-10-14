@@ -1,5 +1,7 @@
 package com.cooperation.project.cooperationcenter.global.exception;
 
+import com.cooperation.project.cooperationcenter.global.exception.codes.BaseCode;
+import com.cooperation.project.cooperationcenter.global.exception.codes.reason.Reason;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -40,6 +42,11 @@ public class BaseResponse<T> {
 
     public static <T> BaseResponse<T> onFailure(ErrorCode errorCode, T data) {
         return new BaseResponse<>(false, errorCode.getCode(), errorCode.getMessage(), data);
+    }
+
+    public static <T> BaseResponse<T> onFailure(BaseCode baseCode, T data) {
+        Reason.ReasonDto reason = baseCode.getReasonHttpStatus();
+        return new BaseResponse<>(false, reason.getCode(), reason.getMessage(), data);
     }
 
 }
