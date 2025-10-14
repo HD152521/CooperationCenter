@@ -32,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -65,6 +66,9 @@ public class MemberService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Value("${app.origin.url}")
+    private String origin;
 
     @Transactional
     public void signup(String data, MultipartFile agencyPicture,MultipartFile businessCertificate) throws Exception{
@@ -219,7 +223,7 @@ public class MemberService {
             passwordResetTokenRepository.save(token);
         }
         //fixme 도메인 수정해야함.
-        return "https://localhost:8081/member/password/reset?token=" + token.getToken();
+        return origin+"/member/password/reset?token=" + token.getToken();
     }
 
     public void sendEmail(UpdatePasswordDto.CheckEmailDto dto) throws Exception {

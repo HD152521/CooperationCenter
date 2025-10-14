@@ -29,3 +29,8 @@ oss:
   bucket: ${OSS_ACCESS_BUCKET_NAME}
   accessKeyId: ${OSS_ACCESS_KEY_ID}
   accessKeySecret: ${OSS_ACCESS_KEY_SECRET}
+
+
+app:
+  origin:
+    url: "http://localhost:8081"

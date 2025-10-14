@@ -165,13 +165,24 @@
                                 <div class="md:col-span-2">
                                     <div class="flex items-center justify-between mb-1">
                                         <label class="block text-sm font-medium text-gray-500">주소</label>
-                                        <button
-                                                type="button"
-                                                class="text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-button transition"
-                                                onclick="openPostcode('member')"
-                                        >
-                                            한국 주소 검색
-                                        </button>
+
+                                        <div class="flex items-center space-x-2 ml-auto">
+                                            <button
+                                                    type="button"
+                                                    id="openChineseModal"
+                                                    class="whitespace-nowrap !rounded-button bg-blue-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 text-sm font-medium transition openChineseModal"
+                                                    data-target="address"
+                                            >
+                                                중국 주소 검색
+                                            </button>
+                                            <button
+                                                    type="button"
+                                                    class="text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-button transition"
+                                                    onclick="openPostcode('member')"
+                                            >
+                                                한국 주소 검색
+                                            </button>
+                                        </div>
                                     </div>
                                     <input
                                             id="editAddress1"
@@ -321,13 +332,23 @@
                                 <div class="md:col-span-2">
                                     <div class="flex items-center justify-between mb-1">
                                         <label class="block text-sm font-medium text-gray-500">주소</label>
-                                        <button
-                                                type="button"
-                                                class="text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-button transition"
-                                                onclick="openPostcode('member')"
-                                        >
-                                            한국 주소 검색
-                                        </button>
+                                        <div class="flex items-center space-x-2 ml-auto">
+                                            <button
+                                                    type="button"
+                                                    class="whitespace-nowrap !rounded-button bg-blue-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 text-sm font-medium transition openChineseModal"
+                                                    data-target="agency"
+                                            >
+                                                중국 주소 검색
+                                            </button>
+
+                                            <button
+                                                    type="button"
+                                                    class="text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-button transition"
+                                                    onclick="openPostcode('member')"
+                                            >
+                                                한국 주소 검색
+                                            </button>
+                                        </div>
                                     </div>
 
                                     <input
@@ -1072,5 +1093,125 @@
         layer.classList.add('hidden');
     }
 </script>
+<div id="chinese-address-modal"
+     class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2
+            z-[9999] w-[400px] bg-white border border-gray-300 shadow-lg rounded-lg p-5">
+    <div class="flex justify-between items-center mb-4 border-b pb-2">
+        <h4 class="text-lg font-semibold text-gray-700">중국 주소 검색</h4>
+        <button id="closeChineseModal" class="text-gray-500 hover:text-gray-700">
+            <i class="ri-close-line ri-lg"></i>
+        </button>
+    </div>
+
+    <input
+            type="text"
+            id="chineseAddressInput"
+            placeholder="예: 上海市徐汇区漕溪北路333号"
+            class="w-full border border-gray-300 rounded-button px-4 py-2 mb-3 focus:ring-2 focus:ring-primary outline-none"
+    />
+
+    <ul id="chineseAddressList"
+        class="border border-gray-200 rounded-lg max-h-60 overflow-y-auto hidden">
+    </ul>
+</div>
+
+
+<script id="chinese-address-modal-script">
+    document.addEventListener("DOMContentLoaded", () => {
+        const modal = document.getElementById("chinese-address-modal");
+        const closeBtn = document.getElementById("closeChineseModal");
+        const input = document.getElementById("chineseAddressInput");
+        const list = document.getElementById("chineseAddressList");
+
+        // 여러 버튼(회원 / 유학원) 공용
+        const openBtns = document.querySelectorAll(".openChineseModal");
+        let currentTarget = null;
+
+        // 모달 열기
+        openBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                currentTarget = btn.dataset.target; // "address" or "agency"
+                modal.classList.remove("hidden");
+                input.value = "";
+                list.innerHTML = "";
+                list.classList.add("hidden");
+                input.focus();
+            });
+        });
+
+        // 모달 닫기
+        closeBtn.addEventListener("click", () => {
+            modal.classList.add("hidden");
+            list.innerHTML = "";
+            list.classList.add("hidden");
+        });
+
+        // 입력 시 자동완성 검색 (디바운스)
+        let debounceTimer;
+        input.addEventListener("input", () => {
+            const keyword = input.value.trim();
+            if (!keyword) {
+                list.classList.add("hidden");
+                return;
+            }
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => fetchSuggestions(keyword), 300);
+        });
+
+        async function fetchSuggestions(keyword) {
+            const url = `/api/v1/tencent/address?keyword=${encodeURIComponent(keyword)}`;
+            try {
+                const resp = await fetch(url);
+                const data = await resp.json();
+                console.log("Tencent API result:", data);
+
+                if (!data || !data.data || data.data.length === 0) {
+                    list.classList.add("hidden");
+                    return;
+                }
+
+                list.classList.remove("hidden");
+                list.innerHTML = data.data
+                    .map(
+                        (item, i) => `
+                        <li data-index="${i}" class="px-3 py-2 hover:bg-gray-100 cursor-pointer border-b last:border-0">
+                            <span class="font-medium">${item.title}</span>
+                            <p class="text-sm text-gray-500">${item.address}</p>
+                        </li>`
+                    )
+                    .join("");
+
+                list.querySelectorAll("li").forEach(li => {
+                    li.addEventListener("click", () => {
+                        const idx = li.dataset.index;
+                        const sel = data.data[idx];
+                        applyChineseAddress(sel);
+                    });
+                });
+            } catch (err) {
+                console.error("Tencent Suggestion API Error:", err);
+            }
+        }
+
+        // 선택 시 address or agency에 값 채우기
+        function applyChineseAddress(sel) {
+            const addr1 = `${sel.province || ""} ${sel.city || ""} ${sel.district || ""}`.trim();
+            const addr2 = `${sel.title || ""} ${sel.address || ""}`.trim();
+
+            if (currentTarget === "address") {
+                document.getElementById("editAddress1").value = addr1;
+                document.getElementById("editAddress2").value = addr2;
+            } else if (currentTarget === "agency") {
+                document.getElementById("editAgencyAddress1").value = addr1;
+                document.getElementById("editAgencyAddress2").value = addr2;
+            }
+
+            modal.classList.add("hidden");
+            list.innerHTML = "";
+            list.classList.add("hidden");
+        }
+    });
+</script>
+
 </body>
 </html>
