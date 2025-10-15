@@ -42,6 +42,12 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final StudentRepositoryCustom studentRepositoryCustom;
 
+    private String[] headers = {
+            "ID","중문명","영문명","생년월일","성별","이메일",
+            "여권번호","수험번호","에이전트 WeChat","에이전트 이메일",
+            "비상연락처","소속(Agency)"
+    };
+
     public void addStudentBySurvey(List<Question> questionList, List<Answer> savedAnswer, Member member){
         log.info("before changing answer to Student");
         int questionLen = questionList.size();
@@ -203,20 +209,14 @@ public class StudentService {
     private byte[] buildExcel(List<StudentResponse.ListDto> rows) throws IOException {
         if (rows == null) rows = java.util.Collections.emptyList();
 
-        String[] headers = {
-                "ID","중문명","영문명","생년월일","성별","이메일",
-                "여권번호","수험번호","에이전트 WeChat","에이전트 이메일",
-                "비상연락처","소속(Agency)"
-        };
+
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        // 메모리에 유지할 행 수(창 크기)를 넉넉히 주면 autosize 정확도가 좋아집니다.
         try (SXSSFWorkbook wb = new SXSSFWorkbook(500);
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
             SXSSFSheet sh = (SXSSFSheet) wb.createSheet("Students");
 
-            // ✅ autosize 가능하도록 모든 컬럼 트래킹 (데이터 쓰기 전에 호출해야 함)
             sh.trackAllColumnsForAutoSizing();
 
             // 헤더 스타일
@@ -275,7 +275,6 @@ public class StudentService {
         return (s == null) ? "" : s;
     }
 
-    /** 파일명 Content-Disposition 용 유틸(선택) */
     public static String encodeAttachmentFilename(String filename) {
         return "attachment; filename*=UTF-8''" +
                 URLEncoder.encode(filename, StandardCharsets.UTF_8).replaceAll("\\+", "%20");

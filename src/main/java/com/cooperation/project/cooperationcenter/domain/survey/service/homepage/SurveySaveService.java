@@ -309,6 +309,43 @@ public class SurveySaveService {
 
     public List<QuestionDto> getStudentTempalte(){
         return List.of(
+                new QuestionDto(
+                        null,
+                        "hierarchy",
+                        "학/석사 선택",
+                        "",
+                        List.of(
+                                // ====== Level 1 (학사 / 석사) ======
+                                new OptionDto(0, null, "학사", null, null, "1-1", 1),
+                                new OptionDto(0, null, "석사", null, null, "1-2", 1),
+
+                                // ====== Level 2: 학사 계열 단과대학 ======
+                                new OptionDto(0, null, "소프트웨어융합대학", null, "1-1", "2-1", 2),
+                                new OptionDto(0, null, "자연과학대학", null, "1-1", "2-2", 2),
+
+                                // ====== Level 3: 소프트웨어융합대학 학과 ======
+                                new OptionDto(0, null, "컴퓨터공학과", null, "2-1", "3-1", 3),
+                                new OptionDto(0, null, "지능기전공학과", null, "2-1", "3-2", 3),
+
+                                // ====== Level 3: 자연과학대학 학과 ======
+                                new OptionDto(0, null, "물리천문학과", null, "2-2", "3-3", 3),
+                                new OptionDto(0, null, "수학통계학과", null, "2-2", "3-4", 3),
+
+                                // ====== Level 2: 석사 계열 단과대학 ======
+                                new OptionDto(0, null, "자연과학", null, "1-2", "2-3", 2),
+                                new OptionDto(0, null, "공학", null, "1-2", "2-4", 2),
+
+                                // ====== Level 3: 석사 계열 학과 ======
+                                new OptionDto(0, null, "수학과", null, "2-3", "3-5", 3),
+                                new OptionDto(0, null, "응용통계학과", null, "2-3", "3-6", 3),
+                                new OptionDto(0, null, "건축공학과", null, "2-4", "3-7", 3),
+                                new OptionDto(0, null, "건설환경공학과", null, "2-4", "3-8", 3)
+                        ),
+                        0,
+                        true,
+                        "degreeZip"
+                )
+                ,
                 new QuestionDto(null, "short", "중국어이름", "", null, 0, true, "chineseName"),
                 new QuestionDto(null, "short", "영문이름", "", null, 0, true, "englishName"),
                 new QuestionDto(null, "date", "생년월일", "", null, 0, true, "birthDate"),
@@ -316,6 +353,7 @@ public class SurveySaveService {
                         new OptionDto(0, null, "남성", null,null,null,0),
                         new OptionDto(0, null, "여성", null,null,null,0)
                 ), 0, true, "gender"),
+
                 new QuestionDto(null, "short", "학생 메일", "", null, 0, true, "studentEmail"),
                 new QuestionDto(null, "short", "여권 번호", "", null, 0, true, "passportNumber"),
                 new QuestionDto(null, "short", "수험 번호", "", null, 0, true, "examNumber"),

@@ -38,6 +38,10 @@ public class Student extends BaseEntity {
 
     private String emergencyContactNum;
 
+    private String degree;
+    private String department;
+    private String major;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "member_id", nullable = false) // unique 제거
     private Member member;
@@ -47,6 +51,10 @@ public class Student extends BaseEntity {
     private SurveyLog surveyLog;
 
     public static Student from(StudentRequest.MappingDto dto,SurveyLog surveyLog,Member member){
+        String[] univer = new String[3];
+        String[] splitDegree = dto.degreeZip().split(",");
+        for(int i=0;i<splitDegree.length;i++) univer[i] = splitDegree[i];
+
         return Student.builder()
                 .chineseName(dto.chineseName())
                 .englishName(dto.englishName())
@@ -60,6 +68,9 @@ public class Student extends BaseEntity {
                 .emergencyContactNum(dto.emergencyContactNum())
                 .surveyLog(surveyLog)
                 .member(member)
+                .degree(univer[0])
+                .department(univer[1])
+                .major(univer[2])
                 .build();
     }
 

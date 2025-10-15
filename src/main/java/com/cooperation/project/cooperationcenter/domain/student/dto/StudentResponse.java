@@ -23,7 +23,11 @@ public class StudentResponse {
             String agentEmail,
 
             String emergencyContactNum,
-            String memberName
+            String memberName,
+
+            String degree,
+            String department,
+            String major
     ){
         public static ListDto from(Student student){
             return new ListDto(
@@ -38,7 +42,10 @@ public class StudentResponse {
                     student.getAgentWechat(),
                     student.getAgentEmail(),
                     student.getEmergencyContactNum(),
-                    student.getMember().getMemberName()
+                    student.getMember().getMemberName(),
+                    student.getDegree(),
+                    student.getDepartment(),
+                    student.getMajor()
             );
         }
         public static List<ListDto> from(List<Student> students){

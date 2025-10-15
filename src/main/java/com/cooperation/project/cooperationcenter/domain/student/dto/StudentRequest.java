@@ -3,10 +3,12 @@ package com.cooperation.project.cooperationcenter.domain.student.dto;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class StudentRequest {
 
     public record MappingDto(
+            String degreeZip,
             String chineseName,
             String englishName,
             LocalDate birthDate,
