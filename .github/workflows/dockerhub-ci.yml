@@ -1,4 +1,4 @@
-name: acr-ci
+name: acr-push-ci
 
 on:
   push:
