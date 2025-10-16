@@ -79,11 +79,11 @@
 
 <main class="container mx-auto px-4 py-6 pt-16 md:pt-20">
     <!-- 헤더 -->
-    <div class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-bold">설문 폴더</h1>
-        <div class="flex gap-2">
-<!--            <a href="/survey/list" class="px-3 py-2 bg-white border border-gray-300 rounded-button text-gray-700">모든 설문 보기</a>-->
-            <button id="open-create-modal" class="bg-primary text-white px-4 py-2 rounded-button flex items-center">
+    <div class="flex flex-row flex-wrap items-center justify-between gap-3 mb-6">
+        <h1 class="text-xl sm:text-2xl font-bold">설문 폴더</h1>
+        <div class="flex flex-row gap-2">
+            <button id="open-create-modal"
+                    class="bg-primary text-white px-4 py-2 rounded-button flex items-center justify-center text-sm sm:text-base">
                 <i class="ri-add-line mr-2"></i> 새 폴더 만들기
             </button>
         </div>
@@ -91,19 +91,22 @@
 
     <!--- 검색바(제목 검색만) -->
     <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
-            <form th:action="@{/survey/folders}" method="get" class="flex gap-3">
-                <div class="relative flex1">
+        <form th:action="@{/survey/folders}" method="get" class="flex flex-col sm:flex-row gap-3">
+            <div class="relative flex-1">
                 <input type="text" name="q" th:value="${condition.text}"
-                       placeholder="폴더명 검색"
-                       class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary/50 focus:border-primary"/>
+                       class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded
+                       focus:ring-2 focus:ring-primary/50 focus:border-primary text-sm sm:text-base"
+                       placeholder="폴더명 검색" />
                 <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                     <i class="ri-search-line"></i>
                 </div>
             </div>
-            <button type="submit" class="bg-primary text-white px-4 py-2 rounded-button">검색</button>
+            <button type="submit"
+                    class="w-full sm:w-auto bg-primary text-white px-4 py-2 rounded-button text-sm sm:text-base">
+                검색
+            </button>
         </form>
     </div>
-
     <!-- 폴더 그리드 (페이지네이션 없음) -->
     <div id="folder-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <div th:each="folder : ${folders}"

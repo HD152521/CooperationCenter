@@ -1,25 +1,41 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const button = document.getElementById("university-button");
-    const menu = document.getElementById("university-menu");
+document.addEventListener("DOMContentLoaded", () => {
+    const mobileBtn = document.getElementById("mobile-menu-button");
+    const mobileMenu = document.getElementById("mobile-menu");
+    const mobileUniBtn = document.getElementById("mobile-university-button");
+    const mobileUniMenu = document.getElementById("mobile-university-menu");
+    const uniBtn = document.getElementById("university-button");
+    const uniMenu = document.getElementById("university-menu");
 
-    let isVisible = false;
+    // 모바일 전체 메뉴 토글
+    if (mobileBtn && mobileMenu) {
+        mobileBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            mobileMenu.classList.toggle("hidden");
+            console.log(mobileMenu);
+        });
+    }
 
-    button.addEventListener("click", function (e) {
-        e.stopPropagation(); // 다른 요소 클릭 시 닫히지 않도록 방지
-        isVisible = !isVisible;
-        menu.classList.toggle("hidden", !isVisible);
-    });
+    // 모바일 대학교 하위 메뉴 토글
+    if (mobileUniBtn && mobileUniMenu) {
+        mobileUniBtn.addEventListener("click", (e) => {
+            console.log("univ menu btn click");
+            e.stopPropagation();
+            mobileUniMenu.classList.toggle("hidden");
+            mobileUniBtn.querySelector("i").classList.toggle("rotate-180");
+        });
+    }
 
-    // 외부 클릭 시 닫기
-    document.addEventListener("click", function () {
-        if (isVisible) {
-            isVisible = false;
-            menu.classList.add("hidden");
-        }
-    });
+    // 데스크탑 대학교 메뉴 토글
+    if (uniBtn && uniMenu) {
+        uniBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            uniMenu.classList.toggle("hidden");
+        });
 
-    // 메뉴 클릭 시엔 닫히지 않도록
-    menu.addEventListener("click", function (e) {
-        e.stopPropagation();
-    });
+        document.addEventListener("click", (e) => {
+            if (!uniBtn.contains(e.target) && !uniMenu.contains(e.target)) {
+                uniMenu.classList.add("hidden");
+            }
+        });
+    }
 });

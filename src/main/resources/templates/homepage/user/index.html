@@ -61,12 +61,7 @@
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-
-<!-- 네비게이션 바 -->
-
 <nav th:replace="~{/homepage/common/nav-user :: nav-user}"></nav>
-
-<!-- 히어로 섹션 -->
 <div class="relative pt-16 overflow-hidden">
     <div class="absolute inset-0 z-0">
         <img
@@ -106,41 +101,6 @@
         </div>
     </div>
 </div>
-<!-- 대학교 섹션 -->
-<!--<section class="py-16 bg-white">-->
-<!--        <div class="container mx-auto px-4 sm:px-6 lg:px-8">-->
-<!--        <div class="text-center mb-12">-->
-<!--            <h2 class="text-3xl font-bold text-gray-900">대학교</h2>-->
-<!--            <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">-->
-<!--                우수 대학교들을 살펴보고 당신의 미래를 설계하세요.-->
-<!--            </p>-->
-<!--        </div>-->
-<!--            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">-->
-<!--                <div-->
-<!--                        class="university-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300"-->
-<!--                        th:each="school : ${schoolDto}">-->
-<!--                    <div class="h-48 bg-gray-50 flex items-center justify-center">-->
-<!--                        <img th:src="${school.imgUrl}" th:alt="${school.koreanName}" class="max-h-full max-w-full object-contain"/>-->
-<!--                    </div>-->
-<!--                    <div class="p-6">-->
-<!--                        <h3 class="text-lg font-semibold text-gray-900" th:text="${school.koreanName}">대학교 이름</h3>-->
-<!--                        <p class="mt-2 text-sm text-gray-600" th:text="${school.englishName}">University English Name</p>-->
-<!--                        <div class="mt-4 flex items-center">-->
-<!--                            <div class="flex items-center">-->
-<!--                                &lt;!&ndash; 별점 고정 (임의로 5점 만점 채움) &ndash;&gt;-->
-<!--                                <div class="w-4 h-4 flex items-center justify-center text-yellow-400"><i class="ri-star-fill"></i></div>-->
-<!--                                <div class="w-4 h-4 flex items-center justify-center text-yellow-400"><i class="ri-star-fill"></i></div>-->
-<!--                                <div class="w-4 h-4 flex items-center justify-center text-yellow-400"><i class="ri-star-fill"></i></div>-->
-<!--                                <div class="w-4 h-4 flex items-center justify-center text-yellow-400"><i class="ri-star-fill"></i></div>-->
-<!--                                <div class="w-4 h-4 flex items-center justify-center text-yellow-400"><i class="ri-star-fill"></i></div>-->
-<!--                            </div>-->
-<!--                            <span class="ml-2 text-sm text-gray-600">5.0</span>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--</section>-->
 <section class="py-16 bg-white">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
@@ -366,16 +326,6 @@
     </div>
 </footer>
 <script src="/js/homepage/url.js"></script>
-<!-- 모바일 메뉴 스크립트 -->
-<script id="mobile-menu-script">
-    document.addEventListener("DOMContentLoaded", function () {
-        const mobileMenuButton = document.getElementById("mobile-menu-button");
-        const mobileMenu = document.getElementById("mobile-menu");
-        mobileMenuButton.addEventListener("click", function () {
-            mobileMenu.classList.toggle("hidden");
-        });
-    });
-</script>
 <!-- 도시 탭 스크립트 -->
 <script id="city-tab-script">
     document.addEventListener("DOMContentLoaded", function () {
