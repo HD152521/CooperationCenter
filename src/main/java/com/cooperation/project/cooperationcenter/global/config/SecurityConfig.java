@@ -99,8 +99,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-        configuration.addAllowedOriginPattern("http://localhost:5173");
-//        configuration.addAllowedOriginPattern("https://*.ngrok-free.app");
+        configuration.addAllowedOriginPattern("http://172.30.1.70:8081");
         configuration.addAllowedOriginPattern("https://11680c706486.ngrok-free.app");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");

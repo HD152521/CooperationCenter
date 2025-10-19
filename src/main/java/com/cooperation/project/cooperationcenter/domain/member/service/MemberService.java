@@ -67,7 +67,7 @@ public class MemberService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Value("${app.origin.url}")
+    @Value("${app.origin}")
     private String origin;
 
     @Transactional

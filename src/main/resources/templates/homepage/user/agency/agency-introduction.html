@@ -200,92 +200,6 @@
 
 <nav th:replace="~{/homepage/common/nav-user :: nav-user}"></nav>
 
-<!--<nav class="bg-white shadow-sm fixed w-full z-10">-->
-<!--    <div class="container mx-auto px-4 sm:px-6 lg:px-8">-->
-<!--        <div class="flex justify-between h-16">-->
-<!--            <div class="flex items-center">-->
-<!--                <a href="#" class="flex-shrink-0 flex items-center">-->
-<!--                    <span class="text-2xl font-['Pacifico'] text-primary">logo</span>-->
-<!--                </a>-->
-<!--                <div class="hidden sm:ml-10 sm:flex sm:space-x-8">-->
-<!--                    <a-->
-<!--                            href="#"-->
-<!--                            class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"-->
-<!--                    >-->
-<!--                        홈-->
-<!--                    </a>-->
-<!--                    <a-->
-<!--                            href="#"-->
-<!--                            class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"-->
-<!--                    >-->
-<!--                        대학교-->
-<!--                    </a>-->
-<!--                    <a-->
-<!--                            href="https://readdy.ai/home/d027a641-c27a-4a46-8bd3-4dec8c797f39/e4d29fa0-ed05-44db-b97a-c2975317f91e"-->
-<!--                            data-readdy="true"-->
-<!--                            class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"-->
-<!--                    >-->
-<!--                        유학원-->
-<!--                    </a>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="hidden sm:ml-6 sm:flex sm:items-center">-->
-<!--                <a href="#">-->
-<!--                    <button-->
-<!--                            class="bg-primary text-white px-4 py-2 !rounded-button whitespace-nowrap"-->
-<!--                    >-->
-<!--                        로그인-->
-<!--                    </button>-->
-<!--                </a>-->
-<!--            </div>-->
-<!--            <div class="flex items-center sm:hidden">-->
-<!--                <button-->
-<!--                        type="button"-->
-<!--                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"-->
-<!--                        id="mobile-menu-button"-->
-<!--                >-->
-<!--                    <span class="sr-only">메뉴 열기</span>-->
-<!--                    <div class="w-6 h-6 flex items-center justify-center">-->
-<!--                        <i class="ri-menu-line ri-lg"></i>-->
-<!--                    </div>-->
-<!--                </button>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    &lt;!&ndash; 모바일 메뉴 &ndash;&gt;-->
-<!--    <div class="sm:hidden hidden" id="mobile-menu">-->
-<!--        <div class="pt-2 pb-3 space-y-1">-->
-<!--            <a-->
-<!--                    href="#"-->
-<!--                    class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"-->
-<!--            >-->
-<!--                홈-->
-<!--            </a>-->
-<!--            <a-->
-<!--                    href="#"-->
-<!--                    class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"-->
-<!--            >-->
-<!--                대학교-->
-<!--            </a>-->
-<!--            <a-->
-<!--                    href="https://readdy.ai/home/d027a641-c27a-4a46-8bd3-4dec8c797f39/e4d29fa0-ed05-44db-b97a-c2975317f91e"-->
-<!--                    data-readdy="true"-->
-<!--                    class="bg-primary-50 border-primary text-primary block pl-3 pr-4 py-2 border-l-4 text-base font-medium"-->
-<!--            >-->
-<!--                유학원-->
-<!--            </a>-->
-<!--        </div>-->
-<!--        <div class="pt-4 pb-3 border-t border-gray-200">-->
-<!--            <div class="flex items-center px-4">-->
-<!--                <button-->
-<!--                        class="w-full bg-primary text-white px-4 py-2 !rounded-button whitespace-nowrap"-->
-<!--                >-->
-<!--                    로그인-->
-<!--                </button>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</nav>-->
 <!-- 메인 컨텐츠 -->
 <main class="pt-16">
     <!-- 헤더 섹션 -->
@@ -583,16 +497,6 @@
         </div>
     </div>
 </footer>
-<!-- 모바일 메뉴 스크립트 -->
-<script id="mobile-menu-script">
-    document.addEventListener("DOMContentLoaded", function () {
-        const mobileMenuButton = document.getElementById("mobile-menu-button");
-        const mobileMenu = document.getElementById("mobile-menu");
-        mobileMenuButton.addEventListener("click", function () {
-            mobileMenu.classList.toggle("hidden");
-        });
-    });
-</script>
 <!-- 필터 드롭다운 스크립트 -->
 <script id="filter-dropdown-script">
     document.addEventListener("DOMContentLoaded", function () {

@@ -32,5 +32,4 @@ oss:
 
 
 app:
-  origin:
-    url: "http://localhost:8081"
+  origin: "http://localhost:8081"

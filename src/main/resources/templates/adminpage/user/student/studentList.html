@@ -242,15 +242,9 @@
             <div class="p-6 border-b border-gray-700">
                 <div class="flex items-center justify-between">
                     <h2 class="text-xl font-bold text-white">학생 목록</h2>
+
+
                     <div class="flex items-center space-x-4">
-<!--                        <select-->
-<!--                                id="page-size"-->
-<!--                                class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8"-->
-<!--                        >-->
-<!--                            <option value="20">20개씩 보기</option>-->
-<!--                            <option value="50">50개씩 보기</option>-->
-<!--                            <option value="100">100개씩 보기</option>-->
-<!--                        </select>-->
                         <div class="text-sm text-gray-400"
                              th:with="
                            pageIdx=${students.number},
@@ -263,6 +257,12 @@
                             <span id="current-range" th:text="|${startRow}-${endRow}|">1-20</span> /
                             <span id="total-students" th:text="${#numbers.formatInteger(total, 0, 'COMMA')}">1,247</span>
                         </div>
+                        <button id="copy-emails-btn"
+                                type="button"
+                                class="flex items-center px-3 py-1.5 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition">
+                            <i class="ri-file-copy-line mr-1"></i>
+                            이메일 복사하기
+                        </button>
                     </div>
                 </div>
             </div>
@@ -723,7 +723,7 @@
         </div>
     </div>
 </div>
-<script id="student-management">
+<script id="student-management" th:inline="javascript"  >
     document.addEventListener("DOMContentLoaded", function () {
         let currentPage = 1;
         let pageSize = 20;
@@ -850,7 +850,23 @@
             document.body.appendChild(notification);
             setTimeout(() => notification.remove(), 3000);
         }
+        const studentEmails = /*[[${students.content.?[studentEmail != null].![studentEmail]}]]*/ [];
 
+        document.getElementById('copy-emails-btn')?.addEventListener('click', async () => {
+            if (!studentEmails || studentEmails.length === 0) {
+                showNotification('복사할 이메일이 없습니다.', 'error');
+                return;
+            }
+
+            const emailString = studentEmails.join(', ');
+            try {
+                await navigator.clipboard.writeText(emailString);
+                showNotification(`${studentEmails.length}개의 이메일이 복사되었습니다!`, 'success');
+            } catch (err) {
+                console.error(err);
+                showNotification('이메일 복사 중 오류가 발생했습니다.', 'error');
+            }
+        });
     });
 </script>
 <script>
@@ -934,6 +950,8 @@
         window.viewStudent(id);
         console.log("button클릭(3)");
     });
+
+
 </script>
 <script>
     // ====== 모달 열고 닫기 ======
@@ -1091,5 +1109,6 @@
         // 새 탭으로 열고 싶으면: window.open(url, '_blank');
     }
 </script>
+
 </body>
 </html>
