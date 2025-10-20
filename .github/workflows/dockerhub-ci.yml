@@ -2,9 +2,9 @@ name: docker-ci
 
 on:
   push:
-    branches: [ "develop" ]        # develop 브랜치 push 시 (빌드만)
+    branches: [ "develop", "main" ]   # develop: 빌드만, main: 빌드+푸시
   pull_request:
-    branches: [ "main" ]           # main 으로 PR 생성/병합 시 (빌드 + 푸시)
+    branches: [ "main" ]              # main 대상 PR 생성/업데이트 시 빌드+푸시
 
 jobs:
   build-and-push:
@@ -34,31 +34,50 @@ jobs:
           images: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
           tags: |
-            type=ref,event=branch
+            # 공통
             type=sha,format=short
+            # 브랜치 push 시 (develop/main)
+            type=ref,event=branch
+            # PR 시 (main 대상)
+            type=ref,event=pr
+            # main push일 때 latest 추가
+            type=raw,value=latest,enable=${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
-      # ✅ DockerHub 로그인 (main PR일 때만)
+      # ✅ DockerHub 로그인: main push 또는 main 대상 PR에서만
       - name: Login to DockerHub
-        if: github.event_name == 'pull_request' && github.base_ref == 'main'
+        if: github.ref == 'refs/heads/main' || (github.event_name == 'pull_request' && github.base_ref == 'main')
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 🚫 Alibaba Cloud ACR 관련 단계 제거 또는 주석처리됨
+      # 🚫 Alibaba Cloud ACR 관련 단계 (나중 대비용 주석 유지)
       # - name: Login to Alibaba Cloud ACR
-      #   if: github.event_name == 'pull_request' && github.base_ref == 'main'
+      #   if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.base_ref == 'main')
       #   uses: docker/login-action@v3
       #   with:
       #     registry: cooperation-center-registry.cn-beijing.cr.aliyuncs.com
       #     username: ${{ secrets.ACR_USERNAME }}
       #     password: ${{ secrets.ACR_PASSWORD }}
 
-      # ✅ Build & Push Docker image (Docker Hub 전용)
-      - name: Build and Push Docker image
+      # - name: (옵션) Build & Push to ACR
+      #   uses: docker/build-push-action@v6
+      #   with:
+      #     context: .
+      #     push: true
+      #     tags: |
+      #       cooperation-center-registry.cn-beijing.cr.aliyuncs.com/${{ secrets.ACR_NAMESPACE }}/${{ github.event.repository.name }}:${{ github.sha }}
+      #       cooperation-center-registry.cn-beijing.cr.aliyuncs.com/${{ secrets.ACR_NAMESPACE }}/${{ github.event.repository.name }}:pr-${{ github.event.pull_request.number }}
+      #       cooperation-center-registry.cn-beijing.cr.aliyuncs.com/${{ secrets.ACR_NAMESPACE }}/${{ github.event.repository.name }}:latest
+
+      # ✅ Build & Push (조건부 푸시)
+      - name: Build and (conditionally) Push Docker image (Docker Hub)
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
+          # develop push: false (빌드만)
+          # main push: true (푸시)
+          # main 대상 PR: true (푸시)
+          push: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'pull_request' && github.base_ref == 'main') }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
