@@ -40,60 +40,63 @@
             font-family: 'Noto Sans KR', sans-serif;
         }
         .nav-item.active {
-        border-left: 4px solid #3b82f6;
-        background-color: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid #3b82f6;
+            background-color: rgba(59, 130, 246, 0.1);
         }
         .nav-item:hover:not(.active) {
-        background-color: rgba(59, 130, 246, 0.05);
+            background-color: rgba(59, 130, 246, 0.05);
         }
         input[type="checkbox"] {
-        appearance: none;
-        -webkit-appearance: none;
-        width: 1.25rem;
-        height: 1.25rem;
-        border: 2px solid #d1d5db;
-        border-radius: 4px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        outline: none;
-        transition: all 0.2s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            outline: none;
+            transition: all 0.2s ease;
         }
         input[type="checkbox"]:checked {
-        background-color: #3b82f6;
-        border-color: #3b82f6;
+            background-color: #3b82f6;
+            border-color: #3b82f6;
         }
         input[type="checkbox"]:checked::after {
-        content: "";
-        width: 0.5rem;
-        height: 0.5rem;
-        display: block;
-        background-color: white;
-        border-radius: 1px;
+            content: "";
+            width: 0.5rem;
+            height: 0.5rem;
+            display: block;
+            background-color: white;
+            border-radius: 1px;
         }
         input[type="search"]::-webkit-search-decoration,
         input[type="search"]::-webkit-search-cancel-button,
         input[type="search"]::-webkit-search-results-button,
         input[type="search"]::-webkit-search-results-decoration {
-        display: none;
+            display: none;
         }
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
+            -webkit-appearance: none;
+            margin: 0;
         }
     </style>
+    <style>:root{ --header-h: 72px; }</style>
 </head>
 <body class="bg-gray-50 min-h-screen">
 <!-- 상단 배너 -->
-<nav th:replace="~{/homepage/common/nav-user :: nav-user}"></nav>
+<nav th:replace="~{homepage/common/nav-user :: nav-user}"></nav>
 <!-- 메인 콘텐츠 영역 -->
 <div class="container mx-auto px-4 py-8 pt-16 flex flex-col md:flex-row gap-8">
     <!-- 좌측 네비게이션 -->
-    <div th:replace="~{/homepage/user/school/school-left-sidebar :: school-left}"></div>
+    <aside class="w-full md:w-64 md:shrink-0 md:self-start md:sticky md:top-[calc(var(--header-h)+16px)]">
+        <div th:replace="~{homepage/user/school/school-left-sidebar :: school-left}"></div>
+    </aside>
     <!-- 우측 메인 콘텐츠 (신청 양식 게시판) -->
-    <div class="flex-grow">
+    <div class="min-w-0 flex-1 py-6 px-0 md:px-6">
         <div class="bg-white rounded shadow p-6">
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                 <h2 class="text-2xl font-bold text-gray-800">학교 신청 양식들</h2>
@@ -168,215 +171,6 @@
                     </div>
                 </div>
             </div>
-            <!-- 양식 리스트 -->
-<!--            <div class="overflow-x-auto">-->
-<!--                <table class="min-w-full">-->
-<!--                    <thead>-->
-<!--                    <tr class="bg-gray-50 text-left">-->
-<!--                        <th class="px-4 py-3 text-sm font-medium text-gray-600 border-b">문서명</th>-->
-<!--                        <th class="px-4 py-3 text-sm font-medium text-gray-600 border-b">유형</th>-->
-<!--                        <th class="px-4 py-3 text-sm font-medium text-gray-600 border-b">업데이트</th>-->
-<!--                        <th class="px-4 py-3 text-sm font-medium text-gray-600 border-b">다운로드</th>-->
-<!--                    </tr>-->
-<!--                    </thead>-->
-<!--                    <tbody class="divide-y divide-gray-200">-->
-<!--                    <tr class="bg-blue-50">-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <div class="flex items-center gap-3">-->
-<!--                                <div class="w-8 h-8 flex items-center justify-center bg-blue-100 text-primary rounded">-->
-<!--                                    <i class="ri-file-text-line"></i>-->
-<!--                                </div>-->
-<!--                                <div>-->
-<!--                                    <p class="font-medium text-gray-800">국제 학생 입학 신청서</p>-->
-<!--                                    <p class="text-xs text-gray-500 mt-0.5">필수 제출 서류</p>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </td>-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">입학</span>-->
-<!--                        </td>-->
-<!--                        <td class="px-4 py-4 text-sm text-gray-600">2025-06-01</td>-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <button class="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded hover:bg-primary/90 text-sm whitespace-nowrap !rounded-button">-->
-<!--                                <div class="w-4 h-4 flex items-center justify-center">-->
-<!--                                    <i class="ri-download-line"></i>-->
-<!--                                </div>-->
-<!--                                <span>다운로드</span>-->
-<!--                            </button>-->
-<!--                        </td>-->
-<!--                    </tr>-->
-<!--                    <tr>-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <div class="flex items-center gap-3">-->
-<!--                                <div class="w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-600 rounded">-->
-<!--                                    <i class="ri-file-text-line"></i>-->
-<!--                                </div>-->
-<!--                                <div>-->
-<!--                                    <p class="font-medium text-gray-800">재정 증명서</p>-->
-<!--                                    <p class="text-xs text-gray-500 mt-0.5">은행 잔고 증명 필요</p>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </td>-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">입학</span>-->
-<!--                        </td>-->
-<!--                        <td class="px-4 py-4 text-sm text-gray-600">2025-05-28</td>-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <button class="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded hover:bg-primary/90 text-sm whitespace-nowrap !rounded-button">-->
-<!--                                <div class="w-4 h-4 flex items-center justify-center">-->
-<!--                                    <i class="ri-download-line"></i>-->
-<!--                                </div>-->
-<!--                                <span>다운로드</span>-->
-<!--                            </button>-->
-<!--                        </td>-->
-<!--                    </tr>-->
-<!--                    <tr>-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <div class="flex items-center gap-3">-->
-<!--                                <div class="w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-600 rounded">-->
-<!--                                    <i class="ri-file-text-line"></i>-->
-<!--                                </div>-->
-<!--                                <div>-->
-<!--                                    <p class="font-medium text-gray-800">국제 학생 장학금 신청서</p>-->
-<!--                                    <p class="text-xs text-gray-500 mt-0.5">성적 증명서 첨부 필요</p>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </td>-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">장학금</span>-->
-<!--                        </td>-->
-<!--                        <td class="px-4 py-4 text-sm text-gray-600">2025-05-20</td>-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <button class="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded hover:bg-primary/90 text-sm whitespace-nowrap !rounded-button">-->
-<!--                                <div class="w-4 h-4 flex items-center justify-center">-->
-<!--                                    <i class="ri-download-line"></i>-->
-<!--                                </div>-->
-<!--                                <span>다운로드</span>-->
-<!--                            </button>-->
-<!--                        </td>-->
-<!--                    </tr>-->
-<!--                    <tr>-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <div class="flex items-center gap-3">-->
-<!--                                <div class="w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-600 rounded">-->
-<!--                                    <i class="ri-file-text-line"></i>-->
-<!--                                </div>-->
-<!--                                <div>-->
-<!--                                    <p class="font-medium text-gray-800">기숙사 신청서</p>-->
-<!--                                    <p class="text-xs text-gray-500 mt-0.5">룸메이트 선호도 조사 포함</p>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </td>-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">기숙사</span>-->
-<!--                        </td>-->
-<!--                        <td class="px-4 py-4 text-sm text-gray-600">2025-05-15</td>-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <button class="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded hover:bg-primary/90 text-sm whitespace-nowrap !rounded-button">-->
-<!--                                <div class="w-4 h-4 flex items-center justify-center">-->
-<!--                                    <i class="ri-download-line"></i>-->
-<!--                                </div>-->
-<!--                                <span>다운로드</span>-->
-<!--                            </button>-->
-<!--                        </td>-->
-<!--                    </tr>-->
-<!--                    <tr>-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <div class="flex items-center gap-3">-->
-<!--                                <div class="w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-600 rounded">-->
-<!--                                    <i class="ri-file-text-line"></i>-->
-<!--                                </div>-->
-<!--                                <div>-->
-<!--                                    <p class="font-medium text-gray-800">건강 검진 양식</p>-->
-<!--                                    <p class="text-xs text-gray-500 mt-0.5">의사 서명 필요</p>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </td>-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">필수</span>-->
-<!--                        </td>-->
-<!--                        <td class="px-4 py-4 text-sm text-gray-600">2025-05-10</td>-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <button class="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded hover:bg-primary/90 text-sm whitespace-nowrap !rounded-button">-->
-<!--                                <div class="w-4 h-4 flex items-center justify-center">-->
-<!--                                    <i class="ri-download-line"></i>-->
-<!--                                </div>-->
-<!--                                <span>다운로드</span>-->
-<!--                            </button>-->
-<!--                        </td>-->
-<!--                    </tr>-->
-<!--                    <tr>-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <div class="flex items-center gap-3">-->
-<!--                                <div class="w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-600 rounded">-->
-<!--                                    <i class="ri-file-text-line"></i>-->
-<!--                                </div>-->
-<!--                                <div>-->
-<!--                                    <p class="font-medium text-gray-800">비자 신청 지원 문서</p>-->
-<!--                                    <p class="text-xs text-gray-500 mt-0.5">체류 목적 진술서 포함</p>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </td>-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">비자</span>-->
-<!--                        </td>-->
-<!--                        <td class="px-4 py-4 text-sm text-gray-600">2025-05-05</td>-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <button class="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded hover:bg-primary/90 text-sm whitespace-nowrap !rounded-button">-->
-<!--                                <div class="w-4 h-4 flex items-center justify-center">-->
-<!--                                    <i class="ri-download-line"></i>-->
-<!--                                </div>-->
-<!--                                <span>다운로드</span>-->
-<!--                            </button>-->
-<!--                        </td>-->
-<!--                    </tr>-->
-<!--                    <tr>-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <div class="flex items-center gap-3">-->
-<!--                                <div class="w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-600 rounded">-->
-<!--                                    <i class="ri-file-text-line"></i>-->
-<!--                                </div>-->
-<!--                                <div>-->
-<!--                                    <p class="font-medium text-gray-800">학업 계획서 양식</p>-->
-<!--                                    <p class="text-xs text-gray-500 mt-0.5">최대 2페이지</p>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </td>-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">입학</span>-->
-<!--                        </td>-->
-<!--                        <td class="px-4 py-4 text-sm text-gray-600">2025-04-28</td>-->
-<!--                        <td class="px-4 py-4">-->
-<!--                            <button class="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded hover:bg-primary/90 text-sm whitespace-nowrap !rounded-button">-->
-<!--                                <div class="w-4 h-4 flex items-center justify-center">-->
-<!--                                    <i class="ri-download-line"></i>-->
-<!--                                </div>-->
-<!--                                <span>다운로드</span>-->
-<!--                            </button>-->
-<!--                        </td>-->
-<!--                    </tr>-->
-<!--                    </tbody>-->
-<!--                </table>-->
-<!--            </div>-->
-<!--            &lt;!&ndash; 페이지네이션 &ndash;&gt;-->
-<!--            <div class="flex items-center justify-between mt-6">-->
-<!--                <p class="text-sm text-gray-600">총 15개 문서 중 1-7</p>-->
-<!--                <div class="flex items-center gap-1">-->
-<!--                    <button class="w-9 h-9 flex items-center justify-center rounded border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap !rounded-button" disabled>-->
-<!--                        <div class="w-5 h-5 flex items-center justify-center">-->
-<!--                            <i class="ri-arrow-left-s-line"></i>-->
-<!--                        </div>-->
-<!--                    </button>-->
-<!--                    <button class="w-9 h-9 flex items-center justify-center rounded bg-primary text-white hover:bg-primary/90 whitespace-nowrap !rounded-button">1</button>-->
-<!--                    <button class="w-9 h-9 flex items-center justify-center rounded border border-gray-300 text-gray-700 hover:bg-gray-50 whitespace-nowrap !rounded-button">2</button>-->
-<!--                    <button class="w-9 h-9 flex items-center justify-center rounded border border-gray-300 text-gray-700 hover:bg-gray-50 whitespace-nowrap !rounded-button">3</button>-->
-<!--                    <button class="w-9 h-9 flex items-center justify-center rounded border border-gray-300 text-gray-500 hover:bg-gray-50 whitespace-nowrap !rounded-button">-->
-<!--                        <div class="w-5 h-5 flex items-center justify-center">-->
-<!--                            <i class="ri-arrow-right-s-line"></i>-->
-<!--                        </div>-->
-<!--                    </button>-->
-<!--                </div>-->
-<!--            </div>-->
             <div class="overflow-x-auto">
                 <table class="min-w-full">
                     <thead>
@@ -387,10 +181,41 @@
                     </tr>
                     </thead>
 
-                    <!-- 정상 데이터 -->
                     <tbody class="divide-y divide-gray-200" th:if="${filePostDto != null}">
-                    <!-- 리스트 -->
-                    <tr th:each="post : ${filePostDto.content}">
+                    <!-- 1) 공지 먼저 -->
+                    <tr th:each="post : ${filePostDto.content}"
+                        th:if="${post.type == 'NOTICE'}"
+                        class="bg-amber-50">
+                        <td class="px-4 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 flex items-center justify-center rounded
+                    bg-amber-100 text-amber-700">
+                                    <i class="ri-pushpin-2-fill"></i>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2">
+            <span class="inline-flex items-center px-2 py-0.5 text-[11px] rounded
+                         bg-amber-200 text-amber-800">공지</span>
+                                        <p class="font-medium text-gray-900" th:text="${post.title}">문서 제목</p>
+                                    </div>
+                                    <p class="text-xs text-gray-600 mt-0.5" th:text="${post.description} ?: '설명 없음'">설명</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-4 text-sm text-gray-700"
+                            th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">2025-06-01</td>
+                        <td class="px-4 py-4">
+                            <a class="inline-flex items-center gap-1 px-2.5 py-1 text-xs bg-primary text-white rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/40"
+                               th:href="@{/api/v1/file/school/{fileId}(fileId=${post.fileId})}">
+                                <div class="w-4 h-4 flex items-center justify-center"><i class="ri-download-line"></i></div>
+                                <span>다운로드</span>
+                            </a>
+                        </td>
+                    </tr>
+
+                    <!-- 2) 일반 문서 -->
+                    <tr th:each="post : ${filePostDto.content}"
+                        th:if="${post.type != 'NOTICE'}">
                         <td class="px-4 py-4">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-600 rounded">
@@ -402,18 +227,12 @@
                                 </div>
                             </div>
                         </td>
-
                         <td class="px-4 py-4 text-sm text-gray-600"
-                            th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">
-                            2025-06-01
-                        </td>
-
+                            th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">2025-06-01</td>
                         <td class="px-4 py-4">
-                            <a class="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded hover:bg-primary/90 text-sm whitespace-nowrap !rounded-button"
-                               th:href="@{/boards/{boardId}/files/{id}/download(boardId=${post.boardId}, id=${post.id})}">
-                                <div class="w-4 h-4 flex items-center justify-center">
-                                    <i class="ri-download-line"></i>
-                                </div>
+                            <a class="inline-flex items-center gap-1 px-2.5 py-1 text-xs bg-primary text-white rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/40"
+                               th:href="@{/api/v1/file/school/{fileId}(fileId=${post.fileId})}">
+                                <div class="w-4 h-4 flex items-center justify-center"><i class="ri-download-line"></i></div>
                                 <span>다운로드</span>
                             </a>
                         </td>
@@ -427,19 +246,10 @@
                     </tr>
                     </tbody>
 
-                    <!-- null 처리(서비스에서 null 반환 시) -->
-                    <tbody class="divide-y divide-gray-200" th:if="${filePostDto == null}">
-                    <tr>
-                        <td class="px-4 py-6 text-center text-sm text-gray-500" colspan="3">
-                            데이터를 불러오는 중 오류가 발생했습니다.
-                        </td>
-                    </tr>
-                    </tbody>
                 </table>
 
                 <!-- 페이지네이션 -->
-                <div class="mt-4 flex items-center justify-between"
-                     th:if="${filePostDto != null}">
+                <div class="mt-4 flex items-center justify-between" th:if="${filePostDto != null}">
                     <!-- 범위 표시 -->
                     <div class="text-sm text-gray-500">
                         <span th:text="${filePostDto.totalElements == 0 ? 0 : (filePostDto.number * filePostDto.size + 1)}">1</span>
@@ -450,21 +260,23 @@
                     </div>
 
                     <!-- 버튼 -->
-                    <ul class="inline-flex items-center gap-1" th:if="${filePostDto.totalPages > 1}">
+                    <ul class="inline-flex items-center2 gap-1" th:if="${filePostDto.totalPages > 1}">
                         <!-- 처음 -->
                         <li>
+                            <a class="px-3 py-1.5 border rounded pointer-events-none opacity-40"
+                               th:if="${filePostDto.first}" href="javascript:void(0)">처음</a>
                             <a class="px-3 py-1.5 border rounded"
-                               th:classappend="${filePostDto.first} ? ' pointer-events-none opacity-40'"
-                               th:href="${filePostDto.first} ? 'javascript:void(0)' : @{|?page=0&size=${filePostDto.size}|}"
-                               aria-label="처음">처음</a>
+                               th:if="${!filePostDto.first}"
+                               th:href="@{|?page=0&size=${filePostDto.size}|}">처음</a>
                         </li>
 
                         <!-- 이전 -->
                         <li>
+                            <a class="px-3 py-1.5 border rounded pointer-events-none opacity-40"
+                               th:if="${filePostDto.first}" href="javascript:void(0)">이전</a>
                             <a class="px-3 py-1.5 border rounded"
-                               th:classappend="${filePostDto.first} ? ' pointer-events-none opacity-40'"
-                               th:href="${filePostDto.first} ? 'javascript:void(0)' : @{|?page=${filePostDto.number - 1}&size=${filePostDto.size}|}"
-                               aria-label="이전">이전</a>
+                               th:if="${!filePostDto.first}"
+                               th:href="@{|?page=${filePostDto.number - 1}&size=${filePostDto.size}|}">이전</a>
                         </li>
 
                         <!-- 페이지 번호 -->
@@ -477,18 +289,20 @@
 
                         <!-- 다음 -->
                         <li>
+                            <a class="px-3 py-1.5 border rounded pointer-events-none opacity-40"
+                               th:if="${filePostDto.last}" href="javascript:void(0)">다음</a>
                             <a class="px-3 py-1.5 border rounded"
-                               th:classappend="${filePostDto.last} ? ' pointer-events-none opacity-40'"
-                               th:href="${filePostDto.last} ? 'javascript:void(0)' : @{|?page=${filePostDto.number + 1}&size=${filePostDto.size}|}"
-                               aria-label="다음">다음</a>
+                               th:if="${!filePostDto.last}"
+                               th:href="@{|?page=${filePostDto.number + 1}&size=${filePostDto.size}|}">다음</a>
                         </li>
 
                         <!-- 끝 -->
                         <li>
+                            <a class="px-3 py-1.5 border rounded pointer-events-none opacity-40"
+                               th:if="${filePostDto.last}" href="javascript:void(0)">끝</a>
                             <a class="px-3 py-1.5 border rounded"
-                               th:classappend="${filePostDto.last} ? ' pointer-events-none opacity-40'"
-                               th:href="${filePostDto.last} ? 'javascript:void(0)' : @{|?page=${filePostDto.totalPages - 1}&size=${filePostDto.size}|}"
-                               aria-label="끝">끝</a>
+                               th:if="${!filePostDto.last}"
+                               th:href="@{|?page=${filePostDto.totalPages - 1}&size=${filePostDto.size}|}">끝</a>
                         </li>
                     </ul>
                 </div>
@@ -606,7 +420,5 @@
         });
     });
 </script>
-<script src="/js/homepage/login.js"></script>
-<script src="/js/homepage/nav-user.js"></script>
 </body>
 </html>
