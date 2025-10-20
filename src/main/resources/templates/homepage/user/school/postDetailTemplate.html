@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>2025년 여름학기 한국어 집중 과정 안내 - 공지사항</title>
+    <title th:text="${postDto.post.title}"></title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -88,18 +88,19 @@
             font-weight: 600;
         }
     </style>
+    <style>:root{ --header-h: 72px; }</style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-<nav th:replace="~{/homepage/common/nav-user :: nav-user}"></nav>
-
-<div class="container mx-auto px-4 py-8 flex flex-col md:flex-row gap-8">
-    <div th:replace="~{/homepage/user/school/school-left-sidebar :: school-left}"></div>
-
-    <div class="flex-grow">
+<nav th:replace="~{homepage/common/nav-user :: nav-user}"></nav>
+<div class="container mx-auto px-4 py-8 pt-16 flex flex-col md:flex-row gap-8">
+    <aside class="w-full md:w-64 md:shrink-0 md:self-start md:sticky md:top-[calc(var(--header-h)+16px)]">
+        <div th:replace="~{homepage/user/school/school-left-sidebar :: school-left}"></div>
+    </aside>
+    <div class="min-w-0 flex-1 py-6 px-0 md:px-6">
         <div class="bg-white rounded shadow p-6">
             <div class="flex items-center gap-4 mb-6">
                 <a
-                        href="https://readdy.ai/home/d027a641-c27a-4a46-8bd3-4dec8c797f39/522e9dba-ba7c-4275-92d8-55a473c8bf22"
+                        th:href="@{'/school/' + ${school} + '/board/' + ${boardId}}"
                         data-readdy="true"
                         class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 text-sm font-medium text-gray-700 whitespace-nowrap !rounded-button"
                 >
@@ -112,7 +113,7 @@
                     <span>공지사항</span>
                     <span class="mx-2">></span>
                     <span class="text-gray-700" th:text="${postDto.post.title}"
-                    >세부 제목</span
+                    ></span
                     >
                 </div>
             </div>
@@ -128,6 +129,7 @@
                         <div class="w-5 h-5 flex items-center justify-center">
                             <i class="ri-user-line"></i>
                         </div>
+                        <!--                        <span th:text="${postDto.status}">관리자</span>-->
                         <span>관리자</span>
                     </div>
                     <div class="flex items-center gap-2">
@@ -172,7 +174,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="content-area" th:utext="${postDto.post.content}">
                 <!-- HTML 내용 출력 -->
             </div>
@@ -191,11 +192,15 @@
                                         <i class="ri-arrow-up-line"></i>
                                     </div>
                                 </div>
-                                <div class="flex-1">
+                                <div class="flex-1" th:if="${postDto.beforePost != null}">
                                     <p class="text-sm text-gray-500"
-                                       th:attr="data-id=${postDto.beforePost.id}" >이전글</p>
+                                       th:attr="data-id=${postDto.beforePost.id}">이전글</p>
                                     <p class="font-medium text-gray-800 hover:text-primary"
-                                       th:text="${postDto.beforePost?.title} ?: ''"></p>
+                                       th:text="${postDto.beforePost.title}"></p>
+                                </div>
+                                <div class="flex-1" th:if="${postDto.beforePost == null}">
+                                    <p class="text-sm text-gray-500" >이전글</p>
+                                    <p class="font-medium text-gray-800 hover:text-primary"></p>
                                 </div>
                             </div>
                         </div>
@@ -212,11 +217,15 @@
                                         <i class="ri-arrow-down-line"></i>
                                     </div>
                                 </div>
-                                <div class="flex-1">
+                                <div class="flex-1" th:if="${postDto.afterPost != null}">
                                     <p class="text-sm text-gray-500"
                                        th:attr="data-id=${postDto.afterPost.id}">다음글</p>
                                     <p class="font-medium text-gray-800 hover:text-primary"
-                                       th:text="${postDto.afterPost?.title} ?: ''"></p>
+                                       th:text="${postDto.afterPost.title}"></p>
+                                </div>
+                                <div class="flex-1" th:if="${postDto.afterPost == null}">
+                                    <p class="text-sm text-gray-500" >다음글</p>
+                                    <p class="font-medium text-gray-800 hover:text-primary"></p>
                                 </div>
                             </div>
                         </div>
@@ -306,7 +315,7 @@
     });
 </script>
 
-<script id="navigationScript">
+<script id="navigationScript" >
     document.addEventListener("DOMContentLoaded", function () {
         const prevPost = document.querySelector(
             ".cursor-pointer:has(.ri-arrow-up-line)",
@@ -315,21 +324,27 @@
             ".cursor-pointer:has(.ri-arrow-down-line)",
         );
 
-        const school = /*[[${school}]]*/ 'default-school';
-        const boardId = /*[[${boardId}]]*/ 0;
+        const school = "[[${school}]]";
+        const boardId = [[${boardId}]];
 
         if (prevPost) {
-            const postId = prevPost.dataset.id;
-            prevPost.addEventListener("click", function () {
-                window.location.href = `/school/${school}/board/${boardId}/post/${postId}`;
-            });
+            const pTag = prevPost.querySelector("p[data-id]");
+            if (pTag && pTag.hasAttribute("data-id")) {
+                const postId = pTag.dataset.id;
+                prevPost.addEventListener("click", function () {
+                    window.location.href = `/school/${school}/board/${boardId}/post/${postId}`;
+                });
+            }
         }
 
         if (nextPost) {
-            const postId = nextPost.dataset.id;
-            nextPost.addEventListener("click", function () {
-                window.location.href = `/school/${school}/board/${boardId}/post/${postId}`;
-            });
+            const pTag = nextPost.querySelector("p[data-id]");
+            if (pTag && pTag.hasAttribute("data-id")) {
+                const postId = pTag.dataset.id;
+                nextPost.addEventListener("click", function () {
+                    window.location.href = `/school/${school}/board/${boardId}/post/${postId}`;
+                });
+            }
         }
     });
 </script>
