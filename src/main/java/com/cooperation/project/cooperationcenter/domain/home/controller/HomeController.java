@@ -23,14 +23,14 @@ public class HomeController {
     public String home(Model model, HttpServletRequest request) {
         model.addAttribute("agencyDto", agencyService.getAgencyListForHome());
         model.addAttribute("schoolDto", schoolFindService.loadAllSchoolByHomeDto());
-        return "/homepage/user/index";
+        return "homepage/user/index";
     }
 
     @RequestMapping({"/admin/home", "/admin"})
     public String adminHome(Model model, HttpServletRequest request) {
         model.addAttribute("pendingDto", memberService.getPendingList());
         log.info("pendingDto:{}",memberService.getPendingList().toString());
-        return "/adminpage/user/index";
+        return "adminpage/user/index";
     }
 
 

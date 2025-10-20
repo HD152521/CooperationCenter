@@ -18,6 +18,6 @@ public class SchoolAdminController {
     @RequestMapping("/school")
     public String school(Model model){
         model.addAttribute("schoolDto",schoolFindService.getSchoolPage());
-        return "/adminpage/user/school/manageSchool";
+        return "adminpage/user/school/manageSchool";
     }
 }
