@@ -30,6 +30,6 @@ public class SurveyAdminController {
         Page<SurveyResponseDto> surveys = surveyFindService.getFilteredSurveysActive(pageable,new SurveyRequest.LogFilterDto(null,null,null,null),null,true);
         model.addAttribute("surveys", surveys);
         model.addAttribute("stats",surveyAdminService.getAdminStats());
-        return "/adminpage/user/survey/manageSurvey";
+        return "adminpage/user/survey/manageSurvey";
     }
 }

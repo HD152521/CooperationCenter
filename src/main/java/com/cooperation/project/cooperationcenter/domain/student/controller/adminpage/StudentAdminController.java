@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class StudentAdminController {
 
     private final StudentService studentService;
-    private final String studentPath = "/adminpage/user/student/";
+    private final String studentPath = "adminpage/user/student/";
 
     @RequestMapping("/student")
     public String studentPage(Model model, @ModelAttribute StudentRequest.ConditionDto condition,
