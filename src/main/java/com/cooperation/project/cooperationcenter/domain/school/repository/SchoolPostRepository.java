@@ -32,4 +32,6 @@ public interface SchoolPostRepository extends JpaRepository<SchoolPost,Long> {
             p.createdAt DESC
     """)
     Page<SchoolPost> findPostsByBoardOrderByNoticeFirst(@Param("boardId") Long boardId, Pageable pageable);
+
+
 }

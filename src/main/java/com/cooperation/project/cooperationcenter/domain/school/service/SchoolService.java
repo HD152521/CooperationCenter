@@ -222,8 +222,4 @@ public class SchoolService {
         log.info("post delete complete");
     }
 
-    public void getScheduleDto(){
-
-    }
-
 }
