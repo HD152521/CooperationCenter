@@ -31,6 +31,8 @@ public class SchoolFindService {
     private final IntroPostRepository introPostRepository;
     private final FilePostRepository filePostRepository;
     private final SchoolScheduleRepository schoolScheduleRepository;
+    private final SchoolPostQSDLRepository schoolPostQSDLRepository;
+
 
     private final FileAttachmentRepository fileAttachmentRepository;
 
@@ -329,13 +331,26 @@ public class SchoolFindService {
         SchoolPost schoolPost = loadPostById(postId);
         SchoolResponse.SchoolPostDto dto = SchoolResponse.SchoolPostDto.from(schoolPost);
         SchoolBoard schoolBoard = schoolPost.getSchoolBoard();
-        SchoolPost beforePost = getBeforePostById(postId,schoolBoard);
-        SchoolPost afterPost = getAfterPostById(postId,schoolBoard);
+        //fixme 수정하기 QueryDSL로
+//        SchoolPost beforePost = getBeforePostById(postId,schoolBoard);
+//        SchoolPost afterPost = getAfterPostById(postId,schoolBoard);
 
-        return new SchoolResponse.PostDetailDto(dto,
-                loadPostFileByPost(postId),
-                (beforePost==null)? null: SchoolResponse.SchoolPostSimpleDto.from(beforePost),
-                (afterPost==null)? null: SchoolResponse.SchoolPostSimpleDto.from(afterPost));
+        try{
+            SchoolPost beforePost = schoolPostQSDLRepository.findBeforePost(schoolPost);
+            SchoolPost afterPost = schoolPostQSDLRepository.findAfterPost(schoolPost);
+
+            return new SchoolResponse.PostDetailDto(dto,
+                    loadPostFileByPost(postId),
+                    (beforePost==null)? null: SchoolResponse.SchoolPostSimpleDto.from(beforePost),
+                    (afterPost==null)? null: SchoolResponse.SchoolPostSimpleDto.from(afterPost));
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+
+
+
+
     }
 
     @Transactional
