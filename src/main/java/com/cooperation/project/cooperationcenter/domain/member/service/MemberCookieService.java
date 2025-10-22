@@ -22,14 +22,20 @@ public class MemberCookieService {
         addRefreshCookies(response, tokenResponse);
     }
 
+
+    //      .secure(true)              // HTTPS 전용
+    //    .sameSite("None")        // CSRF 방어
+
+//    .sameSite("Lax")
+//    .secure(false)
+
     private void addAccessTokenCookies(HttpServletResponse response, TokenResponse tokenResponse) {
         ResponseCookie accessCookie = ResponseCookie.from(JWT_ACCESS_TOKEN_COOKIE_NAME, tokenResponse.accessToken().token())
                 .httpOnly(true)            // JS 접근 차단
-//                .secure(true)              // HTTPS 전용
                 .secure(false)
                 .path("/")                 // 전체 경로에 대해 전송
                 .maxAge(ACCESS_TOKEN_EXPIRE_TIME) // 만료 시간
-                .sameSite("None")        // CSRF 방어
+                .sameSite("Lax")        // CSRF 방어
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
     }
@@ -39,7 +45,7 @@ public class MemberCookieService {
                 .secure(true)              // HTTPS 전용
                 .path("/")                 // 전체 경로에 대해 전송
                 .maxAge(ACCESS_TOKEN_EXPIRE_TIME) // 만료 시간
-                .sameSite("None")        // CSRF 방어
+                .sameSite("Lax")        // CSRF 방어
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
     }
@@ -51,7 +57,7 @@ public class MemberCookieService {
                 .secure(false)
                 .path("/")                 // 전체 경로에 대해 전송
                 .maxAge(ACCESS_TOKEN_EXPIRE_TIME) // 만료 시간
-                .sameSite("None")        // CSRF 방어
+                .sameSite("Lax")        // CSRF 방어
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
     }
@@ -63,7 +69,7 @@ public class MemberCookieService {
                 .secure(false)
                 .path("/")      // 리프레시 전용 엔드포인트에만 전송
                 .maxAge(REFRESH_TOKEN_EXPIRE_TIME)
-                .sameSite("None")
+                .sameSite("Lax")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
     }
@@ -79,7 +85,7 @@ public class MemberCookieService {
                     .secure(false)
                     .path("/")                 // 로그인 시 지정한 path와 동일하게
                     .maxAge(0)                 // 즉시 만료
-                    .sameSite("None")
+                    .sameSite("Lax")
                     .build();
 
             // 2) REFRESH_TOKEN 쿠키 삭제
@@ -89,7 +95,7 @@ public class MemberCookieService {
                     .secure(false)
                     .path("/")     // 로그인 시 지정한 path와 동일하게
                     .maxAge(0)
-                    .sameSite("None")
+                    .sameSite("Lax")
                     .build();
 
             response.addHeader(HttpHeaders.SET_COOKIE, deleteAccess.toString());
