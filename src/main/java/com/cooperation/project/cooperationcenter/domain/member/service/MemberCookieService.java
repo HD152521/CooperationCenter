@@ -30,7 +30,6 @@ public class MemberCookieService {
                 .path("/")                 // 전체 경로에 대해 전송
                 .maxAge(ACCESS_TOKEN_EXPIRE_TIME) // 만료 시간
                 .sameSite("None")        // CSRF 방어
-                .sameSite("None")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
     }
@@ -98,3 +97,4 @@ public class MemberCookieService {
         }
 
 }
+
