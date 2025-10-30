@@ -106,6 +106,13 @@ public class SurveyRestController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/admin/answer")
+    public BaseResponse<?> getAllAnswerLog(){
+        List<AnswerResponse.LogDto> result = surveyLogService.getAllAnswerLog();
+        log.info("result : {}",result.toString());
+        return BaseResponse.onSuccess(result);
+    }
+
     @GetMapping("/admin/answer/{surveyId}")
     public BaseResponse<?> getAnswerLog(@PathVariable String surveyId){
         AnswerResponse.AnswerDto result = surveyLogService.getAnswerLog(surveyId);

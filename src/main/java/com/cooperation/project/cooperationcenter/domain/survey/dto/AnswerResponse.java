@@ -110,8 +110,8 @@ public class AnswerResponse {
             String submitTime,
             Long spendTime,
             String finishStatus,
-            String logId
-
+            String logId,
+            String surveyName
     ){
         public static LogDto from(SurveyLog surveyLog){
             long diffInSeconds = Duration.between(surveyLog.getStartTime(), surveyLog.getCreatedAt()).getSeconds();
@@ -121,7 +121,8 @@ public class AnswerResponse {
                     surveyLog.getCreatedAt().toString(),
                     diffInSeconds,
                     "finish",
-                    surveyLog.getSurveyLogId()
+                    surveyLog.getSurveyLogId(),
+                    surveyLog.getSurvey().getSurveyTitle()
             );
         }
 

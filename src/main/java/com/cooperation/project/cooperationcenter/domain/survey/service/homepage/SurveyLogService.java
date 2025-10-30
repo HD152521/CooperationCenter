@@ -51,6 +51,13 @@ public class SurveyLogService {
         return AnswerResponse.AnswerPagedDto.from(survey,logs);
     }
 
+    public List<AnswerResponse.LogDto> getAllAnswerLog(){
+        List<SurveyLog> surveyLog = surveyFindService.findAllSurveyLog();
+        return AnswerResponse.LogDto.from(surveyLog);
+
+    }
+
+
     public AnswerResponse.AnswerDto getAnswerLog(String surveyId){
         Survey survey = surveyFindService.getSurveyFromId(surveyId);
         List<SurveyLog> surveyLog = surveyFindService.getSurveyLogs(survey);
