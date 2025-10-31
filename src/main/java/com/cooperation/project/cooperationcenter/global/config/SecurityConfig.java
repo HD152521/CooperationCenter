@@ -45,8 +45,12 @@ public class SecurityConfig {
 
                                 //note static 해제
                                 .requestMatchers("/css/**","/plugins/**","/js/**").permitAll()
-
                                 //fixme 임시용임 밑에는
+                                .requestMatchers("/v3/**",
+                                        "/swagger-ui.html",
+                                        "/swagger-ui/**",
+                                        "/swagger-resources/**",
+                                        "/api-test/**").permitAll()
 //                                .requestMatchers("/api/v1/**").permitAll()
 //                                .requestMatchers("/**").permitAll()
                                 //note 일반 사용자 페이지
@@ -60,7 +64,6 @@ public class SecurityConfig {
 
                                 //note 로그인한 사용자
                                 .requestMatchers("/survey/log/detail/**").authenticated()
-
 
                                 //note admin 페이지
                                 .requestMatchers("/admin/login").permitAll()
@@ -100,6 +103,7 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         configuration.addAllowedOriginPattern("http://172.30.1.70:8081");
+        configuration.addAllowedOriginPattern("http://localhost:8081");
         configuration.addAllowedOriginPattern("https://11680c706486.ngrok-free.app");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");

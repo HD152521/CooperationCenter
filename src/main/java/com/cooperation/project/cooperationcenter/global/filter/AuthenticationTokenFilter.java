@@ -36,6 +36,16 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         log.info("진입 path:{}",path);
 
+        if ("/v3/api-docs".equals(path) ||
+                path.startsWith("/v3/api-docs/") ||
+                path.equals("/swagger-ui.html") ||
+                path.startsWith("/swagger-ui/") ||
+                path.startsWith("/swagger-resources/") ||
+                path.startsWith("/api-test/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         //note 무시하는 endpoint들
         final String[] IGNORE_PATHS = {
                 "/css", "/js", "/plugins","/member/logout","/member/signup","/api/v1/member","/api/v1/admin","/api/v1/file/img","/admin/login","/favicon.ico","/api/v1/tencent"
@@ -79,21 +89,5 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
         }
         SecurityContextHolder.clearContext();
         filterChain.doFilter(request, response);
-    }
-
-
-    private void sendErrorResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
-        // 1) HTTP 상태 및 인코딩/타입 설정
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType("application/json; charset=UTF-8");
-        response.setCharacterEncoding("UTF-8");
-
-        // 2) BaseResponse 형식으로 에러 객체 생성
-        BaseResponse<Object> errorBody = BaseResponse.onFailure(errorCode.getCode(), errorCode.getMessage(), null);
-
-        // 3) JSON 직렬화 후 쓰기
-        ObjectMapper objectMapper = new ObjectMapper();
-        String json = objectMapper.writeValueAsString(errorBody);
-        response.getWriter().write(json);
     }
 }
