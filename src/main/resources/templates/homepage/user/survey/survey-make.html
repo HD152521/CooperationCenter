@@ -774,7 +774,7 @@
                             <input id="isPublic"
                                    name="isShare"
                                    type="checkbox"
-                                   th:checked="${survey != null and survey.isShare}" />
+                                   th:checked="${survey == null or survey.isShare}" />
 
                             <span class="slider"></span>
                         </label>
@@ -799,7 +799,7 @@
         </div>
     </div>
 </main>
-<script src="/js/homepage/url.js"></script>
+<script src="/js/homepage/common/url.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 <!-- 계층형 관련 스크립트 -->

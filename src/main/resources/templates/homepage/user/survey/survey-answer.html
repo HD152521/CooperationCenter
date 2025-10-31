@@ -44,20 +44,7 @@
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-<header class="bg-white border-b border-gray-200 sticky top-0 z-10">
-    <div class="container mx-auto px-4">
-        <div class="flex items-center h-16">
-            <a href="/survey/list" data-readdy="true" class="flex items-center text-gray-600 hover:text-primary">
-                <i class="ri-arrow-left-line mr-2"></i>
-                <span>설문조사 목록으로 돌아가기</span>
-            </a>
-            <div class="mx-auto text-lg font-medium"></div>
-            <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white">
-                <span>관</span>
-            </div>
-        </div>
-    </div>
-</header>
+<header th:replace="~{homepage/common/survey-make-nav :: survey-make-nav}"></header>
 <div class="w-full bg-white shadow-sm progress-wrapper">
     <div class="container mx-auto px-4 py-2">
         <div class="relative h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -261,7 +248,7 @@
         }
 
 </script>
-<script src="/js/homepage/url.js"></script>
+<script src="/js/homepage/common/url.js"></script>
 <script th:inline="javascript"  >
     //note API받아오는 코드
     document.addEventListener('DOMContentLoaded', loadSurvey);
@@ -780,7 +767,6 @@
 
             console.log("🔍 response 객체:", response);
 
-// 개별 정보 출력
             console.log("✅ 상태 코드:", response.status);       // ex: 200, 500
             console.log("✅ 성공 여부:", response.ok);           // true/false
             console.log("✅ 상태 메시지:", response.statusText); // ex: OK, Internal Server Error
@@ -808,6 +794,9 @@
                 }, 3000);
             } else {
                 alert("제출에 실패했습니다.");
+                const err = await parseErrorResponse(response); // {code, message, raw}
+                handleSurveyError(err, response.status);
+                return;
             }
         } catch (error) {
             console.error("제출 중 오류:", error);

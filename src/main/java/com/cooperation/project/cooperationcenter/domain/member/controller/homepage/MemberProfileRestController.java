@@ -5,7 +5,9 @@ import com.cooperation.project.cooperationcenter.domain.member.dto.Profile;
 import com.cooperation.project.cooperationcenter.domain.member.dto.UpdatePasswordDto;
 import com.cooperation.project.cooperationcenter.domain.member.service.MemberService;
 import com.cooperation.project.cooperationcenter.domain.member.service.ProfileService;
+import com.cooperation.project.cooperationcenter.global.exception.BaseException;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
+import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,10 +25,14 @@ public class MemberProfileRestController {
 
     @PatchMapping("/member")
     public BaseResponse<?> updateMemberInfo(@RequestBody Profile.MemberDto request, @AuthenticationPrincipal MemberDetails memberDetails){
-
         log.info("request:{}",request.toString());
-        profileService.updateMember(request,memberDetails);
-        return BaseResponse.onSuccess("success");
+        try{
+            profileService.updateMember(request,memberDetails);
+            return BaseResponse.onSuccess("success");
+        }catch (BaseException e){
+            log.warn(e.getCode().toString());
+            return BaseResponse.onFailure(e.getCode(),null);
+        }
     }
 
     @PatchMapping("/agency")

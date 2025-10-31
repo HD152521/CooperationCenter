@@ -73,6 +73,7 @@ public class ProfileService {
         Member member = getMember(memberDetails.getUsername());
         member.updateMember(request);
         memberRepository.save(member);
+        throw new BaseException(ErrorCode.MEMBER_NOT_FOUND);
     }
 
     @Transactional

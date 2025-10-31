@@ -1,10 +1,8 @@
 package com.cooperation.project.cooperationcenter.domain.survey.controller.homepage;
 
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
-import com.cooperation.project.cooperationcenter.domain.student.dto.StudentRequest;
 import com.cooperation.project.cooperationcenter.domain.survey.dto.*;
 import com.cooperation.project.cooperationcenter.domain.survey.model.Survey;
-import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyFolder;
 import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.*;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -13,8 +11,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -22,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.IOException;
 import java.util.List;
@@ -121,23 +118,23 @@ public class SurveyRestController {
     }
 
     @PostMapping("/admin/log/csv")
-    public ResponseEntity<Resource> extractCsv(@RequestBody LogCsv.RequestDto request){
+    public ResponseEntity<StreamingResponseBody> extractCsv(@RequestBody LogCsv.RequestDto request){
         log.info("[enter extract csv]");
         return surveyLogService.extractCsv(request);
     }
 
     @PostMapping("/admin/log/{surveyId}")
-    public ResponseEntity<Resource> extractCsv(@PathVariable String surveyId){
+    public ResponseEntity<StreamingResponseBody> extractCsv(@PathVariable String surveyId){
         log.info("extracy all csv...");
         return surveyLogService.extractAllCsv(surveyId);
     }
 
     @PostMapping("/admin/log/file/student/{surveyId}")
-    public ResponseEntity<byte[]> extractFileStudent(@PathVariable String surveyId){
+    public ResponseEntity<StreamingResponseBody> extractFileStudent(@PathVariable String surveyId){
         return surveyLogService.extractFileStudent(surveyId);
     }
     @PostMapping("/admin/log/file/survey/{surveyId}")
-    public ResponseEntity<byte[]> extractFileSurvey(@PathVariable String surveyId){
+    public ResponseEntity<StreamingResponseBody> extractFileSurvey(@PathVariable String surveyId){
         return surveyLogService.extractFileSurvey(surveyId);
     }
 
