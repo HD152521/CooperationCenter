@@ -6,11 +6,6 @@
     <title th:text="${school}">학교 소개 - 대학교</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet"
-    />
     <link
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
@@ -41,10 +36,18 @@
         };
     </script>
     <style>
-        :where([class^="ri-"])::before { content: "\f3c2"; }
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
+        @font-face {
+          font-family: 'PretendardVariable';
+          src: url('/fonts/PretendardVariable.woff2') format('woff2');
+          font-display: swap;
         }
+
+        body {
+          font-family: 'PretendardVariable', 'Noto Sans KR', sans-serif;
+        }
+    </style>
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
         .timeline-item::before {
             content: '';
             position: absolute;
