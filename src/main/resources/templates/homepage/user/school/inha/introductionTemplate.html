@@ -190,29 +190,13 @@
 
         <!-- 기본 정보 -->
         <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="bg-white rounded-lg shadow-sm p-6 md:col-span-2">
-                <h2 class="text-xl font-semibold mb-4">기본 정보</h2>
-                <dl class="space-y-3 text-sm">
-                    <div class="flex items-start">
-                        <dt class="w-28 text-gray-500">학교명</dt>
-                        <dd class="flex-1 font-medium">인하대학교 (Inha University)</dd>
-                    </div>
-                    <div class="flex items-start">
-                        <dt class="w-28 text-gray-500">설립 연도</dt>
-                        <dd class="flex-1">1954년</dd>
-                    </div>
-                    <div class="flex items-start">
-                        <dt class="w-28 text-gray-500">위치</dt>
-                        <dd class="flex-1">인천광역시 미추홀구 인하로 100, 22212</dd>
-                    </div>
-                    <div class="flex items-start">
-                        <dt class="w-28 text-gray-500">특징</dt>
-                        <dd class="flex-1">
-                            공학 중심의 종합대학 / 항공우주·조선·AI 융합 분야 특성화 / 산학연 클러스터 협력 강화
-                        </dd>
-                    </div>
-                </dl>
-            </div>
+            <div th:replace="~{fragments/school/universityBasicInfo :: universityBasicInfo(
+  '인하대학교',
+  'Inha University',
+  '1954년',
+  '인천광역시 미추홀구 인하로 100, 22212',
+  '공학 중심의 종합대학 / 항공우주·조선·AI 융합 분야 특성화 / 산학연 클러스터 협력 강화'
+)}"></div>
 
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <h2 class="text-xl font-semibold mb-4">QS 세계 대학 순위</h2>
@@ -488,28 +472,14 @@
         </style>
 
         <!-- 위치 정보 -->
-        <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">캠퍼스 위치</h2>
-            <div class="flex flex-col md:flex-row gap-8">
-                <div class="md:w-1/2">
-                    <div class="rounded-lg overflow-hidden h-80">
-                        <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3167.9629415192644!2d126.65338957647929!3d37.4492574303204!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357b79b8c0f5d14d%3A0x3d26052b5cf239d8!2z7J247LKc64yA7ZWZ6rWQIOyLnOyauOyYpO2Vmeq0gA!5e0!3m2!1sko!2skr!4v1739000011000!5m2!1sko!2skr"
-                                width="100%" height="100%" style="border:0;"
-                                allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-                        </iframe>
-                    </div>
-                </div>
-                <div class="md:w-1/2">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">주소</h3>
-                    <p class="text-gray-700 mb-4">인천광역시 미추홀구 인하로 100 (22212) 인하대학교</p>
-                    <a href="https://www.inha.ac.kr/kr/1064/subview.do" target="_blank" rel="noopener"
-                       class="px-5 py-2.5 bg-primary text-white rounded-button hover:bg-blue-600 transition inline-flex items-center">
-                        <i class="ri-map-pin-line mr-2"></i> 오시는 길 안내
-                    </a>
-                </div>
-            </div>
-        </section>
+        <div th:replace="~{fragments/school/universityCampusMap :: universityCampus(
+  '캠퍼스 위치',
+  'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3167.9629415192644!2d126.65338957647929!3d37.4492574303204!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357b79b8c0f5d14d%3A0x3d26052b5cf239d8!2z7J247LKc64yA7ZWZ6rWQIOyLnOyauOyYpO2Vmeq0gA!5e0!3m2!1sko!2skr!4v1739000011000!5m2!1sko!2skr',
+  '인천광역시 미추홀구 인하로 100 (22212) 인하대학교',
+  'https://www.inha.ac.kr/kr/1064/subview.do',
+  '오시는 길 안내'
+)}"></div>
+
     </main>
 </div>
 <footer class="bg-gray-800 text-white py-10 mt-10">
