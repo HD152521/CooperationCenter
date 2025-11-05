@@ -804,6 +804,12 @@
 
 <!-- 계층형 관련 스크립트 -->
 
+<script type="module" id="api-bootstrap">
+    import { api } from "/js/homepage/lib/apiClient.js";
+    window.api = api;
+    window.dispatchEvent(new Event("api-ready"));
+</script>
+
 <script id="hierarchy-management">
     document.addEventListener("DOMContentLoaded", function(){
         window.hierarchyStore = {};
@@ -1735,15 +1741,17 @@
                 folderId,
                 isShare
             };
-            const response = await fetch(url, {
-                method: method,
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) throw new Error("저장 실패");
+            if (method === "POST") {
+                   await api.postJson(url, payload);
+                 } else if (method === "PATCH") {
+                   await api.patchJson(url, payload);
+                 } else if (method === "PUT") {
+                   await api.putJson(url, payload);
+                 } else {
+                   await api._request(method, url, JSON.stringify(payload), {
+                         headers: { "Content-Type": "application/json" }
+                   });
+                 }
 
             showToast("success", "설문조사가 저장되었습니다");
             window.location.href = "/survey/list?folderId="+folderId;
@@ -1777,14 +1785,10 @@
 
             try {
                 // 템플릿 API 호출
-                const res = await fetch(`/api/v1/survey/admin/template?type=${selectedType}`);
-                if (!res.ok) throw new Error("템플릿 로드 실패");
-
-                const jsonResult = await res.json();
-                const templateQuestions =jsonResult.result;
-
-                console.log(jsonResult);
-                console.log(templateQuestions);
+                const templateQuestions = await api.get(
+                       `/api/v1/survey/admin/template?type=${encodeURIComponent(selectedType)}`
+                     );
+                console.log("templateQuestions:", templateQuestions);
 
                 // 템플릿 문항 생성
                 templateQuestions.forEach((q) => {

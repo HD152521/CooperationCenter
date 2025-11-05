@@ -61,7 +61,7 @@ public class SurveyAnswerService {
         }
 
         Survey survey = surveyFindService.getSurveyFromId(requestDto.surveyId());
-//        if(checkDate(survey)) throw new BaseException(ErrorCode.SURVEY_DATE_NOT_VALID);
+        if(checkDate(survey)) throw new BaseException(ErrorCode.SURVEY_DATE_NOT_VALID);
         survey.setParticipantCount();
 
         Member member = memberRepository.findMemberByEmail(memberDetails.getUsername()).get();

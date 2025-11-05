@@ -40,16 +40,8 @@ public class ProfileService {
     private final FileService fileService;
 
     public Member getMember(String email){
-        try {
-            return memberRepository.findMemberByEmail(email)
-                    .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
-        } catch (BaseException e){
-            log.warn("멤버 조회 실패: {}", e.getMessage());
-            return null;
-        } catch (Exception e){
-            log.error("알 수 없는 에러 발생: {}", e.getMessage(), e);
-            return null;
-        }
+        return memberRepository.findMemberByEmail(email)
+                .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     public Profile.ProfileDto getProfileDto(MemberDetails memberDetails, Pageable pageable){
@@ -73,7 +65,6 @@ public class ProfileService {
         Member member = getMember(memberDetails.getUsername());
         member.updateMember(request);
         memberRepository.save(member);
-        throw new BaseException(ErrorCode.MEMBER_NOT_FOUND);
     }
 
     @Transactional

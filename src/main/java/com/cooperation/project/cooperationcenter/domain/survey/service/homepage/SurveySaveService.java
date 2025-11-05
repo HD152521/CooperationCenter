@@ -189,7 +189,10 @@ public class SurveySaveService {
         List<QuestionDto> response = new ArrayList<>();
         Survey survey = surveyFindService.getSurveyFromId(surveyId);
 
-        if(!survey.isShare()) return null;
+        boolean expired = (survey.getEndDate() != null) && LocalDate.now().isAfter(survey.getEndDate());  // today > endDate
+
+        if(!survey.isShare()) throw new BaseException(ErrorCode.SURVEY_NOT_SHARE);
+        if(expired) throw new BaseException(ErrorCode.SURVEY_DATE_NOT_VALID);
 
         List<Question> questions = surveyFindService.getQuestions(survey);
         List<QuestionOption> options = surveyFindService.getOptions(survey);

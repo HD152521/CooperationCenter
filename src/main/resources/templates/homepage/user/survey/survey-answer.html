@@ -249,30 +249,20 @@
 
 </script>
 <script src="/js/homepage/common/url.js"></script>
+
+<script type="module" id="api-bootstrap">
+    import { api } from "/js/homepage/lib/apiClient.js";
+    window.api = api;
+    window.dispatchEvent(new Event("api-ready"));
+</script>
+
 <script th:inline="javascript"  >
     //note API받아오는 코드
     document.addEventListener('DOMContentLoaded', loadSurvey);
     async function loadSurvey() {
         try {
             const surveyId = [[${surveyId}]];
-            const response = await fetch(`${surveyUrl}/${surveyId}`); // ← 필요시 ID 파라미터 수정
-            const text = await response.text();
-            if (!response.ok) {
-                let errMsg = `${response.status} ${response.statusText}`;
-                try {
-                    const e = text ? JSON.parse(text) : null;
-                    if (e?.message) errMsg = e.message;
-                } catch {}
-                showFatalError(errMsg);
-                return;
-            }
-
-            if (!text || !text.trim()) {
-                showFatalError('해당 신청 페이지는 공개 금지 상태입니다.');
-                return;
-            }
-            const jsonText = JSON.parse(text);
-            const data = jsonText.result;
+            const data = await api.get(`${surveyUrl}/${surveyId}`);
             const now = new Date();
 
             const yyyy = now.getFullYear();
@@ -759,19 +749,10 @@
                     }
                 }
             }
+            try{
+                const result = await api.postMultipart(`${surveyUrl}/answer`, formData);
+                console.log("✅ API 성공, payload:", result);
 
-            const response = await fetch(`${surveyUrl}/answer`, {
-                method: 'POST',
-                body: formData
-            });
-
-            console.log("🔍 response 객체:", response);
-
-            console.log("✅ 상태 코드:", response.status);       // ex: 200, 500
-            console.log("✅ 성공 여부:", response.ok);           // true/false
-            console.log("✅ 상태 메시지:", response.statusText); // ex: OK, Internal Server Error
-
-            if (response.ok) {
                 const successMessage = document.createElement('div');
                 successMessage.className = 'fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50';
                 successMessage.innerHTML = `
@@ -792,11 +773,8 @@
                 setTimeout(() => {
                     window.location.href = "/survey/list";
                 }, 3000);
-            } else {
-                alert("제출에 실패했습니다.");
-                const err = await parseErrorResponse(response); // {code, message, raw}
-                handleSurveyError(err, response.status);
-                return;
+            } catch(e) {
+                console.error("파일 fetch 실패:", e);
             }
         } catch (error) {
             console.error("제출 중 오류:", error);

@@ -84,6 +84,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
             } catch (ExpiredJwtException e) {
                 log.warn(e.getMessage());
                 log.warn("authentication에서 오류발생");
+                response.sendRedirect("/member/login");
                 request.setAttribute("tokenExpired", true); // 포워드 시 전달용
             }
         }

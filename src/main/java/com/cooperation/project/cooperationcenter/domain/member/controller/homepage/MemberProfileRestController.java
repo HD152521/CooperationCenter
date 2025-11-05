@@ -32,14 +32,25 @@ public class MemberProfileRestController {
         }catch (BaseException e){
             log.warn(e.getCode().toString());
             return BaseResponse.onFailure(e.getCode(),null);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return BaseResponse.onFailure("ERROR",e.getMessage().toString(),false);
         }
     }
 
     @PatchMapping("/agency")
     public BaseResponse<?> updateAgencyInfo(@RequestBody Profile.MemberDto request, @AuthenticationPrincipal MemberDetails memberDetails){
         log.info("request:{}",request.toString());
-        profileService.updateAgency(request,memberDetails);
-        return BaseResponse.onSuccess("success");
+        try{
+            profileService.updateAgency(request,memberDetails);
+            return BaseResponse.onSuccess("success");
+        }catch (BaseException e){
+            log.warn(e.getCode().toString());
+            return BaseResponse.onFailure(e.getCode(),null);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return BaseResponse.onFailure("ERROR",e.getMessage().toString(),false);
+        }
     }
 
     @PatchMapping("/businessCert")
@@ -47,8 +58,16 @@ public class MemberProfileRestController {
             @RequestPart(name = "businessCertificate", required = false) MultipartFile file
             , @AuthenticationPrincipal MemberDetails memberDetails
     ){
-        profileService.updateBussinessCert(file,memberDetails);
-        return BaseResponse.onSuccess("success");
+        try{
+            profileService.updateBussinessCert(file,memberDetails);
+            return BaseResponse.onSuccess("success");
+        }catch (BaseException e){
+            log.warn(e.getCode().toString());
+            return BaseResponse.onFailure(e.getCode(),null);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return BaseResponse.onFailure("ERROR",e.getMessage().toString(),false);
+        }
     }
 
     @PatchMapping("/agencyPicture")
@@ -56,7 +75,15 @@ public class MemberProfileRestController {
             @RequestPart(name = "agencyPicture", required = false) MultipartFile file
             , @AuthenticationPrincipal MemberDetails memberDetails
     ){
-        profileService.updateAgencyPicture(file,memberDetails);
-        return BaseResponse.onSuccess("success");
+        try{
+            profileService.updateAgencyPicture(file,memberDetails);
+            return BaseResponse.onSuccess("success");
+        }catch (BaseException e){
+            log.warn(e.getCode().toString());
+            return BaseResponse.onFailure(e.getCode(),null);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return BaseResponse.onFailure("ERROR",e.getMessage().toString(),false);
+        }
     }
 }

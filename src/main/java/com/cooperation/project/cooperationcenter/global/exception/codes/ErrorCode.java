@@ -95,6 +95,7 @@ public enum ErrorCode implements BaseCode {
     MEMBER_NOT_ADMIN(HttpStatus.BAD_REQUEST,"MEMBER-0004","Meber is not ADMIN"),
 
     SURVEY_DATE_NOT_VALID(HttpStatus.BAD_REQUEST,"SURVEY-0000","지금 설문조사 입력 기간이 아닙니다."),
+    SURVEY_NOT_SHARE(HttpStatus.BAD_REQUEST,"SURVEY-0001","해당 설문조사는 공개 전입니다."),
 
     // 5xx : server error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SERVER-0000", "서버 에러");

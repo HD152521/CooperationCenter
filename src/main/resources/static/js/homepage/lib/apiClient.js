@@ -34,8 +34,8 @@ export const api = {
     postJson(url, json, opts={}) { return this._request("POST", url, JSON.stringify(json), { ...opts, headers: { "Content-Type": "application/json", ...(opts.headers||{}) } }); },
     putJson(url, json, opts={})  { return this._request("PUT", url,  JSON.stringify(json), { ...opts, headers: { "Content-Type": "application/json", ...(opts.headers||{}) } }); },
     postMultipart(url, formData, opts={}) { return this._request("POST", url, formData, opts); },
-    patchJson(url, json, opts = {}) { return this._request("PATCH",url,JSON.stringify(json),{ ...opts, headers: { "Content-Type": "application/json", ...(opts.headers || {}) } });
-    },
+    patchMultipart(url, formData, opts = {}) {return this._request("PATCH", url, formData, opts);},
+    patchJson(url, json, opts = {}) { return this._request("PATCH",url,JSON.stringify(json),{ ...opts, headers: { "Content-Type": "application/json", ...(opts.headers || {}) } }); },
 
     // ---------- core ----------
     async _request(method, url, body, opts) {
@@ -58,14 +58,19 @@ export const api = {
                 signal: opts?.signal
             });
         } catch (e) {
+            console.log("res 중에 오류");
             Notifier.modal("네트워크 오류", "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
             throw e;
         }
 
+        console.debug("[api] <-", res.status, res.statusText, "for", method, url);
+
         if (!res.ok) {
+            console.log("!res.ok 진입");
             const err = await parseErrorResponse(res);
             handleError(err, res.status, this.config.errorMap);
-            const e = new Error(err.message || `HTTP ${res.status}`);
+            const serverMsg = typeof err.raw === "string" ? err.raw : (err.message || "");
+            const e = new Error(serverMsg || `HTTP ${res.status}`);
             e.code   = err.code || null;
             e.status = res.status;
             e.payload = err.raw;
@@ -74,7 +79,27 @@ export const api = {
 
         // content-type 따라 자동 파싱
         const ct = res.headers.get("Content-Type") || "";
-        if (ct.includes("application/json")) return res.json();
+        if (ct.includes("application/json")){
+            const j = await res.json();
+            if (j && typeof j === "object" && "isSuccess" in j) {
+                if (j.isSuccess === false) {
+                    const err = {
+                        code: j.code ?? null,
+                        message: j.message ?? null,
+                        httpStatus: j.httpStatus ?? 400, // 표시용 상태(서버가 200으로 줘도 OK)
+                        raw: j
+                    };
+                    console.error("[API ERROR LOGICAL]", err.httpStatus, err.code, err.message, err.raw);
+                    handleError(err, err.httpStatus, this.config.errorMap);
+
+                    const e = new Error(err.message || "Logical failure");
+                    e.code = err.code; e.status = err.httpStatus; e.payload = err.raw;
+                    throw e;
+                }
+                return ("result" in j ? j.result : j);
+            }
+            return res.json();
+        }
         if (ct.startsWith("text/"))          return res.text();
         return res; // 파일/바이너리 응답 등
     }
@@ -82,11 +107,11 @@ export const api = {
 
 // ---------- helpers ----------
 async function parseErrorResponse(res) {
-    const ct = res.headers.get("Content-Type") || "";
-    // 기대 포맷: { isSuccess:false, code:"...", message:"...", httpStatus:400 }
     try {
-        if (ct.includes("application/json")) {
-            const j = await res.json();
+           const r2 = res.clone();
+           const ct = r2.headers.get("Content-Type") || "";
+           if (ct.includes("application/json")) {
+                 const j = await r2.json();
 
             // 다양한 래핑 가능성 방어: {reason:{...}}, {error:{...}}, 최상위 ...
             const pick = (obj) => {
@@ -108,7 +133,7 @@ async function parseErrorResponse(res) {
                 raw: j
             };
         }
-        const t = await res.text();
+        const t = await r2.text();
         return { code: null, message: t || null, httpStatus: res.status, isSuccess: false, raw: t };
     } catch {
         return { code: null, message: null, httpStatus: res.status, isSuccess: false, raw: null };
