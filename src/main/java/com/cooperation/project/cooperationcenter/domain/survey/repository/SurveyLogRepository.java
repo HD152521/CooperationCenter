@@ -16,4 +16,5 @@ public interface SurveyLogRepository extends JpaRepository<SurveyLog,Long> {
     SurveyLog findSurveyLogBySurveyLogId(String logId);
     Page<SurveyLog> findSurveysLogByMember(Member member, Pageable pageable);
 
+    List<SurveyLog> findTop7ByOrderByCreatedAtDesc();
 }

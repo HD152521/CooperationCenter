@@ -198,6 +198,15 @@ public class SurveyFindService {
         }
     }
 
+    public List<SurveyLog> findAllSurveyLog(){
+        try{
+            return surveyLogRepository.findTop7ByOrderByCreatedAtDesc();
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
     public SurveyLog getSurveyLog(String logId){
         try{
             return surveyLogRepository.findSurveyLogBySurveyLogId(logId);

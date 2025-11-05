@@ -1094,7 +1094,14 @@
         </div>
     </main>
 </div>
-<script src="/js/homepage/url.js"></script>
+<script type="module" id="api-bootstrap">
+    import { api } from "/js/homepage/lib/apiClient.js";
+    window.api = api;
+    window.dispatchEvent(new Event("api-ready"));
+</script>
+
+
+<script src="/js/homepage/common/url.js"></script>
 <script id="checkbox-handler">
     document.addEventListener("DOMContentLoaded", function () {
         // 체크박스 기능 구현
@@ -1178,17 +1185,8 @@
             };
 
             try {
-                const response = await fetch(`${surveyAdminUrl}/log/csv`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(requestDto),
-                });
 
-                if (!response.ok) {
-                    throw new Error('CSV 생성에 실패했습니다.');
-                }
+                const csvText = await api.postJson(`${surveyAdminUrl}/log/csv`, requestDto);
                 const titleText = document.getElementById("survey-title").textContent;
                 const today = new Date();
                 const year = today.getFullYear();
@@ -1197,7 +1195,7 @@
 
                 const todayStr = `${year}-${month}-${day}`;
 
-                const blob = await response.blob();
+                const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8' });
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
@@ -1248,13 +1246,7 @@
             const surveyId = document.getElementById("survey-title").dataset.id;
 
             try {
-                const response = await fetch(`${surveyAdminUrl}/log/${surveyId}`, {
-                    method: 'POST',
-                });
-
-                if (!response.ok) {
-                    throw new Error('CSV 생성에 실패했습니다.');
-                }
+                const csvData = await api._request("POST", `${surveyAdminUrl}/log/${surveyId}`, null, {});
                 const titleText = document.getElementById("survey-title").textContent;
                 const today = new Date();
                 const year = today.getFullYear();
@@ -1263,7 +1255,10 @@
 
                 const todayStr = `${year}-${month}-${day}`;
 
-                const blob = await response.blob();
+                const blob = csvData instanceof Response
+                    ? await csvData.blob()
+                      : new Blob([csvData], { type: "text/csv;charset=utf-8" });
+
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
 
@@ -1315,13 +1310,8 @@
             const surveyId = document.getElementById("survey-title").dataset.id;
 
             try {
-                const response = await fetch(`${surveyAdminUrl}/log/file/student/${surveyId}`, {
-                    method: 'POST',
-                });
+                const res = await api._request("POST", `${surveyAdminUrl}/log/file/student/${surveyId}`, null, {});
 
-                if (!response.ok) {
-                    throw new Error('유저별 파일 다운로드에 실패했습니다.');
-                }
                 const titleText = document.getElementById("survey-title").textContent;
                 const today = new Date();
                 const year = today.getFullYear();
@@ -1330,7 +1320,7 @@
 
                 const todayStr = `${year}-${month}-${day}`;
 
-                const blob = await response.blob();
+                const blob = await res.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
 
@@ -1382,13 +1372,7 @@
             const surveyId = document.getElementById("survey-title").dataset.id;
 
             try {
-                const response = await fetch(`${surveyAdminUrl}/log/file/survey/${surveyId}`, {
-                    method: 'POST',
-                });
-
-                if (!response.ok) {
-                    throw new Error('문항별 파일 다운로드에 실패했습니다.');
-                }
+                const res = await api._request("POST", `${surveyAdminUrl}/log/file/survey/${surveyId}`, null, {});
                 const titleText = document.getElementById("survey-title").textContent;
                 const today = new Date();
                 const year = today.getFullYear();
@@ -1397,7 +1381,7 @@
 
                 const todayStr = `${year}-${month}-${day}`;
 
-                const blob = await response.blob();
+                const blob = await res.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
 

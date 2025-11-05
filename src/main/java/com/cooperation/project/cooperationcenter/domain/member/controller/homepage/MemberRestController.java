@@ -4,6 +4,7 @@ package com.cooperation.project.cooperationcenter.domain.member.controller.homep
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
 import com.cooperation.project.cooperationcenter.domain.member.dto.UpdatePasswordDto;
 import com.cooperation.project.cooperationcenter.domain.member.service.MemberService;
+import com.cooperation.project.cooperationcenter.global.exception.BaseException;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -36,30 +37,52 @@ public class MemberRestController {
         try{
             memberService.signup(data,agencyPicture,businessCertificate);
             return BaseResponse.onSuccess("success");
+        }catch (BaseException e){
+            return BaseResponse.onFailure(e.getCode(),null);
         }catch (Exception e){
             log.warn(e.getMessage());
-            return BaseResponse.onFailure(ErrorCode.BAD_REQUEST,null);
+            return BaseResponse.onFailure("ERROR",e.getMessage().toString(),false);
         }
     }
 
     @GetMapping("/check-id")
     public BaseResponse<?> checkDuplicateId(@RequestParam String username) {
-        boolean isDuplicate = memberService.isUsernameTaken(username);
-        log.info("response:{}",isDuplicate);
-        return BaseResponse.onSuccess(isDuplicate);
+        try{
+            return BaseResponse.onSuccess(memberService.isUsernameTaken(username));
+        }catch (BaseException e){
+            return BaseResponse.onFailure(e.getCode(),false);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return BaseResponse.onFailure("ERROR",e.getMessage().toString(),false);
+        }
     }
 
     @PostMapping("/login")
     public BaseResponse<?> login(@RequestBody MemberRequest.LoginDto requestDto, HttpServletResponse response,HttpServletRequest request){
+        try{
             memberService.login(requestDto,response,request);
             log.info("loginSuccess");
             return BaseResponse.onSuccess("success");
+        }catch (BaseException e){
+            return BaseResponse.onFailure(e.getCode(),false);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return BaseResponse.onFailure("ERROR",e.getMessage().toString(),false);
+        }
+
     }
 
     @PostMapping("/logout")
     public BaseResponse<?> userLogout(HttpServletRequest request ,HttpServletResponse response){
-        memberService.logout(request,response);
-        return BaseResponse.onSuccess("log out success");
+        try {
+            memberService.logout(request, response);
+            return BaseResponse.onSuccess("log out success");
+        }catch (BaseException e){
+            return BaseResponse.onFailure(e.getCode(),false);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return BaseResponse.onFailure("ERROR",e.getMessage().toString(),false);
+        }
     }
 
     @PostMapping("/refresh")

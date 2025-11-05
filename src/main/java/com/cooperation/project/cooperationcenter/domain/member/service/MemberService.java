@@ -183,13 +183,8 @@ public class MemberService {
     }
 
     public boolean isUsernameTaken(String username){
-        try{
             log.info("username:{}",username);
             return memberRepository.existsMemberByEmail(username);
-        }catch (Exception e){
-            log.warn(e.getMessage());
-            return false;
-        }
     }
 
     @Transactional

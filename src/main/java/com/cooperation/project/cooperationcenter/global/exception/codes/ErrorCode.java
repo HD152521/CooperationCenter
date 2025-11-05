@@ -69,11 +69,11 @@ public enum ErrorCode implements BaseCode {
     //바인딩 에러
     BINDING_ERROR(HttpStatus.BAD_REQUEST, "BINDING-0000", "바인딩에 실패했습니다."),
 
-    FILE_EXTENSION_ERROR(HttpStatus.BAD_REQUEST, "File-0000", "파일 확장자가 잘못되었습니다."),
-    FILE_READ_ERROR(HttpStatus.BAD_REQUEST, "File-0001", "파일을 읽어오는데 실패하였습니다."),
-    FILE_NOT_FOUND(HttpStatus.BAD_REQUEST, "File-0002", "해당 ID를 가진 파일을 찾을 수 없습니다."),
-    FILELOG_NOT_FOUND(HttpStatus.BAD_REQUEST, "File-0003", "파일 업로드 기록을 가져올 수 없습니다."),
-    FILE_SIZE_ERROR(HttpStatus.BAD_REQUEST, "File-0004", "파일 사이즈가 너무 큽니다."),
+    FILE_EXTENSION_ERROR(HttpStatus.BAD_REQUEST, "FILE-0000", "파일 확장자가 잘못되었습니다."),
+    FILE_READ_ERROR(HttpStatus.BAD_REQUEST, "FILE-0001", "파일을 읽어오는데 실패하였습니다."),
+    FILE_NOT_FOUND(HttpStatus.BAD_REQUEST, "FILE-0002", "해당 ID를 가진 파일을 찾을 수 없습니다."),
+    FILELOG_NOT_FOUND(HttpStatus.BAD_REQUEST, "FILE-0003", "파일 업로드 기록을 가져올 수 없습니다."),
+    FILE_SIZE_ERROR(HttpStatus.BAD_REQUEST, "FILE-0004", "파일 사이즈가 너무 큽니다."),
 
     //로그인 에러
     EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "LOGIN-0000", "이메일이 잘못됨"),
@@ -95,6 +95,7 @@ public enum ErrorCode implements BaseCode {
     MEMBER_NOT_ADMIN(HttpStatus.BAD_REQUEST,"MEMBER-0004","Meber is not ADMIN"),
 
     SURVEY_DATE_NOT_VALID(HttpStatus.BAD_REQUEST,"SURVEY-0000","지금 설문조사 입력 기간이 아닙니다."),
+    SURVEY_NOT_SHARE(HttpStatus.BAD_REQUEST,"SURVEY-0001","해당 설문조사는 공개 전입니다."),
 
     // 5xx : server error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SERVER-0000", "서버 에러");
