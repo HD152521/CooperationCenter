@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<section th:fragment="universityIntro(title, description, features, mainLink, mainLabel, subLink, subLabel, imageUrl, imageAlt)"
+         class="bg-white rounded-lg shadow-sm p-6 mb-8">
+
+    <div class="flex flex-col md:flex-row gap-8">
+        <div class="md:w-1/2">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4" th:text="${title}">글로벌 혁신 대학</h2>
+            <p class="text-gray-700 mb-3" th:text="${description}">
+                세종대학교는 서울 광진구에 위치한 사립 종합대학으로, 공학·컴퓨터/AI, 호텔관광, 콘텐츠(애니메이션 등)
+                분야에서 강점을 보이는 것으로 알려져 있습니다.
+            </p>
+
+            <ul class="list-disc pl-5 text-gray-700 space-y-1">
+                <li th:each="feature : ${features}" th:text="${feature}">
+                    도심 접근성 우수(어린이대공원 인접)
+                </li>
+            </ul>
+
+            <div class="flex flex-wrap gap-3 mt-6">
+                <a th:href="${mainLink}" target="_blank" rel="noopener"
+                   class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition flex items-center">
+                    <i class="ri-external-link-line mr-2"></i>
+                    <span th:text="${mainLabel}">공식 홈페이지</span>
+                </a>
+
+                <a th:href="${subLink}" target="_blank" rel="noopener"
+                   class="px-4 py-2 border border-gray-300 text-gray-700 rounded-button hover:bg-gray-50 transition">
+                    <span th:text="${subLabel}">English Site</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="md:w-1/2">
+            <div class="rounded-lg overflow-hidden h-72 bg-gray-100">
+                <img th:src="${imageUrl}" th:alt="${imageAlt}"
+                     class="w-full h-full object-cover object-center" />
+            </div>
+        </div>
+    </div>
+
+</section>
+
+</body>
+</html>
