@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{fragments/layout/main-layout :: main-layout(~{::head}, ~{::body}, ~{::script})}">
+      th:replace="~{fragments/layout/university-layout :: university-layout(~{::head}, ~{::main}, ~{::script})}">
 <head>
     <title th:text="${school}">세종대학교 소개</title>
     <style>
@@ -12,19 +12,10 @@
         .chip.subtle { background:#f3f4f6; color:#4b5563; }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-<div class="container mx-auto px-4 py-8 pt-16 flex flex-col md:flex-row items-start gap-8">
-        <div th:replace="~{fragments/school/universityLeftSideBar:: school-left}"></div>
     <main class="min-w-0 flex-1 py-6 px-0 md:px-6">
-        <div class="mb-8">
-            <div class="flex items-center text-sm text-gray-500 mb-2">
-                <a href="#" class="hover:text-primary">홈</a>
-                <span class="mx-2">></span>
-                <a href="#" class="hover:text-primary">대학교</a>
-                <span class="mx-2">></span>
-            </div>
-            <h1 class="text-3xl font-bold text-gray-900">세종대학교 소개</h1>
-        </div>
+        <div
+                th:replace="~{fragments/school/universityNavHeader :: universityNavHeader('세종대학교 소개')}"
+        ></div>
 
         <div th:replace="~{fragments/school/universityIntroSection :: universityIntroSection(
   '글로벌 혁신 대학',
@@ -426,8 +417,6 @@
 )}"></div>
 
     </main>
-</div>
-</body>
 <th:block th:fragment="script">
 <script>
     (function(){

@@ -1,92 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{fragments/layout/main-layout :: main-layout(~{::head}, ~{::body}, ~{::script})}">
+      th:replace="~{fragments/layout/university-layout :: university-layout(~{::head}, ~{::main}, ~{::script})}">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>공지사항 - 국제 프로그램</title>
-    <style>
-        .nav-item.active {
-            border-left: 4px solid #3b82f6;
-            background-color: rgba(59, 130, 246, 0.1);
-        }
-        .nav-item:hover:not(.active) {
-            background-color: rgba(59, 130, 246, 0.05);
-        }
-        input[type="checkbox"] {
-            appearance: none;
-            -webkit-appearance: none;
-            width: 1.25rem;
-            height: 1.25rem;
-            border: 2px solid #d1d5db;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            outline: none;
-            transition: all 0.2s ease;
-        }
-        input[type="checkbox"]:checked {
-            background-color: #3b82f6;
-            border-color: #3b82f6;
-        }
-        input[type="checkbox"]:checked::after {
-            content: "";
-            width: 0.5rem;
-            height: 0.5rem;
-            display: block;
-            background-color: white;
-            border-radius: 1px;
-        }
-        input[type="search"]::-webkit-search-decoration,
-        input[type="search"]::-webkit-search-cancel-button,
-        input[type="search"]::-webkit-search-results-button,
-        input[type="search"]::-webkit-search-results-decoration {
-            display: none;
-        }
-        input[type="radio"] {
-            appearance: none;
-            -webkit-appearance: none;
-            width: 1.25rem;
-            height: 1.25rem;
-            border: 2px solid #d1d5db;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            outline: none;
-            transition: all 0.2s ease;
-        }
-        input[type="radio"]:checked {
-            border-color: #3b82f6;
-        }
-        input[type="radio"]:checked::after {
-            content: "";
-            width: 0.5rem;
-            height: 0.5rem;
-            display: block;
-            background-color: #3b82f6;
-            border-radius: 50%;
-        }
-        .post-row:hover {
-            background-color: rgba(59, 130, 246, 0.02);
-        }
-        .post-row.important {
-            background-color: rgba(255, 243, 205, 0.5);
-            border-left: 4px solid #f59e0b;
-        }
-    </style>
-    <style>:root{ --header-h: 72px; }</style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-<div class="container mx-auto px-4 py-8 pt-16 flex flex-col md:flex-row gap-8">
-    <aside class="w-full md:w-64 md:shrink-0 md:self-start md:sticky md:top-[calc(var(--header-h)+16px)]">
-        <div th:replace="~{fragments/school/universityLeftSideBar :: school-left}"></div>
-    </aside>
-
-    <div class="min-w-0 flex-1 py-6 px-0 md:px-6">
+    <main class="min-w-0 flex-1 py-6 px-0 md:px-6">
         <div class="bg-white rounded shadow p-6">
             <div
                     class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4"
@@ -340,8 +258,7 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    </main>
 <!--<script id="filterDropdownScript">-->
 <!--    document.addEventListener("DOMContentLoaded", function () {-->
 <!--        const filterButton = document.getElementById("filterButton");-->
@@ -385,5 +302,4 @@
         });
     });
 </script>
-</body>
 </html>

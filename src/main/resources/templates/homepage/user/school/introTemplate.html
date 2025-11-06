@@ -97,13 +97,10 @@
     </style>
 </head>
 <body class="bg-gray-50">
-<!-- 상단 배너 -->
-<nav th:replace="~{homepage/common/nav-user :: nav-user}"></nav>
 <div class="container mx-auto px-4 py-8 pt-16 flex flex-col md:flex-row gap-8">
-    <!-- 좌측 네비게이션 -->
-    <aside class="w-full md:w-64 md:shrink-0 md:self-start">
+
         <div th:replace="~{homepage/user/school/school-left-sidebar :: school-left}"></div>
-    </aside>
+
     <!-- 메인 콘텐츠 -->
     <main class="flex-1 py-6 px-0 md:px-6">
         <!-- 헤더 섹션 -->
