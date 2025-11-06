@@ -14,10 +14,8 @@
 </head>
 <body class="bg-gray-50 min-h-screen">
 <div class="container mx-auto px-4 py-8 pt-16 flex flex-col md:flex-row items-start gap-8">
-        <div th:replace="~{homepage/user/school/school-left-sidebar :: school-left}"></div>
-
+        <div th:replace="~{fragments/school/universityLeftSideBar:: school-left}"></div>
     <main class="min-w-0 flex-1 py-6 px-0 md:px-6">
-        <!-- 헤더 -->
         <div class="mb-8">
             <div class="flex items-center text-sm text-gray-500 mb-2">
                 <a href="#" class="hover:text-primary">홈</a>
@@ -28,46 +26,23 @@
             <h1 class="text-3xl font-bold text-gray-900">세종대학교 소개</h1>
         </div>
 
-        <!-- 한눈에 보기 -->
-        <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <div class="flex flex-col md:flex-row gap-8">
-                <div class="md:w-1/2">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-4">글로벌 혁신 대학</h2>
-                    <p class="text-gray-700 mb-3">
-                        세종대학교는 서울 광진구에 위치한 사립 종합대학으로, 공학·컴퓨터/AI, 호텔관광, 콘텐츠(애니메이션 등) 분야에서 강점을 보이는 것으로 알려져 있습니다.
-                    </p>
-                    <ul class="list-disc pl-5 text-gray-700 space-y-1">
-                        <li>도심 접근성 우수(어린이대공원 인접)</li>
-                        <li>산학연 협력 및 실무 중심 교육 강화</li>
-                        <li>국내외 각종 대학평가에서 꾸준한 성장세</li>
-                    </ul>
-                    <div class="flex flex-wrap gap-3 mt-6">
-                        <a href="https://www.sejong.ac.kr/" target="_blank" rel="noopener"
-                           class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition flex items-center">
-                            <i class="ri-external-link-line mr-2"></i> 공식 홈페이지
-                        </a>
-                        <a href="https://en.sejong.ac.kr/eng/index.do" target="_blank" rel="noopener"
-                           class="px-4 py-2 border border-gray-300 text-gray-700 rounded-button hover:bg-gray-50 transition">
-                            English Site
-                        </a>
-                    </div>
-                </div>
-                <div class="md:w-1/2">
-                    <div class="rounded-lg overflow-hidden h-72 bg-gray-100">
-                        <!-- 필요시 학교 전경 이미지로 교체 -->
-                        <img src="https://www.sejong.ac.kr/_res/sejong/_share/img/sub-visual/sub-visual01.jpg"
-                             alt="세종대학교 캠퍼스" class="w-full h-full object-cover object-center" />
+        <div th:replace="~{fragments/school/universityIntroSection :: universityIntroSection(
+  '글로벌 혁신 대학',
+  '세종대학교는 서울 광진구에 위치한 사립 종합대학으로, 공학·컴퓨터/AI, 호텔관광, 콘텐츠 분야에 강점을 지니고 있습니다.',
+  'https://www.sejong.ac.kr/',
+  'https://en.sejong.ac.kr/eng/index.do',
+  'https://www.sejong.ac.kr/_res/sejong/_share/img/sub-visual/sub-visual01.jpg'
+)}">
+            <ul id="univIntro" class="list-disc pl-5 text-gray-700 space-y-1">
+                <li>도심 접근성 우수(어린이대공원 인접)</li>
+                <li>산학연 협력 및 실무 중심 교육 강화</li>
+                <li>국내외 각종 대학평가에서 꾸준한 성장세</li>
+            </ul>
+        </div>
 
-<!--                        <img src="https://www.sejong.ac.kr/_res/sejong/_share/img/sj-common/img-logo02@2x.png"-->
-<!--                             alt="세종대학교 캠퍼스" class="w-full h-full object-cover object-center" />-->
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <!-- 핵심 정보 카드 (여러 줄 그리드) -->
         <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <!-- 기본 정보: 가로 2칸 -->
+
             <div th:replace="~{fragments/school/universityBasicInfo :: universityBasicInfo(
             '세종대학교',
   'Sejong University',
@@ -77,7 +52,6 @@
 )}"></div>
 
 
-            <!-- QS 세계 대학 순위 -->
             <div th:replace="~{fragments/school/universityInfoCard :: universityInfoCard(
   'QS 세계 대학 순위',
   '392',
@@ -86,7 +60,7 @@
   '* TopUniversities 기준'
 )}"></div>
 
-            <!-- 관련 홈페이지 카드 -->
+
             <div th:replace="~{fragments/school/universityInfoCard :: universityLinkCard(
   '관련 홈페이지',
   '국제처 홈페이지',
@@ -136,10 +110,8 @@
                         class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-sm whitespace-nowrap hover:bg-gray-200">전공자율선택제</button>
             </div>
 
-            <!-- 카드 그리드 -->
-            <div id="collegeGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
 
-                <!-- 인문과학대학 -->
+            <div id="collegeGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                 <article class="border rounded-xl p-5 hover:shadow-md transition group" data-college="인문과학대학">
                     <header class="flex items-center justify-between mb-3">
                         <h3 class="text-lg font-semibold text-gray-900">인문과학대학</h3>
@@ -249,12 +221,12 @@
                 </article>
 
                 <!-- 공과대학 -->
-                <article class="border rounded-xl p-5 hover:shadow-md transition group" data-college="공과대학">
+                <article class="border rounded-xl p-5 hover:shadow-md transition group" data-college="인공지능융합대학">
                     <header class="flex items-center justify-between mb-3">
-                        <h3 class="text-lg font-semibold text-gray-900">공과대학</h3>
+                        <h3 class="text-lg font-semibold text-gray-900">인공지능융합대학</h3>
                         <span class="text-xs text-gray-500" data-count>—</span>
                     </header>
-                    <div class="flex flex-wrap gap-2" data-chips>
+                    <div data-chips>
                         <span class="chip" data-dept>건축공학과</span>
                         <span class="chip" data-dept>건축학과</span>
                         <span class="chip" data-dept>건설환경공학과</span>
@@ -266,8 +238,8 @@
                         <span class="chip" data-dept>양자원자력공학과</span>
                         <span class="chip" data-dept>국방시스템공학과</span>
                     </div>
-                    <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more>더보기</button>
-                </article>
+            <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more></button>
+            </article>
 
                 <!-- 예체능대학 -->
                 <article class="border rounded-xl p-5 hover:shadow-md transition group" data-college="예체능대학">
@@ -445,82 +417,6 @@
 
             </div>
         </section>
-        <script>
-            (function(){
-                const grid = document.getElementById('gradCollegeGrid');
-                const cards = Array.from(grid.querySelectorAll('article[data-college]'));
-                const filters = document.getElementById('gradCollegeFilters');
-                const search = document.getElementById('gradDeptSearch');
-
-                // 칩 개수 처리
-                cards.forEach(card => {
-                    const chipsWrap = card.querySelector('[data-chips]');
-                    const chips = Array.from(chipsWrap.querySelectorAll('.chip'));
-                    const moreBtn = card.querySelector('[data-more]');
-                    const countEl = card.querySelector('[data-count]');
-                    countEl.textContent = chips.length + '개';
-                    if (chips.length > 10) {
-                        chips.slice(10).forEach(ch => ch.classList.add('hidden'));
-                        moreBtn.classList.remove('hidden');
-                        moreBtn.addEventListener('click', () => {
-                            const hidden = chips.slice(10).some(ch => ch.classList.contains('hidden'));
-                            chips.slice(10).forEach(ch => ch.classList.toggle('hidden'));
-                            moreBtn.textContent = hidden ? '접기' : '더보기';
-                        });
-                    }
-                });
-
-                function applyFilter(){
-                    const activeBtn = filters.querySelector('button.active');
-                    const collegeFilter = activeBtn ? activeBtn.dataset.filter : 'all';
-                    const q = (search.value || '').trim().toLowerCase();
-
-                    cards.forEach(card => {
-                        const college = card.dataset.college;
-                        const chips = Array.from(card.querySelectorAll('.chip'));
-                        let hitChip = false;
-                        chips.forEach(c => {
-                            const match = c.textContent.toLowerCase().includes(q);
-                            c.style.opacity = q ? (match ? '1' : '0.25') : '1';
-                            if (match) hitChip = true;
-                        });
-                        const passCollege = (collegeFilter === 'all') || (collegeFilter === college);
-                        const passSearch = q ? hitChip : true;
-                        card.style.display = (passCollege && passSearch) ? '' : 'none';
-                    });
-                }
-
-                // 초기 active
-                filters.querySelector('button[data-filter="all"]').classList.add('active');
-
-                // 필터 클릭
-                filters.addEventListener('click', (e)=>{
-                    const btn = e.target.closest('button[data-filter]');
-                    if (!btn) return;
-                    filters.querySelectorAll('button').forEach(b=>{
-                        b.classList.remove('active','bg-primary','text-white');
-                        b.classList.add('bg-gray-100','text-gray-700');
-                    });
-                    btn.classList.add('active','bg-primary','text-white');
-                    btn.classList.remove('bg-gray-100','text-gray-700');
-                    applyFilter();
-                });
-
-                // 검색
-                search.addEventListener('input', applyFilter);
-            })();
-        </script>
-
-        <style>
-            .chip {
-                display:inline-block; padding:6px 10px; border-radius:9999px;
-                background:#eff6ff; color:#1d4ed8; font-size:.875rem; line-height:1;
-                white-space:nowrap;
-            }
-            .chip.subtle { background:#f3f4f6; color:#4b5563; }
-        </style>
-
-        <!-- 위치 정보 -->
         <div th:replace="~{fragments/school/universityCampusMap :: universityCampus(
   '캠퍼스 위치',
   'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3165.487797563933!2d127.07460067648073!3d37.5502822245114!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357ca51c8b8e8a1d%3A0x9e16a07c0c8e7c2f!2z7ISc7Jq47Yq567OE7Iuc6rO17ZWZ6rWQIOyEnOyauOq0gA!5e0!3m2!1sko!2skr!4v1739000000000!5m2!1sko!2skr',
@@ -532,6 +428,7 @@
     </main>
 </div>
 </body>
+<th:block th:fragment="script">
 <script>
     (function(){
         const grid = document.getElementById('collegeGrid');
@@ -602,4 +499,5 @@
         search.addEventListener('input', applyFilter);
     })();
 </script>
+</th:block>
 </html>
