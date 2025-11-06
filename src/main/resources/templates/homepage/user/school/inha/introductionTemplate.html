@@ -3,40 +3,6 @@
       th:replace="~{fragments/layout/university-layout :: university-layout(~{::head}, ~{::main}, ~{::script})}">
 <head>
     <title th:text="${school}">학교 소개 - 대학교</title>
-    <style>
-        :root {
-            --primary: #2563eb;
-        }
-        .text-primary {
-            color: var(--primary);
-        }
-        .bg-primary {
-            background-color: var(--primary);
-        }
-        .chip {
-            display: inline-block;
-            background: #f3f4f6;
-            color: #374151;
-            font-size: 0.875rem;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            transition: all 0.2s ease;
-        }
-        .chip:hover {
-            background: #e5e7eb;
-        }
-        .chip.hidden {
-            display: none !important;
-        }
-        [data-more] {
-            color: var(--primary);
-            cursor: pointer;
-        }
-        [data-more]:hover {
-            text-decoration: underline;
-        }
-    </style>
-    <style>:root{ --header-h: 72px; }</style>
 </head>
     <main class="min-w-0 flex-1 py-6 px-0 md:px-6">
         <div class="mb-8">

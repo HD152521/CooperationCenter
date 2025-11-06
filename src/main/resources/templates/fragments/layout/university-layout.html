@@ -75,9 +75,31 @@
             background-color: rgba(255, 243, 205, 0.5);
             border-left: 4px solid #f59e0b;
         }
+        .chip {
+            display: inline-block;
+            background: #f3f4f6;
+            color: #374151;
+            font-size: 0.875rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            transition: all 0.2s ease;
+        }
+        .chip:hover {
+            background: #e5e7eb;
+        }
+        .chip.hidden {
+            display: none !important;
+        }
+        [data-more] {
+            color: var(--primary);
+            cursor: pointer;
+        }
+        [data-more]:hover {
+            text-decoration: underline;
+        }
     </style>
     <style>:root{ --header-h: 72px; }</style>
-    <div th:replace="${univHead}"></div>
+    <th:block th:replace="${univHead}"></th:block>
 </head>
 
 <body>
