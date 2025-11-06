@@ -383,6 +383,13 @@
         </nav>
     </div>
 </main>
+<script type="module" id="api-bootstrap">
+    import { api } from "/js/homepage/lib/apiClient.js";
+    api.setBaseURL("/api/v1");
+    window.api = api;
+    window.dispatchEvent(new Event("api-ready"));
+</script>
+
 <script id="delete-modal-management">
     document.addEventListener("DOMContentLoaded", function () {
         const deleteModal = document.getElementById("delete-confirm-modal");
@@ -415,30 +422,22 @@
             });
 
         cancelDeleteBtn.addEventListener("click", closeDeleteModal);
-        confirmDeleteBtn.addEventListener("click", function () {
+        confirmDeleteBtn.addEventListener("click", async function () {
             console.log(surveyToDelete);
             if (surveyToDelete) {
                 const surveyId = surveyToDelete.dataset.surveyId;
                 console.log(surveyId);
-                if(surveyId){
+                if (surveyId) {
                     console.log("fetch하기전");
-                    fetch(`/api/v1/survey/${surveyId}`, {
-                        method: "DELETE"
-                    })
-                        .then(response => {
-                            if (response.ok) {
-                                surveyToDelete.remove();  // 화면에서 제거
-                                closeDeleteModal();       // 모달 닫기
-                                alert("삭제되었습니다.");
-                            } else {
-                                closeDeleteModal();
-                                alert("삭제 실패");
-                            }
-                        })
-                        .catch(error => {
-                            console.error("삭제 중 오류:", error);
-                            alert("서버 오류로 삭제에 실패했습니다.");
-                        });
+                    try{
+                        await api.delete(`/survey/${surveyId}`);
+                        surveyToDelete.remove();
+                        closeDeleteModal();
+                        alert("삭제되었습니다.");
+                    }catch(e){
+                        console.error("삭제 중 오류:", e);
+                        closeDeleteModal();
+                    }
                 }
             }
         });
@@ -482,31 +481,24 @@
         });
 
         cancelCopyBtn.addEventListener("click", closeCopyModal);
-        confirmCopyBtn.addEventListener("click", function () {
+        confirmCopyBtn.addEventListener("click", async function () {
             console.log(surveyToCopy);
             if (surveyToCopy) {
                 const surveyId = surveyToCopy.dataset.surveyId;
                 console.log(surveyId);
-                if(surveyId){
+                if (surveyId) {
                     console.log("fetch하기전");
-                    fetch(`/api/v1/survey/copy/${surveyId}`, {
-                        method: "POST"
-                    })
-                        .then(response => {
-                            if (response.ok) {
-                                surveyToCopy.remove();  // 화면에서 제거
-                                closeCopyModal();       // 모달 닫기
-                                alert("복사되었습니다.");
-                                location.reload();
-                            } else {
-                                closeCopyModal();
-                                alert("복사 실패");
-                            }
-                        })
-                        .catch(error => {
-                            console.error("복사 중 오류:", error);
-                            alert("서버 오류로 복사에 실패했습니다.");
-                        });
+
+                    try{
+                        await api._request("POST", `/survey/copy/${surveyId}`, null, {});
+                        surveyToCopy.remove();  // 화면에서 제거
+                        closeCopyModal();       // 모달 닫기
+                        alert("복사되었습니다.");
+                        location.reload();
+                    }catch(e){
+                        console.error("복사 중 오류:", e);
+                        closeCopyModal();
+                    }
                 }
             }
         });
@@ -603,36 +595,35 @@
     });
 </script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", async function () {
         const container = document.getElementById("survey-list-container");
 
-        fetch("/api/v1/survey/getAll") // ←  리스트 반환하는 API 엔드포인트
-            .then((res) => res.json())
-            .then((data) => {
-                if (!Array.isArray(data)) {
-                    throw new Error("Invalid response format");
-                }
+        try {
+            const data = await api.get("/survey/getAll"); // baseURL이 /api/v1 이므로 최종 /api/v1/survey/getAll
+            if (!Array.isArray(data)) {
+                throw new Error("Invalid response format");
+            }
 
-                container.innerHTML = "";
+            container.innerHTML = "";
 
-                data.forEach((survey) => {
-                    const card = document.createElement("div");
-                    card.className = "survey-card bg-white rounded-lg shadow-sm overflow-hidden";
+            data.forEach((survey) => {
+                const card = document.createElement("div");
+                card.className = "survey-card bg-white rounded-lg shadow-sm overflow-hidden";
 
-                    const surveyId = survey.surveyId;
-                    card.dataset.surveyId = surveyId;
-                    const createdDate = new Date(survey.createdAt);
-                    const formattedDate = createdDate.toLocaleDateString("ko-KR", {
-                        year: "numeric", month: "long", day: "numeric"
-                    });
-                    const isBefore = survey.isBefore;
-                    const status = isBefore ? "진행 전" : (survey.lastDate > 0 ? "진행 중" : "종료");
+                const surveyId = survey.surveyId;
+                card.dataset.surveyId = surveyId;
+                const createdDate = new Date(survey.createdAt);
+                const formattedDate = createdDate.toLocaleDateString("ko-KR", {
+                    year: "numeric", month: "long", day: "numeric"
+                });
+                const isBefore = survey.isBefore;
+                const status = isBefore ? "진행 전" : (survey.lastDate > 0 ? "진행 중" : "종료");
 
-                    const badgeClass = isBefore ? "bg-blue-100 text-white-800" : (survey.lastDate > 0
-                        ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800");
+                const badgeClass = isBefore ? "bg-blue-100 text-white-800" : (survey.lastDate > 0
+                    ? "bg-green-100 text-green-800"
+                    : "bg-red-100 text-red-800");
 
-                    card.innerHTML = `
+                card.innerHTML = `
                         <div class="p-6">
                             <div class="flex items-start justify-between mb-3">
                                 <h3 class="text-lg font-bold text-gray-900 line-clamp-2">
@@ -653,10 +644,10 @@
                                     <i class="ri-time-line mr-2"></i>
                                     <span>
                                       ${survey.isBefore
-                                                            ? "시작 안함"
-                                                            : (survey.lastDate > 0
-                                                                ? `남은 기간: ${survey.lastDate}일`
-                                                                : "종료일 지남")}
+                    ? "시작 안함"
+                    : (survey.lastDate > 0
+                        ? `남은 기간: ${survey.lastDate}일`
+                        : "종료일 지남")}
                                     </span>
                                 </div>
                             </div>
@@ -719,13 +710,12 @@
                         </div>
                 `;
 
-                    container.appendChild(card);
-                });
-            })
-            .catch((err) => {
-                console.error("설문조사 불러오기 실패:", err);
-                container.innerHTML = "<p class='text-gray-500'>설문조사를 불러오는 데 실패했습니다.</p>";
+                container.appendChild(card);
             });
+        } catch (err) {
+            console.error("설문조사 불러오기 실패:", err);
+            container.innerHTML = "<p class='text-gray-500'>설문조사를 불러오는 데 실패했습니다.</p>";
+        }
     });
 </script>
 <script>

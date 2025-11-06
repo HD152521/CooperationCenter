@@ -61,7 +61,7 @@ public class SurveyAnswerService {
         }
 
         Survey survey = surveyFindService.getSurveyFromId(requestDto.surveyId());
-//        if(checkDate(survey)) throw new BaseException(ErrorCode.SURVEY_DATE_NOT_VALID);
+        if(checkDate(survey)) throw new BaseException(ErrorCode.SURVEY_DATE_NOT_VALID);
         survey.setParticipantCount();
 
         Member member = memberRepository.findMemberByEmail(memberDetails.getUsername()).get();
@@ -169,11 +169,15 @@ public class SurveyAnswerService {
         if (answer.answer() instanceof String str) key = answer.answer().toString();
 
         MultipartFile file = multipartRequest.getFile(key);
+        double mb = file.getSize() / 1024.0 / 1024.0;
+
         if (file == null) {
             log.warn("❌ {} 필드 없음", key);
         } else if (file.isEmpty()) {
             log.warn("❌ {} 는 비어 있음", key);
-        } else {
+        } else if(mb>20){
+            throw new BaseException(ErrorCode.FILE_SIZE_ERROR);
+        }else {
             log.info("✅ {} 수신 성공: {}", key, file.getOriginalFilename());
             //key예시 file-0 image-1
             String type = key.split("-")[0];

@@ -44,20 +44,7 @@
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-<header class="bg-white border-b border-gray-200 sticky top-0 z-10">
-    <div class="container mx-auto px-4">
-        <div class="flex items-center h-16">
-            <a href="/survey/list" data-readdy="true" class="flex items-center text-gray-600 hover:text-primary">
-                <i class="ri-arrow-left-line mr-2"></i>
-                <span>설문조사 목록으로 돌아가기</span>
-            </a>
-            <div class="mx-auto text-lg font-medium"></div>
-            <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white">
-                <span>관</span>
-            </div>
-        </div>
-    </div>
-</header>
+<header th:replace="~{homepage/common/survey-make-nav :: survey-make-nav}"></header>
 <div class="w-full bg-white shadow-sm progress-wrapper">
     <div class="container mx-auto px-4 py-2">
         <div class="relative h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -261,31 +248,21 @@
         }
 
 </script>
-<script src="/js/homepage/url.js"></script>
+<script src="/js/homepage/common/url.js"></script>
+
+<script type="module" id="api-bootstrap">
+    import { api } from "/js/homepage/lib/apiClient.js";
+    window.api = api;
+    window.dispatchEvent(new Event("api-ready"));
+</script>
+
 <script th:inline="javascript"  >
     //note API받아오는 코드
     document.addEventListener('DOMContentLoaded', loadSurvey);
     async function loadSurvey() {
         try {
             const surveyId = [[${surveyId}]];
-            const response = await fetch(`${surveyUrl}/${surveyId}`); // ← 필요시 ID 파라미터 수정
-            const text = await response.text();
-            if (!response.ok) {
-                let errMsg = `${response.status} ${response.statusText}`;
-                try {
-                    const e = text ? JSON.parse(text) : null;
-                    if (e?.message) errMsg = e.message;
-                } catch {}
-                showFatalError(errMsg);
-                return;
-            }
-
-            if (!text || !text.trim()) {
-                showFatalError('해당 신청 페이지는 공개 금지 상태입니다.');
-                return;
-            }
-            const jsonText = JSON.parse(text);
-            const data = jsonText.result;
+            const data = await api.get(`${surveyUrl}/${surveyId}`);
             const now = new Date();
 
             const yyyy = now.getFullYear();
@@ -772,20 +749,10 @@
                     }
                 }
             }
+            try{
+                const result = await api.postMultipart(`${surveyUrl}/answer`, formData);
+                console.log("✅ API 성공, payload:", result);
 
-            const response = await fetch(`${surveyUrl}/answer`, {
-                method: 'POST',
-                body: formData
-            });
-
-            console.log("🔍 response 객체:", response);
-
-// 개별 정보 출력
-            console.log("✅ 상태 코드:", response.status);       // ex: 200, 500
-            console.log("✅ 성공 여부:", response.ok);           // true/false
-            console.log("✅ 상태 메시지:", response.statusText); // ex: OK, Internal Server Error
-
-            if (response.ok) {
                 const successMessage = document.createElement('div');
                 successMessage.className = 'fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50';
                 successMessage.innerHTML = `
@@ -806,8 +773,8 @@
                 setTimeout(() => {
                     window.location.href = "/survey/list";
                 }, 3000);
-            } else {
-                alert("제출에 실패했습니다.");
+            } catch(e) {
+                console.error("파일 fetch 실패:", e);
             }
         } catch (error) {
             console.error("제출 중 오류:", error);

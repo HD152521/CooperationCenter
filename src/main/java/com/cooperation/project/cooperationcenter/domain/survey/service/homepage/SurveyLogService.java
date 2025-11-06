@@ -7,24 +7,22 @@ import com.cooperation.project.cooperationcenter.domain.survey.dto.AnswerRespons
 import com.cooperation.project.cooperationcenter.domain.survey.dto.LogCsv;
 import com.cooperation.project.cooperationcenter.domain.survey.model.*;
 import com.cooperation.project.cooperationcenter.domain.survey.repository.AnswerRepository;
+import com.cooperation.project.cooperationcenter.global.exception.BaseException;
+import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -51,6 +49,13 @@ public class SurveyLogService {
         return AnswerResponse.AnswerPagedDto.from(survey,logs);
     }
 
+    public List<AnswerResponse.LogDto> getAllAnswerLog(){
+        List<SurveyLog> surveyLog = surveyFindService.findAllSurveyLog();
+        return AnswerResponse.LogDto.from(surveyLog);
+
+    }
+
+
     public AnswerResponse.AnswerDto getAnswerLog(String surveyId){
         Survey survey = surveyFindService.getSurveyFromId(surveyId);
         List<SurveyLog> surveyLog = surveyFindService.getSurveyLogs(survey);
@@ -75,233 +80,255 @@ public class SurveyLogService {
         return AnswerResponse.AnswerLogDto.from(survey,surveyLog,answers);
     }
 
-    public ResponseEntity<Resource> extractCsv(LogCsv.RequestDto request){
-        StringBuilder csvBuilder = new StringBuilder();
-        final String UTF8_BOM = "\uFEFF";  // ← 이게 핵심!
-        csvBuilder.append(UTF8_BOM);
+    public ResponseEntity<StreamingResponseBody> extractCsv(LogCsv.RequestDto request){
+        var logs = surveyFindService.getSurveyLogs(request.logIds());
+        if (logs == null || logs.isEmpty()) throw new BaseException(ErrorCode.BAD_REQUEST);
 
-        List<SurveyLog> logs = surveyFindService.getSurveyLogs(request.logIds());
-        if(logs == null){
-            //fixme 확인해야함.
-            log.warn("log is null");
-        }
-        Survey survey = Objects.requireNonNull(logs).get(0).getSurvey();
+        Survey survey = logs.get(0).getSurvey();
         List<Question> questions = surveyFindService.getQuestions(survey);
 
-        List<String> questionTexts = questions.stream()
-                .map(q -> toCsvSafe(q.getQuestion()))
-                .toList();
-        String questionLine = "no,"+String.join(",", questionTexts);
-        questionLine+="\n";
-        System.out.println(questionLine);
-        csvBuilder.append(questionLine);
+        StreamingResponseBody body = out -> {
+            // Excel UTF-8 BOM
+            out.write("\uFEFF".getBytes(StandardCharsets.UTF_8));
+            var writer = new java.io.BufferedWriter(new java.io.OutputStreamWriter(out, StandardCharsets.UTF_8));
 
-        int i=1;
-        for(SurveyLog log : logs){
-            List<Answer> answers = surveyFindService.getAnswer(log);
+            // 헤더: questionOrder 기준(escape)
+            writer.write("no,");
+            writer.write(questions.stream().map(q -> toCsvSafe(q.getQuestion())).collect(Collectors.joining(",")));
+            writer.write("\n");
 
-            Map<Integer, Answer> answerMap = new TreeMap<>();
-            for (Answer answer : answers) {
-                answerMap.put(answer.getQuestionId(), answer);
-            }
+            int row = 1;
+            for (SurveyLog log : logs) {
+                // N+1 방지: findService에서 answers를 fetch join으로 가져오게 하거나 여기서 배치 조회
+                List<Answer> answers = surveyFindService.getAnswer(log);
 
-            int maxQuestionId = questions.size();
+                // questionId -> Answer 매핑
+                Map<String, Answer> byQid = answers.stream()
+                        .collect(Collectors.toMap(Answer::getQuestionRealId, a -> a, (a,b)->a));
 
-            List<String> answerTexts = new ArrayList<>(maxQuestionId);
-            for (int j = 1; j <= maxQuestionId; j++) {
-                Answer a = answerMap.get(j);
-                if (a == null) {
-                    answerTexts.add(""); // 빈 칸 처리
-                } else if (QuestionType.isFile(a.getAnswerType())) {
-                    answerTexts.add("\"=HYPERLINK(\"\"" + origin + a.getAnswer().split("_")[0] + "\"\")\"");
-                } else if (QuestionType.checkType(a.getAnswerType())) {
-                    answerTexts.add(toCsvSafe(surveyFindService.getAnswerFromMultiple(a)));
-                } else {
-                    answerTexts.add(a.getAnswer());
+                List<String> cells = new ArrayList<>(questions.size()+1);
+                cells.add(String.valueOf(row++));
+
+                // “질문 리스트 순서(questionOrder)”대로 셀 채우기 (size로 1..N 도는 방식 지양)
+                for (Question q : questions) {
+                    Answer a = byQid.get(q.getQuestionId());
+                    if (a == null) { cells.add(""); continue; }
+
+                    if (QuestionType.isFile(a.getAnswerType())) {
+                        String id = a.getAnswer().split("_")[0]; // TODO: 안전한 파싱으로 교체 권장
+                        // 하이퍼링크 수식 주입 시에도 CSV 인젝션 보호 필요
+                        cells.add("\"=HYPERLINK(\"\"" + origin + a.getAnswer().split("_")[0] + "\"\")\"");
+                    } else if (QuestionType.checkType(a.getAnswerType())) {
+                        cells.add(toCsvSafe(surveyFindService.getAnswerFromMultiple(a)));
+                    } else {
+                        cells.add(toCsvSafe(a.getAnswer()));
+                    }
                 }
+                writer.write(String.join(",", cells));
+                writer.write("\n");
+                writer.flush(); // 청크 단위로 흘려보내기
             }
-            String AnswerLine = (i++)+","+String.join(",", answerTexts);
-            AnswerLine+="\n";
-            System.out.println(AnswerLine);
-            csvBuilder.append(AnswerLine);
-        }
+            writer.flush();
+        };
 
-        byte[] csvBytes = csvBuilder.toString().getBytes(StandardCharsets.UTF_8);
-        ByteArrayResource resource = new ByteArrayResource(csvBytes);
-
-        // 2. 헤더 설정 및 응답
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=survey-logs.csv")
-                .contentType(MediaType.parseMediaType("text/csv"))
-                .contentLength(csvBytes.length)
-                .body(resource);
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition("survey-logs.csv"))
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .body(body);
     }
 
-    public ResponseEntity<Resource> extractAllCsv(String surveyId){
-        StringBuilder csvBuilder = new StringBuilder();
-        final String UTF8_BOM = "\uFEFF";  // ← 이게 핵심!
-        csvBuilder.append(UTF8_BOM);
 
+    private static String contentDisposition(String filename) {
+        // RFC 5987 방식 + 기본 filename 함께 제공
+        String encoded = URLEncoder.encode(filename, StandardCharsets.UTF_8)
+                .replaceAll("\\+", "%20");
+        return "attachment; filename=\"" + filename + "\"; filename*=UTF-8''" + encoded;
+    }
+
+    public ResponseEntity<StreamingResponseBody> extractAllCsv(String surveyId){
+        final String fileBaseUrl = origin; // 기존 origin 사용
+        final Survey survey = surveyFindService.getSurveyFromId(surveyId);
+        final List<SurveyLog> logs = surveyFindService.getSurveyLogs(survey);
+        if (logs == null || logs.isEmpty()) {
+            throw new BaseException(ErrorCode.BAD_REQUEST);
+        }
+        final List<Question> questions = surveyFindService.getQuestions(survey);
+
+        StreamingResponseBody body = out -> {
+            // 엑셀 호환 BOM
+            out.write("\uFEFF".getBytes(StandardCharsets.UTF_8));
+
+            try (BufferedWriter writer =
+                         new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8))) {
+
+                // 1) 헤더 (질문 순서대로)
+                String header = "no," + questions.stream()
+                        .map(q -> toCsvSafe(q.getQuestion()))
+                        .collect(Collectors.joining(","));
+                writer.write(header);
+                writer.write("\n");
+                writer.flush();
+
+                // 2) 본문
+                int row = 1;
+                for (SurveyLog log : logs) {
+                    // N+1이면 surveyFindService.getAnswer(log) 쪽 fetch join/일괄조회 최적화 권장
+                    List<Answer> answers = surveyFindService.getAnswer(log);
+
+                    // 질문ID(real) -> 답변 맵 (※ Answer에 getQuestionRealId가 없으면 getQuestionId로 대체)
+                    Map<String, Answer> byQid = new HashMap<>();
+                    for (Answer a : answers) {
+                        String key = a.getQuestionRealId(); // 없으면 a.getQuestionId()
+                        byQid.put(key, a);
+                    }
+
+                    List<String> cells = new ArrayList<>(questions.size() + 1);
+                    cells.add(String.valueOf(row++));
+
+                    // 질문 리스트 순서(questionOrder)대로 채우기
+                    for (Question q : questions) {
+                        Answer a = byQid.get(q.getQuestionId());
+                        if (a == null) {
+                            cells.add("");
+                            continue;
+                        }
+
+                        if (QuestionType.isFile(a.getAnswerType())) {
+                            // 파일 셀은 의도적으로 HYPERLINK 수식 사용
+                            String fileKey = safeFirstToken(a.getAnswer()); // "id_rest" 형태 보호
+                            cells.add("\"=HYPERLINK(\"\"" + fileBaseUrl + fileKey + "\"\")\"");
+                        } else if (QuestionType.checkType(a.getAnswerType())) {
+                            cells.add(toCsvSafe(surveyFindService.getAnswerFromMultiple(a)));
+                        } else {
+                            // 일반 텍스트는 CSV 인젝션 방지 + CSV escape
+                            cells.add(toCsvSafe(preventCsvInjection(a.getAnswer())));
+                        }
+                    }
+
+                    writer.write(String.join(",", cells));
+                    writer.write("\n");
+                    writer.flush(); // 청크로 바로바로 전송
+                }
+                writer.flush();
+            }
+        };
+
+        ContentDisposition cd = ContentDisposition.attachment()
+                .filename("survey-logs.csv", StandardCharsets.UTF_8)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, cd.toString())
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .body(body);
+    }
+
+    private static String preventCsvInjection(String s) {
+        if (s == null || s.isEmpty()) return "";
+        char c = s.charAt(0);
+        if (c == '=' || c == '+' || c == '-' || c == '@' || c == '\t') {
+            return "'" + s;
+        }
+        return s;
+    }
+
+    private static String safeFirstToken(String v) {
+        if (v == null || v.isBlank()) return "";
+        int idx = v.indexOf('_');
+        String token = (idx >= 0) ? v.substring(0, idx) : v;
+        return token.replaceAll("[\\r\\n\\t\\x00-\\x1F\\x7F]", "");
+    }
+
+    public ResponseEntity<StreamingResponseBody> extractFileStudent(String surveyId){
+        log.info("학생 폴더 출력 start...");
         Survey survey = surveyFindService.getSurveyFromId(surveyId);
         List<SurveyLog> logs = surveyFindService.getSurveyLogs(survey);
 
-        if(logs == null){
-            //fixme 확인해야함.
-            log.warn("log is null");
-        }
-        List<Question> questions = surveyFindService.getQuestions(survey);
+        StreamingResponseBody body = out -> {
+            try (ZipOutputStream zos = new ZipOutputStream(out)) {
+                int idx = 1;
+                for (SurveyLog log : logs) {
+                    String memberName = log.getMember() != null ? log.getMember().getMemberName() : "unknown";
+                    String folder = idx++ + "_" + memberName + "/";
 
-        List<String> questionTexts = questions.stream()
-                .map(q -> toCsvSafe(q.getQuestion()))
-                .toList();
-        String questionLine = "no,"+String.join(",", questionTexts);
-        questionLine+="\n";
-        System.out.println(questionLine);
-        csvBuilder.append(questionLine);
+                    // N+1 주의: answers를 fetch join으로 미리 가져오게
+                    for (Answer a : surveyFindService.getAnswer(log)) {
+                        if (!(a.getAnswerType() == QuestionType.FILE || a.getAnswerType() == QuestionType.IMAGE)) continue;
 
-        int i=1;
-        for(SurveyLog log : logs){
-            List<Answer> answers = surveyFindService.getAnswer(log);
+                        FileAttachment f = a.getSurveyFile();
+                        if (f == null) continue;
 
-            Map<Integer, Answer> answerMap = new TreeMap<>();
-            for (Answer answer : answers) {
-                answerMap.put(answer.getQuestionId(), answer);
-            }
+                        if (!ossService.isFileExist(f)) {
+                            System.out.println("file missing: "+f.getStoredName());
+                            continue; }
 
-            int maxQuestionId = questions.size();
-
-            List<String> answerTexts = new ArrayList<>(maxQuestionId);
-            for (int j = 1; j <= maxQuestionId; j++) {
-                Answer a = answerMap.get(j);
-                if (a == null) {
-                    answerTexts.add(""); // 빈 칸 처리
-                } else if (QuestionType.isFile(a.getAnswerType())) {
-                    answerTexts.add("\"=HYPERLINK(\"\"" + origin + a.getAnswer().split("_")[0] + "\"\")\"");
-                } else if (QuestionType.checkType(a.getAnswerType())) {
-                    answerTexts.add(toCsvSafe(surveyFindService.getAnswerFromMultiple(a)));
-                } else {
-                    answerTexts.add(a.getAnswer());
-                }
-            }
-            String AnswerLine = (i++)+","+String.join(",", answerTexts);
-            AnswerLine+="\n";
-            System.out.println(AnswerLine);
-            csvBuilder.append(AnswerLine);
-        }
-
-        byte[] csvBytes = csvBuilder.toString().getBytes(StandardCharsets.UTF_8);
-        ByteArrayResource resource = new ByteArrayResource(csvBytes);
-
-        // 2. 헤더 설정 및 응답
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=survey-logs.csv")
-                .contentType(MediaType.parseMediaType("text/csv"))
-                .contentLength(csvBytes.length)
-                .body(resource);
-    }
-
-    public ResponseEntity<byte[]> extractFileStudent(String surveyId){
-        log.info("학생 폴더 출력 start...");
-        Survey survey = surveyFindService.getSurveyFromId(surveyId);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-            List<SurveyLog> logs = surveyFindService.getSurveyLogs(survey);
-            int logIndex = 1;
-            for (SurveyLog log : logs) {
-                String memberName = log.getMember().getMemberName();
-                String logFolder = logIndex + "_" + memberName + "/";
-
-                List<Answer> answers = log.getAnswers();
-
-                for (Answer answer : answers) {
-                    System.out.println("teset: "+answer.getAnswerType());
-                    if(!(answer.getAnswerType().equals(QuestionType.FILE)||answer.getAnswerType().equals(QuestionType.IMAGE))) continue;
-
-                    FileAttachment file = answer.getSurveyFile();
-                    System.out.println("filename:"+file.getStoredName());
-
-                    if(!ossService.isFileExist(file)){
-                        System.out.println("해당 파일 없음");
-                        continue;
+                        String entryName = folder + "Q" + a.getQuestionId() + "_" + f.getOriginalName();
+                        zos.putNextEntry(new ZipEntry(entryName));
+                        try (var obj = ossService.getObject(f); InputStream in = obj.getObjectContent()) {
+                            in.transferTo(zos);
+                        }
+                        zos.closeEntry();
                     }
-
-
-                    String fileName = "Q" + answer.getQuestionId() + "_" + file.getOriginalName();
-                    String zipEntryName = logFolder + fileName;
-                    zos.putNextEntry(new ZipEntry(zipEntryName));
-
-                    try (OSSObject ossObject = ossService.getObject(file);
-                         InputStream inputStream = ossObject.getObjectContent()) {
-                        inputStream.transferTo(zos);
-                    }
-                    zos.closeEntry();
                 }
-                logIndex++;
+                zos.finish();
             }
-            zos.finish();
-
-        } catch (IOException e) {
-            log.warn(e.getMessage());
-            throw new RuntimeException(e);
-        }
-
-        byte[] zipBytes = baos.toByteArray();
-        log.info("zip 생성 완료");
+        };
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + surveyId + "_logs.zip\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition(surveyId + "_logs.zip"))
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .contentLength(zipBytes.length)
-                .body(zipBytes);
+                .body(body);
     }
 
-    public ResponseEntity<byte[]> extractFileSurvey(String surveyId){
+    public ResponseEntity<StreamingResponseBody> extractFileSurvey(String surveyId){
         log.info("설문조사 폴더 출력 start...");
-        Survey survey =surveyFindService.getSurveyFromId(surveyId);;
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try (ZipOutputStream zos = new ZipOutputStream(baos)) {
+        Survey survey = surveyFindService.getSurveyFromId(surveyId);
 
-            List<Question> questions = survey.getQuestions();
+        // 미리 필요한 질문만 필터
+        List<Question> questions = survey.getQuestions().stream()
+                .filter(q -> q.getQuestionType() == QuestionType.FILE || q.getQuestionType() == QuestionType.IMAGE)
+                .toList();
 
-            for (Question question : questions) {
-                if(!(question.getQuestionType().equals(QuestionType.FILE)||question.getQuestionType().equals(QuestionType.IMAGE))) continue;
-                List<Answer> answers = answerRepository.findAnswerByQuestionRealId(question.getQuestionId());
-                List<FileAttachment> files = answers.stream().map(Answer::getSurveyFile).toList();
+        StreamingResponseBody body = out -> {
+            try (ZipOutputStream zos = new ZipOutputStream(out)) {
+                for (Question question : questions) {
+                    // ⚠️ N+1이면 여기서 answers 일괄조회/페치조인으로 최적화 권장
+                    List<Answer> answers = answerRepository.findAnswerByQuestionRealId(question.getQuestionId());
 
-                int index = 1;
-                for (FileAttachment file : files) {
+                    int idx = 1;
+                    for (Answer a : answers) {
+                        FileAttachment file = a.getSurveyFile();
+                        if (file == null) continue;
 
-                    if(!ossService.isFileExist(file)){
-                        System.out.println("해당 파일 없음");
-                        continue;
+                        // (선택) 존재 확인 호출이 비싸면 getObject 404로 분기하거나 스킵
+                        if (!ossService.isFileExist(file)) {
+                            log.debug("file missing: {}", file.getStoredName());
+                            continue;
+                        }
+
+                        String entryName = "Q" + question.getQuestionOrder() + "/"
+                                + idx++ + "_" + file.getOriginalName();
+
+                        zos.putNextEntry(new ZipEntry(entryName));
+                        try (OSSObject obj = ossService.getObject(file);
+                             InputStream in = obj.getObjectContent()) {
+                            in.transferTo(zos);
+                        }
+                        zos.closeEntry();
                     }
-
-                    String zipEntryName = "Q" + question.getQuestionOrder() + "/" + index + "_" + file.getOriginalName();
-                    zos.putNextEntry(new ZipEntry(zipEntryName));
-
-                    try (OSSObject ossObject = ossService.getObject(file);
-                         InputStream inputStream = ossObject.getObjectContent()) {
-                        inputStream.transferTo(zos);
-                    }
-
-                    zos.closeEntry();
-                    index++;
                 }
+                zos.finish();
             }
-            zos.finish(); // 명시적 종료
-        } catch (IOException e) {
-            log.warn(e.getMessage());
-            throw new RuntimeException(e);
-        }
+        };
 
-        byte[] zipBytes = baos.toByteArray();
-        log.info("zip 생성 완료");
+        ContentDisposition cd = ContentDisposition.attachment()
+                .filename(surveyId + ".zip", StandardCharsets.UTF_8)
+                .build();
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + surveyId + ".zip\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, cd.toString())
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .contentLength(zipBytes.length)
-                .body(zipBytes);
+                .body(body);
     }
 
 

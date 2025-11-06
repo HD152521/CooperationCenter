@@ -591,5 +591,9 @@
         });
     });
 </script>
+<script type="module">
+    import { api } from "/js/homepage/lib/apiClient.js";
+    api.setBaseURL("/api/v1");   // 필요하면 설정
+</script>
 </body>
 </html>

@@ -369,7 +369,13 @@
         </nav>
     </div>
 </main>
-<script src="/js/homepage/url.js"></script>
+<script type="module" id="api-bootstrap">
+    import { api } from "/js/homepage/lib/apiClient.js";
+    api.setBaseURL("/api/v1");
+    window.api = api;
+    window.dispatchEvent(new Event("api-ready"));
+</script>
+<script src="/js/homepage/common/url.js"></script>
 <script id="delete-modal-management">
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -403,30 +409,22 @@
         });
 
         cancelDeleteBtn.addEventListener("click", closeDeleteModal);
-        confirmDeleteBtn.addEventListener("click", function () {
+        confirmDeleteBtn.addEventListener("click", async function () {
             console.log(surveyToDelete);
             if (surveyToDelete) {
                 const surveyId = surveyToDelete.dataset.surveyId;
                 console.log(surveyId);
                 if (surveyId) {
                     console.log("fetch하기전");
-                    fetch(`${surveyAdminUrl}/${surveyId}`, {
-                        method: "DELETE"
-                    })
-                        .then(response => {
-                            if (response.ok) {
-                                surveyToDelete.remove();  // 화면에서 제거
-                                closeDeleteModal();       // 모달 닫기
-                                alert("삭제되었습니다.");
-                            } else {
-                                closeDeleteModal();
-                                alert("삭제 실패");
-                            }
-                        })
-                        .catch(error => {
-                            console.error("삭제 중 오류:", error);
-                            alert("서버 오류로 삭제에 실패했습니다.");
-                        });
+                    try {
+                        await api.delete(`/survey/admin/${surveyId}`);
+                        surveyToDelete.remove();
+                        closeDeleteModal();
+                        alert("삭제되었습니다.");
+                    } catch (e) {
+                        console.error("삭제 중 오류:", e);
+                        closeDeleteModal();
+                    }
                 }
             }
         });
@@ -470,31 +468,23 @@
         });
 
         cancelCopyBtn.addEventListener("click", closeCopyModal);
-        confirmCopyBtn.addEventListener("click", function () {
+        confirmCopyBtn.addEventListener("click", async function () {
             console.log(surveyToCopy);
             if (surveyToCopy) {
                 const surveyId = surveyToCopy.dataset.surveyId;
                 console.log(surveyId);
                 if (surveyId) {
                     console.log("fetch하기전");
-                    fetch(`${surveyAdminUrl}/copy/${surveyId}`, {
-                        method: "POST"
-                    })
-                        .then(response => {
-                            if (response.ok) {
-                                surveyToCopy.remove();  // 화면에서 제거
-                                closeCopyModal();       // 모달 닫기
-                                alert("복사되었습니다.");
-                                location.reload();
-                            } else {
-                                closeCopyModal();
-                                alert("복사 실패");
-                            }
-                        })
-                        .catch(error => {
-                            console.error("복사 중 오류:", error);
-                            alert("서버 오류로 복사에 실패했습니다.");
-                        });
+                    try {
+                        await api.postJson(`/survey/admin/copy/${surveyId}`, null, {});
+                        surveyToCopy.remove();  // 화면에서 제거
+                        closeCopyModal();       // 모달 닫기
+                        alert("복사되었습니다.");
+                        location.reload();
+                    } catch (e) {
+                        console.error("복사 중 오류:", e);
+                        closeCopyModal();
+                    }
                 }
             }
         });
