@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <!--/*
+        주소 입력 프래그먼트
+
+        - labelText: 폼 필드의 라벨 텍스트 (예: "대표자 주소")
+        - postcodeId: 우편번호 input의 ID
+        - address1Id: 기본 주소 input의 ID
+        - address2Id: 상세 주소 input의 ID
+        - openPostcodeType: 한국 주소 검색 함수에 전달할 타입 ('member' 또는 'agency')
+        - openChineseModalTarget: 중국 주소 검색 모달이 사용할 타겟 ('address' 또는 'agency')
+     */-->
+    <div th:fragment="address-input(labelText, postcodeId, address1Id, address2Id, openPostcodeType, openChineseModalTarget)">
+        <label
+                th:for="${postcodeId}"
+                class="block text-sm font-medium text-gray-700 mb-1"
+        >[[${labelText}]] <span class="text-red-500">*</span></label
+        >
+        <div class="flex gap-3 mb-2">
+            <input
+                    type="text"
+                    th:id="${postcodeId}"
+                    th:name="${postcodeId}"
+                    readonly
+                    required
+                    class="w-32 px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                    placeholder="우편번호"
+            />
+            <button
+                    type="button"
+                    class="whitespace-nowrap !rounded-button bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 font-medium transition"
+                    th:onclick="'openPostcode(\'' + ${openPostcodeType} + '\')'"
+            >
+                한국 주소 검색
+            </button>
+            <button
+                    type="button"
+                    class="whitespace-nowrap !rounded-button bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-3 font-medium transition openChineseModal"
+                    th:data-target="${openChineseModalTarget}"
+            >
+                중국 주소 검색
+            </button>
+        </div>
+        <input
+                type="text"
+                th:id="${address1Id}"
+                th:name="${address1Id}"
+                readonly
+                required
+                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition mb-2"
+                placeholder="기본 주소"
+        />
+        <input
+                type="text"
+                th:id="${address2Id}"
+                th:name="${address2Id}"
+                required
+                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                placeholder="상세 주소"
+        />
+    </div>
+</html>

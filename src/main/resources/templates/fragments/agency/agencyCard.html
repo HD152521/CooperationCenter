@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<div th:fragment="card(agency)"
+     class="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+    <div class="h-48 overflow-hidden">
+        <img th:src="${agency.imgUrl}"
+             th:alt="${agency.agencyName}"
+             class="w-full h-full object-cover object-top"/>
+    </div>
+    <div class="p-6">
+        <h3 class="text-lg font-semibold text-gray-900" th:text="${agency.agencyName}">유학원 이름</h3>
+        <p class="mt-2 text-sm text-gray-600"
+           th:text="|${agency.agencyAddress1} ${agency.agencyAddress2}|">주소</p>
+        <p class="mt-2 text-sm text-gray-600" th:text="${agency.agencyPhone}">전화번호</p>
+        <p class="mt-2 text-sm text-gray-600" th:text="|대표자: ${agency.agencyOwner}|">대표자</p>
+    </div>
+</div>
+
+
+<div th:fragment="empty-data">
+    <h3>no-data</h3>
+</div>
+</html>
