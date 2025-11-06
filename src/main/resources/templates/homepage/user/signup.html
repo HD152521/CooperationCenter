@@ -1,55 +1,22 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html th:replace="~{fragments/layout/main-layout :: main-layout(~{::head}, ~{::body}, ~{::script})}"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>유학원 회원가입</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet"
-    />
-    <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-            rel="stylesheet"
-    />
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-
-    <!--   한국 주소검색-->
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-<!--    중국 주소 검색-->
+    <!--    중국 주소 검색-->
     <script src="https://map.qq.com/api/js?v=2.exp&key=DC7BZ-EPNWL-3R6PE-MFU2I-VCHAO-FUB4R"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { primary: "#4F46E5", secondary: "#6366F1" },
-                    borderRadius: {
-                        none: "0px",
-                        sm: "4px",
-                        DEFAULT: "8px",
-                        md: "12px",
-                        lg: "16px",
-                        xl: "20px",
-                        "2xl": "24px",
-                        "3xl": "32px",
-                        full: "9999px",
-                        button: "8px",
-                    },
-                },
-            },
-        };
-    </script>
     <style>
-        :where([class^="ri-"])::before { content: "\f3c2"; }
+        :where([class^="ri-"])::before {
+            content: "\f3c2";
+        }
+
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
+
         .password-strength-meter {
             height: 4px;
             width: 100%;
@@ -57,11 +24,13 @@
             border-radius: 2px;
             margin-top: 4px;
         }
+
         .password-strength-meter div {
             height: 100%;
             border-radius: 2px;
             transition: width 0.3s ease;
         }
+
         .file-drop-area {
             border: 2px dashed #e5e7eb;
             border-radius: 8px;
@@ -69,10 +38,12 @@
             text-align: center;
             transition: all 0.3s ease;
         }
+
         .file-drop-area.drag-over {
             border-color: #4F46E5;
             background-color: rgba(79, 70, 229, 0.05);
         }
+
         .preview-image {
             max-height: 150px;
             max-width: 100%;
@@ -80,12 +51,37 @@
             margin-top: 1rem;
         }
     </style>
-<!--    주소 검색 스타일-->
+    <!--    주소 검색 스타일-->
     <style>
-        label{display:block;margin:8px 0 4px} input{width:100%;padding:8px}
-        #postcode-layer{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
-            z-index:9999;width:360px;height:480px;border:1px solid #ccc;background:#fff}
-        #close{position:absolute;right:8px;top:8px;cursor:pointer}
+        label {
+            display: block;
+            margin: 8px 0 4px
+        }
+
+        input {
+            width: 100%;
+            padding: 8px
+        }
+
+        #postcode-layer {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            width: 360px;
+            height: 480px;
+            border: 1px solid #ccc;
+            background: #fff
+        }
+
+        #close {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            cursor: pointer
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -301,7 +297,7 @@
                                     class="whitespace-nowrap !rounded-button bg-blue-100 hover:bg-gray-200 text-gray-700 px-4 py-3 font-medium transition openChineseModal"
                                     data-target="address"
                             >
-                                    중국 주소 검색
+                                중국 주소 검색
                             </button>
                         </div>
                         <input
@@ -427,7 +423,7 @@
                                     class="whitespace-nowrap !rounded-button bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 font-medium transition"
                                     onclick="openPostcode('agency')"
                             >
-                               한국 주소 검색
+                                한국 주소 검색
                             </button>
                             <button
                                     type="button"
@@ -460,9 +456,8 @@
                     <div>
                         <label
                                 for="agencyRegion"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >유학원 지역 <span class="text-red-500">*</span></label
-                        >
+                                class="block text-sm font-medium text-gray-700 mb-1">
+                            유학원 지역 <span class="text-red-500">*</span></label>
                         <div class="relative">
                             <select
                                     id="agencyRegion"
@@ -473,6 +468,7 @@
                                 <option value="" disabled selected>
                                     지역을 선택해주세요
                                 </option>
+                                <!--Todo: 중국 지역 Spring 상수로 지정-->
                                 <option value="北京市">北京市</option>
                                 <option value="天津市">天津市</option>
                                 <option value="上海市">上海市</option>
@@ -634,7 +630,7 @@
             <div class="space-y-3">
                 <div class="flex items-center">
                     <div class="relative w-5 h-5 mr-2">
-                        <input type="checkbox" id="agreeAll" class="sr-only" />
+                        <input type="checkbox" id="agreeAll" class="sr-only"/>
                         <div
                                 class="w-5 h-5 border border-gray-300 rounded cursor-pointer flex items-center justify-center"
                                 id="agreeAllBox"
@@ -751,7 +747,8 @@
     </div>
 </div>
 
-<div id="postcode-layer" class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] w-[360px] h-[480px] border border-gray-300 bg-white shadow-lg rounded-lg">
+<div id="postcode-layer"
+     class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] w-[360px] h-[480px] border border-gray-300 bg-white shadow-lg rounded-lg">
     <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
         <h4 class="font-semibold text-gray-700">주소 검색</h4>
         <button id="closePostcode" onclick="closePostcode()" class="text-gray-500 hover:text-gray-700">
@@ -761,580 +758,6 @@
     <div id="postcode-wrap" class="w-full h-[400px]"></div>
 </div>
 
-
-<script id="passwordToggleScript">
-    document.addEventListener("DOMContentLoaded", function () {
-        const togglePassword = document.getElementById("togglePassword");
-        const toggleConfirmPassword = document.getElementById(
-            "toggleConfirmPassword",
-        );
-        const passwordInput = document.getElementById("password");
-        const confirmPasswordInput = document.getElementById("confirmPassword");
-        togglePassword.addEventListener("click", function () {
-            const type =
-                passwordInput.getAttribute("type") === "password" ? "text" : "password";
-            passwordInput.setAttribute("type", type);
-            togglePassword.innerHTML =
-                type === "password"
-                    ? '<i class="ri-eye-line"></i>'
-                    : '<i class="ri-eye-off-line"></i>';
-        });
-        toggleConfirmPassword.addEventListener("click", function () {
-            const type =
-                confirmPasswordInput.getAttribute("type") === "password"
-                    ? "text"
-                    : "password";
-            confirmPasswordInput.setAttribute("type", type);
-            toggleConfirmPassword.innerHTML =
-                type === "password"
-                    ? '<i class="ri-eye-line"></i>'
-                    : '<i class="ri-eye-off-line"></i>';
-        });
-    });
-</script>
-<script id="passwordStrengthScript">
-    document.addEventListener("DOMContentLoaded", function () {
-        const passwordInput = document.getElementById("password");
-        const confirmPasswordInput = document.getElementById("confirmPassword");
-        const passwordStrength = document.getElementById("passwordStrength");
-        const passwordStrengthText = document.getElementById("passwordStrengthText");
-        const passwordMatch = document.getElementById("passwordMatch");
-        passwordInput.addEventListener("input", function () {
-            const password = passwordInput.value;
-            let strength = 0;
-            let message = "";
-            if (password.length >= 8) strength += 25;
-            if (password.match(/[a-z]+/)) strength += 25;
-            if (password.match(/[A-Z]+/)) strength += 25;
-            if (password.match(/[0-9]+/)) strength += 25;
-            if (password.match(/[^a-zA-Z0-9]+/)) strength += 25;
-            passwordStrength.style.width = `${Math.min(strength, 100)}%`;
-            if (strength < 25) {
-                passwordStrength.className = "bg-red-500";
-                message = "매우 약함";
-            } else if (strength < 50) {
-                passwordStrength.className = "bg-orange-500";
-                message = "약함";
-            } else if (strength < 75) {
-                passwordStrength.className = "bg-yellow-500";
-                message = "보통";
-            } else {
-                passwordStrength.className = "bg-green-500";
-                message = "강함";
-            }
-            passwordStrengthText.textContent = `비밀번호 강도: ${message} (영문, 숫자, 특수문자 조합 8자리 이상)`;
-            // 비밀번호 일치 여부 확인
-            checkPasswordMatch();
-        });
-        confirmPasswordInput.addEventListener("input", checkPasswordMatch);
-        function checkPasswordMatch() {
-            const password = passwordInput.value;
-            const confirmPassword = confirmPasswordInput.value;
-            if (confirmPassword === "") {
-                passwordMatch.textContent = "";
-                passwordMatch.className = "mt-1 text-sm";
-            } else if (password === confirmPassword) {
-                passwordMatch.textContent = "비밀번호가 일치합니다.";
-                passwordMatch.className = "mt-1 text-sm text-green-600";
-            } else {
-                passwordMatch.textContent = "비밀번호가 일치하지 않습니다.";
-                passwordMatch.className = "mt-1 text-sm text-red-600";
-            }
-        }
-    });
-</script>
-<script id="fileUploadScript">
-    document.addEventListener("DOMContentLoaded", function () {
-        // 이미지 업로드 처리
-        const imageDropArea = document.getElementById("imageDropArea");
-        const agencyImage = document.getElementById("agencyImage");
-        const imagePreviewContainer = document.getElementById(
-            "imagePreviewContainer",
-        );
-        const imagePreview = document.getElementById("imagePreview");
-        const removeImage = document.getElementById("removeImage");
-        // 사업자 등록증 업로드 처리
-        const licenseDropArea = document.getElementById("licenseDropArea");
-        const businessLicense = document.getElementById("businessLicense");
-        const licenseFileInfo = document.getElementById("licenseFileInfo");
-        const licenseFileName = document.getElementById("licenseFileName");
-        const licenseFileSize = document.getElementById("licenseFileSize");
-        const removeLicense = document.getElementById("removeLicense");
-        // 이미지 파일 처리 함수
-        function handleImageFile(file) {
-            if (file) {
-                // 파일 유효성 검사
-                const validTypes = ["image/jpeg", "image/png", "image/gif"];
-                const maxSize = 5 * 1024 * 1024; // 5MB
-                if (!validTypes.includes(file.type)) {
-                    alert("JPG, PNG, GIF 파일만 업로드 가능합니다.");
-                    return;
-                }
-                if (file.size > maxSize) {
-                    alert("파일 크기는 5MB 이하여야 합니다.");
-                    return;
-                }
-                // 미리보기 생성
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    imagePreview.src = e.target.result;
-                    imagePreviewContainer.classList.remove("hidden");
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-        // 사업자 등록증 파일 처리 함수
-        function handleLicenseFile(file) {
-            if (file) {
-                // 파일 유효성 검사
-                const validTypes = ["application/pdf", "image/jpeg", "image/png"];
-                const maxSize = 10 * 1024 * 1024; // 10MB
-                if (!validTypes.includes(file.type)) {
-                    alert("PDF, JPG, PNG 파일만 업로드 가능합니다.");
-                    return;
-                }
-                if (file.size > maxSize) {
-                    alert("파일 크기는 10MB 이하여야 합니다.");
-                    return;
-                }
-                // 파일 정보 표시
-                licenseFileName.textContent = file.name;
-                licenseFileSize.textContent = formatFileSize(file.size);
-                licenseFileInfo.classList.remove("hidden");
-            }
-        }
-        // 파일 크기 포맷팅
-        function formatFileSize(bytes) {
-            if (bytes < 1024) return bytes + " B";
-            else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
-            else return (bytes / 1048576).toFixed(1) + " MB";
-        }
-        // 이미지 업로드 이벤트
-        agencyImage.addEventListener("change", function (e) {
-            handleImageFile(this.files[0]);
-        });
-        // 이미지 드래그 앤 드롭
-        ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
-            imageDropArea.addEventListener(eventName, preventDefaults, false);
-        });
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-        ["dragenter", "dragover"].forEach((eventName) => {
-            imageDropArea.addEventListener(
-                eventName,
-                function () {
-                    imageDropArea.classList.add("drag-over");
-                },
-                false,
-            );
-        });
-        ["dragleave", "drop"].forEach((eventName) => {
-            imageDropArea.addEventListener(
-                eventName,
-                function () {
-                    imageDropArea.classList.remove("drag-over");
-                },
-                false,
-            );
-        });
-        imageDropArea.addEventListener(
-            "drop",
-            function (e) {
-                const file = e.dataTransfer.files[0];
-                agencyImage.files = e.dataTransfer.files;
-                handleImageFile(file);
-            },
-            false,
-        );
-        // 이미지 제거
-        removeImage.addEventListener("click", function () {
-            agencyImage.value = "";
-            imagePreview.src = "#";
-            imagePreviewContainer.classList.add("hidden");
-        });
-        // 사업자 등록증 업로드 이벤트
-        businessLicense.addEventListener("change", function (e) {
-            handleLicenseFile(this.files[0]);
-        });
-        // 사업자 등록증 드래그 앤 드롭
-        ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
-            licenseDropArea.addEventListener(eventName, preventDefaults, false);
-        });
-        ["dragenter", "dragover"].forEach((eventName) => {
-            licenseDropArea.addEventListener(
-                eventName,
-                function () {
-                    licenseDropArea.classList.add("drag-over");
-                },
-                false,
-            );
-        });
-        ["dragleave", "drop"].forEach((eventName) => {
-            licenseDropArea.addEventListener(
-                eventName,
-                function () {
-                    licenseDropArea.classList.remove("drag-over");
-                },
-                false,
-            );
-        });
-        licenseDropArea.addEventListener(
-            "drop",
-            function (e) {
-                const file = e.dataTransfer.files[0];
-                businessLicense.files = e.dataTransfer.files;
-                handleLicenseFile(file);
-            },
-            false,
-        );
-        // 사업자 등록증 제거
-        removeLicense.addEventListener("click", function () {
-            businessLicense.value = "";
-            licenseFileInfo.classList.add("hidden");
-        });
-    });
-</script>
-<script id="checkboxScript">
-    document.addEventListener("DOMContentLoaded", function () {
-        const agreeAll = document.getElementById("agreeAll");
-        const agreeAllBox = document.getElementById("agreeAllBox");
-        const agreeTerms = document.getElementById("agreeTerms");
-        const agreeTermsBox = document.getElementById("agreeTermsBox");
-        const agreePrivacy = document.getElementById("agreePrivacy");
-        const agreePrivacyBox = document.getElementById("agreePrivacyBox");
-        const agreeMarketing = document.getElementById("agreeMarketing");
-        const agreeMarketingBox = document.getElementById("agreeMarketingBox");
-        // 체크박스 토글 함수
-        function toggleCheckbox(checkbox, box) {
-            checkbox.checked = !checkbox.checked;
-            updateCheckboxStyle(checkbox, box);
-        }
-        // 체크박스 스타일 업데이트
-        function updateCheckboxStyle(checkbox, box) {
-            if (checkbox.checked) {
-                box.classList.add("bg-primary", "border-primary");
-                box.querySelector("i").classList.remove("hidden");
-            } else {
-                box.classList.remove("bg-primary", "border-primary");
-                box.querySelector("i").classList.add("hidden");
-            }
-        }
-        // 전체 동의 업데이트
-        function updateAgreeAll() {
-            const allChecked =
-                agreeTerms.checked && agreePrivacy.checked && agreeMarketing.checked;
-            agreeAll.checked = allChecked;
-            updateCheckboxStyle(agreeAll, agreeAllBox);
-        }
-        // 개별 체크박스 업데이트
-        function updateIndividualCheckboxes() {
-            agreeTerms.checked = agreeAll.checked;
-            agreePrivacy.checked = agreeAll.checked;
-            agreeMarketing.checked = agreeAll.checked;
-            updateCheckboxStyle(agreeTerms, agreeTermsBox);
-            updateCheckboxStyle(agreePrivacy, agreePrivacyBox);
-            updateCheckboxStyle(agreeMarketing, agreeMarketingBox);
-        }
-        // 전체 동의 클릭 이벤트
-        agreeAllBox.addEventListener("click", function () {
-            toggleCheckbox(agreeAll, agreeAllBox);
-            updateIndividualCheckboxes();
-        });
-        // 개별 체크박스 클릭 이벤트
-        agreeTermsBox.addEventListener("click", function () {
-            toggleCheckbox(agreeTerms, agreeTermsBox);
-            updateAgreeAll();
-        });
-        agreePrivacyBox.addEventListener("click", function () {
-            toggleCheckbox(agreePrivacy, agreePrivacyBox);
-            updateAgreeAll();
-        });
-        agreeMarketingBox.addEventListener("click", function () {
-            toggleCheckbox(agreeMarketing, agreeMarketingBox);
-            updateAgreeAll();
-        });
-    });
-</script>
-<script id="search-address">
-    // 주소 검색 (대표자)
-    const zoneEl = document.getElementById('address');
-    const addrEl = document.getElementById('address1');
-
-    const agencyZoneEl = document.getElementById('agencyAddress');
-    const agencyAddrEl = document.getElementById('agencyAddress1');
-
-    const layer  = document.getElementById('postcode-layer');
-    const wrap   = document.getElementById('postcode-wrap');
-
-    function openPostcode(type) {
-        layer.style.display = 'block';
-        new daum.Postcode({
-            oncomplete: function(data) {
-                // 도로명(data.roadAddress) / 지번(data.jibunAddress)
-                const addr = data.roadAddress || data.jibunAddress;
-                if ('member' === type) {
-                    zoneEl.value = data.zonecode;
-                    addrEl.value = addr;
-                    document.getElementById('address2').focus();
-                }else if ('agency' === type) {
-                    agencyZoneEl.value = data.zonecode;
-                    agencyAddrEl.value = addr;
-                    document.getElementById('agencyAddress2').focus();
-                }
-
-                closePostcode();
-            },
-            width: '100%',
-            height: '100%'
-        }).embed(wrap);
-    }
-    function closePostcode() { layer.style.display = 'none'; }
-</script>
-
-<script id="formSubmitScript">
-
-
-    document.addEventListener("DOMContentLoaded", function () {
-        const form = document.getElementById("signupForm");
-        const submitButton = document.getElementById("submitButton");
-        const cancelButton = document.getElementById("cancelButton");
-        // 아이디 중복 확인
-        let isUsernameChecked = false;
-
-        document
-            .getElementById("checkUsername")
-            .addEventListener("click", function () {
-                const username = document.getElementById("email").value;
-                const usernameStatus = document.getElementById("usernameStatus");
-                isUsernameChecked = false;
-
-                if (!username) {
-                    usernameStatus.textContent = "이메일을 입력해주세요.";
-                    usernameStatus.className = "mt-1 text-sm text-red-600";
-                    return;
-                }
-
-                // 이메일 유효성 검사
-                const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-                if (!emailRegex.test(username)) {
-                    usernameStatus.textContent = "올바른 이메일 형식이 아닙니다.";
-                    usernameStatus.className = "mt-1 text-sm text-red-600";
-                    return;
-                }
-                // 여기서는 실제 API 호출 대신 시뮬레이션
-                setTimeout(() => {
-                    fetch(`${memberUrl}/check-id?username=${encodeURIComponent(username)}`)
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error("서버 응답 오류");
-                            }
-                            return response.json();  // true 또는 false
-                        })
-                        .then( data => {
-                            const isDuplicate = data.result;
-                            console.log(isDuplicate);
-                            if (isDuplicate) {
-                                usernameStatus.textContent = "이미 사용 중인 아이디입니다.";
-                                usernameStatus.className = "mt-1 text-sm text-red-600";
-                            } else {
-                                usernameStatus.textContent = "사용 가능한 아이디입니다.";
-                                isUsernameChecked = true;
-                                usernameStatus.className = "mt-1 text-sm text-green-600";
-                            }
-                        })
-                        .catch(error => {
-                            console.error("중복 확인 중 오류:", error);
-                            usernameStatus.textContent = "중복 확인에 실패했습니다.";
-                            usernameStatus.className = "mt-1 text-sm text-gray-500";
-                        });
-                }, 100);
-            });
-
-        // 취소 버튼
-        cancelButton.addEventListener("click", function () {
-            if (
-                confirm("회원가입을 취소하시겠습니까? 입력한 정보는 저장되지 않습니다.")
-            ) {
-                window.location.href = "/"; // 메인 페이지로 이동
-            }
-        });
-        // 폼 제출
-        form.addEventListener("submit", async function (e) {
-            e.preventDefault();
-            if (!isUsernameChecked) {
-                alert("아이디 중복 확인을 먼저 해주세요.");
-                return;
-            }
-
-            // 필수 입력 필드 검사
-            const requiredFields = form.querySelectorAll("[required]");
-            let isValid = true;
-            requiredFields.forEach((field) => {
-                if (!field.value) {
-                    isValid = false;
-                    field.classList.add("border-red-500");
-                } else {
-                    field.classList.remove("border-red-500");
-                }
-            });
-            // 비밀번호 일치 확인
-            const password = document.getElementById("password").value;
-            const confirmPassword = document.getElementById("confirmPassword").value;
-            if (password !== confirmPassword) {
-                isValid = false;
-                document
-                    .getElementById("confirmPassword")
-                    .classList.add("border-red-500");
-                document.getElementById("passwordMatch").textContent =
-                    "비밀번호가 일치하지 않습니다.";
-                document.getElementById("passwordMatch").className =
-                    "mt-1 text-sm text-red-600";
-            }
-            // 약관 동의 확인
-            const agreeTerms = document.getElementById("agreeTerms");
-            const agreePrivacy = document.getElementById("agreePrivacy");
-            if (!agreeTerms.checked || !agreePrivacy.checked) {
-                isValid = false;
-                const modal = document.createElement("div");
-                modal.className = "fixed inset-0 flex items-center justify-center z-50";
-                modal.innerHTML = `
-                  <div class="fixed inset-0 bg-black opacity-50"></div>
-                  <div class="bg-white rounded-lg p-6 relative z-10 max-w-sm w-full mx-4">
-                  <h3 class="text-lg font-medium text-gray-900 mb-4">알림</h3>
-                  <p class="text-gray-500 mb-6">필수 약관에 동의해주세요.</p>
-                  <button class="w-full !rounded-button bg-primary hover:bg-primary/90 text-white px-4 py-2 font-medium transition">확인</button>
-                  </div>
-                  `;
-                document.body.appendChild(modal);
-                modal.querySelector("button").onclick = () => modal.remove();
-                return;
-            }
-            console.log(isValid);
-            if (isValid) {
-                try {
-                    submitButton.disabled = true;
-                    submitButton.innerHTML =
-                        '<i class="ri-loader-4-line animate-spin mr-2"></i> 처리 중...';
-                    console.log("Submit버튼 변환");
-
-
-                    const jsonData = {
-                        memberName: form.name.value,
-                        email: form.email.value,
-                        password: form.password.value,
-                        homePhoneNumber: form.telNum.value,
-                        phoneNumber: form.mobile.value,
-                        address1: form.address1.value,
-                        address2: form.address2.value,
-                        agencyName: form.agencyName.value,
-                        agencyAddress1: form.agencyAddress1.value,
-                        agencyAddress2: form.agencyAddress2.value,
-                        agencyPhone : form.agencyPhone.value,
-                        birth : form.birthDate.value,
-                        agencyOwner : form.owner.value,
-                        agencyRegion: form.agencyRegion.value,
-                        agencyEmail : form.agencyEmail.value
-                    };
-
-                    //데이터 수집
-                    const formData = new FormData();
-                    formData.append('data',JSON.stringify(jsonData));
-                    // formData.append('memberName', form.name.value);
-                    // formData.append('email', form.email.value);
-                    // formData.append('password', form.password.value);
-                    // formData.append('homePhoneNumber', form.telNum.value);
-                    // formData.append('phoneNumber', form.mobile.value)
-                    // formData.append('address1', form.address1.value);
-                    // formData.append('address2', form.address2.value);
-                    // formData.append('agencyName', form.agencyName.value);
-                    // formData.append('agencyAddress1', form.agencyAddress1.value);
-                    // formData.append('agencyAddress2', form.agencyAddress2.value);
-
-
-                    // 파일 업로드
-                    const agencyImage = form.agencyImage.files[0];
-                    if (agencyImage) formData.append('agencyPicture', agencyImage);
-
-                    const businessLicense = form.businessLicense.files[0];
-                    if (businessLicense) formData.append('businessCertificate', businessLicense);
-
-                    //data check
-                    for (let [key, value] of formData.entries()) {
-                        console.log(key, value);
-                    }
-                    console.log("input element:", form.agencyImage); // <input> 태그 존재 여부
-                    console.log("파일 선택 여부:", form.agencyImage.files[0]);
-                    console.log("input element:", form.businessLicense); // <input> 태그 존재 여부
-                    console.log("파일 선택 여부:", form.businessLicense.files[0]);
-
-
-                    const response = await fetch(form.action, {
-                        method: "POST",
-                        body: formData,
-                    });
-
-                    console.log("🔍 response 객체:", response);
-
-// 개별 정보 출력
-                    console.log("✅ 상태 코드:", response.status);       // ex: 200, 500
-                    console.log("✅ 성공 여부:", response.ok);           // true/false
-                    console.log("✅ 상태 메시지:", response.statusText); // ex: OK, Internal Server Error
-
-                    if (response.ok) {
-                        const modal = document.createElement("div");
-                        modal.className =
-                            "fixed inset-0 flex items-center justify-center z-50";
-                        modal.innerHTML = `
-      <div class="fixed inset-0 bg-black opacity-50"></div>
-      <div class="bg-white rounded-lg p-6 relative z-10 max-w-sm w-full mx-4">
-      <div class="flex items-center justify-center mb-4">
-      <i class="ri-checkbox-circle-line text-green-500 text-4xl"></i>
-      </div>
-      <h3 class="text-lg font-medium text-gray-900 text-center mb-2">회원가입 완료</h3>
-      <p class="text-gray-500 text-center mb-6">회원가입이 성공적으로 완료되었습니다.</p>
-      <button class="w-full !rounded-button bg-primary hover:bg-primary/90 text-white px-4 py-2 font-medium transition">확인</button>
-      </div>
-      `;
-                        document.body.appendChild(modal);
-                        modal.querySelector("button").onclick = () => {
-                            modal.remove();
-                            window.location.href = "/member/login";
-                        };
-                    } else {
-                        throw new Error("서버 오류가 발생했습니다.");
-                    }
-                } catch (error) {
-                    const modal = document.createElement("div");
-                    modal.className = "fixed inset-0 flex items-center justify-center z-50";
-                    modal.innerHTML = `
-      <div class="fixed inset-0 bg-black opacity-50"></div>
-      <div class="bg-white rounded-lg p-6 relative z-10 max-w-sm w-full mx-4">
-      <div class="flex items-center justify-center mb-4">
-      <i class="ri-error-warning-line text-red-500 text-4xl"></i>
-      </div>
-      <h3 class="text-lg font-medium text-gray-900 text-center mb-2">오류 발생</h3>
-      <p class="text-gray-500 text-center mb-6">회원가입 처리 중 오류가 발생했습니다.<br>잠시 후 다시 시도해주세요.</p>
-      <button class="w-full !rounded-button bg-primary hover:bg-primary/90 text-white px-4 py-2 font-medium transition">확인</button>
-      </div>
-      `;
-                    document.body.appendChild(modal);
-                    modal.querySelector("button").onclick = () => modal.remove();
-                } finally {
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = "회원가입";
-                }
-            } else {
-                const firstErrorField = form.querySelector(".border-red-500");
-                if (firstErrorField) {
-                    firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
-                    firstErrorField.focus();
-                }
-            }
-        });
-    });
-</script>
 
 <!--중국 주소 검색-->
 <div id="chinese-address-modal"
@@ -1358,107 +781,696 @@
         class="border border-gray-200 rounded-lg max-h-60 overflow-y-auto hidden">
     </ul>
 </div>
+</body>
 
-
-<script id="chinese-address-modal-script">
-    document.addEventListener("DOMContentLoaded", () => {
-        const modal = document.getElementById("chinese-address-modal");
-        const closeBtn = document.getElementById("closeChineseModal");
-        const input = document.getElementById("chineseAddressInput");
-        const list = document.getElementById("chineseAddressList");
-
-        // 여러 버튼(회원 / 유학원) 공용
-        const openBtns = document.querySelectorAll(".openChineseModal");
-        let currentTarget = null;
-
-        // 모달 열기
-        openBtns.forEach(btn => {
-            btn.addEventListener("click", () => {
-                currentTarget = btn.dataset.target; // "address" or "agency"
-                modal.classList.remove("hidden");
-                input.value = "";
-                list.innerHTML = "";
-                list.classList.add("hidden");
-                input.focus();
+<th:block th:fragment="script">
+    <script id="passwordToggleScript">
+        document.addEventListener("DOMContentLoaded", function () {
+            const togglePassword = document.getElementById("togglePassword");
+            const toggleConfirmPassword = document.getElementById(
+                "toggleConfirmPassword",
+            );
+            const passwordInput = document.getElementById("password");
+            const confirmPasswordInput = document.getElementById("confirmPassword");
+            togglePassword.addEventListener("click", function () {
+                const type =
+                    passwordInput.getAttribute("type") === "password" ? "text" : "password";
+                passwordInput.setAttribute("type", type);
+                togglePassword.innerHTML =
+                    type === "password"
+                        ? '<i class="ri-eye-line"></i>'
+                        : '<i class="ri-eye-off-line"></i>';
+            });
+            toggleConfirmPassword.addEventListener("click", function () {
+                const type =
+                    confirmPasswordInput.getAttribute("type") === "password"
+                        ? "text"
+                        : "password";
+                confirmPasswordInput.setAttribute("type", type);
+                toggleConfirmPassword.innerHTML =
+                    type === "password"
+                        ? '<i class="ri-eye-line"></i>'
+                        : '<i class="ri-eye-off-line"></i>';
             });
         });
+    </script>
+    <script id="passwordStrengthScript">
+        document.addEventListener("DOMContentLoaded", function () {
+            const passwordInput = document.getElementById("password");
+            const confirmPasswordInput = document.getElementById("confirmPassword");
+            const passwordStrength = document.getElementById("passwordStrength");
+            const passwordStrengthText = document.getElementById("passwordStrengthText");
+            const passwordMatch = document.getElementById("passwordMatch");
+            passwordInput.addEventListener("input", function () {
+                const password = passwordInput.value;
+                let strength = 0;
+                let message = "";
+                if (password.length >= 8) strength += 25;
+                if (password.match(/[a-z]+/)) strength += 25;
+                if (password.match(/[A-Z]+/)) strength += 25;
+                if (password.match(/[0-9]+/)) strength += 25;
+                if (password.match(/[^a-zA-Z0-9]+/)) strength += 25;
+                passwordStrength.style.width = `${Math.min(strength, 100)}%`;
+                if (strength < 25) {
+                    passwordStrength.className = "bg-red-500";
+                    message = "매우 약함";
+                } else if (strength < 50) {
+                    passwordStrength.className = "bg-orange-500";
+                    message = "약함";
+                } else if (strength < 75) {
+                    passwordStrength.className = "bg-yellow-500";
+                    message = "보통";
+                } else {
+                    passwordStrength.className = "bg-green-500";
+                    message = "강함";
+                }
+                passwordStrengthText.textContent = `비밀번호 강도: ${message} (영문, 숫자, 특수문자 조합 8자리 이상)`;
+                // 비밀번호 일치 여부 확인
+                checkPasswordMatch();
+            });
+            confirmPasswordInput.addEventListener("input", checkPasswordMatch);
 
-        // 모달 닫기
-        closeBtn.addEventListener("click", () => {
-            modal.classList.add("hidden");
-            list.innerHTML = "";
-            list.classList.add("hidden");
-        });
-
-        // 입력 시 자동완성 검색 (디바운스)
-        let debounceTimer;
-        input.addEventListener("input", () => {
-            const keyword = input.value.trim();
-            if (!keyword) {
-                list.classList.add("hidden");
-                return;
+            function checkPasswordMatch() {
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                if (confirmPassword === "") {
+                    passwordMatch.textContent = "";
+                    passwordMatch.className = "mt-1 text-sm";
+                } else if (password === confirmPassword) {
+                    passwordMatch.textContent = "비밀번호가 일치합니다.";
+                    passwordMatch.className = "mt-1 text-sm text-green-600";
+                } else {
+                    passwordMatch.textContent = "비밀번호가 일치하지 않습니다.";
+                    passwordMatch.className = "mt-1 text-sm text-red-600";
+                }
             }
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => fetchSuggestions(keyword), 300);
         });
+    </script>
+    <script id="fileUploadScript">
+        document.addEventListener("DOMContentLoaded", function () {
+            // 이미지 업로드 처리
+            const imageDropArea = document.getElementById("imageDropArea");
+            const agencyImage = document.getElementById("agencyImage");
+            const imagePreviewContainer = document.getElementById(
+                "imagePreviewContainer",
+            );
+            const imagePreview = document.getElementById("imagePreview");
+            const removeImage = document.getElementById("removeImage");
+            // 사업자 등록증 업로드 처리
+            const licenseDropArea = document.getElementById("licenseDropArea");
+            const businessLicense = document.getElementById("businessLicense");
+            const licenseFileInfo = document.getElementById("licenseFileInfo");
+            const licenseFileName = document.getElementById("licenseFileName");
+            const licenseFileSize = document.getElementById("licenseFileSize");
+            const removeLicense = document.getElementById("removeLicense");
 
-        async function fetchSuggestions(keyword) {
-            const url = `/api/v1/tencent/address?keyword=${encodeURIComponent(keyword)}`;
-            try {
-                const resp = await fetch(url);
-                const data = await resp.json();
-                console.log("Tencent API result:", data);
+            // 이미지 파일 처리 함수
+            function handleImageFile(file) {
+                if (file) {
+                    // 파일 유효성 검사
+                    const validTypes = ["image/jpeg", "image/png", "image/gif"];
+                    const maxSize = 5 * 1024 * 1024; // 5MB
+                    if (!validTypes.includes(file.type)) {
+                        alert("JPG, PNG, GIF 파일만 업로드 가능합니다.");
+                        return;
+                    }
+                    if (file.size > maxSize) {
+                        alert("파일 크기는 5MB 이하여야 합니다.");
+                        return;
+                    }
+                    // 미리보기 생성
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        imagePreview.src = e.target.result;
+                        imagePreviewContainer.classList.remove("hidden");
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
 
-                if (!data || !data.data || data.data.length === 0) {
-                    list.classList.add("hidden");
+            // 사업자 등록증 파일 처리 함수
+            function handleLicenseFile(file) {
+                if (file) {
+                    // 파일 유효성 검사
+                    const validTypes = ["application/pdf", "image/jpeg", "image/png"];
+                    const maxSize = 10 * 1024 * 1024; // 10MB
+                    if (!validTypes.includes(file.type)) {
+                        alert("PDF, JPG, PNG 파일만 업로드 가능합니다.");
+                        return;
+                    }
+                    if (file.size > maxSize) {
+                        alert("파일 크기는 10MB 이하여야 합니다.");
+                        return;
+                    }
+                    // 파일 정보 표시
+                    licenseFileName.textContent = file.name;
+                    licenseFileSize.textContent = formatFileSize(file.size);
+                    licenseFileInfo.classList.remove("hidden");
+                }
+            }
+
+            // 파일 크기 포맷팅
+            function formatFileSize(bytes) {
+                if (bytes < 1024) return bytes + " B";
+                else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
+                else return (bytes / 1048576).toFixed(1) + " MB";
+            }
+
+            // 이미지 업로드 이벤트
+            agencyImage.addEventListener("change", function (e) {
+                handleImageFile(this.files[0]);
+            });
+            // 이미지 드래그 앤 드롭
+            ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+                imageDropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ["dragenter", "dragover"].forEach((eventName) => {
+                imageDropArea.addEventListener(
+                    eventName,
+                    function () {
+                        imageDropArea.classList.add("drag-over");
+                    },
+                    false,
+                );
+            });
+            ["dragleave", "drop"].forEach((eventName) => {
+                imageDropArea.addEventListener(
+                    eventName,
+                    function () {
+                        imageDropArea.classList.remove("drag-over");
+                    },
+                    false,
+                );
+            });
+            imageDropArea.addEventListener(
+                "drop",
+                function (e) {
+                    const file = e.dataTransfer.files[0];
+                    agencyImage.files = e.dataTransfer.files;
+                    handleImageFile(file);
+                },
+                false,
+            );
+            // 이미지 제거
+            removeImage.addEventListener("click", function () {
+                agencyImage.value = "";
+                imagePreview.src = "#";
+                imagePreviewContainer.classList.add("hidden");
+            });
+            // 사업자 등록증 업로드 이벤트
+            businessLicense.addEventListener("change", function (e) {
+                handleLicenseFile(this.files[0]);
+            });
+            // 사업자 등록증 드래그 앤 드롭
+            ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+                licenseDropArea.addEventListener(eventName, preventDefaults, false);
+            });
+            ["dragenter", "dragover"].forEach((eventName) => {
+                licenseDropArea.addEventListener(
+                    eventName,
+                    function () {
+                        licenseDropArea.classList.add("drag-over");
+                    },
+                    false,
+                );
+            });
+            ["dragleave", "drop"].forEach((eventName) => {
+                licenseDropArea.addEventListener(
+                    eventName,
+                    function () {
+                        licenseDropArea.classList.remove("drag-over");
+                    },
+                    false,
+                );
+            });
+            licenseDropArea.addEventListener(
+                "drop",
+                function (e) {
+                    const file = e.dataTransfer.files[0];
+                    businessLicense.files = e.dataTransfer.files;
+                    handleLicenseFile(file);
+                },
+                false,
+            );
+            // 사업자 등록증 제거
+            removeLicense.addEventListener("click", function () {
+                businessLicense.value = "";
+                licenseFileInfo.classList.add("hidden");
+            });
+        });
+    </script>
+    <script id="checkboxScript">
+        document.addEventListener("DOMContentLoaded", function () {
+            const agreeAll = document.getElementById("agreeAll");
+            const agreeAllBox = document.getElementById("agreeAllBox");
+            const agreeTerms = document.getElementById("agreeTerms");
+            const agreeTermsBox = document.getElementById("agreeTermsBox");
+            const agreePrivacy = document.getElementById("agreePrivacy");
+            const agreePrivacyBox = document.getElementById("agreePrivacyBox");
+            const agreeMarketing = document.getElementById("agreeMarketing");
+            const agreeMarketingBox = document.getElementById("agreeMarketingBox");
+
+            // 체크박스 토글 함수
+            function toggleCheckbox(checkbox, box) {
+                checkbox.checked = !checkbox.checked;
+                updateCheckboxStyle(checkbox, box);
+            }
+
+            // 체크박스 스타일 업데이트
+            function updateCheckboxStyle(checkbox, box) {
+                if (checkbox.checked) {
+                    box.classList.add("bg-primary", "border-primary");
+                    box.querySelector("i").classList.remove("hidden");
+                } else {
+                    box.classList.remove("bg-primary", "border-primary");
+                    box.querySelector("i").classList.add("hidden");
+                }
+            }
+
+            // 전체 동의 업데이트
+            function updateAgreeAll() {
+                const allChecked =
+                    agreeTerms.checked && agreePrivacy.checked && agreeMarketing.checked;
+                agreeAll.checked = allChecked;
+                updateCheckboxStyle(agreeAll, agreeAllBox);
+            }
+
+            // 개별 체크박스 업데이트
+            function updateIndividualCheckboxes() {
+                agreeTerms.checked = agreeAll.checked;
+                agreePrivacy.checked = agreeAll.checked;
+                agreeMarketing.checked = agreeAll.checked;
+                updateCheckboxStyle(agreeTerms, agreeTermsBox);
+                updateCheckboxStyle(agreePrivacy, agreePrivacyBox);
+                updateCheckboxStyle(agreeMarketing, agreeMarketingBox);
+            }
+
+            // 전체 동의 클릭 이벤트
+            agreeAllBox.addEventListener("click", function () {
+                toggleCheckbox(agreeAll, agreeAllBox);
+                updateIndividualCheckboxes();
+            });
+            // 개별 체크박스 클릭 이벤트
+            agreeTermsBox.addEventListener("click", function () {
+                toggleCheckbox(agreeTerms, agreeTermsBox);
+                updateAgreeAll();
+            });
+            agreePrivacyBox.addEventListener("click", function () {
+                toggleCheckbox(agreePrivacy, agreePrivacyBox);
+                updateAgreeAll();
+            });
+            agreeMarketingBox.addEventListener("click", function () {
+                toggleCheckbox(agreeMarketing, agreeMarketingBox);
+                updateAgreeAll();
+            });
+        });
+    </script>
+    <script id="search-address">
+        // 주소 검색 (대표자)
+        const zoneEl = document.getElementById('address');
+        const addrEl = document.getElementById('address1');
+
+        const agencyZoneEl = document.getElementById('agencyAddress');
+        const agencyAddrEl = document.getElementById('agencyAddress1');
+
+        const layer = document.getElementById('postcode-layer');
+        const wrap = document.getElementById('postcode-wrap');
+
+        function openPostcode(type) {
+            layer.style.display = 'block';
+            new daum.Postcode({
+                oncomplete: function (data) {
+                    // 도로명(data.roadAddress) / 지번(data.jibunAddress)
+                    const addr = data.roadAddress || data.jibunAddress;
+                    if ('member' === type) {
+                        zoneEl.value = data.zonecode;
+                        addrEl.value = addr;
+                        document.getElementById('address2').focus();
+                    } else if ('agency' === type) {
+                        agencyZoneEl.value = data.zonecode;
+                        agencyAddrEl.value = addr;
+                        document.getElementById('agencyAddress2').focus();
+                    }
+
+                    closePostcode();
+                },
+                width: '100%',
+                height: '100%'
+            }).embed(wrap);
+        }
+
+        function closePostcode() {
+            layer.style.display = 'none';
+        }
+    </script>
+
+    <script id="formSubmitScript">
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("signupForm");
+            const submitButton = document.getElementById("submitButton");
+            const cancelButton = document.getElementById("cancelButton");
+            // 아이디 중복 확인
+            let isUsernameChecked = false;
+
+            document
+                .getElementById("checkUsername")
+                .addEventListener("click", function () {
+                    const username = document.getElementById("email").value;
+                    const usernameStatus = document.getElementById("usernameStatus");
+                    isUsernameChecked = false;
+
+                    if (!username) {
+                        usernameStatus.textContent = "이메일을 입력해주세요.";
+                        usernameStatus.className = "mt-1 text-sm text-red-600";
+                        return;
+                    }
+
+                    // 이메일 유효성 검사
+                    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                    if (!emailRegex.test(username)) {
+                        usernameStatus.textContent = "올바른 이메일 형식이 아닙니다.";
+                        usernameStatus.className = "mt-1 text-sm text-red-600";
+                        return;
+                    }
+                    // 여기서는 실제 API 호출 대신 시뮬레이션
+                    setTimeout(() => {
+                        fetch(`${memberUrl}/check-id?username=${encodeURIComponent(username)}`)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error("서버 응답 오류");
+                                }
+                                return response.json();  // true 또는 false
+                            })
+                            .then(data => {
+                                const isDuplicate = data.result;
+                                console.log(isDuplicate);
+                                if (isDuplicate) {
+                                    usernameStatus.textContent = "이미 사용 중인 아이디입니다.";
+                                    usernameStatus.className = "mt-1 text-sm text-red-600";
+                                } else {
+                                    usernameStatus.textContent = "사용 가능한 아이디입니다.";
+                                    isUsernameChecked = true;
+                                    usernameStatus.className = "mt-1 text-sm text-green-600";
+                                }
+                            })
+                            .catch(error => {
+                                console.error("중복 확인 중 오류:", error);
+                                usernameStatus.textContent = "중복 확인에 실패했습니다.";
+                                usernameStatus.className = "mt-1 text-sm text-gray-500";
+                            });
+                    }, 100);
+                });
+
+            // 취소 버튼
+            cancelButton.addEventListener("click", function () {
+                if (
+                    confirm("회원가입을 취소하시겠습니까? 입력한 정보는 저장되지 않습니다.")
+                ) {
+                    window.location.href = "/"; // 메인 페이지로 이동
+                }
+            });
+            // 폼 제출
+            form.addEventListener("submit", async function (e) {
+                e.preventDefault();
+                if (!isUsernameChecked) {
+                    alert("아이디 중복 확인을 먼저 해주세요.");
                     return;
                 }
 
-                list.classList.remove("hidden");
-                list.innerHTML = data.data
-                    .map(
-                        (item, i) => `
+                // 필수 입력 필드 검사
+                const requiredFields = form.querySelectorAll("[required]");
+                let isValid = true;
+                requiredFields.forEach((field) => {
+                    if (!field.value) {
+                        isValid = false;
+                        field.classList.add("border-red-500");
+                    } else {
+                        field.classList.remove("border-red-500");
+                    }
+                });
+                // 비밀번호 일치 확인
+                const password = document.getElementById("password").value;
+                const confirmPassword = document.getElementById("confirmPassword").value;
+                if (password !== confirmPassword) {
+                    isValid = false;
+                    document
+                        .getElementById("confirmPassword")
+                        .classList.add("border-red-500");
+                    document.getElementById("passwordMatch").textContent =
+                        "비밀번호가 일치하지 않습니다.";
+                    document.getElementById("passwordMatch").className =
+                        "mt-1 text-sm text-red-600";
+                }
+                // 약관 동의 확인
+                const agreeTerms = document.getElementById("agreeTerms");
+                const agreePrivacy = document.getElementById("agreePrivacy");
+                if (!agreeTerms.checked || !agreePrivacy.checked) {
+                    isValid = false;
+                    const modal = document.createElement("div");
+                    modal.className = "fixed inset-0 flex items-center justify-center z-50";
+                    modal.innerHTML = `
+                  <div class="fixed inset-0 bg-black opacity-50"></div>
+                  <div class="bg-white rounded-lg p-6 relative z-10 max-w-sm w-full mx-4">
+                  <h3 class="text-lg font-medium text-gray-900 mb-4">알림</h3>
+                  <p class="text-gray-500 mb-6">필수 약관에 동의해주세요.</p>
+                  <button class="w-full !rounded-button bg-primary hover:bg-primary/90 text-white px-4 py-2 font-medium transition">확인</button>
+                  </div>
+                  `;
+                    document.body.appendChild(modal);
+                    modal.querySelector("button").onclick = () => modal.remove();
+                    return;
+                }
+                console.log(isValid);
+                if (isValid) {
+                    try {
+                        submitButton.disabled = true;
+                        submitButton.innerHTML =
+                            '<i class="ri-loader-4-line animate-spin mr-2"></i> 처리 중...';
+                        console.log("Submit버튼 변환");
+
+
+                        const jsonData = {
+                            memberName: form.name.value,
+                            email: form.email.value,
+                            password: form.password.value,
+                            homePhoneNumber: form.telNum.value,
+                            phoneNumber: form.mobile.value,
+                            address1: form.address1.value,
+                            address2: form.address2.value,
+                            agencyName: form.agencyName.value,
+                            agencyAddress1: form.agencyAddress1.value,
+                            agencyAddress2: form.agencyAddress2.value,
+                            agencyPhone: form.agencyPhone.value,
+                            birth: form.birthDate.value,
+                            agencyOwner: form.owner.value,
+                            agencyRegion: form.agencyRegion.value,
+                            agencyEmail: form.agencyEmail.value
+                        };
+
+                        //데이터 수집
+                        const formData = new FormData();
+                        formData.append('data', JSON.stringify(jsonData));
+                        // formData.append('memberName', form.name.value);
+                        // formData.append('email', form.email.value);
+                        // formData.append('password', form.password.value);
+                        // formData.append('homePhoneNumber', form.telNum.value);
+                        // formData.append('phoneNumber', form.mobile.value)
+                        // formData.append('address1', form.address1.value);
+                        // formData.append('address2', form.address2.value);
+                        // formData.append('agencyName', form.agencyName.value);
+                        // formData.append('agencyAddress1', form.agencyAddress1.value);
+                        // formData.append('agencyAddress2', form.agencyAddress2.value);
+
+
+                        // 파일 업로드
+                        const agencyImage = form.agencyImage.files[0];
+                        if (agencyImage) formData.append('agencyPicture', agencyImage);
+
+                        const businessLicense = form.businessLicense.files[0];
+                        if (businessLicense) formData.append('businessCertificate', businessLicense);
+
+                        //data check
+                        for (let [key, value] of formData.entries()) {
+                            console.log(key, value);
+                        }
+                        console.log("input element:", form.agencyImage); // <input> 태그 존재 여부
+                        console.log("파일 선택 여부:", form.agencyImage.files[0]);
+                        console.log("input element:", form.businessLicense); // <input> 태그 존재 여부
+                        console.log("파일 선택 여부:", form.businessLicense.files[0]);
+
+
+                        const response = await fetch(form.action, {
+                            method: "POST",
+                            body: formData,
+                        });
+
+                        console.log("🔍 response 객체:", response);
+
+// 개별 정보 출력
+                        console.log("✅ 상태 코드:", response.status);       // ex: 200, 500
+                        console.log("✅ 성공 여부:", response.ok);           // true/false
+                        console.log("✅ 상태 메시지:", response.statusText); // ex: OK, Internal Server Error
+
+                        if (response.ok) {
+                            const modal = document.createElement("div");
+                            modal.className =
+                                "fixed inset-0 flex items-center justify-center z-50";
+                            modal.innerHTML = `
+      <div class="fixed inset-0 bg-black opacity-50"></div>
+      <div class="bg-white rounded-lg p-6 relative z-10 max-w-sm w-full mx-4">
+      <div class="flex items-center justify-center mb-4">
+      <i class="ri-checkbox-circle-line text-green-500 text-4xl"></i>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 text-center mb-2">회원가입 완료</h3>
+      <p class="text-gray-500 text-center mb-6">회원가입이 성공적으로 완료되었습니다.</p>
+      <button class="w-full !rounded-button bg-primary hover:bg-primary/90 text-white px-4 py-2 font-medium transition">확인</button>
+      </div>
+      `;
+                            document.body.appendChild(modal);
+                            modal.querySelector("button").onclick = () => {
+                                modal.remove();
+                                window.location.href = "/member/login";
+                            };
+                        } else {
+                            throw new Error("서버 오류가 발생했습니다.");
+                        }
+                    } catch (error) {
+                        const modal = document.createElement("div");
+                        modal.className = "fixed inset-0 flex items-center justify-center z-50";
+                        modal.innerHTML = `
+      <div class="fixed inset-0 bg-black opacity-50"></div>
+      <div class="bg-white rounded-lg p-6 relative z-10 max-w-sm w-full mx-4">
+      <div class="flex items-center justify-center mb-4">
+      <i class="ri-error-warning-line text-red-500 text-4xl"></i>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 text-center mb-2">오류 발생</h3>
+      <p class="text-gray-500 text-center mb-6">회원가입 처리 중 오류가 발생했습니다.<br>잠시 후 다시 시도해주세요.</p>
+      <button class="w-full !rounded-button bg-primary hover:bg-primary/90 text-white px-4 py-2 font-medium transition">확인</button>
+      </div>
+      `;
+                        document.body.appendChild(modal);
+                        modal.querySelector("button").onclick = () => modal.remove();
+                    } finally {
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = "회원가입";
+                    }
+                } else {
+                    const firstErrorField = form.querySelector(".border-red-500");
+                    if (firstErrorField) {
+                        firstErrorField.scrollIntoView({behavior: "smooth", block: "center"});
+                        firstErrorField.focus();
+                    }
+                }
+            });
+        });
+    </script>
+    <script id="chinese-address-modal-script">
+        document.addEventListener("DOMContentLoaded", () => {
+            const modal = document.getElementById("chinese-address-modal");
+            const closeBtn = document.getElementById("closeChineseModal");
+            const input = document.getElementById("chineseAddressInput");
+            const list = document.getElementById("chineseAddressList");
+
+            // 여러 버튼(회원 / 유학원) 공용
+            const openBtns = document.querySelectorAll(".openChineseModal");
+            let currentTarget = null;
+
+            // 모달 열기
+            openBtns.forEach(btn => {
+                btn.addEventListener("click", () => {
+                    currentTarget = btn.dataset.target; // "address" or "agency"
+                    modal.classList.remove("hidden");
+                    input.value = "";
+                    list.innerHTML = "";
+                    list.classList.add("hidden");
+                    input.focus();
+                });
+            });
+
+            // 모달 닫기
+            closeBtn.addEventListener("click", () => {
+                modal.classList.add("hidden");
+                list.innerHTML = "";
+                list.classList.add("hidden");
+            });
+
+            // 입력 시 자동완성 검색 (디바운스)
+            let debounceTimer;
+            input.addEventListener("input", () => {
+                const keyword = input.value.trim();
+                if (!keyword) {
+                    list.classList.add("hidden");
+                    return;
+                }
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => fetchSuggestions(keyword), 300);
+            });
+
+            async function fetchSuggestions(keyword) {
+                const url = `/api/v1/tencent/address?keyword=${encodeURIComponent(keyword)}`;
+                try {
+                    const resp = await fetch(url);
+                    const data = await resp.json();
+                    console.log("Tencent API result:", data);
+
+                    if (!data || !data.data || data.data.length === 0) {
+                        list.classList.add("hidden");
+                        return;
+                    }
+
+                    list.classList.remove("hidden");
+                    list.innerHTML = data.data
+                        .map(
+                            (item, i) => `
                         <li data-index="${i}" class="px-3 py-2 hover:bg-gray-100 cursor-pointer border-b last:border-0">
                             <span class="font-medium">${item.title}</span>
                             <p class="text-sm text-gray-500">${item.address}</p>
                         </li>`
-                    )
-                    .join("");
+                        )
+                        .join("");
 
-                list.querySelectorAll("li").forEach(li => {
-                    li.addEventListener("click", () => {
-                        const idx = li.dataset.index;
-                        const sel = data.data[idx];
-                        applyChineseAddress(sel);
+                    list.querySelectorAll("li").forEach(li => {
+                        li.addEventListener("click", () => {
+                            const idx = li.dataset.index;
+                            const sel = data.data[idx];
+                            applyChineseAddress(sel);
+                        });
                     });
-                });
-            } catch (err) {
-                console.error("Tencent Suggestion API Error:", err);
-            }
-        }
-
-        // 선택 시 address or agency에 값 채우기
-        function applyChineseAddress(sel) {
-            const addr1 = `${sel.province || ""} ${sel.city || ""} ${sel.district || ""}`.trim();
-            const addr2 = `${sel.title || ""} ${sel.address || ""}`.trim();
-            const adcode = sel.adcode || "";
-
-            if (currentTarget === "address") {
-                document.getElementById("address").value = adcode;
-                document.getElementById("address1").value = addr1;
-                document.getElementById("address2").value = addr2;
-            } else if (currentTarget === "agency") {
-                document.getElementById("agencyAddress").value = adcode;
-                document.getElementById("agencyAddress1").value = addr1;
-                document.getElementById("agencyAddress2").value = addr2;
+                } catch (err) {
+                    console.error("Tencent Suggestion API Error:", err);
+                }
             }
 
-            modal.classList.add("hidden");
-            list.innerHTML = "";
-            list.classList.add("hidden");
-        }
-    });
-</script>
-<script src="/js/homepage/url.js"></script>
-</body>
+            // 선택 시 address or agency에 값 채우기
+            function applyChineseAddress(sel) {
+                const addr1 = `${sel.province || ""} ${sel.city || ""} ${sel.district || ""}`.trim();
+                const addr2 = `${sel.title || ""} ${sel.address || ""}`.trim();
+                const adcode = sel.adcode || "";
+
+                if (currentTarget === "address") {
+                    document.getElementById("address").value = adcode;
+                    document.getElementById("address1").value = addr1;
+                    document.getElementById("address2").value = addr2;
+                } else if (currentTarget === "agency") {
+                    document.getElementById("agencyAddress").value = adcode;
+                    document.getElementById("agencyAddress1").value = addr1;
+                    document.getElementById("agencyAddress2").value = addr2;
+                }
+
+                modal.classList.add("hidden");
+                list.innerHTML = "";
+                list.classList.add("hidden");
+            }
+        });
+    </script>
+    <script src="/js/homepage/url.js"></script>
+</th:block>
 </html>
