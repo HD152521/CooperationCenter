@@ -4,39 +4,39 @@
 <head></head>
 
 <body>
-
-<div class="relative overflow-hidden">
+<!--메인 베너-->
+<section class="relative overflow-hidden">
     <div class="absolute inset-0 z-0">
         <img src="https://readdy.ai/api/search-image?query=A%20serene%20campus%20scene%20with%20modern%20university%20buildings%2C%20students%20walking%20on%20pathways%20surrounded%20by%20lush%20greenery%2C%20soft%20sunlight%20filtering%20through%20trees%2C%20creating%20a%20peaceful%20academic%20atmosphere.%20The%20image%20has%20a%20clean%2C%20bright%20aesthetic%20with%20a%20gradient%20from%20white%20on%20the%20left%20to%20a%20colorful%20campus%20scene%20on%20the%20right%2C%20perfect%20for%20text%20overlay%20on%20the%20left%20side.&width=1920&height=600&seq=1&orientation=landscape"
              alt="" class="size-full object-cover object-top"/>
         <div class="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-white/10"></div>
     </div>
-    <div class="relative z-1">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-24 w-full">
-            <div class="max-w-2xl">
-                <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-                    당신의 꿈을 위한 완벽한 유학 가이드
-                </h1>
-                <p class="mt-6 text-xl text-gray-600">
-                    전 세계 유수의 대학교와 신뢰할 수 있는 유학원 정보를 한 곳에서
-                    만나보세요. 당신의 성공적인 유학 생활을 위한 첫 걸음을 함께합니다.
-                </p>
-                <div class="mt-8 flex flex-wrap gap-4">
-                    <button class="bg-primary text-white px-6 py-3 !rounded-button whitespace-nowrap">
-                        시작하기
-                    </button>
-                    <button class="bg-white text-primary border border-primary px-6 py-3 !rounded-button whitespace-nowrap">
-                        더 알아보기
-                    </button>
-                </div>
+    <div th:replace="~{fragments/layout/responsive-layout :: responsive(~{::banner})}"
+         class="relative z-1">
+        <div th:fragment="banner" class="py-24 max-w-2xl">
+            <h1 class="text-4xl font-extrabold tracking-tight leading-2 text-gray-900 sm:text-6xl">
+                당신의 꿈을 위한<br>완벽한 유학 가이드
+            </h1>
+            <p class="mt-6 text-xl text-gray-600">
+                전 세계 유수의 대학교와 신뢰할 수 있는 유학원 정보를 한 곳에서 만나보세요.<br>
+                당신의 성공적인 유학 생활을 위한 첫 걸음을 함께합니다.
+            </p>
+            <div class="mt-8 flex flex-wrap gap-4">
+                <button class="px-6 py-3 rounded-md whitespace-nowrap cursor-pointer bg-primary text-white transition-all duration-300 hover:bg-indigo-800">
+                    시작하기
+                </button>
+                <button class="px-6 py-3 rounded-md whitespace-nowrap cursor-pointer bg-white text-primary border border-primary transition-all duration-300 hover:bg-indigo-200">
+                    더 알아보기
+                </button>
             </div>
         </div>
     </div>
-</div>
+</section>
 
 <!--학교 리스트-->
-<section class="py-16 bg-white">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+<section th:insert="~{fragments/layout/responsive-layout :: responsive(~{::section-group1})}"
+         class="py-16 bg-white">
+    <th:block th:fragment="section-group1">
         <div class="text-center mb-12">
             <h2 class="text-3xl font-bold text-gray-900">대학교</h2>
             <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
@@ -44,59 +44,19 @@
             </p>
         </div>
 
-        <!-- 리스트 컨테이너: 항목 사이에만 구분선 -->
-        <ul class="bg-white rounded-lg shadow-sm divide-y divide-gray-200">
-            <!-- 각 학교 항목 -->
-            <li
-                    th:each="school : ${schoolDto}"
-                    class="p-5 sm:p-6 flex items-center gap-4 sm:gap-6 hover:bg-gray-50 transition-colors"
-            >
-                <!-- 로고 -->
-                <div class="shrink-0">
-                    <img
-                            th:src="${school.imgUrl}"
-                            th:alt="${school.koreanName}"
-                            class="w-14 h-14 sm:w-16 sm:h-16 object-contain"
-                    />
-                </div>
-
-                <!-- 텍스트 블록 -->
-                <div class="flex-1 min-w-0 w-full">
-                    <!-- 한 줄 레이아웃: 좌측 학교명, 우측 카테고리 -->
-                    <div class="flex w-full flex-col sm:flex-row sm:items-center sm:gap-4">
-                        <!-- 학교명 (한/영) : 왼쪽 -->
-                        <div class="min-w-0">
-                            <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
-        <span class="text-base sm:text-lg font-semibold text-gray-900"
-              th:text="${school.koreanName}">대학교 이름</span>
-                                <span class="text-sm sm:text-base text-gray-500"
-                                      th:text="${school.englishName}">University English Name</span>
-                            </div>
-                        </div>
-
-                        <!-- 카테고리 : 오른쪽 정렬 -->
-                        <div class="mt-2 sm:mt-0 sm:ml-auto flex flex-wrap gap-2 justify-start sm:justify-end">
-                            <a th:each="cat : ${school.categories}"
-                               th:text="${cat.categoryName()}"
-                               th:href="@{/school/{name}/board/{bid}(name=${school.englishName}, bid=${cat.boardId})}"
-                               class="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 text-xs sm:text-sm
-                hover:bg-primary/10 hover:text-primary transition-colors
-                focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 우측 화살표 (선택 사항) -->
-                <i class="ri-arrow-right-s-line text-gray-400 text-xl shrink-0"></i>
-            </li>
+        <!-- 각 학교 항목 -->
+        <ul class="rounded-lg shadow-sm divide-y divide-gray-200">
+            <th:block th:each="school : ${schoolDto}">
+                <li th:replace="~{fragments/school/schoolCard :: card(${school})}"></li>
+            </th:block>
         </ul>
-    </div>
+    </th:block>
 </section>
 
 <!-- 유학원 섹션 -->
-<section class="py-16 bg-gray-50">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+<section th:insert="~{fragments/layout/responsive-layout :: responsive(~{::section-group2})}"
+         class="py-16 bg-gray-50">
+    <th:block th:fragment="section-group2">
         <div class="text-center mb-12">
             <h2 class="text-3xl font-bold text-gray-900">유학원</h2>
             <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
@@ -106,74 +66,52 @@
         <!-- 유학원 카드 컨테이너 -->
         <div id="agency-container">
             <div class="city-content grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div
-                        th:each="agency : ${agencyDto}"
-                        class="agency-card bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300"
-                >
-                    <div class="h-48 overflow-hidden">
-                        <img
-                                th:src="${agency.imgUrl}"
-                                th:alt="${agency.agencyName}"
-                                class="w-full h-full object-cover object-top"
-                        />
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-lg font-semibold text-gray-900" th:text="${agency.agencyName}">유학원 이름</h3>
-                        <p class="mt-2 text-sm text-gray-600"
-                           th:text="${agency.agencyAddress1} + ' ' + ${agency.agencyAddress2}">주소</p>
-                        <p class="mt-2 text-sm text-gray-600" th:text="${agency.agencyPhone}">전화번호</p>
-                        <p class="mt-2 text-sm text-gray-600" th:text="'대표자: ' + ${agency.agencyOwner}">대표자</p>
-                    </div>
-                </div>
+                <th:block th:each="agency : ${agencyDto}">
+                    <div th:replace="~{fragments/agency/agencyCard :: card(${agency})}"></div>
+                </th:block>
             </div>
         </div>
         <div class="mt-12 text-center">
-            <button
-                    class="bg-white text-primary border border-primary px-6 py-3 !rounded-button whitespace-nowrap"
-            >
-                <a href="/agency/list">
-                    더 많은 유학원 보기
-                </a>
-            </button>
+            <a href="/agency/list"
+               class="px-6 py-3 rounded-md whitespace-nowrap cursor-pointer bg-white text-primary border border-primary transition-all duration-300 hover:bg-indigo-200">
+                더 많은 유학원 보기
+            </a>
         </div>
-    </div>
+    </th:block>
 </section>
-
-<!-- 도시 탭 스크립트 -->
-<script id="city-tab-script">
-    document.addEventListener("turbo:load", function () {
-        const cityTabs = document.querySelectorAll(".city-tab");
-        const cityContents = document.querySelectorAll(".city-content");
-        cityTabs.forEach((tab) => {
-            tab.addEventListener("click", () => {
-                const city = tab.getAttribute("data-city");
-                // 모든 탭 비활성화
-                cityTabs.forEach((t) => {
-                    t.classList.remove("bg-primary", "text-white");
-                    t.classList.add("bg-white", "text-gray-700");
-                });
-                // 클릭한 탭 활성화
-                tab.classList.remove("bg-white", "text-gray-700");
-                tab.classList.add("bg-primary", "text-white");
-                // 모든 콘텐츠 숨기기
-                cityContents.forEach((content) => {
-                    content.classList.add("hidden");
-                });
-                // 선택한 도시의 콘텐츠 표시
-                const selectedContent = document.querySelector(
-                    `.city-content[data-city="${city}"]`,
-                );
-                if (selectedContent) {
-                    selectedContent.classList.remove("hidden");
-                }
-            });
-        });
-    });
-</script>
-
 </body>
 
 <th:block th:fragment="script">
-
+    <!-- 도시 탭 스크립트 -->
+    <script id="city-tab-script">
+        document.addEventListener("turbo:load", function () {
+            const cityTabs = document.querySelectorAll(".city-tab");
+            const cityContents = document.querySelectorAll(".city-content");
+            cityTabs.forEach((tab) => {
+                tab.addEventListener("click", () => {
+                    const city = tab.getAttribute("data-city");
+                    // 모든 탭 비활성화
+                    cityTabs.forEach((t) => {
+                        t.classList.remove("bg-primary", "text-white");
+                        t.classList.add("bg-white", "text-gray-700");
+                    });
+                    // 클릭한 탭 활성화
+                    tab.classList.remove("bg-white", "text-gray-700");
+                    tab.classList.add("bg-primary", "text-white");
+                    // 모든 콘텐츠 숨기기
+                    cityContents.forEach((content) => {
+                        content.classList.add("hidden");
+                    });
+                    // 선택한 도시의 콘텐츠 표시
+                    const selectedContent = document.querySelector(
+                        `.city-content[data-city="${city}"]`,
+                    );
+                    if (selectedContent) {
+                        selectedContent.classList.remove("hidden");
+                    }
+                });
+            });
+        });
+    </script>
 </th:block>
 </html>
