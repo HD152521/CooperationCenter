@@ -1,0 +1,15 @@
+{
+  "name": "cooperation-center",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:css": "node ./node_modules/tailwindcss/lib/cli.js -i ./src/main/resources/static/js/css/input.css -o ./src/main/resources/static/js/css/output.css --minify",
+    "watch:css": "node ./node_modules/tailwindcss/lib/cli.js -i ./src/main/resources/static/js/css/input.css -o ./src/main/resources/static/js/css/output.css --watch",
+    "clean:css": "del ./src/main/resources/static/js/css/output.css"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.18"
+  }
+}
