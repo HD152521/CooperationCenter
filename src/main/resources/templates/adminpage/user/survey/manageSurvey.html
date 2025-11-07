@@ -488,151 +488,145 @@
     </div>
 </div>
 
-<script id="checkbox-functionality">
-    document.addEventListener("DOMContentLoaded", function () {
-        const selectAllCheckbox = document.getElementById("select-all");
-        const surveyCheckboxes = document.querySelectorAll(".survey-checkbox");
-        selectAllCheckbox.addEventListener("change", function () {
-            surveyCheckboxes.forEach((checkbox) => {
-                checkbox.checked = this.checked;
-            });
-        });
+<script id="checkbox-functionality" type="module">
+    const selectAllCheckbox = document.getElementById("select-all");
+    const surveyCheckboxes = document.querySelectorAll(".survey-checkbox");
+    selectAllCheckbox.addEventListener("change", function () {
         surveyCheckboxes.forEach((checkbox) => {
-            checkbox.addEventListener("change", function () {
-                const checkedCount = document.querySelectorAll(
-                    ".survey-checkbox:checked",
-                ).length;
-                selectAllCheckbox.checked = checkedCount === surveyCheckboxes.length;
-                selectAllCheckbox.indeterminate =
-                    checkedCount > 0 && checkedCount < surveyCheckboxes.length;
-            });
+            checkbox.checked = this.checked;
+        });
+    });
+    surveyCheckboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", function () {
+            const checkedCount = document.querySelectorAll(
+                ".survey-checkbox:checked",
+            ).length;
+            selectAllCheckbox.checked = checkedCount === surveyCheckboxes.length;
+            selectAllCheckbox.indeterminate =
+                checkedCount > 0 && checkedCount < surveyCheckboxes.length;
         });
     });
 </script>
-<script id="modal-functionality">
-    document.addEventListener("DOMContentLoaded", function () {
-        // 모달 요소 (필요시 유지)
-        const deleteSurveyModal = document.getElementById("delete-survey-modal");
+<script id="modal-functionality" type="module">
+    // 모달 요소 (필요시 유지)
+    const deleteSurveyModal = document.getElementById("delete-survey-modal");
 
-        // 현재 삭제 대상 ID 저장
-        let currentDeleteSurveyId = null;
+    // 현재 삭제 대상 ID 저장
+    let currentDeleteSurveyId = null;
 
-        function showModal(modal) {
-            modal.classList.remove("hidden");
-            modal.classList.add("flex");
-        }
-        function hideModal(modal) {
-            modal.classList.add("hidden");
-            modal.classList.remove("flex");
-        }
+    function showModal(modal) {
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+    }
+    function hideModal(modal) {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+    }
 
-        // 상세/편집/삭제 버튼 핸들러
-        document.querySelectorAll("#survey-table-body .table-row").forEach((row) => {
-            const surveyId = row.getAttribute("data-survey-id");
+    // 상세/편집/삭제 버튼 핸들러
+    document.querySelectorAll("#survey-table-body .table-row").forEach((row) => {
+        const surveyId = row.getAttribute("data-survey-id");
 
-            const viewBtn = row.querySelector(".view-details-btn");
-            const editBtn = row.querySelector(".edit-btn");
-            const delBtn  = row.querySelector(".delete-btn");
+        const viewBtn = row.querySelector(".view-details-btn");
+        const editBtn = row.querySelector(".edit-btn");
+        const delBtn  = row.querySelector(".delete-btn");
 
-            if (viewBtn) {
-                viewBtn.addEventListener("click", () => {
-                    if (!surveyId) return;
-                    // 1) 상세: 이동
-                    window.location.href = `/survey/log/list/${surveyId}`;
-                });
-            }
-
-            if (editBtn) {
-                editBtn.addEventListener("click", () => {
-                    if (!surveyId) return;
-                    // 2) 편집: 이동
-                    window.location.href = `/survey/edit/${surveyId}`;
-                });
-            }
-
-            if (delBtn) {
-                delBtn.addEventListener("click", () => {
-                    if (!surveyId) return;
-                    // 확인 모달을 유지하려면 아래 두 줄 사용:
-                    currentDeleteSurveyId = surveyId;
-                    showModal(deleteSurveyModal);
-                });
-            }
-        });
-
-        // 삭제 모달 버튼들
-        document.getElementById("cancel-delete-survey")
-            .addEventListener("click", () => hideModal(deleteSurveyModal));
-
-        document.getElementById("confirm-delete-survey")
-            .addEventListener("click", async function () {
-                if (!currentDeleteSurveyId) return;
-
-                try {
-                    const res = await fetch(`/api/v1/survey/admin/${currentDeleteSurveyId}`, {
-                        method: "DELETE",
-                        headers: { "Accept": "application/json" }
-                    });
-
-                    if (!res.ok) {
-                        const msg = `삭제 실패(${res.status})`;
-                        alert(msg);
-                        return;
-                    }
-
-                    // 행 제거
-                    const row = document.querySelector(
-                        `#survey-table-body tr[data-survey-id="${currentDeleteSurveyId}"]`
-                    );
-                    if (row) row.remove();
-
-                    hideModal(deleteSurveyModal);
-                    currentDeleteSurveyId = null;
-                    // TODO: 총 개수/페이지 정보 갱신이 필요하면 여기서 갱신 로직 추가
-                } catch (e) {
-                    alert("삭제 중 오류가 발생했습니다.");
-                }
+        if (viewBtn) {
+            viewBtn.addEventListener("click", () => {
+                if (!surveyId) return;
+                // 1) 상세: 이동
+                window.location.href = `/survey/log/list/${surveyId}`;
             });
+        }
+
+        if (editBtn) {
+            editBtn.addEventListener("click", () => {
+                if (!surveyId) return;
+                // 2) 편집: 이동
+                window.location.href = `/survey/edit/${surveyId}`;
+            });
+        }
+
+        if (delBtn) {
+            delBtn.addEventListener("click", () => {
+                if (!surveyId) return;
+                // 확인 모달을 유지하려면 아래 두 줄 사용:
+                currentDeleteSurveyId = surveyId;
+                showModal(deleteSurveyModal);
+            });
+        }
     });
-</script>
-<script id="search-filter-functionality">
-    document.addEventListener("DOMContentLoaded", function () {
-        const searchInput = document.getElementById("search-input");
-        const statusFilter = document.getElementById("status-filter");
-        const dateFilter = document.getElementById("date-filter");
-        const sortFilter = document.getElementById("sort-filter");
-        function filterTable() {
-            const searchTerm = searchInput.value.toLowerCase();
-            const statusValue = statusFilter.value;
-            const rows = document.querySelectorAll("#survey-table-body tr");
-            rows.forEach((row) => {
-                const titleElement = row.querySelector("td:nth-child(2) p:first-child");
-                const descElement = row.querySelector("td:nth-child(2) p:last-child");
-                const statusElement = row.querySelector("td:nth-child(6) span");
-                const title = titleElement.textContent.toLowerCase();
-                const description = descElement.textContent.toLowerCase();
-                const status = statusElement.textContent.toLowerCase();
-                const matchesSearch =
-                    title.includes(searchTerm) || description.includes(searchTerm);
-                const matchesStatus =
-                    !statusValue ||
-                    (statusValue === "active" && status === "진행중") ||
-                    (statusValue === "completed" && status === "완료됨") ||
-                    (statusValue === "draft" && status === "임시저장") ||
-                    (statusValue === "inactive" && status === "비활성");
-                if (matchesSearch && matchesStatus) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
+
+    // 삭제 모달 버튼들
+    document.getElementById("cancel-delete-survey")
+        .addEventListener("click", () => hideModal(deleteSurveyModal));
+
+    document.getElementById("confirm-delete-survey")
+        .addEventListener("click", async function () {
+            if (!currentDeleteSurveyId) return;
+
+            try {
+                const res = await fetch(`/api/v1/survey/admin/${currentDeleteSurveyId}`, {
+                    method: "DELETE",
+                    headers: { "Accept": "application/json" }
+                });
+
+                if (!res.ok) {
+                    const msg = `삭제 실패(${res.status})`;
+                    alert(msg);
+                    return;
                 }
-            });
-        }
-        searchInput.addEventListener("input", filterTable);
-        statusFilter.addEventListener("change", filterTable);
-        dateFilter.addEventListener("change", filterTable);
-        sortFilter.addEventListener("change", function () {
-            alert("정렬 기능이 적용되었습니다.");
+
+                // 행 제거
+                const row = document.querySelector(
+                    `#survey-table-body tr[data-survey-id="${currentDeleteSurveyId}"]`
+                );
+                if (row) row.remove();
+
+                hideModal(deleteSurveyModal);
+                currentDeleteSurveyId = null;
+                // TODO: 총 개수/페이지 정보 갱신이 필요하면 여기서 갱신 로직 추가
+            } catch (e) {
+                alert("삭제 중 오류가 발생했습니다.");
+            }
         });
+</script>
+<script id="search-filter-functionality" type="module">
+    const searchInput = document.getElementById("search-input");
+    const statusFilter = document.getElementById("status-filter");
+    const dateFilter = document.getElementById("date-filter");
+    const sortFilter = document.getElementById("sort-filter");
+    function filterTable() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const statusValue = statusFilter.value;
+        const rows = document.querySelectorAll("#survey-table-body tr");
+        rows.forEach((row) => {
+            const titleElement = row.querySelector("td:nth-child(2) p:first-child");
+            const descElement = row.querySelector("td:nth-child(2) p:last-child");
+            const statusElement = row.querySelector("td:nth-child(6) span");
+            const title = titleElement.textContent.toLowerCase();
+            const description = descElement.textContent.toLowerCase();
+            const status = statusElement.textContent.toLowerCase();
+            const matchesSearch =
+                title.includes(searchTerm) || description.includes(searchTerm);
+            const matchesStatus =
+                !statusValue ||
+                (statusValue === "active" && status === "진행중") ||
+                (statusValue === "completed" && status === "완료됨") ||
+                (statusValue === "draft" && status === "임시저장") ||
+                (statusValue === "inactive" && status === "비활성");
+            if (matchesSearch && matchesStatus) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+    searchInput.addEventListener("input", filterTable);
+    statusFilter.addEventListener("change", filterTable);
+    dateFilter.addEventListener("change", filterTable);
+    sortFilter.addEventListener("change", function () {
+        alert("정렬 기능이 적용되었습니다.");
     });
 </script>
 </body>

@@ -723,153 +723,153 @@
         </div>
     </div>
 </div>
-<script id="student-management" th:inline="javascript"  >
-    document.addEventListener("DOMContentLoaded", function () {
-        let currentPage = 1;
-        let pageSize = 20;
-        let currentSort = { field: null, direction: "asc" };
-        let currentFilters = {};
+<script id="student-management" th:inline="javascript" type="module">
+    // fixme: 전역함수 정의 - window.resetFilters, window.getFilters, window.sortTable, window.closeStudentModal, window.editStudent, window.deleteStudent
+    let currentPage = 1;
+    let pageSize = 20;
+    let currentSort = { field: null, direction: "asc" };
+    let currentFilters = {};
 
-        window.resetFilters = function () {
-            document.getElementById("name-search").value = "";
-            document.getElementById("gender-filter").value = "";
-            document.getElementById("birth-start").value = "";
-            document.getElementById("birth-end").value = "";
-            document.getElementById("email-search").value = "";
-            document.getElementById("passport-search").value = "";
-            document.getElementById("exam-search").value = "";
-            document.getElementById("survey-log-search").value = "";
-            document.getElementById("selected-survey-id").value = "";
-            document.getElementById("member-search").value = "";
-            currentFilters = {};
-            currentPage = 1;
-            loadStudentData();
-            showNotification("필터가 초기화되었습니다");
-        };
+    window.resetFilters = function () {
+        document.getElementById("name-search").value = "";
+        document.getElementById("gender-filter").value = "";
+        document.getElementById("birth-start").value = "";
+        document.getElementById("birth-end").value = "";
+        document.getElementById("email-search").value = "";
+        document.getElementById("passport-search").value = "";
+        document.getElementById("exam-search").value = "";
+        document.getElementById("survey-log-search").value = "";
+        document.getElementById("selected-survey-id").value = "";
+        document.getElementById("member-search").value = "";
+        currentFilters = {};
+        currentPage = 1;
+        loadStudentData();
+        showNotification("필터가 초기화되었습니다");
+    };
 
-        window.getFilters = function () {
-            const name = document.getElementById('name-search').value.trim();
-            const gender = document.getElementById('gender-filter').value;
-            const birthStart = document.getElementById('birth-start').value; // yyyy-mm-dd
-            const birthEnd = document.getElementById('birth-end').value;
-            const email = document.getElementById('email-search').value.trim();
-            const passport = document.getElementById('passport-search').value.trim();
-            const exam = document.getElementById('exam-search').value.trim();
-            const surveyLogId = document.getElementById('selected-survey-id').value.trim();
-            const surveyTitle = document.getElementById('survey-log-search').value.trim();
-            const agencyName = document.getElementById('member-search').value.trim();
+    window.getFilters = function () {
+        const name = document.getElementById('name-search').value.trim();
+        const gender = document.getElementById('gender-filter').value;
+        const birthStart = document.getElementById('birth-start').value; // yyyy-mm-dd
+        const birthEnd = document.getElementById('birth-end').value;
+        const email = document.getElementById('email-search').value.trim();
+        const passport = document.getElementById('passport-search').value.trim();
+        const exam = document.getElementById('exam-search').value.trim();
+        const surveyLogId = document.getElementById('selected-survey-id').value.trim();
+        const surveyTitle = document.getElementById('survey-log-search').value.trim();
+        const agencyName = document.getElementById('member-search').value.trim();
 
 
-            // 간단 검증: 날짜 역전 방지
-            if (birthStart && birthEnd && birthStart > birthEnd) {
-                alert('생년월일 시작이 종료보다 늦을 수 없습니다.');
-                return null;
-            }
-
-            return { name, gender, birthStart, birthEnd, email, passport, exam, surveyLogId, surveyTitle,agencyName };
+        // 간단 검증: 날짜 역전 방지
+        if (birthStart && birthEnd && birthStart > birthEnd) {
+            alert('생년월일 시작이 종료보다 늦을 수 없습니다.');
+            return null;
         }
 
-        window.sortTable = function (field) {
-            if (currentSort.field === field) {
-                currentSort.direction = currentSort.direction === "asc" ? "desc" : "asc";
+        return { name, gender, birthStart, birthEnd, email, passport, exam, surveyLogId, surveyTitle,agencyName };
+    }
+
+    window.sortTable = function (field) {
+        if (currentSort.field === field) {
+            currentSort.direction = currentSort.direction === "asc" ? "desc" : "asc";
+        } else {
+            currentSort.field = field;
+            currentSort.direction = "asc";
+        }
+        const tbody = document.getElementById("student-table-body");
+        const rows = Array.from(tbody.getElementsByTagName("tr"));
+        rows.sort((a, b) => {
+            let aValue = a.cells[getColumnIndex(field)].textContent.trim();
+            let bValue = b.cells[getColumnIndex(field)].textContent.trim();
+            if (field === "id") {
+                aValue = parseInt(aValue.replace("#", ""));
+                bValue = parseInt(bValue.replace("#", ""));
+            }
+            if (field === "birthday") {
+                aValue = new Date(aValue);
+                bValue = new Date(bValue);
+            }
+            if (currentSort.direction === "asc") {
+                return aValue > bValue ? 1 : -1;
             } else {
-                currentSort.field = field;
-                currentSort.direction = "asc";
-            }
-            const tbody = document.getElementById("student-table-body");
-            const rows = Array.from(tbody.getElementsByTagName("tr"));
-            rows.sort((a, b) => {
-                let aValue = a.cells[getColumnIndex(field)].textContent.trim();
-                let bValue = b.cells[getColumnIndex(field)].textContent.trim();
-                if (field === "id") {
-                    aValue = parseInt(aValue.replace("#", ""));
-                    bValue = parseInt(bValue.replace("#", ""));
-                }
-                if (field === "birthday") {
-                    aValue = new Date(aValue);
-                    bValue = new Date(bValue);
-                }
-                if (currentSort.direction === "asc") {
-                    return aValue > bValue ? 1 : -1;
-                } else {
-                    return aValue < bValue ? 1 : -1;
-                }
-            });
-            rows.forEach((row) => tbody.appendChild(row));
-            updateSortingIcons(field);
-            showNotification(
-                `${field} 기준으로 ${currentSort.direction === "asc" ? "오름차순" : "내림차순"} 정렬되었습니다`,
-            );
-        };
-        function getColumnIndex(field) {
-            const fieldMap = {
-                id: 0,
-                chineseName: 1,
-                englishName: 2,
-                birthday: 3,
-            };
-            return fieldMap[field] || 0;
-        }
-        function updateSortingIcons(currentField) {
-            const headers = document.querySelectorAll("th[onclick]");
-            headers.forEach((header) => {
-                const icon = header.querySelector("i");
-                if (header.onclick.toString().includes(currentField)) {
-                    icon.className =
-                        currentSort.direction === "asc"
-                            ? "ri-arrow-up-line text-primary text-xs"
-                            : "ri-arrow-down-line text-primary text-xs";
-                } else {
-                    icon.className = "ri-arrow-up-down-line text-xs";
-                }
-            });
-        }
-        window.closeStudentModal = function () {
-            document.getElementById("studentDetailModal").classList.add("hidden");
-        };
-        window.editStudent = function () {
-            showNotification("학생 정보 수정 기능은 준비 중입니다");
-        };
-        window.deleteStudent = function (studentId) {
-            if (confirm("이 학생 데이터를 삭제하시겠습니까?")) {
-                showNotification("학생 데이터가 삭제되었습니다", "success");
-                loadStudentData();
-            }
-        };
-
-        function showNotification(message, type = "info") {
-            const notification = document.createElement("div");
-            const bgColor =
-                type === "success"
-                    ? "bg-green-500"
-                    : type === "error"
-                        ? "bg-red-500"
-                        : "bg-blue-500";
-            notification.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50`;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            setTimeout(() => notification.remove(), 3000);
-        }
-        const studentEmails = /*[[${students.content.?[studentEmail != null].![studentEmail]}]]*/ [];
-
-        document.getElementById('copy-emails-btn')?.addEventListener('click', async () => {
-            if (!studentEmails || studentEmails.length === 0) {
-                showNotification('복사할 이메일이 없습니다.', 'error');
-                return;
-            }
-
-            const emailString = studentEmails.join(', ');
-            try {
-                await navigator.clipboard.writeText(emailString);
-                showNotification(`${studentEmails.length}개의 이메일이 복사되었습니다!`, 'success');
-            } catch (err) {
-                console.error(err);
-                showNotification('이메일 복사 중 오류가 발생했습니다.', 'error');
+                return aValue < bValue ? 1 : -1;
             }
         });
+        rows.forEach((row) => tbody.appendChild(row));
+        updateSortingIcons(field);
+        showNotification(
+            `${field} 기준으로 ${currentSort.direction === "asc" ? "오름차순" : "내림차순"} 정렬되었습니다`,
+        );
+    };
+    function getColumnIndex(field) {
+        const fieldMap = {
+            id: 0,
+            chineseName: 1,
+            englishName: 2,
+            birthday: 3,
+        };
+        return fieldMap[field] || 0;
+    }
+    function updateSortingIcons(currentField) {
+        const headers = document.querySelectorAll("th[onclick]");
+        headers.forEach((header) => {
+            const icon = header.querySelector("i");
+            if (header.onclick.toString().includes(currentField)) {
+                icon.className =
+                    currentSort.direction === "asc"
+                        ? "ri-arrow-up-line text-primary text-xs"
+                        : "ri-arrow-down-line text-primary text-xs";
+            } else {
+                icon.className = "ri-arrow-up-down-line text-xs";
+            }
+        });
+    }
+    window.closeStudentModal = function () {
+        document.getElementById("studentDetailModal").classList.add("hidden");
+    };
+    window.editStudent = function () {
+        showNotification("학생 정보 수정 기능은 준비 중입니다");
+    };
+    window.deleteStudent = function (studentId) {
+        if (confirm("이 학생 데이터를 삭제하시겠습니까?")) {
+            showNotification("학생 데이터가 삭제되었습니다", "success");
+            loadStudentData();
+        }
+    };
+
+    function showNotification(message, type = "info") {
+        const notification = document.createElement("div");
+        const bgColor =
+            type === "success"
+                ? "bg-green-500"
+                : type === "error"
+                    ? "bg-red-500"
+                    : "bg-blue-500";
+        notification.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+    }
+    const studentEmails = /*[[${students.content.?[studentEmail != null].![studentEmail]}]]*/ [];
+
+    document.getElementById('copy-emails-btn')?.addEventListener('click', async () => {
+        if (!studentEmails || studentEmails.length === 0) {
+            showNotification('복사할 이메일이 없습니다.', 'error');
+            return;
+        }
+
+        const emailString = studentEmails.join(', ');
+        try {
+            await navigator.clipboard.writeText(emailString);
+            showNotification(`${studentEmails.length}개의 이메일이 복사되었습니다!`, 'success');
+        } catch (err) {
+            console.error(err);
+            showNotification('이메일 복사 중 오류가 발생했습니다.', 'error');
+        }
     });
 </script>
-<script>
+<script type="module">
+    // fixme: 전역함수 정의 - window.viewStudent, fillStudentModal, setText, openStudentModal, closeStudentModal
     window.viewStudent = async function viewStudent(id) {
 
         console.log("enter viewStudent / id=", id);
@@ -953,7 +953,7 @@
 
 
 </script>
-<script>
+<script type="module">
     // ====== 모달 열고 닫기 ======
     const openBtn = document.getElementById('open-survey-picker');
     const modal   = document.getElementById('survey-picker-modal');
@@ -980,6 +980,7 @@
 
     async function fetchSurveys({ q = '', pageNum = 1 } = {}) {
 
+        // fixme: 전역변수 참조 - window.location.origin
         const url = new URL('/api/v1/survey/list', window.location.origin);
 
         if (q) url.searchParams.set('title', q);
@@ -1073,6 +1074,7 @@
     async function applyFilters() {
         // 방식 1) Ajax로 서버 데이터 새로 가져오기 (SPA/partial render)
         // GET /api/logs?surveyId=...&academy=...
+        // fixme: 전역변수 참조 - window.location.origin
         const url = new URL('/api/logs', window.location.origin);
         if (surveyIdInput.value) url.searchParams.set('surveyId', surveyIdInput.value);
 
@@ -1085,8 +1087,9 @@
         // document.getElementById('filter-form').submit();
     }
 </script>
-<script>
-    // 빈값/기본값 제외하고 쿼리로 붙여서 이동
+<script type="module">
+    // fixme: 전역함수 정의 - exportData
+    // fixme: 전역변수 참조 - window.getFilters, window.location.assign
     function exportData() {
         const filters = window.getFilters();
         if (!filters) return;

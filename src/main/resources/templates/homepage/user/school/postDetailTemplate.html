@@ -297,54 +297,50 @@
     </div>
 </footer>
 
-<script id="downloadScript">
-    document.addEventListener("DOMContentLoaded", function () {
-        const downloadButtons = Array.from(document.querySelectorAll("button"));
-        downloadButtons.forEach((button) => {
-            if (button.textContent.includes("다운로드")) {
-                button.addEventListener("click", function () {
-                    const fileName = this
-                        .closest(".flex")
-                        .querySelector(".font-medium").textContent;
-                    alert(`${fileName} 파일을 다운로드합니다.`);
-                });
-            }
-        });
+<script id="downloadScript" type="module">
+    const downloadButtons = Array.from(document.querySelectorAll("button"));
+    downloadButtons.forEach((button) => {
+        if (button.textContent.includes("다운로드")) {
+            button?.addEventListener("click", function () {
+                const fileName = this
+                    .closest(".flex")
+                    .querySelector(".font-medium").textContent;
+                alert(`${fileName} 파일을 다운로드합니다.`);
+            });
+        }
     });
 </script>
 
-<script id="navigationScript" >
-    document.addEventListener("DOMContentLoaded", function () {
-        const prevPost = document.querySelector(
-            ".cursor-pointer:has(.ri-arrow-up-line)",
-        );
-        const nextPost = document.querySelector(
-            ".cursor-pointer:has(.ri-arrow-down-line)",
-        );
+<script id="navigationScript" type="module">
+    const prevPost = document.querySelector(
+        ".cursor-pointer:has(.ri-arrow-up-line)",
+    );
+    const nextPost = document.querySelector(
+        ".cursor-pointer:has(.ri-arrow-down-line)",
+    );
 
-        const school = "[[${school}]]";
-        const boardId = [[${boardId}]];
+    const school = "[[${school}]]";
+    const boardId = [[${boardId}]];
 
-        if (prevPost) {
-            const pTag = prevPost.querySelector("p[data-id]");
-            if (pTag && pTag.hasAttribute("data-id")) {
-                const postId = pTag.dataset.id;
-                prevPost.addEventListener("click", function () {
-                    window.location.href = `/school/${school}/board/${boardId}/post/${postId}`;
-                });
-            }
+    if (prevPost) {
+        const pTag = prevPost.querySelector("p[data-id]");
+        if (pTag && pTag.hasAttribute("data-id")) {
+            const postId = pTag.dataset.id;
+            prevPost?.addEventListener("click", function () {
+                window.location.href = `/school/${school}/board/${boardId}/post/${postId}`;
+            });
         }
+    }
 
-        if (nextPost) {
-            const pTag = nextPost.querySelector("p[data-id]");
-            if (pTag && pTag.hasAttribute("data-id")) {
-                const postId = pTag.dataset.id;
-                nextPost.addEventListener("click", function () {
-                    window.location.href = `/school/${school}/board/${boardId}/post/${postId}`;
-                });
-            }
+    if (nextPost) {
+        const pTag = nextPost.querySelector("p[data-id]");
+        if (pTag && pTag.hasAttribute("data-id")) {
+            const postId = pTag.dataset.id;
+            nextPost?.addEventListener("click", function () {
+                window.location.href = `/school/${school}/board/${boardId}/post/${postId}`;
+            });
         }
-    });
+    }
 </script>
 </body>
 </html>

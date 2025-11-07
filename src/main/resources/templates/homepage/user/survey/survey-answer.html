@@ -98,12 +98,12 @@
         </form>
     </div>
 </main>
-<script id="survey-interaction">
+<script id="survey-interaction" type="module">
 // 글자수 카운트 기능
         function initializeSurveyInteractions() {
             // 글자 수 카운트
             document.querySelectorAll('textarea[name^="q"]').forEach((textarea) => {
-                textarea.addEventListener('input', function () {
+                textarea?.addEventListener('input', function () {
                     let charCount = textarea.closest('.question-container')?.querySelector('.char-count')
                         || document.getElementById('charCount');
                     if (!charCount) return;
@@ -120,7 +120,7 @@
             // 파일 입력
             document.querySelectorAll('input[type="file"]').forEach((fileInput) => {
                 const type = fileInput.dataset.type; // file or image
-                const container = fileInput.closest('.space-y-3');
+                const container = fileInput.closest('.question-container');
                 console.log(container);
                 const fileNameDisplay = type === "image"
                     ? container?.querySelector('.image-input')
@@ -128,7 +128,7 @@
                 console.log(fileNameDisplay);
 
                 if (fileNameDisplay) {
-                    fileInput.addEventListener("change", function () {
+                    fileInput?.addEventListener("change", function () {
                         console.log("파일 변환됨");
                         fileNameDisplay.textContent = this.files.length > 0
                             ? `선택된 파일: ${this.files[0].name}`
@@ -140,7 +140,7 @@
 
             // 라디오 버튼 스타일 처리
             document.querySelectorAll('.custom-radio input[type="radio"]').forEach((input) => {
-                input.addEventListener('change', function () {
+                input?.addEventListener('change', function () {
                     const name = this.getAttribute('name');
                     document.querySelectorAll(`.custom-radio input[name="${name}"]`).forEach((radio) => {
                         const span = radio.nextElementSibling?.querySelector('span');
@@ -154,7 +154,7 @@
 
             // 체크박스 스타일 처리
             document.querySelectorAll('.custom-checkbox input[type="checkbox"]').forEach((input) => {
-                input.addEventListener('change', function () {
+                input?.addEventListener('change', function () {
                     const span = this.nextElementSibling?.querySelector('span');
                     if (span) {
                         span.style.opacity = this.checked ? '1' : '0';
@@ -167,31 +167,31 @@
 
             // 드롭다운
             document.querySelectorAll('select').forEach((select) => {
-                select.addEventListener('change', updateProgress);
+                select?.addEventListener('change', updateProgress);
             });
 
             // 텍스트 입력 필드
             document.querySelectorAll('input[type="text"]').forEach((input) => {
-                input.addEventListener('input', updateProgress);
+                input?.addEventListener('input', updateProgress);
             });
 
             // 날짜 선택
             document.querySelectorAll('input[type="date"]').forEach((input) => {
-                input.addEventListener('change', updateProgress);
+                input?.addEventListener('change', updateProgress);
             });
             updateProgress();
         }
 
         // 진행 상태바 상단 고정 스타일 적용 (선택적으로 호출 가능)
-        document.addEventListener("DOMContentLoaded", function () {
-            const progressWrapper = document.querySelector('.progress-wrapper');
-            if (progressWrapper) {
-                progressWrapper.style.position = 'sticky';
-                progressWrapper.style.top = '0';
-                progressWrapper.style.zIndex = '50';
-                progressWrapper.style.backgroundColor = 'white';
-            }
-        });
+        // fixme: 전역변수 참조 - initializeSurveyInteractions, updateProgress, setUpJumpHandlers, renderSurveyHeader, renderQuestions, setHierarchy
+        // 이 함수들은 loadSurvey에서 호출되므로, loadSurvey가 모듈이 되면 이 함수들도 모듈 내에서 정의되거나 export/import 되어야 합니다.
+        const progressWrapper = document.querySelector('.progress-wrapper');
+        if (progressWrapper) {
+            progressWrapper.style.position = 'sticky';
+            progressWrapper.style.top = '0';
+            progressWrapper.style.zIndex = '50';
+            progressWrapper.style.backgroundColor = 'white';
+        }
 
         function updateProgress() {
             const allQuestionEls = Array.from(document.querySelectorAll('[id^="question-"]'));
@@ -202,6 +202,7 @@
 
             visibleQuestionEls.forEach(qEl => {
                 const idx = parseInt(qEl.id.split('-')[1])-1; // question-3 → 3
+                // fixme: 전역변수 참조 - window.questions
                 const q = window.questions[idx];
                 if (!q) return;
                 totalRequired++;
@@ -261,10 +262,11 @@
         }
 
 </script>
-<script src="/js/homepage/url.js"></script>
-<script th:inline="javascript"  >
+<script th:inline="javascript" type="module">
     //note API받아오는 코드
-    document.addEventListener('DOMContentLoaded', loadSurvey);
+    // fixme: 전역변수 참조 - surveyUrl
+    // fixme: 전역변수 설정 - window.time, window.questions, window.hierarchyStore
+    // fixme: 전역함수 호출 - initializeSurveyInteractions, setUpJumpHandlers, updateProgress, renderSurveyHeader, renderQuestions, setHierarchy
     async function loadSurvey() {
         try {
             const surveyId = [[${surveyId}]];
@@ -308,6 +310,8 @@
         }
     }
     function setHierarchy(){
+        // fixme: 전역변수 설정 - window.hierarchyStore
+        // fixme: 전역변수 참조 - window.questions
         window.hierarchyStore = {};
 
         window.questions.forEach((q, idx) => {
@@ -381,7 +385,7 @@
             });
 
             // ✅ 1단계 선택 이벤트
-            level1.addEventListener('change', () => {
+            level1?.addEventListener('change', () => {
                 const selected = level1.value;
 
                 // 초기화
@@ -407,7 +411,7 @@
             });
 
             // ✅ 2단계 선택 이벤트
-            level2.addEventListener('change', () => {
+            level2?.addEventListener('change', () => {
                 const selected = level2.value;
 
                 level3.innerHTML = `<option value="">3단계 선택</option>`;
@@ -439,8 +443,9 @@
         descEl.textContent = description;
     }
 </script>
-<script>
+<script type="module">
     //note 질문 가져와서 넣어주는 코드
+    // fixme: 전역변수 참조 - window.questions
     function renderQuestions(questions) {
         const container = document.getElementById('questions-container');
         container.innerHTML = '';
@@ -548,7 +553,7 @@
         });
     }
 </script>
-<script>
+<script type="module">
         function setUpJumpHandlers() {
             const allQuestions = Array.from(document.querySelectorAll('[id^="question-"]'));
 
@@ -624,7 +629,7 @@
         }
 </script>
 
-<script id="submitForm" th:inline="javascript">
+<script id="submitForm" th:inline="javascript" type="module">
     const form = document.getElementById('survey-form');
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -634,7 +639,7 @@
         const templateAnswers=[];
         let questionCnt = 0;
         for (let idx = 0; idx < window.questions.length; idx++) {
-            const q = window.questions[idx];
+            const q = window.questions[idx]; // fixme: 전역변수 참조 - window.questions
             const optionName = `q${idx}`;
             const problemName = `question-${idx+1}`;
             const inputs = document.querySelectorAll(`[name="${optionName}"]`);
@@ -719,7 +724,7 @@
                 }
             }
 
-            if(window.questions[idx].isTemplate){
+            if(window.questions[idx].isTemplate){ // fixme: 전역변수 참조 - window.questions
                 templateAnswers.push({
                     questionId: idx + 1,
                     type: type,
@@ -753,6 +758,7 @@
                 surveyId: surveyId,
                 answers: answers,
                 templateAnswers: templateAnswers,
+                // fixme: 전역변수 참조 - window.time
                 startTime : window.time,
                 questionCnt : questionCnt
             }));
@@ -773,6 +779,7 @@
                 }
             }
 
+            // fixme: 전역변수 참조 - surveyUrl
             const response = await fetch(`${surveyUrl}/answer`, {
                 method: 'POST',
                 body: formData
@@ -850,7 +857,8 @@
 </script>
 
 
-<script th:inline="javascript">
+<script th:inline="javascript" type="module">
+    // fixme: 전역함수 호출 - showFatalError
     function showFatalError(message) {
         // 진행바/내용 숨기고 에러 카드만 노출
         const progress = document.querySelector('.progress-wrapper');

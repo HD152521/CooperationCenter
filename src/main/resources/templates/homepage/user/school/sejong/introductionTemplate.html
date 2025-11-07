@@ -430,7 +430,7 @@
             if (chips.length > 10) {
                 chips.slice(10).forEach(ch => ch.classList.add('hidden'));
                 moreBtn.classList.remove('hidden');
-                moreBtn.addEventListener('click', () => {
+                moreBtn?.addEventListener('click', () => {
                     const hidden = chips.slice(10).some(ch => ch.classList.contains('hidden'));
                     chips.slice(10).forEach(ch => ch.classList.toggle('hidden'));
                     moreBtn.textContent = hidden ? '접기' : '더보기';
@@ -464,7 +464,7 @@
         filters.querySelector('button[data-filter="all"]').classList.add('active');
 
         // 탭 클릭
-        filters.addEventListener('click', (e)=>{
+        filters?.addEventListener('click', (e)=>{
             const btn = e.target.closest('button[data-filter]');
             if (!btn) return;
             filters.querySelectorAll('button').forEach(b=>{
@@ -477,7 +477,7 @@
         });
 
         // 검색
-        search.addEventListener('input', applyFilter);
+        search?.addEventListener('input', applyFilter);
     })();
 </script>
 </th:block>

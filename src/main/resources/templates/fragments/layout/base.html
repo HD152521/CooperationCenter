@@ -25,7 +25,7 @@
     <th:block th:replace="${base_head}"></th:block>
 
     <!--HTML -> SPA 로 바꿔주는 라이브러리-->
-<!--    <script type="module" src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@latest/dist/turbo.es2017-esm.min.js"></script>-->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@latest/dist/turbo.es2017-esm.min.js"></script>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <script>
         tailwind.config = {
@@ -49,6 +49,7 @@
             },
         };
     </script>
+    <script src="/js/homepage/url.js"></script>
 </head>
 <body class="min-h-screen">
     <th:block th:replace="${base_body}"></th:block>

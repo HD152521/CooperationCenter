@@ -745,125 +745,123 @@
         </div>
     </div>
 </footer>
-<script id="profileEditHandler">
-    document.addEventListener("DOMContentLoaded", function () {
-        const editProfileBtn = document.getElementById("editProfileBtn");
-        const editProfileModal = document.getElementById("editProfileModal");
-        const cancelEditBtn = document.getElementById("cancelEditBtn");
-        const saveProfileBtn = document.getElementById("saveProfileBtn");
-        const successToast = document.getElementById("successToast");
+<script id="profileEditHandler" type="module">
+    const editProfileBtn = document.getElementById("editProfileBtn");
+    const editProfileModal = document.getElementById("editProfileModal");
+    const cancelEditBtn = document.getElementById("cancelEditBtn");
+    const saveProfileBtn = document.getElementById("saveProfileBtn");
+    const successToast = document.getElementById("successToast");
 
-        editProfileBtn.addEventListener("click", () => editProfileModal.classList.remove("hidden"));
-        cancelEditBtn.addEventListener("click", () => editProfileModal.classList.add("hidden"));
+    editProfileBtn?.addEventListener("click", () => editProfileModal.classList.remove("hidden"));
+    cancelEditBtn?.addEventListener("click", () => editProfileModal.classList.add("hidden"));
 
-        saveProfileBtn.addEventListener("click", async () => {
-            // DTO에 맞춰 JSON 구성
-            const payload = {
-                memberName:        document.getElementById("editName").value?.trim() || null,
-                birth:             document.getElementById("editBirthdate").value || null, // YYYY-MM-DD
-                email:             document.getElementById("editEmail").value?.trim() || null,
-                homePhoneNumber:   document.getElementById("editHomePhoneNum").value?.trim() || null,
-                phoneNumber:       document.getElementById("editPhoneNum").value?.trim() || null,
-                address1:          document.getElementById("editAddress1").value?.trim() || null,
-                address2:          document.getElementById("editAddress2").value?.trim() || null
-                // agency* 필드는 이 엔드포인트에선 생략(서버가 null 허용/무시하면 보내도 되지만 보통 생략 권장)
-            };
+    saveProfileBtn?.addEventListener("click", async () => {
+        // DTO에 맞춰 JSON 구성
+        const payload = {
+            memberName:        document.getElementById("editName").value?.trim() || null,
+            birth:             document.getElementById("editBirthdate").value || null, // YYYY-MM-DD
+            email:             document.getElementById("editEmail").value?.trim() || null,
+            homePhoneNumber:   document.getElementById("editHomePhoneNum").value?.trim() || null,
+            phoneNumber:       document.getElementById("editPhoneNum").value?.trim() || null,
+            address1:          document.getElementById("editAddress1").value?.trim() || null,
+            address2:          document.getElementById("editAddress2").value?.trim() || null
+            // agency* 필드는 이 엔드포인트에선 생략(서버가 null 허용/무시하면 보내도 되지만 보통 생략 권장)
+        };
 
-            try {
-                const res = await fetch("/api/v1/profile/member", {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(payload)
-                });
+        try {
+            const res = await fetch("/api/v1/profile/member", {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
 
-                if (!res.ok) {
-                    const txt = await res.text().catch(()=> "");
-                    alert("프로필 저장 실패\n" + txt);
-                    return;
-                }
-
-                // 성공 처리
-                editProfileModal.classList.add("hidden");
-                successToast.classList.remove("hidden");
-                successToast.classList.remove("translate-y-full", "opacity-0");
-
-                // 최신 데이터 반영을 확실히: 새로고침(간단)
-                setTimeout(() => { location.reload(); }, 800);
-
-            } catch (e) {
-                console.error(e);
-                alert("프로필 저장 중 오류가 발생했습니다.");
+            if (!res.ok) {
+                const txt = await res.text().catch(()=> "");
+                alert("프로필 저장 실패\n" + txt);
+                return;
             }
-        });
 
-        // 모달 바깥 클릭 닫기
-        window.addEventListener("click", (e) => {
-            if (e.target === editProfileModal) editProfileModal.classList.add("hidden");
-        });
+            // 성공 처리
+            editProfileModal.classList.add("hidden");
+            successToast.classList.remove("hidden");
+            successToast.classList.remove("translate-y-full", "opacity-0");
+
+            // 최신 데이터 반영을 확실히: 새로고침(간단)
+            setTimeout(() => { location.reload(); }, 800);
+
+        } catch (e) {
+            console.error(e);
+            alert("프로필 저장 중 오류가 발생했습니다.");
+        }
+    });
+
+    // fixme: 전역변수 참조 - window 객체에 직접 이벤트 리스너 추가
+    window?.addEventListener("click", (e) => {
+        if (e.target === editProfileModal) editProfileModal.classList.add("hidden");
     });
 </script>
-<script id="agencyEditHandler">
-    document.addEventListener("DOMContentLoaded", function () {
-        const editAgencyBtn = document.getElementById("editAgencyBtn");
-        const editAgencyModal = document.getElementById("editAgencyModal");
-        const cancelAgencyBtn = document.getElementById("cancelAgencyBtn");
-        const saveAgencyBtn = document.getElementById("saveAgencyBtn");
-        const agencySuccessToast = document.getElementById("agencySuccessToast");
+<script id="agencyEditHandler" type="module">
+    const editAgencyBtn = document.getElementById("editAgencyBtn");
+    const editAgencyModal = document.getElementById("editAgencyModal");
+    const cancelAgencyBtn = document.getElementById("cancelAgencyBtn");
+    const saveAgencyBtn = document.getElementById("saveAgencyBtn");
+    const agencySuccessToast = document.getElementById("agencySuccessToast");
 
-        editAgencyBtn.addEventListener("click", () => editAgencyModal.classList.remove("hidden"));
-        cancelAgencyBtn.addEventListener("click", () => editAgencyModal.classList.add("hidden"));
+    editAgencyBtn.addEventListener("click", () => editAgencyModal.classList.remove("hidden"));
+    cancelAgencyBtn.addEventListener("click", () => editAgencyModal.classList.add("hidden"));
 
-        saveAgencyBtn.addEventListener("click", async () => {
-            const formEl = document.getElementById("agencyEditForm");
-            const formData = new FormData(formEl);
-            const body = Object.fromEntries(formData.entries());
+    saveAgencyBtn.addEventListener("click", async () => {
+        const formEl = document.getElementById("agencyEditForm");
+        const formData = new FormData(formEl);
+        const body = Object.fromEntries(formData.entries());
 
-            const payload = {
-                agencyOwner:    document.getElementById("editAgencyOwner").value?.trim() || null,
-                agencyName:     document.getElementById("editAgencyName").value?.trim() || null,
-                agencyPhone:    document.getElementById("editAgencyPhone").value?.trim() || null,
-                agencyRegion:   document.getElementById("editAgencyRegion").value?.trim() || null,
-                agencyEmail:    document.getElementById("editAgencyEmail").value?.trim() || null,
-                agencyAddress1: document.getElementById("editAgencyAddress1").value?.trim() || null,
-                agencyAddress2: document.getElementById("editAgencyAddress2").value?.trim() || null
-                // member* 필드는 이 엔드포인트에선 생략
-            };
+        const payload = {
+            agencyOwner:    document.getElementById("editAgencyOwner").value?.trim() || null,
+            agencyName:     document.getElementById("editAgencyName").value?.trim() || null,
+            agencyPhone:    document.getElementById("editAgencyPhone").value?.trim() || null,
+            agencyRegion:   document.getElementById("editAgencyRegion").value?.trim() || null,
+            agencyEmail:    document.getElementById("editAgencyEmail").value?.trim() || null,
+            agencyAddress1: document.getElementById("editAgencyAddress1").value?.trim() || null,
+            agencyAddress2: document.getElementById("editAgencyAddress2").value?.trim() || null
+            // member* 필드는 이 엔드포인트에선 생략
+        };
 
-            try {
-                const res = await fetch("/api/v1/profile/agency", {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(payload)
-                });
+        try {
+            const res = await fetch("/api/v1/profile/agency", {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
 
-                if (!res.ok) {
-                    const txt = await res.text().catch(()=> "");
-                    alert("유학원 정보 저장 실패\n" + txt);
-                    return;
-                }
-
-                editAgencyModal.classList.add("hidden");
-                agencySuccessToast.classList.remove("hidden");
-                agencySuccessToast.classList.remove("translate-y-full", "opacity-0");
-
-                setTimeout(() => { location.reload(); }, 800);
-
-            } catch (e) {
-                console.error(e);
-                alert("유학원 정보 저장 중 오류가 발생했습니다.");
+            if (!res.ok) {
+                const txt = await res.text().catch(()=> "");
+                alert("유학원 정보 저장 실패\n" + txt);
+                return;
             }
-        });
 
-        window.addEventListener("click", (e) => {
-            if (e.target === editAgencyModal) editAgencyModal.classList.add("hidden");
-        });
+            editAgencyModal.classList.add("hidden");
+            agencySuccessToast.classList.remove("hidden");
+            agencySuccessToast.classList.remove("translate-y-full", "opacity-0");
+
+            setTimeout(() => { location.reload(); }, 800);
+
+        } catch (e) {
+            console.error(e);
+            alert("유학원 정보 저장 중 오류가 발생했습니다.");
+        }
+    });
+
+    // fixme: 전역변수 참조 - window 객체에 직접 이벤트 리스너 추가
+    window.addEventListener("click", (e) => {
+        if (e.target === editAgencyModal) editAgencyModal.classList.add("hidden");
     });
 </script>
 <script>
+    // fixme: 전역변수 참조 - CURRENT_REGION, populateAgencyRegions
     // 현재 저장된 지역(초기 선택값) — Thymeleaf 사용 중이면 아래 한 줄을 그대로 쓰세요.
     const CURRENT_REGION = /*[[${profileDto.member.agencyRegion}]]*/ '';
 
@@ -904,22 +902,21 @@
     }
 
     // 모달 열릴 때마다 최신 옵션으로 채우기(중복 채움 방지도 추가)
-    document.addEventListener('DOMContentLoaded', () => {
-        const editAgencyBtn = document.getElementById('editAgencyBtn');
-        const editAgencyModal = document.getElementById('editAgencyModal');
+    const editAgencyBtn = document.getElementById('editAgencyBtn');
+    const editAgencyModal = document.getElementById('editAgencyModal');
 
-        editAgencyBtn?.addEventListener('click', async () => {
-            editAgencyModal.classList.remove('hidden');
+    editAgencyBtn?.addEventListener('click', async () => {
+        editAgencyModal.classList.remove('hidden');
 
-            const select = document.getElementById('editAgencyRegion');
-            // 옵션이 기본값 하나뿐이면(=아직 안 채움) 채우기
-            if (select && select.options.length <= 1) {
-                await populateAgencyRegions();
-            }
-        });
+        const select = document.getElementById('editAgencyRegion');
+        // 옵션이 기본값 하나뿐이면(=아직 안 채움) 채우기
+        if (select && select.options.length <= 1) {
+            await populateAgencyRegions();
+        }
     });
 </script>
 <script>
+    // fixme: 전역변수 참조 - IIFE, wirePatchUpload, showToast
     (function () {
         const BASE = "/api/v1/profile";
         const csrfToken  = document.querySelector('meta[name="_csrf"]')?.getAttribute("content");
@@ -1064,6 +1061,7 @@
 
 <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script>
+    // fixme: 전역변수 참조 - daum 객체 및 openPostcode, closePostcode 함수
     // address field
     const addrEl = document.getElementById('editAddress1');
     const agencyAddrEl = document.getElementById('editAgencyAddress1');
@@ -1116,101 +1114,99 @@
 </div>
 
 
-<script id="chinese-address-modal-script">
-    document.addEventListener("DOMContentLoaded", () => {
-        const modal = document.getElementById("chinese-address-modal");
-        const closeBtn = document.getElementById("closeChineseModal");
-        const input = document.getElementById("chineseAddressInput");
-        const list = document.getElementById("chineseAddressList");
+<script id="chinese-address-modal-script" type="module">
+    const modal = document.getElementById("chinese-address-modal");
+    const closeBtn = document.getElementById("closeChineseModal");
+    const input = document.getElementById("chineseAddressInput");
+    const list = document.getElementById("chineseAddressList");
 
-        // 여러 버튼(회원 / 유학원) 공용
-        const openBtns = document.querySelectorAll(".openChineseModal");
-        let currentTarget = null;
+    // 여러 버튼(회원 / 유학원) 공용
+    const openBtns = document.querySelectorAll(".openChineseModal");
+    let currentTarget = null;
 
-        // 모달 열기
-        openBtns.forEach(btn => {
-            btn.addEventListener("click", () => {
-                currentTarget = btn.dataset.target; // "address" or "agency"
-                modal.classList.remove("hidden");
-                input.value = "";
-                list.innerHTML = "";
-                list.classList.add("hidden");
-                input.focus();
-            });
-        });
-
-        // 모달 닫기
-        closeBtn.addEventListener("click", () => {
-            modal.classList.add("hidden");
+    // 모달 열기
+    openBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            currentTarget = btn.dataset.target; // "address" or "agency"
+            modal.classList.remove("hidden");
+            input.value = "";
             list.innerHTML = "";
             list.classList.add("hidden");
+            input.focus();
         });
+    });
 
-        // 입력 시 자동완성 검색 (디바운스)
-        let debounceTimer;
-        input.addEventListener("input", () => {
-            const keyword = input.value.trim();
-            if (!keyword) {
+    // 모달 닫기
+    closeBtn.addEventListener("click", () => {
+        modal.classList.add("hidden");
+        list.innerHTML = "";
+        list.classList.add("hidden");
+    });
+
+    // 입력 시 자동완성 검색 (디바운스)
+    let debounceTimer;
+    input.addEventListener("input", () => {
+        const keyword = input.value.trim();
+        if (!keyword) {
+            list.classList.add("hidden");
+            return;
+        }
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => fetchSuggestions(keyword), 300);
+    });
+
+    async function fetchSuggestions(keyword) {
+        const url = `/api/v1/tencent/address?keyword=${encodeURIComponent(keyword)}`;
+        try {
+            const resp = await fetch(url);
+            const data = await resp.json();
+            console.log("Tencent API result:", data);
+
+            if (!data || !data.data || data.data.length === 0) {
                 list.classList.add("hidden");
                 return;
             }
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => fetchSuggestions(keyword), 300);
-        });
 
-        async function fetchSuggestions(keyword) {
-            const url = `/api/v1/tencent/address?keyword=${encodeURIComponent(keyword)}`;
-            try {
-                const resp = await fetch(url);
-                const data = await resp.json();
-                console.log("Tencent API result:", data);
-
-                if (!data || !data.data || data.data.length === 0) {
-                    list.classList.add("hidden");
-                    return;
-                }
-
-                list.classList.remove("hidden");
-                list.innerHTML = data.data
-                    .map(
-                        (item, i) => `
+            list.classList.remove("hidden");
+            list.innerHTML = data.data
+                .map(
+                    (item, i) => `
                         <li data-index="${i}" class="px-3 py-2 hover:bg-gray-100 cursor-pointer border-b last:border-0">
                             <span class="font-medium">${item.title}</span>
                             <p class="text-sm text-gray-500">${item.address}</p>
                         </li>`
-                    )
-                    .join("");
+                )
+                .join("");
 
-                list.querySelectorAll("li").forEach(li => {
-                    li.addEventListener("click", () => {
-                        const idx = li.dataset.index;
-                        const sel = data.data[idx];
-                        applyChineseAddress(sel);
-                    });
+            list.querySelectorAll("li").forEach(li => {
+                li.addEventListener("click", () => {
+                    const idx = li.dataset.index;
+                    const sel = data.data[idx];
+                    applyChineseAddress(sel);
                 });
-            } catch (err) {
-                console.error("Tencent Suggestion API Error:", err);
-            }
+            });
+        } catch (err) {
+            console.error("Tencent Suggestion API Error:", err);
+        }
+    }
+
+    // 선택 시 address or agency에 값 채우기
+    function applyChineseAddress(sel) {
+        const addr1 = `${sel.province || ""} ${sel.city || ""} ${sel.district || ""}`.trim();
+        const addr2 = `${sel.title || ""} ${sel.address || ""}`.trim();
+
+        if (currentTarget === "address") {
+            document.getElementById("editAddress1").value = addr1;
+            document.getElementById("editAddress2").value = addr2;
+        } else if (currentTarget === "agency") {
+            document.getElementById("editAgencyAddress1").value = addr1;
+            document.getElementById("editAgencyAddress2").value = addr2;
         }
 
-        // 선택 시 address or agency에 값 채우기
-        function applyChineseAddress(sel) {
-            const addr1 = `${sel.province || ""} ${sel.city || ""} ${sel.district || ""}`.trim();
-            const addr2 = `${sel.title || ""} ${sel.address || ""}`.trim();
-
-            if (currentTarget === "address") {
-                document.getElementById("editAddress1").value = addr1;
-                document.getElementById("editAddress2").value = addr2;
-            } else if (currentTarget === "agency") {
-                document.getElementById("editAgencyAddress1").value = addr1;
-                document.getElementById("editAgencyAddress2").value = addr2;
-            }
-
-            modal.classList.add("hidden");
-            list.innerHTML = "";
-            list.classList.add("hidden");
-        }
-    });
+        modal.classList.add("hidden");
+        list.innerHTML = "";
+        list.classList.add("hidden");
+    }
 </script>
 
 </body>

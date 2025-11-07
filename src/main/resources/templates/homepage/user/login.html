@@ -114,154 +114,147 @@
 </body>
 
 <th:block th:fragment="script">
-    <script id="login">
-        document.addEventListener("DOMContentLoaded", () => {
-            const form = document.querySelector("form");
+    <script type="module">
+        const form = document.querySelector("form");
 
-            form.addEventListener("submit", async (e) => {
-                e.preventDefault();
+        form?.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-                const email = document.getElementById("email").value.trim();
-                const password = document.getElementById("password").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
 
-                const loginDto = { email, password };
+            const loginDto = { email, password };
 
-                try {
-                    const response = await fetch(memberUrl + "/login", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(loginDto)
-                    });
-
-                    const responseBody = await response.json();
-
-                    // ✅ 로그인 성공
-                    if (response.ok && responseBody.isSuccess) {
-                        showModal({
-                            type: "success",
-                            title: "로그인 성공!",
-                            message: "환영합니다. 로그인이 완료되었습니다.",
-                            buttonText: "확인",
-                            onClose: () => window.location.href = "/home"
-                        });
-                        return;
-                    }
-
-                    // ✅ 로그인 실패 (BaseResponse.isSuccess=false)
-                    console.warn("❌ 로그인 실패:", responseBody);
-
-                    let errorMessage = "로그인에 실패했습니다. 잠시 후 다시 시도해주세요.";
-                    console.log("responseBody:"+responseBody);
-                    if (responseBody.message) errorMessage = responseBody.message;
-
-
-                    showModal({
-                        type: "error",
-                        title: "로그인 실패",
-                        message: errorMessage,
-                        buttonText: "다시 시도"
-                    });
-
-                } catch (err) {
-                    console.error("🚨 네트워크 또는 서버 오류:", err);
-                    showModal({
-                        type: "error",
-                        title: "서버 오류",
-                        message: "로그인 중 오류가 발생했습니다. 네트워크 상태를 확인해주세요.",
-                        buttonText: "확인"
-                    });
-                }
-            });
-
-            function showModal({ type, title, message, buttonText, onClose }) {
-                const modal = document.createElement("div");
-                modal.className =
-                    "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
-
-                const iconClass =
-                    type === "success"
-                        ? "ri-checkbox-circle-line text-green-500 bg-green-100"
-                        : "ri-close-circle-line text-red-500 bg-red-100";
-
-                modal.innerHTML = `
-          <div class="bg-white rounded-lg p-8 max-w-sm w-full mx-4 relative transform transition-all">
-            <div class="text-center">
-              <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${iconClass}">
-                <i class="ri-${type === "success" ? "checkbox-circle-line" : "close-circle-line"} text-3xl"></i>
-              </div>
-              <h3 class="text-lg font-medium text-gray-900 mb-2">${title}</h3>
-              <p class="text-sm text-gray-500 mb-6">${message}</p>
-              <button type="button"
-                class="w-full inline-flex justify-center !rounded-button px-4 py-2 text-sm font-medium text-white ${
-                    type === "success" ? "bg-primary hover:bg-primary-dark" : "bg-red-500 hover:bg-red-600"
-                } focus:outline-none whitespace-nowrap">
-                ${buttonText}
-              </button>
-            </div>
-          </div>`;
-
-                document.body.appendChild(modal);
-
-                const button = modal.querySelector("button");
-                button.addEventListener("click", () => {
-                    modal.remove();
-                    if (onClose) onClose();
+            try {
+                const response = await fetch(memberUrl + "/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(loginDto)
                 });
 
-                modal.addEventListener("click", (e) => {
-                    if (e.target === modal) {
-                        modal.remove();
-                        if (onClose) onClose();
-                    }
+                const responseBody = await response.json();
+
+                // ✅ 로그인 성공
+                if (response.ok && responseBody.isSuccess) {
+                    showModal({
+                        type: "success",
+                        title: "로그인 성공!",
+                        message: "환영합니다. 로그인이 완료되었습니다.",
+                        buttonText: "확인",
+                        onClose: () => window.location.href = "/home"
+                    });
+                    return;
+                }
+
+                // ✅ 로그인 실패 (BaseResponse.isSuccess=false)
+                console.warn("❌ 로그인 실패:", responseBody);
+
+                let errorMessage = "로그인에 실패했습니다. 잠시 후 다시 시도해주세요.";
+                console.log("responseBody:"+responseBody);
+                if (responseBody.message) errorMessage = responseBody.message;
+
+
+                showModal({
+                    type: "error",
+                    title: "로그인 실패",
+                    message: errorMessage,
+                    buttonText: "다시 시도"
+                });
+
+            } catch (err) {
+                console.error("🚨 네트워크 또는 서버 오류:", err);
+                showModal({
+                    type: "error",
+                    title: "서버 오류",
+                    message: "로그인 중 오류가 발생했습니다. 네트워크 상태를 확인해주세요.",
+                    buttonText: "확인"
                 });
             }
         });
-    </script>
-    <script id="password-toggle-script">
-        document.addEventListener("DOMContentLoaded", function () {
-            const togglePassword = document.getElementById("toggle-password");
-            const passwordInput = document.getElementById("password");
-            const passwordIcon = document.getElementById("password-icon");
 
-            togglePassword.addEventListener("click", function () {
-                const type =
-                    passwordInput.getAttribute("type") === "password" ? "text" : "password";
-                passwordInput.setAttribute("type", type);
+        function showModal({ type, title, message, buttonText, onClose }) {
+            const modal = document.createElement("div");
+            modal.className =
+                "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
 
-                if (type === "password") {
-                    passwordIcon.classList.remove("ri-eye-line");
-                    passwordIcon.classList.add("ri-eye-off-line");
-                } else {
-                    passwordIcon.classList.remove("ri-eye-off-line");
-                    passwordIcon.classList.add("ri-eye-line");
+            const iconClass =
+                type === "success"
+                    ? "ri-checkbox-circle-line text-green-500 bg-green-100"
+                    : "ri-close-circle-line text-red-500 bg-red-100";
+
+            modal.innerHTML = `
+  <div class="bg-white rounded-lg p-8 max-w-sm w-full mx-4 relative transform transition-all">
+    <div class="text-center">
+      <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${iconClass}">
+        <i class="ri-${type === "success" ? "checkbox-circle-line" : "close-circle-line"} text-3xl"></i>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">${title}</h3>
+      <p class="text-sm text-gray-500 mb-6">${message}</p>
+      <button type="button"
+        class="w-full inline-flex justify-center !rounded-button px-4 py-2 text-sm font-medium text-white ${
+                type === "success" ? "bg-primary hover:bg-primary-dark" : "bg-red-500 hover:bg-red-600"
+            } focus:outline-none whitespace-nowrap">
+        ${buttonText}
+      </button>
+    </div>
+  </div>`;
+
+            document.body.appendChild(modal);
+
+            const button = modal.querySelector("button");
+            button?.addEventListener("click", () => {
+                modal.remove();
+                if (onClose) onClose();
+            });
+
+            modal?.addEventListener("click", (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                    if (onClose) onClose();
                 }
             });
+        }
+    </script>
+    <script id="password-toggle-script" type="module">
+        const togglePassword = document.getElementById("toggle-password");
+        const passwordInput = document.getElementById("password");
+        const passwordIcon = document.getElementById("password-icon");
+
+        togglePassword?.addEventListener("click", function () {
+            const type =
+                passwordInput.getAttribute("type") === "password" ? "text" : "password";
+            passwordInput.setAttribute("type", type);
+
+            if (type === "password") {
+                passwordIcon.classList.remove("ri-eye-line");
+                passwordIcon.classList.add("ri-eye-off-line");
+            } else {
+                passwordIcon.classList.remove("ri-eye-off-line");
+                passwordIcon.classList.add("ri-eye-line");
+            }
         });
     </script>
 
-    <script id="custom-checkbox-script">
-        document.addEventListener("DOMContentLoaded", function () {
-            const checkbox = document.getElementById("remember-me");
-            const customCheckbox = document.querySelector(".custom-checkbox");
-            const checkIcon = customCheckbox.querySelector("i");
+    <script id="custom-checkbox-script" type="module">
+        const checkbox = document.getElementById("remember-me");
+        const customCheckbox = document.querySelector(".custom-checkbox");
+        const checkIcon = customCheckbox.querySelector("i");
 
-            customCheckbox.addEventListener("click", function () {
-                checkbox.checked = !checkbox.checked;
+        customCheckbox.addEventListener("click", function () {
+            checkbox.checked = !checkbox.checked;
 
-                if (checkbox.checked) {
-                    customCheckbox.classList.add("bg-primary", "border-primary");
-                    customCheckbox.classList.remove("border-gray-300");
-                    checkIcon.classList.remove("hidden");
-                } else {
-                    customCheckbox.classList.remove("bg-primary", "border-primary");
-                    customCheckbox.classList.add("border-gray-300");
-                    checkIcon.classList.add("hidden");
-                }
-            });
+            if (checkbox.checked) {
+                customCheckbox.classList.add("bg-primary", "border-primary");
+                customCheckbox.classList.remove("border-gray-300");
+                checkIcon.classList.remove("hidden");
+            } else {
+                customCheckbox.classList.remove("bg-primary", "border-primary");
+                customCheckbox.classList.add("border-gray-300");
+                checkIcon.classList.add("hidden");
+            }
         });
     </script>
-    <script src="/js/homepage/url.js"></script>
 </th:block>
 </html>

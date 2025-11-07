@@ -80,18 +80,16 @@
     </div>
 </div>
 
-<script id="button-interactions">
-    document.addEventListener("DOMContentLoaded", function () {
-        const homeButton = document.querySelector("button:first-of-type");
-        const loginButton = document.querySelector("button:last-of-type");
+<script id="button-interactions" type="module">
+    const homeButton = document.querySelector("button:first-of-type");
+    const loginButton = document.querySelector("button:last-of-type");
 
-        homeButton.addEventListener("click", function () {
-            window.location.href = "/";
-        });
+    homeButton.addEventListener("click", function () {
+        window.location.href = "/";
+    });
 
-        loginButton.addEventListener("click", function () {
-            window.location.href = "/login";
-        });
+    loginButton.addEventListener("click", function () {
+        window.location.href = "/login";
     });
 </script>
 </body>

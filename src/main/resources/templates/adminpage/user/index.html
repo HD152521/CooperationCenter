@@ -474,196 +474,186 @@
         </div>
     </div>
 </div>
-<script id="approval-system">
-    document.addEventListener("DOMContentLoaded", function () {
-        const modal = document.getElementById("approval-modal");
-        const cancelBtn = document.getElementById("cancel-approval");
-        const confirmBtn = document.getElementById("confirm-approval");
-        let selectedEmail = null;
+<script id="approval-system" type="module">
+    const modal = document.getElementById("approval-modal");
+    const cancelBtn = document.getElementById("cancel-approval");
+    const confirmBtn = document.getElementById("confirm-approval");
+    let selectedEmail = null;
 
-        function showModal() {
-            modal.classList.remove("hidden");
-            modal.classList.add("flex");
+    function showModal() {
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+    }
+    function hideModal() {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+    }
+    const acceptButtons = document.querySelectorAll(".accept-btn");
+    acceptButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                selectedEmail = button.getAttribute("data-email");
+                showModal();
+            });
+    });
+
+    cancelBtn.addEventListener("click", hideModal);
+    confirmBtn.addEventListener("click", async function () {
+        if (!selectedEmail) {
+            alert("승인할 이메일 정보가 없습니다.");
+            return;
         }
-        function hideModal() {
-            modal.classList.add("hidden");
-            modal.classList.remove("flex");
+
+        try {
+            const response = await fetch(`/api/v1/admin/accept/${encodeURIComponent(selectedEmail)}`, {
+                method: "POST"
+            });
+
+            if (!response.ok) {
+                throw new Error("서버 오류");
+            }
+            const result = await response.json();
+            if (result.isSuccess) {
+                alert("승인 완료!");
+                location.reload();
+            } else {
+                alert("승인 실패: " + (result.message || "알 수 없는 오류"));
+            }
+        } catch (error) {
+            console.error("API 요청 실패:", error);
+            alert("승인 중 오류가 발생했습니다.");
+        } finally {
+            hideModal();
         }
-        const acceptButtons = document.querySelectorAll(".accept-btn");
-        acceptButtons.forEach((button) => {
-                button.addEventListener("click", () => {
-                    selectedEmail = button.getAttribute("data-email");
-                    showModal();
-                });
+    });
+    modal.addEventListener("click", function (e) {
+        if (e.target === modal) {
+            hideModal();
+        }
+    });
+</script>
+<script id="refresh-functionality" type="module">
+    const refreshButtons = document.querySelectorAll("button i.ri-refresh-line");
+    refreshButtons.forEach((button) => {
+        button.parentElement.addEventListener("click", function () {
+            this.style.transform = "rotate(360deg)";
+            this.style.transition = "transform 0.5s ease";
+            setTimeout(() => {
+                this.style.transform = "rotate(0deg)";
+                alert("데이터가 새로고침되었습니다.");
+            }, 500);
         });
+    });
+</script>
 
-        cancelBtn.addEventListener("click", hideModal);
-        confirmBtn.addEventListener("click", async function () {
-            if (!selectedEmail) {
-                alert("승인할 이메일 정보가 없습니다.");
-                return;
-            }
+<script id="view-details" type="module">
+    const userDetailsModal = document.getElementById("user-details-modal");
 
-            try {
-                const response = await fetch(`/api/v1/admin/accept/${encodeURIComponent(selectedEmail)}`, {
-                    method: "POST"
-                });
+    function showModal(modal) {
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+    }
 
-                if (!response.ok) {
-                    throw new Error("서버 오류");
-                }
-                const result = await response.json();
-                if (result.isSuccess) {
-                    alert("승인 완료!");
-                    location.reload();
-                } else {
-                    alert("승인 실패: " + (result.message || "알 수 없는 오류"));
-                }
-            } catch (error) {
-                console.error("API 요청 실패:", error);
-                alert("승인 중 오류가 발생했습니다.");
-            } finally {
-                hideModal();
-            }
+    function hideModal(modal) {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+    }
+
+    const viewDetailsButtons = document.querySelectorAll(".view-details-btn");
+
+
+    viewDetailsButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+            const row = this.closest("tr");
+            const name = row.cells[1].textContent;
+            const email = row.cells[2].textContent;
+            const joinDate = row.cells[3].textContent;
+            const lastLogin = "2025-07-11"
+            const isActive = true;
+            document.getElementById("detail-name").textContent = name;
+            document.getElementById("detail-email").textContent = email;
+            document.getElementById("detail-join-date").textContent = joinDate;
+            document.getElementById("detail-last-login").textContent = lastLogin;
+            document.getElementById("detail-status").textContent = isActive
+                ? "활성"
+                : "비활성";
+            document.getElementById(
+                "detail-status",
+            ).previousElementSibling.className = isActive
+                ? "w-2 h-2 rounded-full bg-green-500 mr-2"
+                : "w-2 h-2 rounded-full bg-red-500 mr-2";
+            showModal(userDetailsModal);
         });
+    });
+    document
+        .getElementById("close-details")
+        .addEventListener("click", () => hideModal(userDetailsModal));
+    document
+        .getElementById("close-details-btn")
+        .addEventListener("click", () => hideModal(userDetailsModal));
+    const documentPreviewModal = document.getElementById(
+        "document-preview-modal",
+    );
+    const viewBusinessRegistrationBtn = document.getElementById(
+        "view-business-registration",
+    );
+    const closePreviewButtons = document.querySelectorAll(".close-preview");
+    viewBusinessRegistrationBtn.addEventListener("click", () => {
+        showModal(documentPreviewModal);
+    });
+    closePreviewButtons.forEach((button) => {
+        button.addEventListener("click", () => hideModal(documentPreviewModal));
+    });
+    [
+        userDetailsModal,
+        documentPreviewModal,
+    ].forEach((modal) => {
         modal.addEventListener("click", function (e) {
             if (e.target === modal) {
-                hideModal();
+                hideModal(modal);
             }
         });
     });
 </script>
-<script id="refresh-functionality">
-    document.addEventListener("DOMContentLoaded", function () {
-        const refreshButtons = document.querySelectorAll("button i.ri-refresh-line");
-        refreshButtons.forEach((button) => {
-            button.parentElement.addEventListener("click", function () {
-                this.style.transform = "rotate(360deg)";
-                this.style.transition = "transform 0.5s ease";
-                setTimeout(() => {
-                    this.style.transform = "rotate(0deg)";
-                    alert("데이터가 새로고침되었습니다.");
-                }, 500);
-            });
-        });
-    });
-</script>
 
-<script id="view-details">
-    document.addEventListener("DOMContentLoaded", function () {
-        const userDetailsModal = document.getElementById("user-details-modal");
+<script id="login-log-fetch" type="module">
+    const tableBody = document.getElementById("login-log-body");
+    const refreshButton = document.getElementById("refresh-login-log");
 
-        function showModal(modal) {
-            modal.classList.remove("hidden");
-            modal.classList.add("flex");
-        }
+    // ✅ 로그인 기록 데이터 불러오기 함수
+    async function loadLoginLogs() {
+        try {
+            const res = await fetch("/api/v1/admin/login/log");
+            if (!res.ok) throw new Error("서버 오류");
 
-        function hideModal(modal) {
-            modal.classList.add("hidden");
-            modal.classList.remove("flex");
-        }
+            const json = await res.json();
+            const data = json.result?.content || []; // Page<LoginLogDto> 형태일 경우
 
-        const viewDetailsButtons = document.querySelectorAll(".view-details-btn");
+            console.log("data:"+data);
 
+            // 기존 데이터 제거
+            tableBody.innerHTML = "";
 
-        viewDetailsButtons.forEach((button) => {
-            button.addEventListener("click", function () {
-                const row = this.closest("tr");
-                const name = row.cells[1].textContent;
-                const email = row.cells[2].textContent;
-                const joinDate = row.cells[3].textContent;
-                const lastLogin = "2025-07-11"
-                const isActive = true;
-                document.getElementById("detail-name").textContent = name;
-                document.getElementById("detail-email").textContent = email;
-                document.getElementById("detail-join-date").textContent = joinDate;
-                document.getElementById("detail-last-login").textContent = lastLogin;
-                document.getElementById("detail-status").textContent = isActive
-                    ? "활성"
-                    : "비활성";
-                document.getElementById(
-                    "detail-status",
-                ).previousElementSibling.className = isActive
-                    ? "w-2 h-2 rounded-full bg-green-500 mr-2"
-                    : "w-2 h-2 rounded-full bg-red-500 mr-2";
-                showModal(userDetailsModal);
-            });
-        });
-        document
-            .getElementById("close-details")
-            .addEventListener("click", () => hideModal(userDetailsModal));
-        document
-            .getElementById("close-details-btn")
-            .addEventListener("click", () => hideModal(userDetailsModal));
-        const documentPreviewModal = document.getElementById(
-            "document-preview-modal",
-        );
-        const viewBusinessRegistrationBtn = document.getElementById(
-            "view-business-registration",
-        );
-        const closePreviewButtons = document.querySelectorAll(".close-preview");
-        viewBusinessRegistrationBtn.addEventListener("click", () => {
-            showModal(documentPreviewModal);
-        });
-        closePreviewButtons.forEach((button) => {
-            button.addEventListener("click", () => hideModal(documentPreviewModal));
-        });
-        [
-            userDetailsModal,
-            documentPreviewModal,
-        ].forEach((modal) => {
-            modal.addEventListener("click", function (e) {
-                if (e.target === modal) {
-                    hideModal(modal);
-                }
-            });
-        });
-    });
-
-
-
-</script>
-
-<script id="login-log-fetch">
-    document.addEventListener("DOMContentLoaded", async () => {
-        const tableBody = document.getElementById("login-log-body");
-        const refreshButton = document.getElementById("refresh-login-log");
-
-        // ✅ 로그인 기록 데이터 불러오기 함수
-        async function loadLoginLogs() {
-            try {
-                const res = await fetch("/api/v1/admin/login/log");
-                if (!res.ok) throw new Error("서버 오류");
-
-                const json = await res.json();
-                const data = json.result?.content || []; // Page<LoginLogDto> 형태일 경우
-
-                console.log("data:"+data);
-
-                // 기존 데이터 제거
-                tableBody.innerHTML = "";
-
-                if (data.length === 0) {
-                    tableBody.innerHTML = `
+            if (data.length === 0) {
+                tableBody.innerHTML = `
                     <tr>
                         <td colspan="4" class="p-3 text-center text-gray-400">
                             로그인 기록이 없습니다.
                         </td>
                     </tr>`;
-                    return;
-                }
+                return;
+            }
 
-                // ✅ 데이터 렌더링
-                data.forEach(log => {
-                    const statusColor = log.success
-                        ? "bg-green-500 bg-opacity-20 text-green-400"
-                        : "bg-red-500 bg-opacity-20 text-red-400";
+            // ✅ 데이터 렌더링
+            data.forEach(log => {
+                const statusColor = log.success
+                    ? "bg-green-500 bg-opacity-20 text-green-400"
+                    : "bg-red-500 bg-opacity-20 text-red-400";
 
-                    const statusText = log.success ? "정상" : "실패";
+                const statusText = log.success ? "정상" : "실패";
 
-                    const row = document.createElement("tr");
-                    row.className = "table-row border-b border-gray-700";
-                    row.innerHTML = `
+                const row = document.createElement("tr");
+                row.className = "table-row border-b border-gray-700";
+                row.innerHTML = `
                     <td class="p-3 text-white">${log.memberName || "알 수 없음"}</td>
                     <td class="p-3 text-gray-300">${log.loginTime || "-"}</td>
                     <td class="p-3 text-gray-400">${log.ipAddress || "-"}</td>
@@ -673,28 +663,27 @@
                         </span>
                     </td>
                 `;
-                    tableBody.appendChild(row);
-                });
-            } catch (err) {
-                console.error("로그인 기록 로드 실패:", err);
-                tableBody.innerHTML = `
+                tableBody.appendChild(row);
+            });
+        } catch (err) {
+            console.error("로그인 기록 로드 실패:", err);
+            tableBody.innerHTML = `
                 <tr>
                     <td colspan="4" class="p-3 text-center text-red-400">
                         데이터를 불러오는 중 오류가 발생했습니다.
                     </td>
                 </tr>`;
-            }
         }
+    }
 
-        // 페이지 로드 시 자동 호출
-        loadLoginLogs();
+    // 페이지 로드 시 자동 호출
+    loadLoginLogs();
 
-        // 새로고침 버튼 기능 연결
-        refreshButton.addEventListener("click", () => {
-            refreshButton.classList.add("animate-spin");
-            loadLoginLogs().finally(() => {
-                setTimeout(() => refreshButton.classList.remove("animate-spin"), 600);
-            });
+    // 새로고침 버튼 기능 연결
+    refreshButton.addEventListener("click", () => {
+        refreshButton.classList.add("animate-spin");
+        loadLoginLogs().finally(() => {
+            setTimeout(() => refreshButton.classList.remove("animate-spin"), 600);
         });
     });
 </script>

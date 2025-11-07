@@ -619,45 +619,39 @@
         </div>
     </main>
 </div>
-<script id="switch-functionality">
-    document.addEventListener("DOMContentLoaded", function () {
-        const switches = document.querySelectorAll(".custom-switch input");
-        switches.forEach((switchElement) => {
-            switchElement.addEventListener("change", function () {
-                const label = this.closest(".custom-switch").previousElementSibling;
-                if (this.checked) {
-                    console.log(`${label.textContent} 활성화됨`);
-                } else {
-                    console.log(`${label.textContent} 비활성화됨`);
-                }
-            });
+<script id="switch-functionality" type="module">
+    const switches = document.querySelectorAll(".custom-switch input");
+    switches.forEach((switchElement) => {
+        switchElement.addEventListener("change", function () {
+            const label = this.closest(".custom-switch").previousElementSibling;
+            if (this.checked) {
+                console.log(`${label.textContent} 활성화됨`);
+            } else {
+                console.log(`${label.textContent} 비활성화됨`);
+            }
         });
     });
 </script>
-<script id="setting-card-functionality">
-    document.addEventListener("DOMContentLoaded", function () {
-        const settingButtons = document.querySelectorAll(".setting-card button");
-        settingButtons.forEach((button) => {
-            button.addEventListener("click", function () {
-                const cardTitle =
-                    this.closest(".setting-card").querySelector("h3").textContent;
-                alert(`${cardTitle} 페이지로 이동합니다.`);
-            });
+<script id="setting-card-functionality" type="module">
+    const settingButtons = document.querySelectorAll(".setting-card button");
+    settingButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+            const cardTitle =
+                this.closest(".setting-card").querySelector("h3").textContent;
+            alert(`${cardTitle} 페이지로 이동합니다.`);
         });
     });
 </script>
-<script id="refresh-functionality">
-    document.addEventListener("DOMContentLoaded", function () {
-        const refreshButton = document
-            .querySelector('button[class*="ri-refresh-line"]')
-            .closest("button");
-        refreshButton.addEventListener("click", function () {
-            this.querySelector("i").style.animation = "spin 1s linear";
-            setTimeout(() => {
-                this.querySelector("i").style.animation = "";
-                alert("시스템 상태가 업데이트되었습니다.");
-            }, 1000);
-        });
+<script id="refresh-functionality" type="module">
+    const refreshButton = document
+        .querySelector('button[class*="ri-refresh-line"]')
+        .closest("button");
+    refreshButton.addEventListener("click", function () {
+        this.querySelector("i").style.animation = "spin 1s linear";
+        setTimeout(() => {
+            this.querySelector("i").style.animation = "";
+            alert("시스템 상태가 업데이트되었습니다.");
+        }, 1000);
     });
 </script>
 </body>

@@ -745,7 +745,7 @@
 
     <!-- 우측 사이드바 - 설정 패널 -->
 <!--fixme     <div class="w-72 shrink-0 ml-6">-->
-    <div id="right-sidebar" class="w-72 shrink-0 ml-6 hidden fixed top-0 right-0 h-full bg-white z-40 sm:block sm:relative sm:h-auto sm:right-auto">
+    <div id="right-sidebar" class="w-72 shrink-0 ml-6 hidden fixed top-0 right-0 h-full bg-white z-40 sm:block sm:relative sm:h-auto sm:top-auto sm:left-auto">
         <div class="bg-white rounded-lg shadow-sm p-4 sticky top-20">
             <h2 class="text-lg font-semibold mb-4">설정</h2>
 
@@ -799,288 +799,288 @@
         </div>
     </div>
 </main>
-<script src="/js/homepage/url.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 <!-- 계층형 관련 스크립트 -->
 
-<script id="hierarchy-management">
-    document.addEventListener("DOMContentLoaded", function(){
-        window.hierarchyStore = {};
+<script id="hierarchy-management" type="module">
+    // fixme: 전역변수 설정 - window.hierarchyStore, window.initHierarchy, window.getStore, window.updateHierarchyColumn
+    let hierarchyStore = {};
 
-        function initHierarchy(questionId) {
-            hierarchyStore[questionId] = {
-                firstHierarchyData: [],
-                hierarchyData: {},
-                hierarchySubData: {},
-                selectedOptions: {
-                    1: null,
-                    2: null,
-                    3: null,
-                },
-                hierarchyOptionCount: {
-                    1: 0,
-                    2: 0,
-                    3: 0,
-                }
-            };
-        }window.initHierarchy = initHierarchy;
-
-        function getStore(questionId) {
-            console.log("enter");
-            if (!hierarchyStore[questionId]) {
-                initHierarchy(questionId);
+    function initHierarchy(questionId) {
+        hierarchyStore[questionId] = {
+            firstHierarchyData: [],
+            hierarchyData: {},
+            hierarchySubData: {},
+            selectedOptions: {
+                1: null,
+                2: null,
+                3: null,
+            },
+            hierarchyOptionCount: {
+                1: 0,
+                2: 0,
+                3: 0,
             }
-            return hierarchyStore[questionId];
-        }window.getStore = getStore;
+        };
+    } // window.initHierarchy = initHierarchy; // fixme: 전역 함수로 노출 필요 시 주석 해제
 
-        function updateHierarchyColumn(level, parentId = null, container, questionId) {
-            const store = getStore(questionId);
-            container.innerHTML = "";
+    function getStore(questionId) {
+        console.log("enter");
+        if (!hierarchyStore[questionId]) {
+            initHierarchy(questionId);
+        }
+        return hierarchyStore[questionId];
+    } // window.getStore = getStore; // fixme: 전역 함수로 노출 필요 시 주석 해제
 
-            console.log("✅ 호출된 questionId:", questionId);
-            console.log("✅ store.selectedOptions:", store.selectedOptions);
-            console.log("✅ store.hierarchyData:", store.hierarchyData);
-            console.log("✅ store.subhierarchyData:", store.hierarchySubData);
-            console.log("✅ container:", container);
+    function updateHierarchyColumn(level, parentId = null, container, questionId) {
+        const store = getStore(questionId);
+        container.innerHTML = "";
 
-            let options = [];
-            if (level === 1) options = store.firstHierarchyData;
-            else if (level === 2 && parentId && store.hierarchyData[parentId]) options = store.hierarchyData[parentId];
-            else if (level === 3 && parentId && store.hierarchySubData[parentId]) options = store.hierarchySubData[parentId];
+        console.log("✅ 호출된 questionId:", questionId);
+        console.log("✅ store.selectedOptions:", store.selectedOptions);
+        console.log("✅ store.hierarchyData:", store.hierarchyData);
+        console.log("✅ store.subhierarchyData:", store.hierarchySubData);
+        console.log("✅ container:", container);
+
+        let options = [];
+        if (level === 1) options = store.firstHierarchyData;
+        else if (level === 2 && parentId && store.hierarchyData[parentId]) options = store.hierarchyData[parentId];
+        else if (level === 3 && parentId && store.hierarchySubData[parentId]) options = store.hierarchySubData[parentId];
 
 
 
-            options.forEach((option) => {
-                const optionDiv = document.createElement("div");
-                optionDiv.className = "hierarchy-option group relative";
-                optionDiv.setAttribute("data-option-id", option.id);
-                optionDiv.setAttribute("data-parent", parentId);
-                optionDiv.innerHTML = `
+        options.forEach((option) => {
+            const optionDiv = document.createElement("div");
+            optionDiv.className = "hierarchy-option group relative";
+            optionDiv.setAttribute("data-option-id", option.id);
+            optionDiv.setAttribute("data-parent", parentId);
+            optionDiv.innerHTML = `
         <input type="text" value="${option.text}" placeholder="옵션명 입력">
         <button class="absolute top-2 right-2 w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100" data-delete-option>
             <i class="ri-close-line text-xs"></i>
         </button>
         `;
-                container.appendChild(optionDiv);
-            });
+            container.appendChild(optionDiv);
+        });
 
-            if (options.length > 0) {
-                console.log("option길이"+options.length);
-                const currentSelectedId = store.selectedOptions[level];
-                const allOptions = container.querySelectorAll(".hierarchy-option");
-                let selectedFound = false;
-                allOptions.forEach(opt => {
-                    const optId = opt.getAttribute("data-option-id");
-                    if (optId === currentSelectedId) {
-                        opt.classList.add("selected");
-                        selectedFound = true;
+        if (options.length > 0) {
+            console.log("option길이"+options.length);
+            const currentSelectedId = store.selectedOptions[level];
+            const allOptions = container.querySelectorAll(".hierarchy-option");
+            let selectedFound = false;
+            allOptions.forEach(opt => {
+                const optId = opt.getAttribute("data-option-id");
+                if (optId === currentSelectedId) {
+                    opt.classList.add("selected");
+                    selectedFound = true;
+                }
+            });
+            // 선택된 게 없으면 첫 번째를 기본 선택으로
+            if (!selectedFound) {
+                const firstOption = container.querySelector(".hierarchy-option");
+                if (firstOption) {
+                    firstOption.classList.add("selected");
+                    store.selectedOptions[level] = firstOption.getAttribute("data-option-id");
+                }
+            }
+            // 다음 단계 업데이트
+            if (level < 3) {
+                const questionContainer = container.closest(".question-container");
+                const nextParentId = store.selectedOptions[level];  // 위에서 보정된 값 사용
+                const nextLevel = level + 1;
+                const nextContainer = questionContainer.querySelector(`[data-options-container="${nextLevel}"]`);
+                updateHierarchyColumn(level + 1, nextParentId, nextContainer, questionId);
+            }
+        }else {
+            store.selectedOptions[level] = "";
+            if (level < 3) {
+                const questionContainer = container.closest(".question-container");
+                const nextContainer = questionContainer.querySelector(`[data-options-container="${level + 1}"]`);
+                if (nextContainer) nextContainer.innerHTML = "";
+                store.selectedOptions[level + 1] = "";
+            }
+        }
+    } // window.updateHierarchyColumn = updateHierarchyColumn; // fixme: 전역 함수로 노출 필요 시 주석 해제
+
+    document.addEventListener("click", function (event) {
+        const option = event.target.closest(".hierarchy-option");
+        if (
+            option &&
+            !event.target.closest("button") &&
+            !event.target.matches("input")
+        ) {
+            // ✅ 현재 column(계층)을 정확히 찾기
+            const levelElement = option.closest("[data-level]");
+            const level = parseInt(levelElement.getAttribute("data-level"));
+            const questionContainer = option.closest(".question-container");
+
+            // ✅ container를 column 내부에서 찾기 (핵심 수정)
+            const container = levelElement.querySelector(`[data-options-container="${level}"]`);
+
+            const questionId = questionContainer.getAttribute("data-question-id");
+            if (!levelElement || !container) return;
+
+            const optionId = option.getAttribute("data-option-id");
+            const store = getStore(questionId);
+
+            // ✅ 선택 상태 갱신
+            container.querySelectorAll(".hierarchy-option").forEach((opt) => {
+                opt.classList.remove("selected");
+            });
+            option.classList.add("selected");
+
+            store.selectedOptions[level] = optionId;
+            console.log(`✅ 선택됨: level=${level}, optionId=${optionId}`);
+
+            // ✅ 다음 단계 갱신
+            if (level < 3) {
+                const nextColumn = questionContainer.querySelector(
+                    `[data-level="${level + 1}"]`
+                );
+                const nextContainer = nextColumn.querySelector(
+                    `[data-options-container="${level + 1}"]`
+                );
+                updateHierarchyColumn(level + 1, optionId, nextContainer, questionId);
+            }
+        }
+    });
+
+
+    document.addEventListener("click", function (event) {
+        const addButton = event.target.closest("[data-add-option]");
+        if (addButton) {
+            event.stopPropagation();
+            const level = parseInt(addButton.getAttribute("data-add-option"));
+            const questionContainer = addButton.closest(".question-container");
+            const questionId = questionContainer.getAttribute("data-question-id");
+            const store = getStore(questionId);
+
+            const container = questionContainer.querySelector(`[data-options-container="${level}"]`);
+            const newOptionId = `${level}-${store.hierarchyOptionCount[level] + 1}`;
+            const newOptionText = "옵션";
+
+            if (level === 1) {
+                store.firstHierarchyData.push({ id: newOptionId, text: newOptionText });
+                store.hierarchyOptionCount[level]++;
+                updateHierarchyColumn(level, null, container, questionId);
+            } else {
+                const parentId = store.selectedOptions[level - 1];
+
+                if (!parentId || parentId === "") {
+                    alert(`⚠️ ${level - 1}단계에서 옵션을 먼저 선택해주세요.`);
+                    return;
+                }
+
+                if (level === 2) {
+                    if (!store.hierarchyData[parentId]) store.hierarchyData[parentId] = [];
+                    store.hierarchyData[parentId].push({ id: newOptionId, text: newOptionText });
+                } else if (level === 3) {
+                    if (!store.hierarchySubData[parentId]) store.hierarchySubData[parentId] = [];
+                    store.hierarchySubData[parentId].push({ id: newOptionId, text: newOptionText });
+                }
+                store.hierarchyOptionCount[level]++;
+                updateHierarchyColumn(level, parentId, container, questionId);
+            }
+        }
+    });
+
+    document.addEventListener("click", function (event) {
+        const deleteButton = event.target.closest("[data-delete-option]");
+        if (deleteButton) {
+            const option = deleteButton.closest(".hierarchy-option");
+            const container = option.closest("[data-options-container]");
+            const questionContainer = option.closest(".question-container");
+            const questionId = questionContainer.getAttribute("data-question-id");
+            const store = getStore(questionId);
+
+            const level = parseInt(container.getAttribute("data-options-container"));
+            const id = option.getAttribute("data-option-id");
+            const parentId = option.getAttribute("data-parent");
+
+            const optionsCount = container.querySelectorAll(".hierarchy-option").length;
+            if (optionsCount > 2) {
+                const wasSelected = option.classList.contains("selected");
+                option.remove();
+
+                if (level === 1) {
+                    store.firstHierarchyData = store.firstHierarchyData.filter(opt => opt.id !== id);
+                } else if (level === 2) {
+                    if (store.hierarchyData[parentId]) {
+                        store.hierarchyData[parentId] = store.hierarchyData[parentId].filter(opt => opt.id !== id);
                     }
-                });
-                // 선택된 게 없으면 첫 번째를 기본 선택으로
-                if (!selectedFound) {
+                    delete store.hierarchySubData[id];
+                } else if (level === 3) {
+                    if (store.hierarchySubData[parentId]) {
+                        store.hierarchySubData[parentId] = store.hierarchySubData[parentId].filter(opt => opt.id !== id);
+                    }
+                }
+
+                if (wasSelected) {
                     const firstOption = container.querySelector(".hierarchy-option");
                     if (firstOption) {
                         firstOption.classList.add("selected");
                         store.selectedOptions[level] = firstOption.getAttribute("data-option-id");
-                    }
-                }
-                // 다음 단계 업데이트
-                if (level < 3) {
-                    const questionContainer = container.closest(".question-container");
-                    const nextParentId = store.selectedOptions[level];  // 위에서 보정된 값 사용
-                    const nextLevel = level + 1;
-                    const nextContainer = questionContainer.querySelector(`[data-options-container="${nextLevel}"]`);
-                    updateHierarchyColumn(level + 1, nextParentId, nextContainer, questionId);
-                }
-            }else {
-                store.selectedOptions[level] = "";
-                if (level < 3) {
-                    const questionContainer = container.closest(".question-container");
-                    const nextContainer = questionContainer.querySelector(`[data-options-container="${level + 1}"]`);
-                    if (nextContainer) nextContainer.innerHTML = "";
-                    store.selectedOptions[level + 1] = "";
-                }
-            }
-        }window.updateHierarchyColumn = updateHierarchyColumn;
-
-        document.addEventListener("click", function (event) {
-            const option = event.target.closest(".hierarchy-option");
-            if (
-                option &&
-                !event.target.closest("button") &&
-                !event.target.matches("input")
-            ) {
-                // ✅ 현재 column(계층)을 정확히 찾기
-                const levelElement = option.closest("[data-level]");
-                const level = parseInt(levelElement.getAttribute("data-level"));
-                const questionContainer = option.closest(".question-container");
-
-                // ✅ container를 column 내부에서 찾기 (핵심 수정)
-                const container = levelElement.querySelector(`[data-options-container="${level}"]`);
-
-                const questionId = questionContainer.getAttribute("data-question-id");
-                if (!levelElement || !container) return;
-
-                const optionId = option.getAttribute("data-option-id");
-                const store = getStore(questionId);
-
-                // ✅ 선택 상태 갱신
-                container.querySelectorAll(".hierarchy-option").forEach((opt) => {
-                    opt.classList.remove("selected");
-                });
-                option.classList.add("selected");
-
-                store.selectedOptions[level] = optionId;
-                console.log(`✅ 선택됨: level=${level}, optionId=${optionId}`);
-
-                // ✅ 다음 단계 갱신
-                if (level < 3) {
-                    const nextColumn = questionContainer.querySelector(
-                        `[data-level="${level + 1}"]`
-                    );
-                    const nextContainer = nextColumn.querySelector(
-                        `[data-options-container="${level + 1}"]`
-                    );
-                    updateHierarchyColumn(level + 1, optionId, nextContainer, questionId);
-                }
-            }
-        });
-
-
-        document.addEventListener("click", function (event) {
-            const addButton = event.target.closest("[data-add-option]");
-            if (addButton) {
-                event.stopPropagation();
-                const level = parseInt(addButton.getAttribute("data-add-option"));
-                const questionContainer = addButton.closest(".question-container");
-                const questionId = questionContainer.getAttribute("data-question-id");
-                const store = getStore(questionId);
-
-                const container = questionContainer.querySelector(`[data-options-container="${level}"]`);
-                const newOptionId = `${level}-${store.hierarchyOptionCount[level] + 1}`;
-                const newOptionText = "옵션";
-
-                if (level === 1) {
-                    store.firstHierarchyData.push({ id: newOptionId, text: newOptionText });
-                    store.hierarchyOptionCount[level]++;
-                    updateHierarchyColumn(level, null, container, questionId);
-                } else {
-                    const parentId = store.selectedOptions[level - 1];
-
-                    if (!parentId || parentId === "") {
-                        alert(`⚠️ ${level - 1}단계에서 옵션을 먼저 선택해주세요.`);
-                        return;
-                    }
-
-                    if (level === 2) {
-                        if (!store.hierarchyData[parentId]) store.hierarchyData[parentId] = [];
-                        store.hierarchyData[parentId].push({ id: newOptionId, text: newOptionText });
-                    } else if (level === 3) {
-                        if (!store.hierarchySubData[parentId]) store.hierarchySubData[parentId] = [];
-                        store.hierarchySubData[parentId].push({ id: newOptionId, text: newOptionText });
-                    }
-                    store.hierarchyOptionCount[level]++;
-                    updateHierarchyColumn(level, parentId, container, questionId);
-                }
-            }
-        });
-
-        document.addEventListener("click", function (event) {
-            const deleteButton = event.target.closest("[data-delete-option]");
-            if (deleteButton) {
-                const option = deleteButton.closest(".hierarchy-option");
-                const container = option.closest("[data-options-container]");
-                const questionContainer = option.closest(".question-container");
-                const questionId = questionContainer.getAttribute("data-question-id");
-                const store = getStore(questionId);
-
-                const level = parseInt(container.getAttribute("data-options-container"));
-                const id = option.getAttribute("data-option-id");
-                const parentId = option.getAttribute("data-parent");
-
-                const optionsCount = container.querySelectorAll(".hierarchy-option").length;
-                if (optionsCount > 2) {
-                    const wasSelected = option.classList.contains("selected");
-                    option.remove();
-
-                    if (level === 1) {
-                        store.firstHierarchyData = store.firstHierarchyData.filter(opt => opt.id !== id);
-                    } else if (level === 2) {
-                        if (store.hierarchyData[parentId]) {
-                            store.hierarchyData[parentId] = store.hierarchyData[parentId].filter(opt => opt.id !== id);
-                        }
-                        delete store.hierarchySubData[id];
-                    } else if (level === 3) {
-                        if (store.hierarchySubData[parentId]) {
-                            store.hierarchySubData[parentId] = store.hierarchySubData[parentId].filter(opt => opt.id !== id);
+                        const tmpContainer = questionContainer.querySelectorAll(`[data-options-container]`);
+                        // fixme: 전역함수 호출 - updateHierarchyColumn
+                        if (level < 3) {
+                            updateHierarchyColumn(level + 1, store.selectedOptions[level], tmpContainer[level], questionId);
                         }
                     }
-
-                    if (wasSelected) {
-                        const firstOption = container.querySelector(".hierarchy-option");
-                        if (firstOption) {
-                            firstOption.classList.add("selected");
-                            store.selectedOptions[level] = firstOption.getAttribute("data-option-id");
-                            const tmpContainer = questionContainer.querySelectorAll(`[data-options-container]`);
-                            if (level < 3) {
-                                updateHierarchyColumn(level + 1, store.selectedOptions[level], tmpContainer[level], questionId);
-                            }
-                        }
-                    }
-                } else {
-                    alert("각 계층에는 최소 2개의 옵션이 필요합니다.");
                 }
+            } else {
+                alert("각 계층에는 최소 2개의 옵션이 필요합니다.");
             }
-        });
+        }
+    });
 
-        document.addEventListener("input", function (event) {
-            const input = event.target;
-            const option = input.closest(".hierarchy-option");
-            if (!option) return;
+    document.addEventListener("input", function (event) {
+        const input = event.target;
+        const option = input.closest(".hierarchy-option");
+        if (!option) return;
 
-            const id = option.getAttribute("data-option-id");
-            const parentId = option.getAttribute("data-parent");
-            const levelElement = option.closest("[data-options-container]");
-            const questionId = option.closest(".question-container").getAttribute("data-question-id");
-            if (!levelElement || !questionId) return;
+        const id = option.getAttribute("data-option-id");
+        const parentId = option.getAttribute("data-parent");
+        const levelElement = option.closest("[data-options-container]");
+        const questionId = option.closest(".question-container").getAttribute("data-question-id");
+        if (!levelElement || !questionId) return;
 
-            const level = parseInt(levelElement.getAttribute("data-options-container"));
-            const newText = input.value;
-            const store = hierarchyStore[questionId];
+        const level = parseInt(levelElement.getAttribute("data-options-container"));
+        const newText = input.value;
+        // fixme: 전역변수 참조 - hierarchyStore
+        const store = hierarchyStore[questionId];
 
-            if (level === 1) {
-                const target = store.firstHierarchyData.find(opt => opt.id === id);
-                if (target) target.text = newText;
-            } else if (level === 2 && store.hierarchyData[parentId]) {
-                const target = store.hierarchyData[parentId].find(opt => opt.id === id);
-                if (target) target.text = newText;
-            } else if (level === 3 && store.hierarchySubData[parentId]) {
-                const target = store.hierarchySubData[parentId].find(opt => opt.id === id);
-                if (target) target.text = newText;
-            }
-        });
+        if (level === 1) {
+            const target = store.firstHierarchyData.find(opt => opt.id === id);
+            if (target) target.text = newText;
+        } else if (level === 2 && store.hierarchyData[parentId]) {
+            const target = store.hierarchyData[parentId].find(opt => opt.id === id);
+            if (target) target.text = newText;
+        } else if (level === 3 && store.hierarchySubData[parentId]) {
+            const target = store.hierarchySubData[parentId].find(opt => opt.id === id);
+            if (target) target.text = newText;
+        }
     });
 </script>
-<script id="init">
-    window.addEventListener('DOMContentLoaded', () => {
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
-        const todayStr = `${yyyy}-${mm}-${dd}`;
+<script id="init" type="module">
+    // fixme: 전역변수 참조 - Sortable
+    // fixme: 전역함수 호출 - updateJumpTargets
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
 
-        const startInput = document.getElementById('start-date');
-        const endInput = document.getElementById('end-date');
+    const startInput = document.getElementById('start-date');
+    const endInput = document.getElementById('end-date');
 
-        if (!startInput.value) {
-            startInput.value = todayStr;
-        }
+    if (!startInput.value) {
+        startInput.value = todayStr;
+    }
 
-        if (!endInput.value) {
-            endInput.value = todayStr;
-        }
-    });
+    if (!endInput.value) {
+        endInput.value = todayStr;
+    }
 
     function validateDateRange() {
         const startInput = document.getElementById('start-date');
@@ -1099,23 +1099,22 @@
     }
 
     //옮길수있는걸로 변경
-    document.addEventListener("DOMContentLoaded", function () {
-        const questionsContainer = document.getElementById("questions-container");
+    const questionsContainer = document.getElementById("questions-container");
 
-        new Sortable(questionsContainer, {
-            handle: ".question-container", // 클릭 가능한 핸들 (필요 시 바꿀 수 있음)
-            animation: 150,
-            ghostClass: "bg-gray-100", // 드래그 시 배경색 효과
-            filter: "#question-template, #empty-state", // 드래그 제외할 요소
-            onEnd: function (/**Event*/ evt) {
-                console.log(`문항 ${evt.oldIndex + 1} → ${evt.newIndex + 1}로 이동`);
-                updateJumpTargets(); // 점프 대상 다시 정렬
-            },
-        });
+    new Sortable(questionsContainer, {
+        handle: ".question-container", // 클릭 가능한 핸들 (필요 시 바꿀 수 있음)
+        animation: 150,
+        ghostClass: "bg-gray-100", // 드래그 시 배경색 효과
+        filter: "#question-template, #empty-state", // 드래그 제외할 요소
+        onEnd: function (/**Event*/ evt) {
+            console.log(`문항 ${evt.oldIndex + 1} → ${evt.newIndex + 1}로 이동`);
+            updateJumpTargets(); // 점프 대상 다시 정렬
+        },
     });
 </script>
 
-<script id="multiple-choice-management">
+<script id="multiple-choice-management" type="module">
+    // fixme: 전역함수 정의 - createOptionElement, updateJumpTargets
     function createOptionElement(type, optionCount) {
         console.log("enter cereateOptionElement");
         const wrapper = document.createElement("div");
@@ -1164,89 +1163,90 @@
 
 
 
-        function updateJumpTargets() {
-            const allQuestions = document.querySelectorAll('.question-container:not(#question-template)');
-            allQuestions.forEach((question, index) => {
-                const selects = question.querySelectorAll(".jump-target-select");
-                selects.forEach(select => {
-                    const currentValue = select.value;
-                    select.innerHTML = '<option value="">선택 시 이동할 문항</option>';
+    function updateJumpTargets() {
+        const allQuestions = document.querySelectorAll('.question-container:not(#question-template)');
+        allQuestions.forEach((question, index) => {
+            const selects = question.querySelectorAll(".jump-target-select");
+            selects.forEach(select => {
+                const currentValue = select.value;
+                select.innerHTML = '<option value="">선택 시 이동할 문항</option>';
 
-                    for (let i = index + 1; i < allQuestions.length; i++) {
-                        // const targetQuestion = allQuestions[i];
-                        const displayNumber = i + 1; // 순서대로 1, 2, 3처럼 표기
-                        const option = document.createElement("option");
-                        option.value = displayNumber;
-                        option.textContent = `${displayNumber}번 문항`; // UI에 보이는 순서 기준
-                        if (String(displayNumber) === currentValue) option.selected = true;
-                        select.appendChild(option);
-                    }
-                });
+                for (let i = index + 1; i < allQuestions.length; i++) {
+                    // const targetQuestion = allQuestions[i];
+                    const displayNumber = i + 1; // 순서대로 1, 2, 3처럼 표기
+                    const option = document.createElement("option");
+                    option.value = displayNumber;
+                    option.textContent = `${displayNumber}번 문항`; // UI에 보이는 순서 기준
+                    if (String(displayNumber) === currentValue) option.selected = true;
+                    select.appendChild(option);
+                }
+            });
+        });
+    }
+
+    document.addEventListener("click", function (event) {
+        // ✅ 옵션 추가 버튼 처리
+        const addButton = event.target.closest("button");
+        if (
+            addButton &&
+            addButton.textContent.trim().includes("옵션 추가")
+        ) {
+            const container = addButton.closest(
+                '.answer-container[data-type="multiple"], .answer-container[data-type="multiple-checkbox"], .answer-container[data-type="dropdown"]'
+            );
+            if (!container) return;
+
+            const optionsContainer = addButton.closest(".space-y-2");
+            const type = container.dataset.type;
+
+            const optionCount = Array.from(optionsContainer.children)
+                .filter((el) => el.classList.contains("flex") && el.classList.contains("items-center"))
+                .length;
+
+            // fixme: 전역함수 호출 - createOptionElement
+            const newOption = createOptionElement(type, optionCount + 1);
+            optionsContainer.insertBefore(newOption, addButton);
+            // fixme: 전역함수 호출 - updateJumpTargets
+            updateJumpTargets();
+
+            // 옵션 placeholder 재정렬
+            const inputs = optionsContainer.querySelectorAll('input[type="text"]');
+            let count = 1;
+            inputs.forEach(input => {
+                if (input.placeholder.startsWith("옵션")) {
+                    input.placeholder = `옵션 ${count++}`;
+                }
             });
         }
 
-    document.addEventListener("DOMContentLoaded", function () {
-        document.addEventListener("click", function (event) {
-            // ✅ 옵션 추가 버튼 처리
-            const addButton = event.target.closest("button");
-            if (
-                addButton &&
-                addButton.textContent.trim().includes("옵션 추가")
-            ) {
-                const container = addButton.closest(
-                    '.answer-container[data-type="multiple"], .answer-container[data-type="multiple-checkbox"], .answer-container[data-type="dropdown"]'
-                );
-                if (!container) return;
-
-                const optionsContainer = addButton.closest(".space-y-2");
-                const type = container.dataset.type;
-
+        // ✅ 옵션 삭제 버튼 처리
+        const deleteBtn = event.target.closest(".delete-option");
+        if (deleteBtn) {
+            const optionsContainer = deleteBtn.closest(".space-y-2");
+            if (optionsContainer) {
                 const optionCount = Array.from(optionsContainer.children)
                     .filter((el) => el.classList.contains("flex") && el.classList.contains("items-center"))
                     .length;
 
-                const newOption = createOptionElement(type, optionCount + 1);
-                optionsContainer.insertBefore(newOption, addButton);
-                updateJumpTargets();
+                console.log("현재 옵션 개수:", optionCount);
 
-                // 옵션 placeholder 재정렬
-                const inputs = optionsContainer.querySelectorAll('input[type="text"]');
-                let count = 1;
-                inputs.forEach(input => {
-                    if (input.placeholder.startsWith("옵션")) {
-                        input.placeholder = `옵션 ${count++}`;
+                if (optionCount < 4) {
+                    alert("최소 2개의 옵션이 필요합니다.");
+                } else {
+                    const optionRow = deleteBtn.closest("div.flex.items-center");
+                    if (optionRow) {
+                        optionRow.remove();
                     }
-                });
-            }
-
-            // ✅ 옵션 삭제 버튼 처리
-            const deleteBtn = event.target.closest(".delete-option");
-            if (deleteBtn) {
-                const optionsContainer = deleteBtn.closest(".space-y-2");
-                if (optionsContainer) {
-                    const optionCount = Array.from(optionsContainer.children)
-                        .filter((el) => el.classList.contains("flex") && el.classList.contains("items-center"))
-                        .length;
-
-                    console.log("현재 옵션 개수:", optionCount);
-
-                    if (optionCount < 4) {
-                        alert("최소 2개의 옵션이 필요합니다.");
-                    } else {
-                        const optionRow = deleteBtn.closest("div.flex.items-center");
-                        if (optionRow) {
-                            optionRow.remove();
-                        } else {
-                            console.warn("삭제할 div를 찾을 수 없습니다.");
-                        }
-                    }
+                    // fixme: 전역함수 호출 - updateJumpTargets
+                    updateJumpTargets();
                 }
             }
-        });
+        }
     });
 </script>
 
-<script id="question-management" th:inline="javascript">
+<script id="question-management" th:inline="javascript" type="module">
+    // fixme: 전역함수 정의 - addQuestion, setQuestionType, setupTypeDropdown, setupDeleteButton
     let questionCounter = 0;
 
     // ✅ 밖으로 뺀 함수들 (전역)
@@ -1264,10 +1264,12 @@
         questionCounter++;
         newQuestion.setAttribute("data-question-id", questionCounter);
 
+        // fixme: 전역함수 호출 - setQuestionType, setupTypeDropdown, setupDeleteButton
         setQuestionType(newQuestion, type);
-        questionsContainer.appendChild(newQuestion);
         setupTypeDropdown(newQuestion);
         setupDeleteButton(newQuestion);
+
+        questionsContainer.appendChild(newQuestion);
 
         newQuestion.scrollIntoView({ behavior: "smooth", block: "start" });
 
@@ -1328,6 +1330,7 @@
         typeOptions.forEach((option) => {
             option.addEventListener("click", function () {
                 const type = this.getAttribute("data-type");
+                // fixme: 전역함수 호출 - setQuestionType
                 setQuestionType(questionElement, type);
                 typeMenu.classList.add("hidden");
                 typeButton.setAttribute("aria-expanded", "false");
@@ -1345,189 +1348,193 @@
             if (questions.length === 0) {
                 emptyState.classList.remove("hidden");
             }
+            // fixme: 전역함수 호출 - updateJumpTargets
             updateJumpTargets();
         });
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
-        const addQuestionBtn = document.getElementById("add-question-btn");
-        const addQuestionBtnBottom = document.getElementById("add-question-btn-bottom");
+    const addQuestionBtn = document.getElementById("add-question-btn");
+    const addQuestionBtnBottom = document.getElementById("add-question-btn-bottom");
 
-        addQuestionBtn.addEventListener("click", function () {
-            addQuestion("short");
+    addQuestionBtn.addEventListener("click", function () {
+        // fixme: 전역함수 호출 - addQuestion, updateJumpTargets
+        addQuestion("short");
+        updateJumpTargets();
+    });
+
+    addQuestionBtnBottom.addEventListener("click", function () {
+        // fixme: 전역함수 호출 - addQuestion, updateJumpTargets
+        addQuestion("short");
+        updateJumpTargets();
+    });
+
+    const typeButtons = document.querySelectorAll("[data-question-type]");
+    typeButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+            const type = this.getAttribute("data-question-type");
+            // fixme: 전역함수 호출 - addQuestion, updateJumpTargets
+            addQuestion(type);
             updateJumpTargets();
-        });
-
-        addQuestionBtnBottom.addEventListener("click", function () {
-            addQuestion("short");
-            updateJumpTargets();
-        });
-
-        const typeButtons = document.querySelectorAll("[data-question-type]");
-        typeButtons.forEach((button) => {
-            button.addEventListener("click", function () {
-                const type = this.getAttribute("data-question-type");
-                addQuestion(type);
-                updateJumpTargets();
-            });
         });
     });
 </script>
 
-<script id="dataLoad" th:inline="javascript">
-    document.addEventListener("DOMContentLoaded", function () {
+<script id="dataLoad" th:inline="javascript" type="module">
+    // fixme: 전역함수 호출 - renderExistingQuestions, updateJumpTargets, restoreJumpTargetSelections
+    function renderExistingQuestions(survey) {
+        survey.questions.forEach((q) => {
+            const questionType = q.type.toLowerCase();
+            // fixme: 전역함수 호출 - addQuestion
+            const qEl = addQuestion(questionType);
+            qEl.setAttribute("data-id", q.questionId);
+            qEl.setAttribute("data-template",q.isTemplate);
+            qEl.setAttribute("data-domain-field",q.domainField);
+            if(q.isTemplate) qEl.setAttribute("domainField",q.domainField);
+            qEl.querySelector('input[type="text"]').value = q.question;
+            const textarea = qEl.querySelector('textarea');
+            if (textarea) {
+                textarea.value = q.description || "";
+            }
+            if (q.required) {
+                qEl.querySelector(".required-checkbox").checked = true;
+            }
 
-        function renderExistingQuestions(survey) {
-            survey.questions.forEach((q) => {
-                const questionType = q.type.toLowerCase();
-                const qEl = addQuestion(questionType);
-                qEl.setAttribute("data-id", q.questionId);
-                qEl.setAttribute("data-template",q.isTemplate);
-                qEl.setAttribute("data-domain-field",q.domainField);
-                if(q.isTemplate) qEl.setAttribute("domainField",q.domainField);
-                qEl.querySelector('input[type="text"]').value = q.question;
-                const textarea = qEl.querySelector('textarea');
-                if (textarea) {
-                    textarea.value = q.description || "";
+            if (["multiple", "multiple-checkbox", "dropdown"].includes(questionType)) {
+                const container = qEl.querySelector(`.answer-container[data-type="${questionType}"]`);
+                const optionsContainer = container.querySelector(".space-y-2");
+                const addButton = optionsContainer.querySelector(".add-option-button");
+
+                if (!addButton) {
+                    console.warn("addButton이 존재하지 않습니다. 현재 옵션 추가 불가능한 상태.");
+                    return;
                 }
-                if (q.required) {
-                    qEl.querySelector(".required-checkbox").checked = true;
-                }
 
-                if (["multiple", "multiple-checkbox", "dropdown"].includes(questionType)) {
-                    const container = qEl.querySelector(`.answer-container[data-type="${questionType}"]`);
-                    const optionsContainer = container.querySelector(".space-y-2");
-                    const addButton = optionsContainer.querySelector(".add-option-button");
+                q.options?.forEach((option, index) => {
+                    const existingInputs = optionsContainer.querySelectorAll("input[type='text']");
 
-                    if (!addButton) {
-                        console.warn("addButton이 존재하지 않습니다. 현재 옵션 추가 불가능한 상태.");
-                        return;
-                    }
+                    const text = typeof option === "string" ? option : option.text;
+                    const nextQuestion = option?.nextQuestion ?? "";
+                    const realNextQuestion = option?.realNextQuestion ?? "";
+                    const optionId = (option && option.optionId) ? option.optionId : 0;
 
-                    q.options?.forEach((option, index) => {
-                        const existingInputs = optionsContainer.querySelectorAll("input[type='text']");
+                    if (index < existingInputs.length) {
+                        const input = existingInputs[index];
+                        input.value = text;
+                        input.dataset.nextQuestion = nextQuestion;
+                        input.dataset.realNextQuestion = realNextQuestion;
+                        input.dataset.id = optionId;
+                        // input.setAttribute("data-next-question", nextQuestion);
+                        // input.setAttribute("data-real-next-question", realNextQuestion);
+                    } else {
+                        // fixme: 전역함수 호출 - createOptionElement
+                        const newOption = createOptionElement(questionType, index);
+                        optionsContainer.insertBefore(newOption, addButton);
 
-                        const text = typeof option === "string" ? option : option.text;
-                        const nextQuestion = option?.nextQuestion ?? "";
-                        const realNextQuestion = option?.realNextQuestion ?? "";
-                        const optionId = (option && option.optionId) ? option.optionId : 0;
-
-                        if (index < existingInputs.length) {
-                            const input = existingInputs[index];
-                            input.value = text;
-                            input.dataset.nextQuestion = nextQuestion;
-                            input.dataset.realNextQuestion = realNextQuestion;
-                            input.dataset.id = optionId;
-                            // input.setAttribute("data-next-question", nextQuestion);
-                            // input.setAttribute("data-real-next-question", realNextQuestion);
+                        // setTimeout(() => {
+                        const newInputs = optionsContainer.querySelectorAll("input[type='text']");
+                        const newInput = newInputs[index];
+                        if (newInput) {
+                            newInput.value = text;
+                            newInput.dataset.nextQuestion = nextQuestion;
+                            newInput.dataset.realNextQuestion = realNextQuestion;
+                            newInput.dataset.id = optionId;
+                            console.log(`옵션 ${index + 1} 값 및 dataset 설정됨`);
                         } else {
-                            const newOption = createOptionElement(questionType, index);
-                            optionsContainer.insertBefore(newOption, addButton);
-
-                            // setTimeout(() => {
-                                const newInputs = optionsContainer.querySelectorAll("input[type='text']");
-                                const newInput = newInputs[index];
-                                if (newInput) {
-                                    newInput.value = text;
-                                    newInput.dataset.nextQuestion = nextQuestion;
-                                    newInput.dataset.realNextQuestion = realNextQuestion;
-                                    newInput.dataset.id = optionId;
-                                    console.log(`옵션 ${index + 1} 값 및 dataset 설정됨`);
-                                } else {
-                                    console.warn(`옵션 ${index + 1}용 input 찾을 수 없음`);
-                                }
-                            // }, 10);
+                            console.warn(`옵션 ${index + 1}용 input 찾을 수 없음`);
                         }
-                    });
-
-                }else if(["hierarchy"].includes(questionType)){
-
-                    const questionId = qEl.getAttribute("data-question-id");
-                    const store = window.getStore(questionId);
-                    store.firstHierarchyData = [];
-                    q.options.forEach((option) => {
-                        const level = option.level;
-                        const parentId = option.parentOptionId ?? null;
-                        const text = option.text ?? "옵션";
-                        const id = option.hierarchyId;
-                        const optionId = option.optionId;
-                        if (level === 1) {
-                                store.firstHierarchyData.push({ id, text,optionId:optionId });
-                        } else if (level === 2) {
-                            if (!store.hierarchyData[parentId]) store.hierarchyData[parentId] = [];
-                            store.hierarchyData[parentId].push({ id, text,optionId:optionId });
-                        } else if (level === 3) {
-                            if (!store.hierarchySubData[parentId]) store.hierarchySubData[parentId] = [];
-                            store.hierarchySubData[parentId].push({ id, text,optionId:optionId });
-                        }
-                        store.hierarchyOptionCount[level] = (store.hierarchyOptionCount[level] || 0) + 1;
-                    });
-                    const container = qEl.querySelector(`[data-options-container="1"]`);
-                    window.updateHierarchyColumn(1, null, container, questionId);
-
-                }
-            });
-        }
-
-        function restoreJumpTargetSelections() {
-            const allQuestions = document.querySelectorAll('.question-container:not(#question-template)');
-
-            allQuestions.forEach((question) => {
-                const inputs = question.querySelectorAll('input[type="text"][data-next-question]');
-
-                inputs.forEach((input) => {
-                    const targetId = input.dataset.nextQuestion;
-                    if (targetId===0) return;
-                    console.log("targetId:",targetId);
-
-                    // 바로 아래에 있는 select 찾기 (HTML 구조에 맞춰서 보장됨)
-                    const select = input.closest(".flex")?.querySelector(".jump-target-select")
-                        || input.parentElement?.querySelector(".jump-target-select");
-
-                    console.log("select:"+select);
-
-                    if (select) {
-                        const matchingOption = Array.from(select.options).find(opt => opt.value === targetId);
-                        if (matchingOption) {
-                            select.value = targetId;
-                        } else {
-                            console.warn(`옵션 ${input.placeholder}의 점프 대상(${targetId})을 select에서 찾을 수 없습니다.`);
-                        }
+                        // }, 10);
                     }
                 });
-            });
-        }
 
-        try {
-            const survey = [[${survey}]];
-            if (survey && survey.questions?.length > 0) {
-                document.getElementById("survey-title").value = survey.title || "새 설문조사";
-                // 설명
-                document.querySelector("textarea").value = survey.description || "";
+            }else if(["hierarchy"].includes(questionType)){
 
-                // 시작일
-                const startDateInput = document.getElementById("start-date");
-                if (startDateInput && survey.startDate) {
-                    startDateInput.value = survey.startDate;
-                }
+                const questionId = qEl.getAttribute("data-question-id");
+                // fixme: 전역함수 호출 - window.initHierarchy, window.getStore, window.updateHierarchyColumn
+                const store = window.getStore(questionId);
+                store.firstHierarchyData = [];
+                q.options.forEach((option) => {
+                    const level = option.level;
+                    const parentId = option.parentOptionId ?? null;
+                    const text = option.text ?? "옵션";
+                    const id = option.hierarchyId;
+                    const optionId = option.optionId;
+                    if (level === 1) {
+                        store.firstHierarchyData.push({ id, text,optionId:optionId });
+                    } else if (level === 2) {
+                        if (!store.hierarchyData[parentId]) store.hierarchyData[parentId] = [];
+                        store.hierarchyData[parentId].push({ id, text,optionId:optionId });
+                    } else if (level === 3) {
+                        if (!store.hierarchySubData[parentId]) store.hierarchySubData[parentId] = [];
+                        store.hierarchySubData[parentId].push({ id, text,optionId:optionId });
+                    }
+                    store.hierarchyOptionCount[level] = (store.hierarchyOptionCount[level] || 0) + 1;
+                });
+                const container = qEl.querySelector(`[data-options-container="1"]`);
+                window.updateHierarchyColumn(1, null, container, questionId);
 
-                // 종료일
-                const endDateInput = document.getElementById("end-date");
-                if (endDateInput && survey.endDate) {
-                    endDateInput.value = survey.endDate;
-                }
-
-                renderExistingQuestions(survey);
-                updateJumpTargets();
-                restoreJumpTargetSelections();
             }
-        } catch (e) {
-            console.warn("survey 데이터 없음");
+        });
+    }
+
+    function restoreJumpTargetSelections() {
+        const allQuestions = document.querySelectorAll('.question-container:not(#question-template)');
+
+        allQuestions.forEach((question) => {
+            const inputs = question.querySelectorAll('input[type="text"][data-next-question]');
+
+            inputs.forEach((input) => {
+                const targetId = input.dataset.nextQuestion;
+                if (targetId===0) return;
+                console.log("targetId:",targetId);
+
+                // 바로 아래에 있는 select 찾기 (HTML 구조에 맞춰서 보장됨)
+                const select = input.closest(".flex")?.querySelector(".jump-target-select")
+                    || input.parentElement?.querySelector(".jump-target-select");
+
+                console.log("select:"+select);
+
+                if (select) {
+                    const matchingOption = Array.from(select.options).find(opt => opt.value === targetId);
+                    if (matchingOption) {
+                        select.value = targetId;
+                    } else {
+                        console.warn(`옵션 ${input.placeholder}의 점프 대상(${targetId})을 select에서 찾을 수 없습니다.`);
+                    }
+                }
+            });
+        });
+    }
+
+    try {
+        const survey = /*[[${survey}]]*/ null;
+        if (survey && survey.questions?.length > 0) {
+            document.getElementById("survey-title").value = survey.title || "새 설문조사";
+            // 설명
+            document.querySelector("textarea").value = survey.description || "";
+
+            // 시작일
+            const startDateInput = document.getElementById("start-date");
+            if (startDateInput && survey.startDate) {
+                startDateInput.value = survey.startDate;
+            }
+
+            // 종료일
+            const endDateInput = document.getElementById("end-date");
+            if (endDateInput && survey.endDate) {
+                endDateInput.value = survey.endDate;
+            }
+
+            renderExistingQuestions(survey);
+            updateJumpTargets();
+            restoreJumpTargetSelections();
         }
-    });
+    } catch (e) {
+        console.warn("survey 데이터 없음");
+    }
 </script>
 
-<script id="save-management">
+<script id="save-management" type="module">
+    // fixme: 전역함수 정의 - showToast
     function showToast(type, message, showRetry = false) {
         const toast = document.getElementById("toast");
         const toastIcon = document.getElementById("toast-icon");
@@ -1562,16 +1569,14 @@
     });
 
 
-    document.addEventListener("DOMContentLoaded", function () {
-
-        const saveButton = document.getElementById("saveButton")
-        saveButton.addEventListener("click", saveForm);
-    });
-
+    const saveButton = document.getElementById("saveButton")
+    // fixme: 전역함수 호출 - saveForm
+    saveButton.addEventListener("click", saveForm);
 </script>
 
-<script th:inline="javascript">
+<script th:inline="javascript" type="module">
     //note 설문 형태 저장하는 기능
+    // fixme: 전역함수 정의 - collectQuestions, saveForm
     function collectQuestions() {
         const questionElements = document.querySelectorAll(
             '#questions-container > .question-container:not(#question-template)'
@@ -1620,6 +1625,7 @@
                 questionData.options = optionPairs;
             }else if (type === "hierarchy") {
                 const questionId = el.getAttribute("data-question-id");
+                // fixme: 전역변수 참조 - window.hierarchyStore
                 const store = window.hierarchyStore?.[questionId];
                 if (!store) {
                     collectionFailed = true;
@@ -1677,27 +1683,33 @@
         );
 
         if (!titleInput.value.trim()) {
+            // fixme: 전역함수 호출 - showToast
             showToast("error", "설문조사 제목을 입력해주세요");
             titleInput.focus();
             return;
         }
 
         const description = document.querySelector("textarea").value.trim();
+        // fixme: 전역함수 호출 - collectQuestions
         const questions = collectQuestions();
 
         //저장 가능 체크
         if(questions==null){
             console.log("questions is null");
+            // fixme: 전역함수 호출 - showToast
             showToast("error","설문조사 문항을 제대로 입력해주세요");
             return;
         }
 
         if (questions.length === 0) {
+            // fixme: 전역함수 호출 - showToast
             showToast("error", "문제를 하나 이상 추가해주세요");
             return;
         }
 
+        // fixme: 전역함수 호출 - validateDateRange
         if(!validateDateRange()){
+            // fixme: 전역함수 호출 - showToast
             showToast("error", "날짜를 다시 확인해주세요");
             return;
         }
@@ -1717,6 +1729,7 @@
             if(survey) console.log("survey있음");
             else console.log("survey없음");
             const folderId = /*[[${folderId}]]*/ null;
+            // fixme: 전역변수 참조 - surveyAdminUrl
             const url = (survey) ? surveyAdminUrl+"/edit" : surveyAdminUrl + "/make";
             const method = (survey) ? "PATCH" : "POST";
             const surveyType=document.getElementById("survey-type")?.value || "normal";
@@ -1745,9 +1758,11 @@
 
             if (!response.ok) throw new Error("저장 실패");
 
+            // fixme: 전역함수 호출 - showToast
             showToast("success", "설문조사가 저장되었습니다");
             window.location.href = "/survey/list?folderId="+folderId;
         } catch (error) {
+            // fixme: 전역함수 호출 - showToast
             showToast("error", "저장 중 오류가 발생했습니다", true);
         } finally {
             saveButton.innerHTML = originalContent;
@@ -1756,117 +1771,121 @@
     }
 
 </script>
-<script id="change_template">
-    document.addEventListener('DOMContentLoaded', function () {
-        const surveyTypeSelect = document.getElementById('survey-type');
-        const questionsContainer = document.getElementById('questions-container');
-        const emptyState = document.getElementById('empty-state');
+<script id="change_template" type="module">
+    const surveyTypeSelect = document.getElementById('survey-type');
+    const questionsContainer = document.getElementById('questions-container');
+    const emptyState = document.getElementById('empty-state');
 
-        surveyTypeSelect.addEventListener('change', async function () {
-            const selectedType = this.value;
+    surveyTypeSelect.addEventListener('change', async function () {
+        const selectedType = this.value;
 
-            // 기존 문항 초기화
-            const existingQuestions = document.querySelectorAll(
-                '#questions-container > .question-container:not(#question-template)'
-            );
-            existingQuestions.forEach((el) => el.remove());
-            emptyState.classList.remove("hidden");
+        // 기존 문항 초기화
+        const existingQuestions = document.querySelectorAll(
+            '#questions-container > .question-container:not(#question-template)'
+        );
+        existingQuestions.forEach((el) => el.remove());
+        emptyState.classList.remove("hidden");
 
-            // 일반 설문은 빈 상태로 끝냄
-            if (selectedType === "normal") return;
+        // 일반 설문은 빈 상태로 끝냄
+        if (selectedType === "normal") return;
 
-            try {
-                // 템플릿 API 호출
-                const res = await fetch(`/api/v1/survey/admin/template?type=${selectedType}`);
-                if (!res.ok) throw new Error("템플릿 로드 실패");
+        try {
+            // 템플릿 API 호출
+            // fixme: 전역변수 참조 - surveyAdminUrl
+            const res = await fetch(`/api/v1/survey/admin/template?type=${selectedType}`);
+            if (!res.ok) throw new Error("템플릿 로드 실패");
 
-                const jsonResult = await res.json();
-                const templateQuestions =jsonResult.result;
+            const jsonResult = await res.json();
+            const templateQuestions =jsonResult.result;
 
-                console.log(jsonResult);
-                console.log(templateQuestions);
+            console.log(jsonResult);
+            console.log(templateQuestions);
 
-                // 템플릿 문항 생성
-                templateQuestions.forEach((q) => {
-                    const el = addQuestion(q.type);
-                    el.setAttribute('data-template', 'true');
-                    if (q.domainField) el.setAttribute('data-domain-field', q.domainField);
-                    if (q.questionId) el.dataset.id = q.questionId;
+            // 템플릿 문항 생성
+            templateQuestions.forEach((q) => {
+                // fixme: 전역함수 호출 - addQuestion
+                const el = addQuestion(q.type);
+                el.setAttribute('data-template', 'true');
+                if (q.domainField) el.setAttribute('data-domain-field', q.domainField);
+                if (q.questionId) el.dataset.id = q.questionId;
 
-                    const titleInput = el.querySelector('input[type="text"]');
-                    if (titleInput) titleInput.value = q.question || '';
+                const titleInput = el.querySelector('input[type="text"]');
+                if (titleInput) titleInput.value = q.question || '';
 
-                    const descArea = el.querySelector('textarea');
-                    if (descArea) descArea.value = q.description || '';
+                const descArea = el.querySelector('textarea');
+                if (descArea) descArea.value = q.description || '';
 
-                    const reqCheckbox = el.querySelector('.required-checkbox');
-                    if (reqCheckbox) reqCheckbox.checked = !!q.required;
+                const reqCheckbox = el.querySelector('.required-checkbox');
+                if (reqCheckbox) reqCheckbox.checked = !!q.required;
 
-                    // 옵션 문항일 경우 옵션도 추가
-                    if (['multiple', 'multiple-checkbox', 'dropdown'].includes(q.type)) {
-                        const container = el.querySelector(`.answer-container[data-type="${q.type}"]`);
-                        const optionsContainer = container.querySelector(".space-y-2");
-                        const addButton = optionsContainer.querySelector(".add-option-button");
+                // 옵션 문항일 경우 옵션도 추가
+                if (['multiple', 'multiple-checkbox', 'dropdown'].includes(q.type)) {
+                    const container = el.querySelector(`.answer-container[data-type="${q.type}"]`);
+                    const optionsContainer = container.querySelector(".space-y-2");
+                    const addButton = optionsContainer.querySelector(".add-option-button");
 
-                        const existingInputs = optionsContainer.querySelectorAll("input[type='text']");
+                    const existingInputs = optionsContainer.querySelectorAll("input[type='text']");
 
-                        q.options?.forEach((option, idx) => {
-                            if (idx < existingInputs.length) {
-                                // 기존 옵션 1, 2에 덮어쓰기
-                                const input = existingInputs[idx];
-                                input.value = option.text || '';
-                            } else {
-                                // 3번째 이후는 새로 추가
-                                const optEl = createOptionElement(q.type, idx + 1);
-                                const input = optEl.querySelector('input[type="text"]');
-                                if (input) input.value = option.text || '';
-                                optionsContainer.insertBefore(optEl, addButton);
-                            }
-                        });
-                    }
-                    else if (q.type === 'hierarchy') {
-                        const questionId = el.getAttribute('data-question-id');
-                        window.initHierarchy(questionId); // ✅ 스토어 초기화
-                        const store = window.getStore(questionId);
+                    q.options?.forEach((option, idx) => {
+                        if (idx < existingInputs.length) {
+                            // 기존 옵션 1, 2에 덮어쓰기
+                            const input = existingInputs[idx];
+                            input.value = option.text || '';
+                        } else {
+                            // 3번째 이후는 새로 추가
+                            // fixme: 전역함수 호출 - createOptionElement
+                            const optEl = createOptionElement(q.type, idx + 1);
+                            const input = optEl.querySelector('input[type="text"]');
+                            if (input) input.value = option.text || '';
+                            optionsContainer.insertBefore(optEl, addButton);
+                        }
+                    });
+                }
+                else if (q.type === 'hierarchy') {
+                    const questionId = el.getAttribute('data-question-id');
+                    // fixme: 전역함수 호출 - window.initHierarchy, window.getStore, window.updateHierarchyColumn
+                    window.initHierarchy(questionId); // ✅ 스토어 초기화
+                    const store = window.getStore(questionId);
 
-                        // 계층 데이터 초기화
-                        store.firstHierarchyData = [];
-                        store.hierarchyData = {};
-                        store.hierarchySubData = {};
-                        store.hierarchyOptionCount = { 1: 0, 2: 0, 3: 0 };
+                    // 계층 데이터 초기화
+                    store.firstHierarchyData = [];
+                    store.hierarchyData = {};
+                    store.hierarchySubData = {};
+                    store.hierarchyOptionCount = { 1: 0, 2: 0, 3: 0 };
 
-                        q.options?.forEach(option => {
-                            const level = option.level;
-                            const parentId = option.parentOptionId ?? null;
-                            const text = option.text ?? '옵션';
-                            const id = option.hierarchyId;
-                            const optionId = option.optionId;
+                    q.options?.forEach(option => {
+                        const level = option.level;
+                        const parentId = option.parentOptionId ?? null;
+                        const text = option.text ?? '옵션';
+                        const id = option.hierarchyId;
+                        const optionId = option.optionId;
 
-                            if (level === 1) {
+                        if (level === 1) {
                                 store.firstHierarchyData.push({ id, text, optionId });
-                            } else if (level === 2) {
-                                if (!store.hierarchyData[parentId]) store.hierarchyData[parentId] = [];
-                                store.hierarchyData[parentId].push({ id, text, optionId });
-                            } else if (level === 3) {
-                                if (!store.hierarchySubData[parentId]) store.hierarchySubData[parentId] = [];
-                                store.hierarchySubData[parentId].push({ id, text, optionId });
-                            }
+                        } else if (level === 2) {
+                            if (!store.hierarchyData[parentId]) store.hierarchyData[parentId] = [];
+                            store.hierarchyData[parentId].push({ id, text, optionId });
+                        } else if (level === 3) {
+                            if (!store.hierarchySubData[parentId]) store.hierarchySubData[parentId] = [];
+                            store.hierarchySubData[parentId].push({ id, text, optionId });
+                        }
 
-                            store.hierarchyOptionCount[level]++;
-                        });
+                        store.hierarchyOptionCount[level]++;
+                    });
 
-                        // ✅ DOM 렌더링은 store 기반으로 실행
-                        const container = el.querySelector(`[data-options-container="1"]`);
-                        window.updateHierarchyColumn(1, null, container, questionId);
-                    }
-                });
+                    // ✅ DOM 렌더링은 store 기반으로 실행
+                    const container = el.querySelector(`[data-options-container="1"]`);
+                    window.updateHierarchyColumn(1, null, container, questionId);
+                }
+            });
 
-                updateJumpTargets();
-            } catch (e) {
-                console.warn("템플릿 불러오기 실패:", e);
-                showToast("error", "템플릿 불러오기에 실패했습니다");
-            }
-        });
+            // fixme: 전역함수 호출 - updateJumpTargets
+            updateJumpTargets();
+        } catch (e) {
+            console.warn("템플릿 불러오기 실패:", e);
+            // fixme: 전역함수 호출 - showToast
+            showToast("error", "템플릿 불러오기에 실패했습니다");
+        }
     });
 </script>
 

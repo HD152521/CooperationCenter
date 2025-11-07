@@ -629,7 +629,7 @@
 </div>
 
 <script id="checkbox-functionality">
-    document.addEventListener("DOMContentLoaded", function () {
+    (function () {
         const selectAllCheckbox = document.getElementById("select-all");
         const userCheckboxes = document.querySelectorAll(".user-checkbox");
         selectAllCheckbox.addEventListener("change", function () {
@@ -647,10 +647,10 @@
                     checkedCount > 0 && checkedCount < userCheckboxes.length;
             });
         });
-    });
+    })();
 </script>
 <script id="modal-functionality">
-    document.addEventListener("DOMContentLoaded", function () {
+    (function () {
         const editModal = document.getElementById("edit-modal");
         const deleteModal = document.getElementById("delete-modal");
         const userDetailsModal = document.getElementById("user-details-modal");
@@ -797,10 +797,10 @@
                 }
             });
         });
-    });
+    })();
 </script>
 <script id="status-toggle-functionality">
-    document.addEventListener("DOMContentLoaded", function () {
+    (function () {
         const statusSwitches = document.querySelectorAll(".custom-switch input");
         statusSwitches.forEach((switchElement) => {
             switchElement.addEventListener("change", async function () {
@@ -834,10 +834,10 @@
                 }
             });
         });
-    });
+    })();
 </script>
 <script id="filter">
-    document.addEventListener("DOMContentLoaded", function () {
+    (function() {
         const filterButton = document.getElementById("filter-btn");
         filterButton.addEventListener("click", function () {
             const keyword = document.getElementById("search-input").value.trim();
@@ -852,7 +852,7 @@
 
             location.href = `/admin/user?${params.toString()}`;
         });
-    });
+    })();
 </script>
 </body>
 </html>

@@ -83,33 +83,31 @@
 
 <th:block th:fragment="script">
     <!-- 도시 탭 스크립트 -->
-    <script id="city-tab-script">
-        document.addEventListener("turbo:load", function () {
-            const cityTabs = document.querySelectorAll(".city-tab");
-            const cityContents = document.querySelectorAll(".city-content");
-            cityTabs.forEach((tab) => {
-                tab.addEventListener("click", () => {
-                    const city = tab.getAttribute("data-city");
-                    // 모든 탭 비활성화
-                    cityTabs.forEach((t) => {
-                        t.classList.remove("bg-primary", "text-white");
-                        t.classList.add("bg-white", "text-gray-700");
-                    });
-                    // 클릭한 탭 활성화
-                    tab.classList.remove("bg-white", "text-gray-700");
-                    tab.classList.add("bg-primary", "text-white");
-                    // 모든 콘텐츠 숨기기
-                    cityContents.forEach((content) => {
-                        content.classList.add("hidden");
-                    });
-                    // 선택한 도시의 콘텐츠 표시
-                    const selectedContent = document.querySelector(
-                        `.city-content[data-city="${city}"]`,
-                    );
-                    if (selectedContent) {
-                        selectedContent.classList.remove("hidden");
-                    }
+    <script id="city-tab-script" type="module">
+        const cityTabs = document.querySelectorAll(".city-tab");
+        const cityContents = document.querySelectorAll(".city-content");
+        cityTabs.forEach((tab) => {
+            tab?.addEventListener("click", () => {
+                const city = tab.getAttribute("data-city");
+                // 모든 탭 비활성화
+                cityTabs.forEach((t) => {
+                    t.classList.remove("bg-primary", "text-white");
+                    t.classList.add("bg-white", "text-gray-700");
                 });
+                // 클릭한 탭 활성화
+                tab.classList.remove("bg-white", "text-gray-700");
+                tab.classList.add("bg-primary", "text-white");
+                // 모든 콘텐츠 숨기기
+                cityContents.forEach((content) => {
+                    content.classList.add("hidden");
+                });
+                // 선택한 도시의 콘텐츠 표시
+                const selectedContent = document.querySelector(
+                    `.city-content[data-city="${city}"]`,
+                );
+                if (selectedContent) {
+                    selectedContent.classList.remove("hidden");
+                }
             });
         });
     </script>
