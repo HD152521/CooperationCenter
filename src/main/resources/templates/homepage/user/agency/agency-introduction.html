@@ -22,8 +22,7 @@
                     <h1 class="text-3xl font-bold text-gray-900">유학원 찾기</h1>
                     <p class="mt-2 text-lg text-gray-600">
                         전문적인 유학 상담을 제공하는 신뢰할 수 있는 유학원을
-                        찾아보세요.
-                    </p>
+                        찾아보세요. </p>
                 </div>
                 <!--                <div class="mt-4 md:mt-0 flex space-x-2">-->
                 <!--                    <button-->
@@ -59,9 +58,7 @@
                             <i class="ri-search-line"></i>
                         </div>
                     </div>
-                    <input type="text"
-                           id="searchKeyword"
-                           th:placeholder="${keyword}"
+                    <input type="text" id="searchKeyword" th:placeholder="${keyword}"
                            class="pl-10 pr-4 py-2 w-full border border-gray-300 !rounded-button focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm"/>
                 </div>
                 <!-- 지역 필터 -->
@@ -97,8 +94,7 @@
     <div id="list-view" class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="mb-6 flex justify-between items-center">
             <h2 class="text-xl font-semibold text-gray-900">
-                총 <span class="text-primary" th:text="${agencyDto.totalElements}">0</span>개의 유학원
-            </h2>
+                총 <span class="text-primary" th:text="${agencyDto.totalElements}">0</span>개의 유학원 </h2>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <th:block th:each="agency : ${agencyDto}">
@@ -111,22 +107,19 @@
         <!-- TODO: Pagination 컴포넌트 구현하기-->
         <div class="mt-8 flex justify-center items-center space-x-2" th:if="${agencyDto.totalPages > 0}">
             <!-- 이전 버튼 -->
-            <a th:if="${agencyDto.hasPrevious()}"
-               th:href="@{/agency/list(page=${agencyDto.number - 1})}"
+            <a th:if="${agencyDto.hasPrevious()}" th:href="@{/agency/list(page=${agencyDto.number - 1})}"
                class="px-3 py-1 rounded border text-sm text-gray-700 hover:bg-gray-100">이전</a>
 
             <!-- 페이지 번호 -->
             <span th:each="pageNum : ${#numbers.sequence(0, agencyDto.totalPages - 1)}">
                 <a th:href="@{/agency/list(page=${pageNum}, keyword=${keyword}, region=${region})}"
-                   th:text="${pageNum + 1}"
-                   th:class="${pageNum == agencyDto.number} ?
+                   th:text="${pageNum + 1}" th:class="${pageNum == agencyDto.number} ?
                              'px-3 py-1 rounded bg-primary text-white text-sm' :
                              'px-3 py-1 rounded border text-sm text-gray-700 hover:bg-gray-100'">
                 </a>
             </span>
             <!-- 다음 버튼 -->
-            <a th:if="${agencyDto.hasNext()}"
-               th:href="@{/agency/list(page=${agencyDto.number + 1})}"
+            <a th:if="${agencyDto.hasNext()}" th:href="@{/agency/list(page=${agencyDto.number + 1})}"
                class="px-3 py-1 rounded border text-sm text-gray-700 hover:bg-gray-100">다음</a>
         </div>
 

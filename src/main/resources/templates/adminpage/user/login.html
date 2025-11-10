@@ -1,20 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>관리자 로그인</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet"
-    />
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-    />
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"/>
     <script>
         tailwind.config = {
             theme: {
@@ -43,30 +37,36 @@
         :where([class^="ri-"])::before {
             content: "\f3c2";
         }
+
         .login-card {
             background: linear-gradient(145deg, #2C2C3A, #232331);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
         }
+
         .input-field {
             background: rgba(55, 65, 81, 0.8);
             border: 1px solid rgba(75, 85, 99, 0.5);
             transition: all 0.3s ease;
         }
+
         .input-field:focus {
             border-color: #3498DB;
             box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
             background: rgba(55, 65, 81, 1);
         }
+
         .login-button {
             background: linear-gradient(135deg, #3498DB, #2980B9);
             transition: all 0.3s ease;
         }
+
         .login-button:hover {
             background: linear-gradient(135deg, #2980B9, #21618C);
             transform: translateY(-1px);
             box-shadow: 0 4px 20px rgba(52, 152, 219, 0.3);
         }
+
         .error-message {
             background: rgba(231, 76, 60, 0.1);
             border: 1px solid rgba(231, 76, 60, 0.3);
@@ -74,9 +74,7 @@
         }
     </style>
 </head>
-<body
-        class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen flex items-center justify-center p-4"
->
+<body class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen flex items-center justify-center p-4">
 <div class="login-card rounded-xl p-8 w-full max-w-md">
     <div class="text-center mb-8">
         <h1 class="font-['Pacifico'] text-3xl text-white mb-2">logo</h1>
@@ -85,72 +83,37 @@
     </div>
     <form id="login-form" class="space-y-6">
         <div>
-            <label
-                    for="admin-id"
-                    class="block text-sm font-medium text-gray-300 mb-2"
-            >관리자 ID</label
-            >
+            <label for="admin-id" class="block text-sm font-medium text-gray-300 mb-2">관리자 ID</label>
             <div class="relative">
-                <div
-                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                >
-                    <div
-                            class="w-5 h-5 flex items-center justify-center text-gray-400"
-                    >
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <div class="w-5 h-5 flex items-center justify-center text-gray-400">
                         <i class="ri-user-line"></i>
                     </div>
                 </div>
-                <input
-                        type="text"
-                        id="admin-id"
-                        name="admin-id"
-                        class="input-field w-full pl-10 pr-4 py-3 rounded-lg text-white placeholder-gray-400 border-none focus:outline-none text-sm"
-                        placeholder="관리자 ID를 입력하세요"
-                        required
-                />
+                <input type="text" id="admin-id" name="admin-id"
+                       class="input-field w-full pl-10 pr-4 py-3 rounded-lg text-white placeholder-gray-400 border-none focus:outline-none text-sm"
+                       placeholder="관리자 ID를 입력하세요" required/>
             </div>
         </div>
         <div>
-            <label
-                    for="password"
-                    class="block text-sm font-medium text-gray-300 mb-2"
-            >비밀번호</label
-            >
+            <label for="password" class="block text-sm font-medium text-gray-300 mb-2">비밀번호</label>
             <div class="relative">
-                <div
-                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                >
-                    <div
-                            class="w-5 h-5 flex items-center justify-center text-gray-400"
-                    >
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <div class="w-5 h-5 flex items-center justify-center text-gray-400">
                         <i class="ri-lock-line"></i>
                     </div>
                 </div>
-                <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        class="input-field w-full pl-10 pr-12 py-3 rounded-lg text-white placeholder-gray-400 border-none focus:outline-none text-sm"
-                        placeholder="비밀번호를 입력하세요"
-                        required
-                />
-                <button
-                        type="button"
-                        id="toggle-password"
-                        class="absolute inset-y-0 right-0 pr-3 flex items-center"
-                >
-                    <div
-                            class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-300 transition-colors"
-                    >
+                <input type="password" id="password" name="password"
+                       class="input-field w-full pl-10 pr-12 py-3 rounded-lg text-white placeholder-gray-400 border-none focus:outline-none text-sm"
+                       placeholder="비밀번호를 입력하세요" required/>
+                <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                    <div class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-300 transition-colors">
                         <i class="ri-eye-line" id="eye-icon"></i>
                     </div>
                 </button>
             </div>
         </div>
-        <div
-                id="error-message"
-                class="error-message p-3 rounded-lg text-sm hidden"
-        >
+        <div id="error-message" class="error-message p-3 rounded-lg text-sm hidden">
             <div class="flex items-center">
                 <div class="w-4 h-4 flex items-center justify-center mr-2">
                     <i class="ri-error-warning-line"></i>
@@ -158,10 +121,8 @@
                 <span id="error-text"></span>
             </div>
         </div>
-        <button
-                type="submit"
-                class="login-button w-full py-3 px-4 rounded-button text-white font-medium text-sm whitespace-nowrap"
-        >
+        <button type="submit"
+                class="login-button w-full py-3 px-4 rounded-button text-white font-medium text-sm whitespace-nowrap">
             <span id="login-text">로그인</span>
             <div id="loading-spinner" class="hidden inline-flex items-center">
                 <div class="w-4 h-4 flex items-center justify-center mr-2">
@@ -193,21 +154,26 @@
     const loadingSpinner = document.getElementById("loading-spinner");
     const adminIdInput = document.getElementById("admin-id");
     const passwordInput = document.getElementById("password");
+
     function showError(message) {
         errorMessage.classList.remove("hidden");
         errorText.textContent = message;
     }
+
     function hideError() {
         errorMessage.classList.add("hidden");
     }
+
     function showLoading() {
         loginText.classList.add("hidden");
         loadingSpinner.classList.remove("hidden");
     }
+
     function hideLoading() {
         loginText.classList.remove("hidden");
         loadingSpinner.classList.add("hidden");
     }
+
     loginForm.addEventListener("submit", async function (e) {
         e.preventDefault();
 

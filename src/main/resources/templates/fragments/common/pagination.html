@@ -1,58 +1,51 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-    <!--
-        페이지네이션(Pagination) 공통 프래그먼트
+<!--
+    페이지네이션(Pagination) 공통 프래그먼트
 
-        사용법:
-        <div th:replace="~{fragments/common/pagination :: pagination(page=${페이지객체}, maxButtons=${최대버튼수})}"></div>
+    사용법:
+    <div th:replace="~{fragments/common/pagination :: pagination(page=${페이지객체}, maxButtons=${최대버튼수})}"></div>
 
-        파라미터:
-        - page: org.springframework.data.domain.Page 객체. 컨트롤러에서 모델에 담아 전달해야 합니다.
-        - maxButtons: 중앙에 표시할 페이지 번호 버튼의 최대 개수 (정수).
-    -->
-    <div th:fragment="pagination(page, maxButtons)"
-         th:if="${page.totalPages > 1}"
-         class="mt-8 flex justify-center items-center space-x-2">
+    파라미터:
+    - page: org.springframework.data.domain.Page 객체. 컨트롤러에서 모델에 담아 전달해야 합니다.
+    - maxButtons: 중앙에 표시할 페이지 번호 버튼의 최대 개수 (정수).
+-->
+<div th:fragment="pagination(page, maxButtons)" th:if="${page.totalPages > 1}"
+     class="mt-8 flex justify-center items-center space-x-2">
 
-        <!-- '이전' 버튼 -->
-        <a th:if="${page.hasPrevious()}"
-           th:href="@{''.toString() (page=${page.number - 1})}"
-           class="px-3 py-1 rounded border text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-            이전
-        </a>
-        <span th:if="${!page.hasPrevious()}"
-              class="px-3 py-1 rounded border text-sm text-gray-400 cursor-not-allowed">
+    <!-- '이전' 버튼 -->
+    <a th:if="${page.hasPrevious()}" th:href="@{''.toString() (page=${page.number - 1})}"
+       class="px-3 py-1 rounded border text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+        이전
+    </a>
+    <span th:if="${!page.hasPrevious()}" class="px-3 py-1 rounded border text-sm text-gray-400 cursor-not-allowed">
             이전
         </span>
 
-        <!-- 페이지 번호 버튼 -->
-        <th:block th:with="
+    <!-- 페이지 번호 버튼 -->
+    <th:block th:with="
             half=${T(java.lang.Math).floor(maxButtons / 2)},
             start=${T(java.lang.Math).max(0, page.number - half)},
             end=${T(java.lang.Math).min(page.totalPages - 1, start + maxButtons - 1)},
             adjustedStart=${T(java.lang.Math).max(0, end - maxButtons + 1)}">
 
             <span th:each="pageNum : ${#numbers.sequence(adjustedStart, end)}">
-                <a th:href="@{''.toString() (page=${pageNum})}"
-                   th:text="${pageNum + 1}"
-                   th:class="${pageNum == page.number} ?
+                <a th:href="@{''.toString() (page=${pageNum})}" th:text="${pageNum + 1}" th:class="${pageNum == page.number} ?
                              'px-3 py-1 rounded bg-primary text-white text-sm' :
                              'px-3 py-1 rounded border text-sm text-gray-700 hover:bg-gray-100 transition-colors'">
                 </a>
             </span>
-        </th:block>
+    </th:block>
 
-        <!-- '다음' 버튼 -->
-        <a th:if="${page.hasNext()}"
-           th:href="@{''.toString() (page=${page.number + 1})}"
-           class="px-3 py-1 rounded border text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-            다음
-        </a>
-        <span th:if="${!page.hasNext()}"
-              class="px-3 py-1 rounded border text-sm text-gray-400 cursor-not-allowed">
+    <!-- '다음' 버튼 -->
+    <a th:if="${page.hasNext()}" th:href="@{''.toString() (page=${page.number + 1})}"
+       class="px-3 py-1 rounded border text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+        다음
+    </a>
+    <span th:if="${!page.hasNext()}" class="px-3 py-1 rounded border text-sm text-gray-400 cursor-not-allowed">
             다음
         </span>
-    </div>
+</div>
 
 </html>
