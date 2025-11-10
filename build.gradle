@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.0'
 	id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.github.node-gradle.node' version '7.0.2'
 }
 
 group = 'com.cooperation.project'
@@ -62,6 +63,24 @@ dependencies {
 	implementation 'com.squareup.okhttp3:okhttp:4.11.0'
 	implementation "org.springframework.boot:spring-boot-starter-mail"
 
+}
+
+node {
+    version = '20.17.0'
+    download = true
+    workDir = file("${project.buildDir}/nodejs")
+    npmWorkDir = file("${project.buildDir}/npm")
+    nodeProjectDir = file("${project.projectDir}")
+}
+
+tasks.register('buildTailwind', com.github.gradle.node.npm.task.NpmTask) {
+    group = 'build'
+    description = 'Build Tailwind CSS using npm'
+    args = ['run', 'build:css']
+}
+
+tasks.named('processResources') {
+    dependsOn(tasks.named('buildTailwind'))
 }
 
 tasks.named('test') {
