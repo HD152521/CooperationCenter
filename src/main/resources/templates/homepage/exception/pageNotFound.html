@@ -195,28 +195,24 @@
     </div>
 </div>
 
-<script id="button-interactions">
-    document.addEventListener("DOMContentLoaded", function () {
-        const homeButton = document.querySelector("button:first-of-type");
-        const backButton = document.querySelector("button:nth-of-type(2)");
+<script id="button-interactions" type="module">
+    const homeButton = document.querySelector("button:first-of-type");
+    const backButton = document.querySelector("button:nth-of-type(2)");
 
-        homeButton.addEventListener("click", function () {
-            window.location.href = "/";
-        });
+    homeButton.addEventListener("click", function () {
+        window.location.href = "/";
+    });
 
-        backButton.addEventListener("click", function () {
-            window.history.back();
-        });
+    backButton.addEventListener("click", function () {
+        window.history.back();
     });
 </script>
 
-<script id="floating-animations">
-    document.addEventListener("DOMContentLoaded", function () {
-        const floatingElements = document.querySelectorAll(".floating-animation");
+<script id="floating-animations" type="module">
+    const floatingElements = document.querySelectorAll(".floating-animation");
 
-        floatingElements.forEach((element, index) => {
-            element.style.animationDelay = `${index * 0.5}s`;
-        });
+    floatingElements.forEach((element, index) => {
+        element.style.animationDelay = `${index * 0.5}s`;
     });
 </script>
 </body>

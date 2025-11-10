@@ -1,53 +1,45 @@
-document.addEventListener("DOMContentLoaded", () => {
+(function() {
     const mobileBtn = document.getElementById("mobile-menu-button");
     const mobileMenu = document.getElementById("mobile-menu");
     const mobileUniBtn = document.getElementById("mobile-university-button");
     const mobileUniMenu = document.getElementById("mobile-university-menu");
 
     // 모바일 전체 메뉴 토글
-    if (mobileBtn && mobileMenu) {
-        mobileBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            mobileMenu.classList.toggle("hidden");
-            console.log(mobileMenu);
-        });
-    }
+    mobileBtn?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        mobileMenu?.classList.toggle("hidden");
+    });
 
     // 모바일 대학교 하위 메뉴 토글
-    if (mobileUniBtn && mobileUniMenu) {
-        mobileUniBtn.addEventListener("click", (e) => {
-            console.log("univ menu btn click");
-            e.stopPropagation();
-            mobileUniMenu.classList.toggle("hidden");
-            mobileUniBtn.querySelector("i").classList.toggle("rotate-180");
-        });
-    }
+    mobileUniBtn?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        mobileUniMenu?.classList.toggle("hidden");
+        mobileUniBtn?.querySelector("i").classList.toggle("rotate-180");
+    });
 
 
     // 로그아웃 기능
     const webLogoutBtn = document.getElementById("web-logout-button");
     webLogoutBtn?.addEventListener("click", logoutListener);
-});
 
-function logoutListener() {
-    console.log("로그아웃 시도");
-    fetch("/api/v1/member/logout", {
-        method: "POST",
-        credentials: "include"
-    }).then(response => {
-        if (response.ok) {
-            window.location.href = "/home";
-        } else {
-            throw new Error("로그아웃 실패");
-        }
-    }).catch(err => {
-        console.error("로그아웃 오류:", err);
-        alert("로그아웃 오류 발생");
-    });
-}
+    function logoutListener() {
+        fetch("/api/v1/member/logout", {
+            method: "POST",
+            credentials: "include"
+        }).then(response => {
+            if (response.ok) {
+                Turbo.visit("/home");
+            } else {
+                throw new Error("로그아웃 실패");
+            }
+        }).catch(err => {
+            console.error("로그아웃 오류:", err);
+            alert("로그아웃 오류 발생");
+        });
+    }
+})();
 
-
-// 세션 연장기능 -> 미들웨어로 빼면 어떨까요?
+// Todo: 세션 연장기능 -> 미들웨어로 빼면 어떨까요?
 // async function loadPageContent() {
 //     const response = await fetch(window.location.pathname, {
 //         credentials: 'include'

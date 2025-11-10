@@ -480,7 +480,7 @@
     </div>
 </div>
 <script id="approval-system">
-    document.addEventListener("DOMContentLoaded", function () {
+    (function() {
         const approvalButtons = document.querySelectorAll(
             'button:contains("승인하기")',
         );
@@ -510,10 +510,10 @@
                 hideModal();
             }
         });
-    });
+    })();
 </script>
 <script id="table-interactions">
-    document.addEventListener("DOMContentLoaded", function () {
+    (function() {
         const detailButtons = document.querySelectorAll("button");
         detailButtons.forEach((button) => {
             if (button.textContent.includes("상세보기")) {
@@ -525,10 +525,10 @@
                 });
             }
         });
-    });
+    })();
 </script>
 <script id="refresh-functionality">
-    document.addEventListener("DOMContentLoaded", function () {
+    (function() {
         const refreshButtons = document.querySelectorAll("button i.ri-refresh-line");
         refreshButtons.forEach((button) => {
             button.parentElement.addEventListener("click", function () {
@@ -540,7 +540,7 @@
                 }, 500);
             });
         });
-    });
+    })();
 </script>
 </body>
 </html>

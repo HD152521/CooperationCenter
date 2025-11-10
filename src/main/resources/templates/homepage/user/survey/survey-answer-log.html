@@ -1094,545 +1094,538 @@
         </div>
     </main>
 </div>
-<script src="/js/homepage/url.js"></script>
-<script id="checkbox-handler">
-    document.addEventListener("DOMContentLoaded", function () {
-        // 체크박스 기능 구현
-        const checkboxes = document.querySelectorAll(".custom-checkbox");
-        const selectAllCheckbox = document.getElementById("select-all");
-        const exportCsvButton = document.getElementById("export-csv");
-        const exportAllCsvButton = document.getElementById("export-csv-all");
-        const fileDownloadByStudentBtn = document.getElementById("fileDownload-student");
-        const fileDownloadBySurveyBtn = document.getElementById("fileDownload-survey");
+<script id="checkbox-handler" type="module">
+    // 체크박스 기능 구현
+    const checkboxes = document.querySelectorAll(".custom-checkbox");
+    const selectAllCheckbox = document.getElementById("select-all");
+    const exportCsvButton = document.getElementById("export-csv");
+    const exportAllCsvButton = document.getElementById("export-csv-all");
+    const fileDownloadByStudentBtn = document.getElementById("fileDownload-student");
+    const fileDownloadBySurveyBtn = document.getElementById("fileDownload-survey");
 
-        // 개별 체크박스 클릭 처리
-        checkboxes.forEach((checkbox) => {
-            checkbox.addEventListener("click", function (e) {
-                if (this.id !== "select-all" && this.id !== "checkbox-complete") {
-                    e.stopPropagation();
-                }
-                this.classList.toggle("checked");
-                // 전체 선택 체크박스 상태 업데이트
-                if (this.id !== "select-all" && this.id !== "checkbox-complete") {
-                    const totalCheckboxes = document.querySelectorAll(
-                        ".custom-checkbox[data-id]",
-                    ).length;
-                    const checkedCheckboxes = document.querySelectorAll(
-                        ".custom-checkbox[data-id].checked",
-                    ).length;
-                    selectAllCheckbox.classList.toggle(
-                        "checked",
-                        totalCheckboxes === checkedCheckboxes,
-                    );
+    // 개별 체크박스 클릭 처리
+    checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener("click", function (e) {
+            if (this.id !== "select-all" && this.id !== "checkbox-complete") {
+                e.stopPropagation();
+            }
+            this.classList.toggle("checked");
+            // 전체 선택 체크박스 상태 업데이트
+            if (this.id !== "select-all" && this.id !== "checkbox-complete") {
+                const totalCheckboxes = document.querySelectorAll(
+                    ".custom-checkbox[data-id]",
+                ).length;
+                const checkedCheckboxes = document.querySelectorAll(
+                    ".custom-checkbox[data-id].checked",
+                ).length;
+                selectAllCheckbox.classList.toggle(
+                    "checked",
+                    totalCheckboxes === checkedCheckboxes,
+                );
+            }
+        });
+    });
+    // 전체 선택 체크박스 클릭 처리
+    selectAllCheckbox.addEventListener("click", function () {
+
+        console.log("전테 선택 버튼 클릭");
+        this.classList.toggle("checked");
+
+        const isChecked = this.classList.toggle("checked");
+        console.log("ischecked:"+isChecked);
+        document
+            .querySelectorAll(".custom-checkbox[data-id]")
+            .forEach((checkbox) => {
+                console.log(checkbox);
+                checkbox.classList.remove("checked"); // 초기화 후
+                if (isChecked) {
+                    checkbox.classList.add("checked"); // 체크 추가
                 }
             });
-        });
-        // 전체 선택 체크박스 클릭 처리
-        selectAllCheckbox.addEventListener("click", function () {
-
-            console.log("전테 선택 버튼 클릭");
-            this.classList.toggle("checked");
-
-            const isChecked = this.classList.toggle("checked");
-            console.log("ischecked:"+isChecked);
-            document
-                .querySelectorAll(".custom-checkbox[data-id]")
-                .forEach((checkbox) => {
-                    console.log(checkbox);
-                    checkbox.classList.remove("checked"); // 초기화 후
-                    if (isChecked) {
-                        checkbox.classList.add("checked"); // 체크 추가
-                    }
-                });
-        });
-        // CSV 추출 버튼 클릭 처리
-        exportCsvButton.addEventListener("click", async () => {
-            const selectedRows = document.querySelectorAll(
-                ".custom-checkbox[data-id].checked",
-            );
-            if (selectedRows.length === 0) {
-                const notification = document.createElement("div");
-                notification.className =
-                    "fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded";
-                notification.innerHTML = `
+    });
+    // CSV 추출 버튼 클릭 처리
+    exportCsvButton.addEventListener("click", async () => {
+        const selectedRows = document.querySelectorAll(
+            ".custom-checkbox[data-id].checked",
+        );
+        if (selectedRows.length === 0) {
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded";
+            notification.innerHTML = `
       <div class="flex items-center">
       <i class="ri-error-warning-line mr-2"></i>
       <span>선택된 항목이 없습니다.</span>
       </div>
       `;
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-                return;
-            }
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+            return;
+        }
 
-            const logIds = [];
-            selectedRows.forEach(box => {
-                const logId = box.getAttribute('data-log-id');
-                if (logId) {
-                    logIds.push(logId);
-                }
+        const logIds = [];
+        selectedRows.forEach(box => {
+            const logId = box.getAttribute('data-log-id');
+            if (logId) {
+                logIds.push(logId);
+            }
+        });
+
+        const requestDto = {
+            logIds: logIds
+        };
+
+        try {
+            const response = await fetch(`${surveyAdminUrl}/log/csv`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestDto),
             });
 
-            const requestDto = {
-                logIds: logIds
-            };
+            if (!response.ok) {
+                throw new Error('CSV 생성에 실패했습니다.');
+            }
+            const titleText = document.getElementById("survey-title").textContent;
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // 0-based → +1
+            const day = String(today.getDate()).padStart(2, '0');
 
-            try {
-                const response = await fetch(`${surveyAdminUrl}/log/csv`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(requestDto),
-                });
+            const todayStr = `${year}-${month}-${day}`;
 
-                if (!response.ok) {
-                    throw new Error('CSV 생성에 실패했습니다.');
-                }
-                const titleText = document.getElementById("survey-title").textContent;
-                const today = new Date();
-                const year = today.getFullYear();
-                const month = String(today.getMonth() + 1).padStart(2, '0'); // 0-based → +1
-                const day = String(today.getDate()).padStart(2, '0');
-
-                const todayStr = `${year}-${month}-${day}`;
-
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = titleText+"_"+todayStr+'.csv';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                window.URL.revokeObjectURL(url);
-                const notification = document.createElement("div");
-                notification.className =
-                    "fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded";
-                notification.innerHTML = `
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = titleText+"_"+todayStr+'.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded";
+            notification.innerHTML = `
       <div class="flex items-center">
       <i class="ri-checkbox-circle-line mr-2"></i>
       <span>CSV 파일이 다운로드되었습니다.</span>
       </div>
       `;
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-            } catch (error) {
-                console.error(error);
-                alert('CSV 다운로드 중 오류가 발생했습니다.');
-            }
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        } catch (error) {
+            console.error(error);
+            alert('CSV 다운로드 중 오류가 발생했습니다.');
+        }
 
-        });
+    });
 
-        exportAllCsvButton.addEventListener("click", async () => {
-            const Rows = document.querySelectorAll(
-                ".custom-checkbox[data-id]",
-            );
+    exportAllCsvButton.addEventListener("click", async () => {
+        const Rows = document.querySelectorAll(
+            ".custom-checkbox[data-id]",
+        );
 
-            if (Rows.length === 0) {
-                const notification = document.createElement("div");
-                notification.className =
-                    "fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded";
-                notification.innerHTML = `
+        if (Rows.length === 0) {
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded";
+            notification.innerHTML = `
       <div class="flex items-center">
       <i class="ri-error-warning-line mr-2"></i>
       <span>설문에 대한 기록이 없습니다.</span>
       </div>
       `;
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-                return;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+            return;
+        }
+
+
+        const surveyId = document.getElementById("survey-title").dataset.id;
+
+        try {
+            const response = await fetch(`${surveyAdminUrl}/log/${surveyId}`, {
+                method: 'POST',
+            });
+
+            if (!response.ok) {
+                throw new Error('CSV 생성에 실패했습니다.');
             }
+            const titleText = document.getElementById("survey-title").textContent;
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // 0-based → +1
+            const day = String(today.getDate()).padStart(2, '0');
 
+            const todayStr = `${year}-${month}-${day}`;
 
-            const surveyId = document.getElementById("survey-title").dataset.id;
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
 
-            try {
-                const response = await fetch(`${surveyAdminUrl}/log/${surveyId}`, {
-                    method: 'POST',
-                });
-
-                if (!response.ok) {
-                    throw new Error('CSV 생성에 실패했습니다.');
-                }
-                const titleText = document.getElementById("survey-title").textContent;
-                const today = new Date();
-                const year = today.getFullYear();
-                const month = String(today.getMonth() + 1).padStart(2, '0'); // 0-based → +1
-                const day = String(today.getDate()).padStart(2, '0');
-
-                const todayStr = `${year}-${month}-${day}`;
-
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-
-                a.href = url;
-                a.download = titleText+"_"+todayStr+'_all.csv';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                window.URL.revokeObjectURL(url);
-                const notification = document.createElement("div");
-                notification.className =
-                    "fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded";
-                notification.innerHTML = `
+            a.href = url;
+            a.download = titleText+"_"+todayStr+'_all.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded";
+            notification.innerHTML = `
       <div class="flex items-center">
       <i class="ri-checkbox-circle-line mr-2"></i>
       <span>CSV 파일이 다운로드되었습니다.</span>
       </div>
       `;
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-            } catch (error) {
-                console.error(error);
-                alert('CSV 다운로드 중 오류가 발생했습니다.');
-            }
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        } catch (error) {
+            console.error(error);
+            alert('CSV 다운로드 중 오류가 발생했습니다.');
+        }
 
-        });
+    });
 
-        fileDownloadByStudentBtn.addEventListener("click", async () => {
-            const Rows = document.querySelectorAll(
-                ".custom-checkbox[data-id]",
-            );
+    fileDownloadByStudentBtn.addEventListener("click", async () => {
+        const Rows = document.querySelectorAll(
+            ".custom-checkbox[data-id]",
+        );
 
-            if (Rows.length === 0) {
-                const notification = document.createElement("div");
-                notification.className =
-                    "fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded";
-                notification.innerHTML = `
+        if (Rows.length === 0) {
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded";
+            notification.innerHTML = `
       <div class="flex items-center">
       <i class="ri-error-warning-line mr-2"></i>
       <span>설문에 대한 기록이 없습니다.</span>
       </div>
       `;
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-                return;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+            return;
+        }
+
+
+        const surveyId = document.getElementById("survey-title").dataset.id;
+
+        try {
+            const response = await fetch(`${surveyAdminUrl}/log/file/student/${surveyId}`, {
+                method: 'POST',
+            });
+
+            if (!response.ok) {
+                throw new Error('유저별 파일 다운로드에 실패했습니다.');
             }
+            const titleText = document.getElementById("survey-title").textContent;
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // 0-based → +1
+            const day = String(today.getDate()).padStart(2, '0');
 
+            const todayStr = `${year}-${month}-${day}`;
 
-            const surveyId = document.getElementById("survey-title").dataset.id;
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
 
-            try {
-                const response = await fetch(`${surveyAdminUrl}/log/file/student/${surveyId}`, {
-                    method: 'POST',
-                });
-
-                if (!response.ok) {
-                    throw new Error('유저별 파일 다운로드에 실패했습니다.');
-                }
-                const titleText = document.getElementById("survey-title").textContent;
-                const today = new Date();
-                const year = today.getFullYear();
-                const month = String(today.getMonth() + 1).padStart(2, '0'); // 0-based → +1
-                const day = String(today.getDate()).padStart(2, '0');
-
-                const todayStr = `${year}-${month}-${day}`;
-
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-
-                a.href = url;
-                a.download = titleText+"_"+todayStr+'_all.zip';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                window.URL.revokeObjectURL(url);
-                const notification = document.createElement("div");
-                notification.className =
-                    "fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded";
-                notification.innerHTML = `
+            a.href = url;
+            a.download = titleText+"_"+todayStr+'_all.zip';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded";
+            notification.innerHTML = `
       <div class="flex items-center">
       <i class="ri-checkbox-circle-line mr-2"></i>
       <span>파일이 다운로드 되었습니다.</span>
       </div>
       `;
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-            } catch (error) {
-                console.error(error);
-                alert('유저별 파일 다운로드에 실패했습니다.');
-            }
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        } catch (error) {
+            console.error(error);
+            alert('유저별 파일 다운로드에 실패했습니다.');
+        }
 
-        });
+    });
 
-        fileDownloadBySurveyBtn.addEventListener("click", async () => {
-            const Rows = document.querySelectorAll(
-                ".custom-checkbox[data-id]",
-            );
+    fileDownloadBySurveyBtn.addEventListener("click", async () => {
+        const Rows = document.querySelectorAll(
+            ".custom-checkbox[data-id]",
+        );
 
-            if (Rows.length === 0) {
-                const notification = document.createElement("div");
-                notification.className =
-                    "fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded";
-                notification.innerHTML = `
+        if (Rows.length === 0) {
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded";
+            notification.innerHTML = `
       <div class="flex items-center">
       <i class="ri-error-warning-line mr-2"></i>
       <span>설문에 대한 기록이 없습니다.</span>
       </div>
       `;
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-                return;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+            return;
+        }
+
+
+        const surveyId = document.getElementById("survey-title").dataset.id;
+
+        try {
+            const response = await fetch(`${surveyAdminUrl}/log/file/survey/${surveyId}`, {
+                method: 'POST',
+            });
+
+            if (!response.ok) {
+                throw new Error('문항별 파일 다운로드에 실패했습니다.');
             }
+            const titleText = document.getElementById("survey-title").textContent;
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // 0-based → +1
+            const day = String(today.getDate()).padStart(2, '0');
 
+            const todayStr = `${year}-${month}-${day}`;
 
-            const surveyId = document.getElementById("survey-title").dataset.id;
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
 
-            try {
-                const response = await fetch(`${surveyAdminUrl}/log/file/survey/${surveyId}`, {
-                    method: 'POST',
-                });
-
-                if (!response.ok) {
-                    throw new Error('문항별 파일 다운로드에 실패했습니다.');
-                }
-                const titleText = document.getElementById("survey-title").textContent;
-                const today = new Date();
-                const year = today.getFullYear();
-                const month = String(today.getMonth() + 1).padStart(2, '0'); // 0-based → +1
-                const day = String(today.getDate()).padStart(2, '0');
-
-                const todayStr = `${year}-${month}-${day}`;
-
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-
-                a.href = url;
-                a.download = titleText+"_"+todayStr+'_all.zip';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                window.URL.revokeObjectURL(url);
-                const notification = document.createElement("div");
-                notification.className =
-                    "fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded";
-                notification.innerHTML = `
+            a.href = url;
+            a.download = titleText+"_"+todayStr+'_all.zip';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded";
+            notification.innerHTML = `
       <div class="flex items-center">
       <i class="ri-checkbox-circle-line mr-2"></i>
       <span>파일이 다운로드 되었습니다.</span>
       </div>
       `;
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-            } catch (error) {
-                console.error(error);
-                alert('문항별 파일 다운로드에 실패했습니다.');
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        } catch (error) {
+            console.error(error);
+            alert('문항별 파일 다운로드에 실패했습니다.');
+        }
+
+    });
+
+
+
+    // 라디오 버튼 기능 구현
+    const radios = document.querySelectorAll(".custom-radio");
+    radios.forEach((radio) => {
+        radio.addEventListener("click", function () {
+            const name = this.getAttribute("name");
+            if (name) {
+                document
+                    .querySelectorAll(`.custom-radio[name="${name}"]`)
+                    .forEach((r) => {
+                        r.classList.remove("checked");
+                    });
             }
-
+            this.classList.add("checked");
         });
-
-
-
-        // 라디오 버튼 기능 구현
-        const radios = document.querySelectorAll(".custom-radio");
-        radios.forEach((radio) => {
-            radio.addEventListener("click", function () {
-                const name = this.getAttribute("name");
-                if (name) {
-                    document
-                        .querySelectorAll(`.custom-radio[name="${name}"]`)
-                        .forEach((r) => {
-                            r.classList.remove("checked");
-                        });
-                }
-                this.classList.add("checked");
-            });
-        });
-        // 스위치 기능 구현
-        const switches = document.querySelectorAll(".custom-switch");
-        switches.forEach((switchEl) => {
-            switchEl.addEventListener("click", function () {
-                this.classList.toggle("checked");
-            });
+    });
+    // 스위치 기능 구현
+    const switches = document.querySelectorAll(".custom-switch");
+    switches.forEach((switchEl) => {
+        switchEl.addEventListener("click", function () {
+            this.classList.toggle("checked");
         });
     });
 </script>
-<script id="tab-handler">
-    document.addEventListener("DOMContentLoaded", function () {
-        const tabResponses = document.getElementById("tab-responses");
-        const tabAnalysis = document.getElementById("tab-analysis");
-        const contentResponses = document.getElementById("content-responses");
-        const contentAnalysis = document.getElementById("content-analysis");
-        tabResponses.addEventListener("click", function () {
-            tabResponses.classList.add("tab-active");
-            tabAnalysis.classList.remove("tab-active");
-            tabAnalysis.classList.add("text-gray-500");
-            contentResponses.classList.remove("hidden");
-            contentResponses.classList.add("block");
-            contentAnalysis.classList.remove("block");
-            contentAnalysis.classList.add("hidden");
-        });
-        tabAnalysis.addEventListener("click", function () {
-            tabAnalysis.classList.add("tab-active");
-            tabAnalysis.classList.remove("text-gray-500");
-            tabResponses.classList.remove("tab-active");
-            contentAnalysis.classList.remove("hidden");
-            contentAnalysis.classList.add("block");
-            contentResponses.classList.remove("block");
-            contentResponses.classList.add("hidden");
-        });
+<script id="tab-handler" type="module">
+    const tabResponses = document.getElementById("tab-responses");
+    const tabAnalysis = document.getElementById("tab-analysis");
+    const contentResponses = document.getElementById("content-responses");
+    const contentAnalysis = document.getElementById("content-analysis");
+    tabResponses.addEventListener("click", function () {
+        tabResponses.classList.add("tab-active");
+        tabAnalysis.classList.remove("tab-active");
+        tabAnalysis.classList.add("text-gray-500");
+        contentResponses.classList.remove("hidden");
+        contentResponses.classList.add("block");
+        contentAnalysis.classList.remove("block");
+        contentAnalysis.classList.add("hidden");
+    });
+    tabAnalysis.addEventListener("click", function () {
+        tabAnalysis.classList.add("tab-active");
+        tabAnalysis.classList.remove("text-gray-500");
+        tabResponses.classList.remove("tab-active");
+        contentAnalysis.classList.remove("hidden");
+        contentAnalysis.classList.add("block");
+        contentResponses.classList.remove("block");
+        contentResponses.classList.add("hidden");
     });
 </script>
-<script id="chart-handler">
-    document.addEventListener("DOMContentLoaded", function () {
-        // 만족도 차트
-        const satisfactionChart = echarts.init(
-            document.getElementById("chart-satisfaction"),
-        );
-        const satisfactionOption = {
-            animation: false,
-            tooltip: {
-                trigger: "axis",
-                axisPointer: {
-                    type: "shadow",
-                },
-                backgroundColor: "rgba(255, 255, 255, 0.9)",
-                borderColor: "#e5e7eb",
-                borderWidth: 1,
-                textStyle: {
-                    color: "#1f2937",
+<script id="chart-handler" type="module">
+    // 만족도 차트
+    const satisfactionChart = echarts.init(
+        document.getElementById("chart-satisfaction"),
+    );
+    const satisfactionOption = {
+        animation: false,
+        tooltip: {
+            trigger: "axis",
+            axisPointer: {
+                type: "shadow",
+            },
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            borderColor: "#e5e7eb",
+            borderWidth: 1,
+            textStyle: {
+                color: "#1f2937",
+            },
+        },
+        grid: {
+            left: "3%",
+            right: "4%",
+            bottom: "3%",
+            top: "3%",
+            containLabel: true,
+        },
+        xAxis: {
+            type: "category",
+            data: ["매우 불만족", "불만족", "보통", "만족", "매우 만족"],
+            axisLine: {
+                lineStyle: {
+                    color: "#e5e7eb",
                 },
             },
-            grid: {
-                left: "3%",
-                right: "4%",
-                bottom: "3%",
-                top: "3%",
-                containLabel: true,
+            axisLabel: {
+                color: "#1f2937",
             },
-            xAxis: {
-                type: "category",
-                data: ["매우 불만족", "불만족", "보통", "만족", "매우 만족"],
-                axisLine: {
-                    lineStyle: {
-                        color: "#e5e7eb",
-                    },
-                },
-                axisLabel: {
-                    color: "#1f2937",
+        },
+        yAxis: {
+            type: "value",
+            axisLine: {
+                show: false,
+            },
+            axisTick: {
+                show: false,
+            },
+            splitLine: {
+                lineStyle: {
+                    color: "#f3f4f6",
                 },
             },
-            yAxis: {
-                type: "value",
-                axisLine: {
-                    show: false,
-                },
-                axisTick: {
-                    show: false,
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: "#f3f4f6",
-                    },
-                },
-                axisLabel: {
-                    color: "#1f2937",
+            axisLabel: {
+                color: "#1f2937",
+            },
+        },
+        series: [
+            {
+                name: "응답 수",
+                type: "bar",
+                barWidth: "60%",
+                data: [5, 15, 40, 120, 68],
+                itemStyle: {
+                    color: "rgba(87, 181, 231, 1)",
+                    borderRadius: 4,
                 },
             },
-            series: [
-                {
-                    name: "응답 수",
-                    type: "bar",
-                    barWidth: "60%",
-                    data: [5, 15, 40, 120, 68],
-                    itemStyle: {
-                        color: "rgba(87, 181, 231, 1)",
-                        borderRadius: 4,
-                    },
-                },
-            ],
-        };
-        satisfactionChart.setOption(satisfactionOption);
-        // 입사일 차트
-        const joinDateChart = echarts.init(
-            document.getElementById("chart-join-date"),
-        );
-        const joinDateOption = {
-            animation: false,
-            tooltip: {
-                trigger: "axis",
-                axisPointer: {
-                    type: "shadow",
-                },
-                backgroundColor: "rgba(255, 255, 255, 0.9)",
-                borderColor: "#e5e7eb",
-                borderWidth: 1,
-                textStyle: {
-                    color: "#1f2937",
+        ],
+    };
+    satisfactionChart.setOption(satisfactionOption);
+    // 입사일 차트
+    const joinDateChart = echarts.init(
+        document.getElementById("chart-join-date"),
+    );
+    const joinDateOption = {
+        animation: false,
+        tooltip: {
+            trigger: "axis",
+            axisPointer: {
+                type: "shadow",
+            },
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            borderColor: "#e5e7eb",
+            borderWidth: 1,
+            textStyle: {
+                color: "#1f2937",
+            },
+        },
+        grid: {
+            left: "3%",
+            right: "4%",
+            bottom: "3%",
+            top: "3%",
+            containLabel: true,
+        },
+        xAxis: {
+            type: "category",
+            data: ["2020", "2021", "2022", "2023", "2024", "2025"],
+            axisLine: {
+                lineStyle: {
+                    color: "#e5e7eb",
                 },
             },
-            grid: {
-                left: "3%",
-                right: "4%",
-                bottom: "3%",
-                top: "3%",
-                containLabel: true,
+            axisLabel: {
+                color: "#1f2937",
             },
-            xAxis: {
-                type: "category",
-                data: ["2020", "2021", "2022", "2023", "2024", "2025"],
-                axisLine: {
-                    lineStyle: {
-                        color: "#e5e7eb",
-                    },
-                },
-                axisLabel: {
-                    color: "#1f2937",
+        },
+        yAxis: {
+            type: "value",
+            axisLine: {
+                show: false,
+            },
+            axisTick: {
+                show: false,
+            },
+            splitLine: {
+                lineStyle: {
+                    color: "#f3f4f6",
                 },
             },
-            yAxis: {
-                type: "value",
-                axisLine: {
-                    show: false,
+            axisLabel: {
+                color: "#1f2937",
+            },
+        },
+        series: [
+            {
+                name: "입사자 수",
+                type: "line",
+                smooth: true,
+                symbol: "none",
+                data: [18, 25, 32, 65, 58, 50],
+                lineStyle: {
+                    color: "rgba(141, 211, 199, 1)",
+                    width: 3,
                 },
-                axisTick: {
-                    show: false,
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: "#f3f4f6",
-                    },
-                },
-                axisLabel: {
-                    color: "#1f2937",
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        {
+                            offset: 0,
+                            color: "rgba(141, 211, 199, 0.3)",
+                        },
+                        {
+                            offset: 1,
+                            color: "rgba(141, 211, 199, 0.1)",
+                        },
+                    ]),
                 },
             },
-            series: [
-                {
-                    name: "입사자 수",
-                    type: "line",
-                    smooth: true,
-                    symbol: "none",
-                    data: [18, 25, 32, 65, 58, 50],
-                    lineStyle: {
-                        color: "rgba(141, 211, 199, 1)",
-                        width: 3,
-                    },
-                    areaStyle: {
-                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                            {
-                                offset: 0,
-                                color: "rgba(141, 211, 199, 0.3)",
-                            },
-                            {
-                                offset: 1,
-                                color: "rgba(141, 211, 199, 0.1)",
-                            },
-                        ]),
-                    },
-                },
-            ],
-        };
-        joinDateChart.setOption(joinDateOption);
-        // 창 크기 변경 시 차트 크기 조정
-        window.addEventListener("resize", function () {
-            satisfactionChart.resize();
-            joinDateChart.resize();
-        });
+        ],
+    };
+    joinDateChart.setOption(joinDateOption);
+    // 창 크기 변경 시 차트 크기 조정
+    window.addEventListener("resize", function () {
+        satisfactionChart.resize();
+        joinDateChart.resize();
     });
 </script>
 </body>

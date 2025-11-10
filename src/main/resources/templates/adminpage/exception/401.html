@@ -77,7 +77,7 @@
     </div>
 </div>
 <script id="button-interactions">
-    document.addEventListener("DOMContentLoaded", function () {
+    (function () {
         const homeButton = document.querySelector("button:first-of-type");
         const loginButton = document.querySelector("button:last-of-type");
         homeButton.addEventListener("click", function () {
@@ -86,7 +86,7 @@
         loginButton.addEventListener("click", function () {
             window.location.href = "/login";
         });
-    });
+    })();
 </script>
 </body>
 </html>

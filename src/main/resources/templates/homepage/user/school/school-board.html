@@ -265,21 +265,19 @@
         </div>
     </main>
 <th:block th:fragment="script">
-    <script id="filterDropdownScript">
-        document.addEventListener("DOMContentLoaded", function () {
-            const filterButton = document.getElementById("filterButton");
-            const filterDropdown = document.getElementById("filterDropdown");
-            filterButton.addEventListener("click", function () {
-                filterDropdown.classList.toggle("hidden");
-            });
-            document.addEventListener("click", function (event) {
-                if (
-                    !filterButton.contains(event.target) &&
-                    !filterDropdown.contains(event.target)
-                ) {
-                    filterDropdown.classList.add("hidden");
-                }
-            });
+    <script id="filterDropdownScript" type="module">
+        const filterButton = document.getElementById("filterButton");
+        const filterDropdown = document.getElementById("filterDropdown");
+        filterButton?.addEventListener("click", function () {
+            filterDropdown.classList.toggle("hidden");
+        });
+        document.addEventListener("click", function (event) {
+            if (
+                !filterButton.contains(event.target) &&
+                !filterDropdown.contains(event.target)
+            ) {
+                filterDropdown.classList.add("hidden");
+            }
         });
     </script>
 </th:block>

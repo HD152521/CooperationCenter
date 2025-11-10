@@ -913,100 +913,96 @@
         </div>
     </div>
 </footer>
-<script id="chart-script">
-    document.addEventListener("DOMContentLoaded", function () {
-        const chartDom = document.getElementById("internationalChart");
-        const myChart = echarts.init(chartDom);
-        const option = {
-            animation: false,
-            tooltip: {
-                trigger: "item",
-                backgroundColor: "rgba(255, 255, 255, 0.8)",
-                borderColor: "#eee",
-                borderWidth: 1,
-                textStyle: {
-                    color: "#1f2937",
-                },
+<script id="chart-script" type="module">
+    const chartDom = document.getElementById("internationalChart");
+    const myChart = echarts.init(chartDom);
+    const option = {
+        animation: false,
+        tooltip: {
+            trigger: "item",
+            backgroundColor: "rgba(255, 255, 255, 0.8)",
+            borderColor: "#eee",
+            borderWidth: 1,
+            textStyle: {
+                color: "#1f2937",
             },
-            legend: {
-                top: "5%",
-                left: "center",
-                textStyle: {
-                    color: "#1f2937",
-                },
+        },
+        legend: {
+            top: "5%",
+            left: "center",
+            textStyle: {
+                color: "#1f2937",
             },
-            series: [
-                {
-                    name: "국제 협력 현황",
-                    type: "pie",
-                    radius: ["40%", "70%"],
-                    avoidLabelOverlap: false,
-                    itemStyle: {
-                        borderRadius: 8,
-                        borderColor: "#fff",
-                        borderWidth: 2,
-                    },
+        },
+        series: [
+            {
+                name: "국제 협력 현황",
+                type: "pie",
+                radius: ["40%", "70%"],
+                avoidLabelOverlap: false,
+                itemStyle: {
+                    borderRadius: 8,
+                    borderColor: "#fff",
+                    borderWidth: 2,
+                },
+                label: {
+                    show: false,
+                    position: "center",
+                },
+                emphasis: {
                     label: {
-                        show: false,
-                        position: "center",
+                        show: true,
+                        fontSize: "16",
+                        fontWeight: "bold",
+                        color: "#1f2937",
                     },
-                    emphasis: {
-                        label: {
-                            show: true,
-                            fontSize: "16",
-                            fontWeight: "bold",
-                            color: "#1f2937",
-                        },
-                    },
-                    labelLine: {
-                        show: false,
-                    },
-                    data: [
-                        { value: 85, name: "아시아" },
-                        { value: 65, name: "북미" },
-                        { value: 55, name: "유럽" },
-                        { value: 25, name: "오세아니아" },
-                        { value: 20, name: "기타" },
-                    ],
-                    color: [
-                        "rgba(87, 181, 231, 1)",
-                        "rgba(141, 211, 199, 1)",
-                        "rgba(251, 191, 114, 1)",
-                        "rgba(252, 141, 98, 1)",
-                        "rgba(190, 190, 190, 1)",
-                    ],
                 },
-            ],
-        };
-        myChart.setOption(option);
-        window.addEventListener("resize", function () {
-            myChart.resize();
-        });
+                labelLine: {
+                    show: false,
+                },
+                data: [
+                    { value: 85, name: "아시아" },
+                    { value: 65, name: "북미" },
+                    { value: 55, name: "유럽" },
+                    { value: 25, name: "오세아니아" },
+                    { value: 20, name: "기타" },
+                ],
+                color: [
+                    "rgba(87, 181, 231, 1)",
+                    "rgba(141, 211, 199, 1)",
+                    "rgba(251, 191, 114, 1)",
+                    "rgba(252, 141, 98, 1)",
+                    "rgba(190, 190, 190, 1)",
+                ],
+            },
+        ],
+    };
+    myChart.setOption(option);
+    window.addEventListener("resize", function () {
+        myChart.resize();
     });
 </script>
-<script id="mobile-menu-script">
-    document.addEventListener("DOMContentLoaded", function () {
-        const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-        const mobileMenu = document.getElementById("mobileMenu");
-        const mobileUnivBtn = document.getElementById("mobileUnivBtn");
-        const mobileUnivSubmenu = document.getElementById("mobileUnivSubmenu");
+<script id="mobile-menu-script" type="module">
+    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+    const mobileMenu = document.getElementById("mobileMenu");
+    const mobileUnivBtn = document.getElementById("mobileUnivBtn");
+    const mobileUnivSubmenu = document.getElementById("mobileUnivSubmenu");
 
-        mobileMenuBtn.addEventListener("click", function () {
-            mobileMenu.classList.toggle("hidden");
-        });
+    mobileMenuBtn?.addEventListener("click", function () {
+        mobileMenu.classList.toggle("hidden");
+    });
 
-        mobileUnivBtn.addEventListener("click", function () {
-            mobileUnivSubmenu.classList.toggle("hidden");
-        });
+    mobileUnivBtn?.addEventListener("click", function () {
+        mobileUnivSubmenu.classList.toggle("hidden");
+    });
 
-        document.addEventListener("click", function (event) {
-            if (
-                !mobileMenuBtn.contains(event.target) &&
-                !mobileMenu.contains(event.target)
-            ) {
-                mobileMenu.classList.add("hidden");
-            }
-        });
+    document.addEventListener("click", function (event) {
+        if (
+            !mobileMenuBtn?.contains(event.target) &&
+            !mobileMenu?.contains(event.target)
+        ) {
+            mobileMenu?.classList.add("hidden");
+        }
     });
 </script>
 <script src="/js/homepage/nav-user.js"></script>
