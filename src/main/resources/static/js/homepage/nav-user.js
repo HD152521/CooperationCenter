@@ -1,4 +1,4 @@
-(function() {
+document.addEventListener("turbo:load", () => {
     const mobileBtn = document.getElementById("mobile-menu-button");
     const mobileMenu = document.getElementById("mobile-menu");
     const mobileUniBtn = document.getElementById("mobile-university-button");
@@ -37,7 +37,7 @@
             alert("로그아웃 오류 발생");
         });
     }
-})();
+});
 
 // Todo: 세션 연장기능 -> 미들웨어로 빼면 어떨까요?
 // async function loadPageContent() {
