@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>설문조사 관리</title>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <script>
         tailwind.config = {
@@ -173,10 +174,10 @@
 <!--header자리-->
 <header th:replace="~{fragments/common/survey-nav :: survey-nav}"></header>
 
-<main class="container mx-auto px-4 py-6 flex">
+<main class="px-4 py-6 flex">
     <!-- 좌측 사이드바 - 문제 유형 선택 -->
  <!-- fixme    <div class="w-64 shrink-0 mr-6 ">-->
-    <div id="left-sidebar" class="w-64 shrink-0 mr-6 hidden fixed top-0 left-0 h-full bg-white z-40 sm:block sm:relative sm:h-auto sm:top-auto sm:left-auto">
+    <div id="left-sidebar" class="w-64 shrink-0 mr-6 hidden fixed top-0 left-0 h-full z-40 sm:block sm:relative sm:h-auto sm:top-auto sm:left-auto">
         <div class="bg-white rounded-lg shadow-sm p-4 sticky top-20">
             <h2 class="text-lg font-semibold mb-4">문제 유형</h2>
             <div class="space-y-2">
@@ -293,10 +294,8 @@
                         placeholder="설문조사 제목을 입력하세요"
                         class="text-xl font-bold w-full focus:outline-none"
                         value="새 설문조사" />
-                <button
-                        class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap flex items-center",
-                        id="saveButton"
-                >
+                <button id="saveButton"
+                        class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap flex items-center">
                     <i class="ri-save-line mr-2"></i>
                     저장하기
                 </button>
@@ -307,10 +306,9 @@
                 <!--                        placeholder="설문조사 제목을 입력하세요"-->
                 <!--                        class="w-full text-xl font-semibold border-none focus:ring-0 focus:outline-none"-->
                 <!--                />-->
-                <textarea
-                        placeholder="설문조사에 대한 설명을 입력하세요"
-                        class="w-full mt-2 border-none focus:ring-0 focus:outline-none resize-none text-gray-600"
-                ></textarea>
+                <textarea placeholder="설문조사에 대한 설명을 입력하세요"
+                          class="w-full mt-2 border-none focus:ring-0 focus:outline-none resize-none text-gray-600">
+                </textarea>
             </div>
         </div>
         <div id="questions-container" class="space-y-4">
@@ -742,11 +740,10 @@
         </div>
     </div>
 
-
     <!-- 우측 사이드바 - 설정 패널 -->
 <!--fixme     <div class="w-72 shrink-0 ml-6">-->
-    <div id="right-sidebar" class="w-72 shrink-0 ml-6 hidden fixed top-0 right-0 h-full bg-white z-40 sm:block sm:relative sm:h-auto sm:top-auto sm:left-auto">
-        <div class="bg-white rounded-lg shadow-sm p-4 sticky top-20">
+    <div id="right-sidebar" class="w-72 shrink-0 ml-6 hidden fixed top-0 right-0 h-full z-40 sm:block sm:relative sm:h-auto sm:right-auto">
+        <div class="bg-white rounded-lg shadow-sm sticky top-20 p-4">
             <h2 class="text-lg font-semibold mb-4">설정</h2>
 
             <div class="border-t border-gray-100 my-4"></div>
@@ -799,12 +796,45 @@
         </div>
     </div>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-
 <!-- 계층형 관련 스크립트 -->
+<script id="toast-management" type="module">
+    function showToast(type, message, showRetry = false) {
+        const toast = document.getElementById("toast");
+        const toastIcon = document.getElementById("toast-icon");
+        const toastMessage = document.getElementById("toast-message");
+        const toastAction = document.getElementById("toast-action");
 
+        toastIcon.className =
+            type === "success"
+                ? "ri-checkbox-circle-line text-green-500"
+                : "ri-error-warning-line text-red-500";
+
+        toastMessage.textContent = message;
+        toastAction.classList.toggle("hidden", !showRetry);
+        toast.classList.remove("hidden");
+
+        setTimeout(() => {
+            toast.classList.add("show");
+        }, 100);
+        setTimeout(() => {
+            toast.classList.remove("show");
+            setTimeout(() => {
+                toast.classList.add("hidden");
+            }, 300);
+        }, 3000);
+    }
+    document.getElementById("toast-close").addEventListener("click", () => {
+        const toast = document.getElementById("toast");
+        toast.classList.remove("show");
+        setTimeout(() => {
+            toast.classList.add("hidden");
+        }, 300);
+    });
+
+    // export module
+    window.showToast = showToast;
+</script>
 <script id="hierarchy-management" type="module">
-    // fixme: 전역변수 설정 - window.hierarchyStore, window.initHierarchy, window.getStore, window.updateHierarchyColumn
     let hierarchyStore = {};
 
     function initHierarchy(questionId) {
@@ -823,7 +853,7 @@
                 3: 0,
             }
         };
-    } // window.initHierarchy = initHierarchy; // fixme: 전역 함수로 노출 필요 시 주석 해제
+    }
 
     function getStore(questionId) {
         console.log("enter");
@@ -831,7 +861,7 @@
             initHierarchy(questionId);
         }
         return hierarchyStore[questionId];
-    } // window.getStore = getStore; // fixme: 전역 함수로 노출 필요 시 주석 해제
+    }
 
     function updateHierarchyColumn(level, parentId = null, container, questionId) {
         const store = getStore(questionId);
@@ -901,7 +931,7 @@
                 store.selectedOptions[level + 1] = "";
             }
         }
-    } // window.updateHierarchyColumn = updateHierarchyColumn; // fixme: 전역 함수로 노출 필요 시 주석 해제
+    }
 
     document.addEventListener("click", function (event) {
         const option = event.target.closest(".hierarchy-option");
@@ -945,7 +975,6 @@
             }
         }
     });
-
 
     document.addEventListener("click", function (event) {
         const addButton = event.target.closest("[data-add-option]");
@@ -1022,7 +1051,6 @@
                         firstOption.classList.add("selected");
                         store.selectedOptions[level] = firstOption.getAttribute("data-option-id");
                         const tmpContainer = questionContainer.querySelectorAll(`[data-options-container]`);
-                        // fixme: 전역함수 호출 - updateHierarchyColumn
                         if (level < 3) {
                             updateHierarchyColumn(level + 1, store.selectedOptions[level], tmpContainer[level], questionId);
                         }
@@ -1047,7 +1075,6 @@
 
         const level = parseInt(levelElement.getAttribute("data-options-container"));
         const newText = input.value;
-        // fixme: 전역변수 참조 - hierarchyStore
         const store = hierarchyStore[questionId];
 
         if (level === 1) {
@@ -1061,10 +1088,219 @@
             if (target) target.text = newText;
         }
     });
+
+    // export module
+    window.hierarchyStore = hierarchyStore;
+    window.initHierarchy = initHierarchy;
+    window.getStore = getStore;
+    window.updateHierarchyColumn = updateHierarchyColumn;
+</script>
+<script th:inline="javascript" type="module">
+    //note 설문 형태 저장하는 기능
+    function collectQuestions() {
+        const questionElements = document.querySelectorAll(
+            '#questions-container > .question-container:not(#question-template)'
+        );
+
+        const questions = [];
+        let collectionFailed = false;
+
+        questionElements.forEach((el) => {
+            const type = el.querySelector('.answer-container:not(.hidden)').dataset.type;
+            const title = el.querySelector('input[type="text"]').value.trim() || '';
+            const description = el.querySelector('textarea')?.value.trim() || '';
+            const questionId = el.dataset.id;
+            console.log(title);
+            if(!title) collectionFailed = true;
+            //fixme 이거 수정한거 spring dto에 추가해야함.
+            const isTemplate = el.dataset.template === "true";
+            const domainField = el.dataset.domainField || null;
+
+            const questionData = {
+                type,
+                question: title,
+                description,
+                ...(questionId && { questionId }),
+                ...(isTemplate && { isTemplate: true }),
+                ...(domainField && { domainField })
+            };
+
+            // 객관식/드롭다운 질문에 옵션이 있다면 추가
+            if (['multiple', 'multiple-checkbox', 'dropdown'].includes(type)) {
+                const optionInputs = el.querySelectorAll(
+                    `.answer-container[data-type="${type}"] input[type="text"]`
+                );
+                const optionPairs = Array.from(optionInputs).map((input) => {
+                    const text = input.value.trim();
+                    const select = input.parentElement.querySelector(".jump-target-select");
+                    const nextQuestion = select?.value || "";
+                    const optionId = input.dataset.id;
+                    return { text, nextQuestion , ...(optionId && { optionId: optionId })};
+                }).filter(
+                    opt => {
+                        const isValid = opt.text.length > 0;
+                        if (!isValid) collectionFailed = true; // 이것도 true로 설정해서 저장 실패 처리
+                        return isValid;
+                    });
+                questionData.options = optionPairs;
+            }else if (type === "hierarchy") {
+                const questionId = el.getAttribute("data-question-id");
+                const store = window.hierarchyStore?.[questionId];
+                if (!store) {
+                    collectionFailed = true;
+                    return;
+                }
+
+                const hierarchyOptions = [];
+
+                // 1단계
+                store.firstHierarchyData.forEach(first => {
+                    hierarchyOptions.push({
+                        text: first.text,
+                        hierarchyId: first.id,
+                        level: 1,
+                        parentOptionId: null,
+                        ...(first.optionId && { optionId: first.optionId })
+                    });
+
+                    const secondLevel = store.hierarchyData[first.id] || [];
+                    secondLevel.forEach(second => {
+                        hierarchyOptions.push({
+                            text: second.text,
+                            hierarchyId: second.id,
+                            level: 2,
+                            parentOptionId: first.id,
+                            ...(second.optionId && { optionId: second.optionId })
+                        });
+
+                        const thirdLevel = store.hierarchySubData[second.id] || [];
+                        thirdLevel.forEach(third => {
+                            hierarchyOptions.push({
+                                text: third.text,
+                                hierarchyId: third.id,
+                                level: 3,
+                                parentOptionId: second.id,
+                                ...(third.optionId && { optionId: third.optionId })
+                            });
+                        });
+                    });
+                });
+
+                questionData.options = hierarchyOptions;
+            }
+
+            questions.push(questionData);
+        });
+
+        return collectionFailed ? null : questions;
+    }
+
+    // Date validation
+    function validateDateRange() {
+        const startInput = document.getElementById('start-date');
+        const endInput = document.getElementById('end-date');
+
+        if (!startInput || !endInput) return;
+
+        const startDate = new Date(startInput.value);
+        const endDate = new Date(endInput.value);
+
+        if (endDate < startDate) {
+            console.warn('종료일이 시작일보다 이전입니다.');
+            return false;
+        }
+        return true;
+    }
+
+    async function saveForm() {
+        console.log("save button click");
+        const titleInput = document.querySelector(
+            'input[placeholder="설문조사 제목을 입력하세요"]'
+        );
+
+        if (!titleInput.value.trim()) {
+            showToast("error", "설문조사 제목을 입력해주세요");
+            titleInput.focus();
+            return;
+        }
+
+        const description = document.querySelector("textarea").value.trim();
+        const questions = collectQuestions();
+
+        //저장 가능 체크
+        if(questions==null){
+            console.log("questions is null");
+            showToast("error","설문조사 문항을 제대로 입력해주세요");
+            return;
+        }
+
+        if (questions.length === 0) {
+            showToast("error", "문제를 하나 이상 추가해주세요");
+            return;
+        }
+
+        if(!validateDateRange()){
+            showToast("error", "날짜를 다시 확인해주세요");
+            return;
+        }
+
+        const originalContent = saveButton.innerHTML;
+        saveButton.innerHTML = `
+        <i class="ri-loader-4-line loading-spinner mr-2"></i>
+        저장 중...
+    `;
+        saveButton.disabled = true;
+
+        const startDate = document.getElementById("start-date").value;
+        const endDate = document.getElementById("end-date").value;
+
+        try {
+            const survey = /*[[${survey}]]*/ null;
+            if(survey) console.log("survey있음");
+            else console.log("survey없음");
+            const folderId = /*[[${folderId}]]*/ null;
+            const url = (survey) ? surveyAdminUrl+"/edit" : surveyAdminUrl + "/make";
+            const method = (survey) ? "PATCH" : "POST";
+            const surveyType=document.getElementById("survey-type")?.value || "normal";
+            const isShare = document.querySelector('#isPublic').checked;
+            console.log("surveyType:"+surveyType);
+            //fixme payload수정함 이거  dto에서 받아야함.
+
+            const payload = {
+                title: titleInput.value,
+                description,
+                questions,
+                startDate,
+                endDate,
+                surveyType: surveyType,
+                ...(survey && { surveyId: survey.surveyId }), // surveyId가 존재할 때만 id 추가
+                folderId,
+                isShare
+            };
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) throw new Error("저장 실패");
+
+            showToast("success", "설문조사가 저장되었습니다");
+            window.location.href = "/survey/list?folderId="+folderId;
+        } catch (error) {
+            showToast("error", "저장 중 오류가 발생했습니다", true);
+        } finally {
+            saveButton.innerHTML = originalContent;
+            saveButton.disabled = false;
+        }
+    }
+
+    const saveButton = document.getElementById("saveButton")
+    saveButton.addEventListener("click", saveForm);
 </script>
 <script id="init" type="module">
-    // fixme: 전역변수 참조 - Sortable
-    // fixme: 전역함수 호출 - updateJumpTargets
     const today = new Date();
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -1082,22 +1318,6 @@
         endInput.value = todayStr;
     }
 
-    function validateDateRange() {
-        const startInput = document.getElementById('start-date');
-        const endInput = document.getElementById('end-date');
-
-        if (!startInput || !endInput) return;
-
-        const startDate = new Date(startInput.value);
-        const endDate = new Date(endInput.value);
-
-        if (endDate < startDate) {
-            console.warn('종료일이 시작일보다 이전입니다.');
-            return false;
-        }
-        return true;
-    }
-
     //옮길수있는걸로 변경
     const questionsContainer = document.getElementById("questions-container");
 
@@ -1112,9 +1332,7 @@
         },
     });
 </script>
-
 <script id="multiple-choice-management" type="module">
-    // fixme: 전역함수 정의 - createOptionElement, updateJumpTargets
     function createOptionElement(type, optionCount) {
         console.log("enter cereateOptionElement");
         const wrapper = document.createElement("div");
@@ -1161,8 +1379,6 @@
         return wrapper;
     }
 
-
-
     function updateJumpTargets() {
         const allQuestions = document.querySelectorAll('.question-container:not(#question-template)');
         allQuestions.forEach((question, index) => {
@@ -1203,10 +1419,8 @@
                 .filter((el) => el.classList.contains("flex") && el.classList.contains("items-center"))
                 .length;
 
-            // fixme: 전역함수 호출 - createOptionElement
             const newOption = createOptionElement(type, optionCount + 1);
             optionsContainer.insertBefore(newOption, addButton);
-            // fixme: 전역함수 호출 - updateJumpTargets
             updateJumpTargets();
 
             // 옵션 placeholder 재정렬
@@ -1237,16 +1451,17 @@
                     if (optionRow) {
                         optionRow.remove();
                     }
-                    // fixme: 전역함수 호출 - updateJumpTargets
                     updateJumpTargets();
                 }
             }
         }
     });
-</script>
 
+    // export window functions
+    window.createOptionElement = createOptionElement;
+    window.updateJumpTargets = updateJumpTargets;
+</script>
 <script id="question-management" th:inline="javascript" type="module">
-    // fixme: 전역함수 정의 - addQuestion, setQuestionType, setupTypeDropdown, setupDeleteButton
     let questionCounter = 0;
 
     // ✅ 밖으로 뺀 함수들 (전역)
@@ -1264,7 +1479,6 @@
         questionCounter++;
         newQuestion.setAttribute("data-question-id", questionCounter);
 
-        // fixme: 전역함수 호출 - setQuestionType, setupTypeDropdown, setupDeleteButton
         setQuestionType(newQuestion, type);
         setupTypeDropdown(newQuestion);
         setupDeleteButton(newQuestion);
@@ -1330,7 +1544,6 @@
         typeOptions.forEach((option) => {
             option.addEventListener("click", function () {
                 const type = this.getAttribute("data-type");
-                // fixme: 전역함수 호출 - setQuestionType
                 setQuestionType(questionElement, type);
                 typeMenu.classList.add("hidden");
                 typeButton.setAttribute("aria-expanded", "false");
@@ -1348,7 +1561,6 @@
             if (questions.length === 0) {
                 emptyState.classList.remove("hidden");
             }
-            // fixme: 전역함수 호출 - updateJumpTargets
             updateJumpTargets();
         });
     }
@@ -1356,35 +1568,32 @@
     const addQuestionBtn = document.getElementById("add-question-btn");
     const addQuestionBtnBottom = document.getElementById("add-question-btn-bottom");
 
-    addQuestionBtn.addEventListener("click", function () {
-        // fixme: 전역함수 호출 - addQuestion, updateJumpTargets
+    addQuestionBtn?.addEventListener("click", function () {
         addQuestion("short");
         updateJumpTargets();
     });
 
-    addQuestionBtnBottom.addEventListener("click", function () {
-        // fixme: 전역함수 호출 - addQuestion, updateJumpTargets
+    addQuestionBtnBottom?.addEventListener("click", function () {
         addQuestion("short");
         updateJumpTargets();
     });
 
     const typeButtons = document.querySelectorAll("[data-question-type]");
-    typeButtons.forEach((button) => {
+    typeButtons?.forEach((button) => {
         button.addEventListener("click", function () {
             const type = this.getAttribute("data-question-type");
-            // fixme: 전역함수 호출 - addQuestion, updateJumpTargets
             addQuestion(type);
             updateJumpTargets();
         });
     });
-</script>
 
+    // export window functions
+    window.addQuestion = addQuestion;
+</script>
 <script id="dataLoad" th:inline="javascript" type="module">
-    // fixme: 전역함수 호출 - renderExistingQuestions, updateJumpTargets, restoreJumpTargetSelections
     function renderExistingQuestions(survey) {
         survey.questions.forEach((q) => {
             const questionType = q.type.toLowerCase();
-            // fixme: 전역함수 호출 - addQuestion
             const qEl = addQuestion(questionType);
             qEl.setAttribute("data-id", q.questionId);
             qEl.setAttribute("data-template",q.isTemplate);
@@ -1426,7 +1635,6 @@
                         // input.setAttribute("data-next-question", nextQuestion);
                         // input.setAttribute("data-real-next-question", realNextQuestion);
                     } else {
-                        // fixme: 전역함수 호출 - createOptionElement
                         const newOption = createOptionElement(questionType, index);
                         optionsContainer.insertBefore(newOption, addButton);
 
@@ -1449,7 +1657,6 @@
             }else if(["hierarchy"].includes(questionType)){
 
                 const questionId = qEl.getAttribute("data-question-id");
-                // fixme: 전역함수 호출 - window.initHierarchy, window.getStore, window.updateHierarchyColumn
                 const store = window.getStore(questionId);
                 store.firstHierarchyData = [];
                 q.options.forEach((option) => {
@@ -1532,251 +1739,11 @@
         console.warn("survey 데이터 없음");
     }
 </script>
-
-<script id="save-management" type="module">
-    // fixme: 전역함수 정의 - showToast
-    function showToast(type, message, showRetry = false) {
-        const toast = document.getElementById("toast");
-        const toastIcon = document.getElementById("toast-icon");
-        const toastMessage = document.getElementById("toast-message");
-        const toastAction = document.getElementById("toast-action");
-
-        toastIcon.className =
-            type === "success"
-                ? "ri-checkbox-circle-line text-green-500"
-                : "ri-error-warning-line text-red-500";
-
-        toastMessage.textContent = message;
-        toastAction.classList.toggle("hidden", !showRetry);
-        toast.classList.remove("hidden");
-
-        setTimeout(() => {
-            toast.classList.add("show");
-        }, 100);
-        setTimeout(() => {
-            toast.classList.remove("show");
-            setTimeout(() => {
-                toast.classList.add("hidden");
-            }, 300);
-        }, 3000);
-    }
-    document.getElementById("toast-close").addEventListener("click", () => {
-        const toast = document.getElementById("toast");
-        toast.classList.remove("show");
-        setTimeout(() => {
-            toast.classList.add("hidden");
-        }, 300);
-    });
-
-
-    const saveButton = document.getElementById("saveButton")
-    // fixme: 전역함수 호출 - saveForm
-    saveButton.addEventListener("click", saveForm);
-</script>
-
-<script th:inline="javascript" type="module">
-    //note 설문 형태 저장하는 기능
-    // fixme: 전역함수 정의 - collectQuestions, saveForm
-    function collectQuestions() {
-        const questionElements = document.querySelectorAll(
-            '#questions-container > .question-container:not(#question-template)'
-        );
-
-        const questions = [];
-        let collectionFailed = false;
-
-        questionElements.forEach((el) => {
-            const type = el.querySelector('.answer-container:not(.hidden)').dataset.type;
-            const title = el.querySelector('input[type="text"]').value.trim() || '';
-            const description = el.querySelector('textarea')?.value.trim() || '';
-            const questionId = el.dataset.id;
-            console.log(title);
-            if(!title) collectionFailed = true;
-            //fixme 이거 수정한거 spring dto에 추가해야함.
-            const isTemplate = el.dataset.template === "true";
-            const domainField = el.dataset.domainField || null;
-
-            const questionData = {
-                type,
-                question: title,
-                description,
-                ...(questionId && { questionId }),
-                ...(isTemplate && { isTemplate: true }),
-                ...(domainField && { domainField })
-            };
-
-            // 객관식/드롭다운 질문에 옵션이 있다면 추가
-            if (['multiple', 'multiple-checkbox', 'dropdown'].includes(type)) {
-                const optionInputs = el.querySelectorAll(
-                    `.answer-container[data-type="${type}"] input[type="text"]`
-                );
-                const optionPairs = Array.from(optionInputs).map((input) => {
-                    const text = input.value.trim();
-                        const select = input.parentElement.querySelector(".jump-target-select");
-                    const nextQuestion = select?.value || "";
-                    const optionId = input.dataset.id;
-                    return { text, nextQuestion , ...(optionId && { optionId: optionId })};
-                }).filter(
-                    opt => {
-                        const isValid = opt.text.length > 0;
-                        if (!isValid) collectionFailed = true; // 이것도 true로 설정해서 저장 실패 처리
-                        return isValid;
-                    });
-                questionData.options = optionPairs;
-            }else if (type === "hierarchy") {
-                const questionId = el.getAttribute("data-question-id");
-                // fixme: 전역변수 참조 - window.hierarchyStore
-                const store = window.hierarchyStore?.[questionId];
-                if (!store) {
-                    collectionFailed = true;
-                    return;
-                }
-
-                const hierarchyOptions = [];
-
-                // 1단계
-                store.firstHierarchyData.forEach(first => {
-                    hierarchyOptions.push({
-                        text: first.text,
-                        hierarchyId: first.id,
-                        level: 1,
-                        parentOptionId: null,
-                        ...(first.optionId && { optionId: first.optionId })
-                    });
-
-                    const secondLevel = store.hierarchyData[first.id] || [];
-                    secondLevel.forEach(second => {
-                        hierarchyOptions.push({
-                            text: second.text,
-                            hierarchyId: second.id,
-                            level: 2,
-                            parentOptionId: first.id,
-                            ...(second.optionId && { optionId: second.optionId })
-                        });
-
-                        const thirdLevel = store.hierarchySubData[second.id] || [];
-                        thirdLevel.forEach(third => {
-                            hierarchyOptions.push({
-                                text: third.text,
-                                hierarchyId: third.id,
-                                level: 3,
-                                parentOptionId: second.id,
-                                ...(third.optionId && { optionId: third.optionId })
-                            });
-                        });
-                    });
-                });
-
-                questionData.options = hierarchyOptions;
-            }
-
-            questions.push(questionData);
-        });
-
-        return collectionFailed ? null : questions;
-    }
-
-    async function saveForm() {
-        console.log("save button click");
-        const titleInput = document.querySelector(
-            'input[placeholder="설문조사 제목을 입력하세요"]'
-        );
-
-        if (!titleInput.value.trim()) {
-            // fixme: 전역함수 호출 - showToast
-            showToast("error", "설문조사 제목을 입력해주세요");
-            titleInput.focus();
-            return;
-        }
-
-        const description = document.querySelector("textarea").value.trim();
-        // fixme: 전역함수 호출 - collectQuestions
-        const questions = collectQuestions();
-
-        //저장 가능 체크
-        if(questions==null){
-            console.log("questions is null");
-            // fixme: 전역함수 호출 - showToast
-            showToast("error","설문조사 문항을 제대로 입력해주세요");
-            return;
-        }
-
-        if (questions.length === 0) {
-            // fixme: 전역함수 호출 - showToast
-            showToast("error", "문제를 하나 이상 추가해주세요");
-            return;
-        }
-
-        // fixme: 전역함수 호출 - validateDateRange
-        if(!validateDateRange()){
-            // fixme: 전역함수 호출 - showToast
-            showToast("error", "날짜를 다시 확인해주세요");
-            return;
-        }
-
-        const originalContent = saveButton.innerHTML;
-        saveButton.innerHTML = `
-        <i class="ri-loader-4-line loading-spinner mr-2"></i>
-        저장 중...
-    `;
-        saveButton.disabled = true;
-
-        const startDate = document.getElementById("start-date").value;
-        const endDate = document.getElementById("end-date").value;
-
-        try {
-            const survey = /*[[${survey}]]*/ null;
-            if(survey) console.log("survey있음");
-            else console.log("survey없음");
-            const folderId = /*[[${folderId}]]*/ null;
-            // fixme: 전역변수 참조 - surveyAdminUrl
-            const url = (survey) ? surveyAdminUrl+"/edit" : surveyAdminUrl + "/make";
-            const method = (survey) ? "PATCH" : "POST";
-            const surveyType=document.getElementById("survey-type")?.value || "normal";
-            const isShare = document.querySelector('#isPublic').checked;
-            console.log("surveyType:"+surveyType);
-            //fixme payload수정함 이거  dto에서 받아야함.
-
-            const payload = {
-                title: titleInput.value,
-                description,
-                questions,
-                startDate,
-                endDate,
-                surveyType: surveyType,
-                ...(survey && { surveyId: survey.surveyId }), // surveyId가 존재할 때만 id 추가
-                folderId,
-                isShare
-            };
-            const response = await fetch(url, {
-                method: method,
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) throw new Error("저장 실패");
-
-            // fixme: 전역함수 호출 - showToast
-            showToast("success", "설문조사가 저장되었습니다");
-            window.location.href = "/survey/list?folderId="+folderId;
-        } catch (error) {
-            // fixme: 전역함수 호출 - showToast
-            showToast("error", "저장 중 오류가 발생했습니다", true);
-        } finally {
-            saveButton.innerHTML = originalContent;
-            saveButton.disabled = false;
-        }
-    }
-
-</script>
 <script id="change_template" type="module">
     const surveyTypeSelect = document.getElementById('survey-type');
-    const questionsContainer = document.getElementById('questions-container');
     const emptyState = document.getElementById('empty-state');
 
-    surveyTypeSelect.addEventListener('change', async function () {
+    surveyTypeSelect?.addEventListener('change', async function () {
         const selectedType = this.value;
 
         // 기존 문항 초기화
@@ -1784,14 +1751,13 @@
             '#questions-container > .question-container:not(#question-template)'
         );
         existingQuestions.forEach((el) => el.remove());
-        emptyState.classList.remove("hidden");
+        emptyState?.classList.remove("hidden");
 
         // 일반 설문은 빈 상태로 끝냄
         if (selectedType === "normal") return;
 
         try {
             // 템플릿 API 호출
-            // fixme: 전역변수 참조 - surveyAdminUrl
             const res = await fetch(`/api/v1/survey/admin/template?type=${selectedType}`);
             if (!res.ok) throw new Error("템플릿 로드 실패");
 
@@ -1803,7 +1769,6 @@
 
             // 템플릿 문항 생성
             templateQuestions.forEach((q) => {
-                // fixme: 전역함수 호출 - addQuestion
                 const el = addQuestion(q.type);
                 el.setAttribute('data-template', 'true');
                 if (q.domainField) el.setAttribute('data-domain-field', q.domainField);
@@ -1833,7 +1798,6 @@
                             input.value = option.text || '';
                         } else {
                             // 3번째 이후는 새로 추가
-                            // fixme: 전역함수 호출 - createOptionElement
                             const optEl = createOptionElement(q.type, idx + 1);
                             const input = optEl.querySelector('input[type="text"]');
                             if (input) input.value = option.text || '';
@@ -1843,7 +1807,6 @@
                 }
                 else if (q.type === 'hierarchy') {
                     const questionId = el.getAttribute('data-question-id');
-                    // fixme: 전역함수 호출 - window.initHierarchy, window.getStore, window.updateHierarchyColumn
                     window.initHierarchy(questionId); // ✅ 스토어 초기화
                     const store = window.getStore(questionId);
 
@@ -1879,15 +1842,12 @@
                 }
             });
 
-            // fixme: 전역함수 호출 - updateJumpTargets
             updateJumpTargets();
         } catch (e) {
             console.warn("템플릿 불러오기 실패:", e);
-            // fixme: 전역함수 호출 - showToast
             showToast("error", "템플릿 불러오기에 실패했습니다");
         }
     });
 </script>
-
 </body>
 </html>

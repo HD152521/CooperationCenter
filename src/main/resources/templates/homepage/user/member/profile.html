@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>프로필 페이지</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -745,6 +746,41 @@
         </div>
     </div>
 </footer>
+
+
+<div id="postcode-layer" class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] w-[360px] h-[480px] border border-gray-300 bg-white shadow-lg rounded-lg">
+    <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
+        <h4 class="font-semibold text-gray-700">주소 검색</h4>
+        <button id="closePostcode" onclick="closePostcode()" class="text-gray-500 hover:text-gray-700">
+            <i class="ri-close-line ri-lg"></i>
+        </button>
+    </div>
+    <div id="postcode-wrap" class="w-full h-[400px]"></div>
+</div>
+
+
+<div id="chinese-address-modal"
+     class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2
+            z-[9999] w-[400px] bg-white border border-gray-300 shadow-lg rounded-lg p-5">
+    <div class="flex justify-between items-center mb-4 border-b pb-2">
+        <h4 class="text-lg font-semibold text-gray-700">중국 주소 검색</h4>
+        <button id="closeChineseModal" class="text-gray-500 hover:text-gray-700">
+            <i class="ri-close-line ri-lg"></i>
+        </button>
+    </div>
+
+    <input
+            type="text"
+            id="chineseAddressInput"
+            placeholder="예: 上海市徐汇区漕溪北路333号"
+            class="w-full border border-gray-300 rounded-button px-4 py-2 mb-3 focus:ring-2 focus:ring-primary outline-none"
+    />
+
+    <ul id="chineseAddressList"
+        class="border border-gray-200 rounded-lg max-h-60 overflow-y-auto hidden">
+    </ul>
+</div>
+
 <script id="profileEditHandler" type="module">
     const editProfileBtn = document.getElementById("editProfileBtn");
     const editProfileModal = document.getElementById("editProfileModal");
@@ -797,7 +833,6 @@
         }
     });
 
-    // fixme: 전역변수 참조 - window 객체에 직접 이벤트 리스너 추가
     window?.addEventListener("click", (e) => {
         if (e.target === editProfileModal) editProfileModal.classList.add("hidden");
     });
@@ -855,13 +890,11 @@
         }
     });
 
-    // fixme: 전역변수 참조 - window 객체에 직접 이벤트 리스너 추가
     window.addEventListener("click", (e) => {
         if (e.target === editAgencyModal) editAgencyModal.classList.add("hidden");
     });
 </script>
-<script>
-    // fixme: 전역변수 참조 - CURRENT_REGION, populateAgencyRegions
+<script type="module">
     // 현재 저장된 지역(초기 선택값) — Thymeleaf 사용 중이면 아래 한 줄을 그대로 쓰세요.
     const CURRENT_REGION = /*[[${profileDto.member.agencyRegion}]]*/ '';
 
@@ -915,153 +948,138 @@
         }
     });
 </script>
-<script>
-    // fixme: 전역변수 참조 - IIFE, wirePatchUpload, showToast
-    (function () {
-        const BASE = "/api/v1/profile";
-        const csrfToken  = document.querySelector('meta[name="_csrf"]')?.getAttribute("content");
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute("content");
-        const toast = document.getElementById("profileToast");
+<script type="module">
+    const BASE = "/api/v1/profile";
+    const csrfToken  = document.querySelector('meta[name="_csrf"]')?.getAttribute("content");
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute("content");
+    const toast = document.getElementById("profileToast");
 
-        const wirePatchUpload = ({
-                                     openBtnIds = [],
-                                     modalId,
-                                     closeBtnId,
-                                     formId,
-                                     fileInputId,
-                                     previewId,
-                                     endpoint,         // e.g. `${BASE}/businessCert`
-                                     fileFieldName,    // e.g. "businessCertificate"
-                                     acceptPdf = false // 사업자등록증만 true
-                                 }) => {
-            const modal   = document.getElementById(modalId);
-            const close   = document.getElementById(closeBtnId);
-            const form    = document.getElementById(formId);
-            const fileInp = document.getElementById(fileInputId);
-            const preview = document.getElementById(previewId);
+    const wirePatchUpload = ({
+                                 openBtnIds = [],
+                                 modalId,
+                                 closeBtnId,
+                                 formId,
+                                 fileInputId,
+                                 previewId,
+                                 endpoint,         // e.g. `${BASE}/businessCert`
+                                 fileFieldName,    // e.g. "businessCertificate"
+                                 acceptPdf = false // 사업자등록증만 true
+                             }) => {
+        const modal   = document.getElementById(modalId);
+        const close   = document.getElementById(closeBtnId);
+        const form    = document.getElementById(formId);
+        const fileInp = document.getElementById(fileInputId);
+        const preview = document.getElementById(previewId);
 
-            // open buttons
-            openBtnIds.map(id => document.getElementById(id))
-                .filter(Boolean)
-                .forEach(btn => btn.addEventListener("click", () => {
-                    modal.classList.remove("hidden"); modal.classList.add("flex");
-                    preview.classList.add("hidden"); preview.innerHTML = "";
-                    form.reset();
-                }));
+        // open buttons
+        openBtnIds.map(id => document.getElementById(id))
+            .filter(Boolean)
+            .forEach(btn => btn.addEventListener("click", () => {
+                modal.classList.remove("hidden"); modal.classList.add("flex");
+                preview.classList.add("hidden"); preview.innerHTML = "";
+                form.reset();
+            }));
 
-            // close
-            const closeModal = () => { modal.classList.add("hidden"); modal.classList.remove("flex"); };
-            close?.addEventListener("click", closeModal);
-            modal?.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+        // close
+        const closeModal = () => { modal.classList.add("hidden"); modal.classList.remove("flex"); };
+        close?.addEventListener("click", closeModal);
+        modal?.addEventListener("click", e => { if (e.target === modal) closeModal(); });
 
-            // preview
-            fileInp?.addEventListener("change", () => {
-                const file = fileInp.files?.[0];
-                if (!file) { preview.classList.add("hidden"); preview.innerHTML = ""; return; }
-                preview.classList.remove("hidden"); preview.innerHTML = "";
-                const isImage = /^image\//.test(file.type);
-                if (isImage) {
-                    const img = document.createElement("img");
-                    img.className = "max-h-full max-w-full object-contain"; img.alt = "미리보기";
-                    const fr = new FileReader(); fr.onload = () => (img.src = fr.result); fr.readAsDataURL(file);
-                    preview.appendChild(img);
-                } else {
-                    const box = document.createElement("div");
-                    box.className = "flex flex-col items-center justify-center text-gray-500";
-                    box.innerHTML = '<i class="ri-file-pdf-2-line text-5xl mb-2"></i><span class="text-sm">PDF 문서</span>';
-                    preview.appendChild(box);
-                }
-            });
-
-            // submit (PATCH multipart/form-data)
-            form?.addEventListener("submit", async (e) => {
-                e.preventDefault();
-                const file = fileInp.files?.[0];
-                if (!file) { alert("파일을 선택해주세요."); return; }
-                if (file.size > 10 * 1024 * 1024) { alert("최대 10MB까지 업로드 가능합니다."); return; }
-                if (!acceptPdf && !/^image\//.test(file.type)) { alert("이미지 파일만 업로드할 수 있습니다."); return; }
-                if (acceptPdf && !( /^image\//.test(file.type) || file.type === "application/pdf" )) {
-                    alert("이미지 또는 PDF만 업로드할 수 있습니다."); return;
-                }
-
-                const fd = new FormData();
-                fd.append(fileFieldName, file);
-
-                try {
-                    const res = await fetch(endpoint, {
-                        method: "PATCH",
-                        body: fd,
-                        headers: csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : undefined,
-                    });
-
-                    // 바디는 굳이 파싱 안 해도 됨 (BaseResponse<String> "success")
-                    if (!res.ok) {
-                        const text = await res.text();
-                        let msg = res.status + " " + res.statusText;
-                        try { const err = text ? JSON.parse(text) : null; if (err?.message) msg = err.message; } catch {}
-                        throw new Error(msg);
-                    }
-
-                    closeModal();
-                    showToast("업데이트되었습니다.");
-                    location.reload();
-                } catch (err) {
-                    console.error("업로드 실패:", err);
-                    alert("업로드 중 오류가 발생했습니다: " + (err?.message || "Unknown"));
-                }
-            });
-        };
-
-        function showToast(msg) {
-            if (msg) toast.textContent = msg;
-            toast.classList.remove("hidden");
-            requestAnimationFrame(() => toast.classList.remove("translate-y-full", "opacity-0"));
-            setTimeout(() => {
-                toast.classList.add("translate-y-full", "opacity-0");
-                setTimeout(() => toast.classList.add("hidden"), 300);
-            }, 2000);
-        }
-
-        // 사업자등록증: 이미지/PDF 허용, @RequestPart name = businessCertificate
-        wirePatchUpload({
-            openBtnIds: ["openBizCertModal", "openBizCertModal__empty"],
-            modalId: "bizCertModal",
-            closeBtnId: "closeBizCertModal",
-            formId: "bizCertForm",
-            fileInputId: "bizCertFile",
-            previewId: "bizCertPreview",
-            endpoint: `${BASE}/businessCert`,
-            fileFieldName: "businessCertificate",
-            acceptPdf: true
+        // preview
+        fileInp?.addEventListener("change", () => {
+            const file = fileInp.files?.[0];
+            if (!file) { preview.classList.add("hidden"); preview.innerHTML = ""; return; }
+            preview.classList.remove("hidden"); preview.innerHTML = "";
+            const isImage = /^image\//.test(file.type);
+            if (isImage) {
+                const img = document.createElement("img");
+                img.className = "max-h-full max-w-full object-contain"; img.alt = "미리보기";
+                const fr = new FileReader(); fr.onload = () => (img.src = fr.result); fr.readAsDataURL(file);
+                preview.appendChild(img);
+            } else {
+                const box = document.createElement("div");
+                box.className = "flex flex-col items-center justify-center text-gray-500";
+                box.innerHTML = '<i class="ri-file-pdf-2-line text-5xl mb-2"></i><span class="text-sm">PDF 문서</span>';
+                preview.appendChild(box);
+            }
         });
 
-        // 유학원 대표사진: 이미지만, @RequestPart name = agencyPicture
-        wirePatchUpload({
-            openBtnIds: ["openAgencyPicModal", "openAgencyPicModal__empty"],
-            modalId: "agencyPicModal",
-            closeBtnId: "closeAgencyPicModal",
-            formId: "agencyPicForm",
-            fileInputId: "agencyPicFile",
-            previewId: "agencyPicPreview",
-            endpoint: `${BASE}/agencyPicture`,
-            fileFieldName: "agencyPicture",
-            acceptPdf: false
+        // submit (PATCH multipart/form-data)
+        form?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const file = fileInp.files?.[0];
+            if (!file) { alert("파일을 선택해주세요."); return; }
+            if (file.size > 10 * 1024 * 1024) { alert("최대 10MB까지 업로드 가능합니다."); return; }
+            if (!acceptPdf && !/^image\//.test(file.type)) { alert("이미지 파일만 업로드할 수 있습니다."); return; }
+            if (acceptPdf && !( /^image\//.test(file.type) || file.type === "application/pdf" )) {
+                alert("이미지 또는 PDF만 업로드할 수 있습니다."); return;
+            }
+
+            const fd = new FormData();
+            fd.append(fileFieldName, file);
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: "PATCH",
+                    body: fd,
+                    headers: csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : undefined,
+                });
+
+                // 바디는 굳이 파싱 안 해도 됨 (BaseResponse<String> "success")
+                if (!res.ok) {
+                    const text = await res.text();
+                    let msg = res.status + " " + res.statusText;
+                    try { const err = text ? JSON.parse(text) : null; if (err?.message) msg = err.message; } catch {}
+                    throw new Error(msg);
+                }
+
+                closeModal();
+                showToast("업데이트되었습니다.");
+                location.reload();
+            } catch (err) {
+                console.error("업로드 실패:", err);
+                alert("업로드 중 오류가 발생했습니다: " + (err?.message || "Unknown"));
+            }
         });
-    })();
+    };
+
+    function showToast(msg) {
+        if (msg) toast.textContent = msg;
+        toast.classList.remove("hidden");
+        requestAnimationFrame(() => toast.classList.remove("translate-y-full", "opacity-0"));
+        setTimeout(() => {
+            toast.classList.add("translate-y-full", "opacity-0");
+            setTimeout(() => toast.classList.add("hidden"), 300);
+        }, 2000);
+    }
+
+    // 사업자등록증: 이미지/PDF 허용, @RequestPart name = businessCertificate
+    wirePatchUpload({
+        openBtnIds: ["openBizCertModal", "openBizCertModal__empty"],
+        modalId: "bizCertModal",
+        closeBtnId: "closeBizCertModal",
+        formId: "bizCertForm",
+        fileInputId: "bizCertFile",
+        previewId: "bizCertPreview",
+        endpoint: `${BASE}/businessCert`,
+        fileFieldName: "businessCertificate",
+        acceptPdf: true
+    });
+
+    // 유학원 대표사진: 이미지만, @RequestPart name = agencyPicture
+    wirePatchUpload({
+        openBtnIds: ["openAgencyPicModal", "openAgencyPicModal__empty"],
+        modalId: "agencyPicModal",
+        closeBtnId: "closeAgencyPicModal",
+        formId: "agencyPicForm",
+        fileInputId: "agencyPicFile",
+        previewId: "agencyPicPreview",
+        endpoint: `${BASE}/agencyPicture`,
+        fileFieldName: "agencyPicture",
+        acceptPdf: false
+    });
 </script>
-<div id="postcode-layer" class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] w-[360px] h-[480px] border border-gray-300 bg-white shadow-lg rounded-lg">
-    <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
-        <h4 class="font-semibold text-gray-700">주소 검색</h4>
-        <button id="closePostcode" onclick="closePostcode()" class="text-gray-500 hover:text-gray-700">
-            <i class="ri-close-line ri-lg"></i>
-        </button>
-    </div>
-    <div id="postcode-wrap" class="w-full h-[400px]"></div>
-</div>
-
-<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-<script>
-    // fixme: 전역변수 참조 - daum 객체 및 openPostcode, closePostcode 함수
+<script type="module">
     // address field
     const addrEl = document.getElementById('editAddress1');
     const agencyAddrEl = document.getElementById('editAgencyAddress1');
@@ -1090,30 +1108,11 @@
     function closePostcode() {
         layer.classList.add('hidden');
     }
+
+    // export module functions
+    window.openPostcode = openPostcode;
+    window.closePostcode = closePostcode;
 </script>
-<div id="chinese-address-modal"
-     class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2
-            z-[9999] w-[400px] bg-white border border-gray-300 shadow-lg rounded-lg p-5">
-    <div class="flex justify-between items-center mb-4 border-b pb-2">
-        <h4 class="text-lg font-semibold text-gray-700">중국 주소 검색</h4>
-        <button id="closeChineseModal" class="text-gray-500 hover:text-gray-700">
-            <i class="ri-close-line ri-lg"></i>
-        </button>
-    </div>
-
-    <input
-            type="text"
-            id="chineseAddressInput"
-            placeholder="예: 上海市徐汇区漕溪北路333号"
-            class="w-full border border-gray-300 rounded-button px-4 py-2 mb-3 focus:ring-2 focus:ring-primary outline-none"
-    />
-
-    <ul id="chineseAddressList"
-        class="border border-gray-200 rounded-lg max-h-60 overflow-y-auto hidden">
-    </ul>
-</div>
-
-
 <script id="chinese-address-modal-script" type="module">
     const modal = document.getElementById("chinese-address-modal");
     const closeBtn = document.getElementById("closeChineseModal");

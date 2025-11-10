@@ -233,7 +233,6 @@
 
         showLoading();
         try {
-            // fixme: 전역변수 참조 - memberUrl. 이 변수는 외부 스크립트에서 정의될 것으로 추정됩니다.
             const response = await fetch(memberUrl + "/login", {
                 method: "POST",
                 headers: {

@@ -410,75 +410,73 @@
 
     </main>
 <th:block th:fragment="script">
-<script>
-    (function(){
-        const grid = document.getElementById('collegeGrid');
-        const cards = Array.from(grid.querySelectorAll('article[data-college]'));
-        const filters = document.getElementById('collegeFilters');
-        const search = document.getElementById('deptSearch');
+<script type="module">
+    const grid = document.getElementById('collegeGrid');
+    const cards = Array.from(grid.querySelectorAll('article[data-college]'));
+    const filters = document.getElementById('collegeFilters');
+    const search = document.getElementById('deptSearch');
 
-        // 칩 개수 > 10 이면 접기 처리
-        cards.forEach(card => {
-            const chipsWrap = card.querySelector('[data-chips]');
-            const chips = Array.from(chipsWrap.querySelectorAll('.chip:not([data-desc])'));
-            const moreBtn = card.querySelector('[data-more]');
-            const countEl = card.querySelector('[data-count]');
+    // 칩 개수 > 10 이면 접기 처리
+    cards.forEach(card => {
+        const chipsWrap = card.querySelector('[data-chips]');
+        const chips = Array.from(chipsWrap.querySelectorAll('.chip:not([data-desc])'));
+        const moreBtn = card.querySelector('[data-more]');
+        const countEl = card.querySelector('[data-count]');
 
-            // 카운트 표시
-            countEl.textContent = chips.length + '개';
+        // 카운트 표시
+        countEl.textContent = chips.length + '개';
 
-            if (chips.length > 10) {
-                chips.slice(10).forEach(ch => ch.classList.add('hidden'));
-                moreBtn.classList.remove('hidden');
-                moreBtn?.addEventListener('click', () => {
-                    const hidden = chips.slice(10).some(ch => ch.classList.contains('hidden'));
-                    chips.slice(10).forEach(ch => ch.classList.toggle('hidden'));
-                    moreBtn.textContent = hidden ? '접기' : '더보기';
-                });
-            }
-        });
-
-        function applyFilter(){
-            const activeBtn = filters.querySelector('button.active');
-            const collegeFilter = activeBtn ? activeBtn.dataset.filter : 'all';
-            const q = (search.value || '').trim().toLowerCase();
-
-            cards.forEach(card => {
-                const college = card.dataset.college;
-                const chips = Array.from(card.querySelectorAll('.chip'));
-                // 검색
-                let hitChip = false;
-                chips.forEach(c => {
-                    const match = c.textContent.toLowerCase().includes(q);
-                    c.style.opacity = q ? (match ? '1' : '0.25') : '1';
-                    if (match) hitChip = true;
-                });
-                // 카드 표시 조건
-                const passCollege = (collegeFilter === 'all') || (collegeFilter === college);
-                const passSearch = q ? hitChip : true;
-                card.style.display = (passCollege && passSearch) ? '' : 'none';
+        if (chips.length > 10) {
+            chips.slice(10).forEach(ch => ch.classList.add('hidden'));
+            moreBtn.classList.remove('hidden');
+            moreBtn?.addEventListener('click', () => {
+                const hidden = chips.slice(10).some(ch => ch.classList.contains('hidden'));
+                chips.slice(10).forEach(ch => ch.classList.toggle('hidden'));
+                moreBtn.textContent = hidden ? '접기' : '더보기';
             });
         }
+    });
 
-        // 초기 active
-        filters.querySelector('button[data-filter="all"]').classList.add('active');
+    function applyFilter(){
+        const activeBtn = filters.querySelector('button.active');
+        const collegeFilter = activeBtn ? activeBtn.dataset.filter : 'all';
+        const q = (search.value || '').trim().toLowerCase();
 
-        // 탭 클릭
-        filters?.addEventListener('click', (e)=>{
-            const btn = e.target.closest('button[data-filter]');
-            if (!btn) return;
-            filters.querySelectorAll('button').forEach(b=>{
-                b.classList.remove('active','bg-primary','text-white');
-                b.classList.add('bg-gray-100','text-gray-700');
+        cards.forEach(card => {
+            const college = card.dataset.college;
+            const chips = Array.from(card.querySelectorAll('.chip'));
+            // 검색
+            let hitChip = false;
+            chips.forEach(c => {
+                const match = c.textContent.toLowerCase().includes(q);
+                c.style.opacity = q ? (match ? '1' : '0.25') : '1';
+                if (match) hitChip = true;
             });
-            btn.classList.add('active','bg-primary','text-white');
-            btn.classList.remove('bg-gray-100','text-gray-700');
-            applyFilter();
+            // 카드 표시 조건
+            const passCollege = (collegeFilter === 'all') || (collegeFilter === college);
+            const passSearch = q ? hitChip : true;
+            card.style.display = (passCollege && passSearch) ? '' : 'none';
         });
+    }
 
-        // 검색
-        search?.addEventListener('input', applyFilter);
-    })();
+    // 초기 active
+    filters?.querySelector('button[data-filter="all"]').classList.add('active');
+
+    // 탭 클릭
+    filters?.addEventListener('click', (e)=>{
+        const btn = e.target.closest('button[data-filter]');
+        if (!btn) return;
+        filters.querySelectorAll('button').forEach(b=>{
+            b.classList.remove('active','bg-primary','text-white');
+            b.classList.add('bg-gray-100','text-gray-700');
+        });
+        btn.classList.add('active','bg-primary','text-white');
+        btn.classList.remove('bg-gray-100','text-gray-700');
+        applyFilter();
+    });
+
+    // 검색
+    search?.addEventListener('input', applyFilter);
 </script>
 </th:block>
 </html>

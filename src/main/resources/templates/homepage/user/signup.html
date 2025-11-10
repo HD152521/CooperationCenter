@@ -468,7 +468,7 @@
                                 <option value="" disabled selected>
                                     지역을 선택해주세요
                                 </option>
-                                <!--Todo: 중국 지역 Spring 상수로 지정-->
+                                <!--TODO: 중국 지역 Spring 상수로 지정-->
                                 <option value="北京市">北京市</option>
                                 <option value="天津市">天津市</option>
                                 <option value="上海市">上海市</option>
@@ -1083,8 +1083,7 @@
             updateAgreeAll();
         });
     </script>
-    <!-- fixme: 전역변수 참조 - daum 객체 및 openPostcode, closePostcode 함수를 전역 스코프에서 사용 -->
-    <script id="search-address">
+    <script id="search-address" type="module">
         // 주소 검색 (대표자)
         const zoneEl = document.getElementById('address');
         const addrEl = document.getElementById('address1');
@@ -1121,8 +1120,11 @@
         function closePostcode() {
             layer.style.display = 'none';
         }
-    </script>
 
+        // export module functions
+        window.openPostcode = openPostcode;
+        window.closePostcode = closePostcode;
+    </script>
     <script id="formSubmitScript" type="module">
         const form = document.getElementById("signupForm");
         const submitButton = document.getElementById("submitButton");
@@ -1152,7 +1154,6 @@
                 }
                 // 여기서는 실제 API 호출 대신 시뮬레이션
                 setTimeout(() => {
-                    // fixme: 전역변수 참조 - memberUrl
                     fetch(`${memberUrl}/check-id?username=${encodeURIComponent(username)}`)
                         .then(response => {
                             if (!response.ok) {

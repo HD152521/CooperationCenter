@@ -31,7 +31,7 @@
     <div id="postcode-wrap" style="width:100%;height:100%"></div>
 </div>
 
-<script>
+<script type="module">
     const zoneEl = document.getElementById('zonecode');
     const addrEl = document.getElementById('address');
     const layer  = document.getElementById('postcode-layer');
@@ -53,6 +53,10 @@
         }).embed(wrap);
     }
     function closePostcode() { layer.style.display = 'none'; }
+
+    // export module functions
+    window.openPostcode = openPostcode;
+    window.closePostcode = closePostcode;
 </script>
 </body>
 </html>

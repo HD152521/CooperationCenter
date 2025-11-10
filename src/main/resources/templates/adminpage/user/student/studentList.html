@@ -724,7 +724,7 @@
     </div>
 </div>
 <script id="student-management" th:inline="javascript" type="module">
-    // fixme: 전역함수 정의 - window.resetFilters, window.getFilters, window.sortTable, window.closeStudentModal, window.editStudent, window.deleteStudent
+    // fixme: loadStudentData() 존재하지 않음
     let currentPage = 1;
     let pageSize = 20;
     let currentSort = { field: null, direction: "asc" };
@@ -824,14 +824,13 @@
             }
         });
     }
-    window.closeStudentModal = function () {
-        document.getElementById("studentDetailModal").classList.add("hidden");
-    };
+
     window.editStudent = function () {
         showNotification("학생 정보 수정 기능은 준비 중입니다");
     };
     window.deleteStudent = function (studentId) {
         if (confirm("이 학생 데이터를 삭제하시겠습니까?")) {
+            // TODO: 삭제 요청 API 연결
             showNotification("학생 데이터가 삭제되었습니다", "success");
             loadStudentData();
         }
@@ -869,9 +868,7 @@
     });
 </script>
 <script type="module">
-    // fixme: 전역함수 정의 - window.viewStudent, fillStudentModal, setText, openStudentModal, closeStudentModal
-    window.viewStudent = async function viewStudent(id) {
-
+    async function viewStudent(id) {
         console.log("enter viewStudent / id=", id);
 
         try {
@@ -935,8 +932,7 @@
     }
 
     function closeStudentModal() {
-        const m = document.getElementById('studentDetailModal');
-        m.classList.add('hidden');
+        document.getElementById("studentDetailModal").classList.add("hidden");
         document.body.style.overflow = '';
     }
 
@@ -951,7 +947,8 @@
         console.log("button클릭(3)");
     });
 
-
+    // export module functions
+    window.closeStudentModal = closeStudentModal;
 </script>
 <script type="module">
     // ====== 모달 열고 닫기 ======
@@ -975,12 +972,10 @@
     const pageEl   = document.getElementById('survey-page');
 
     let page = 1;
-    const pageSize = 9; // 서버 페이지 크기와 맞추세요.
+    const pageSize = 9; // fixme: 서버 페이지 크기와 맞추세요.
     let lastQuery = '';
 
     async function fetchSurveys({ q = '', pageNum = 1 } = {}) {
-
-        // fixme: 전역변수 참조 - window.location.origin
         const url = new URL('/api/v1/survey/list', window.location.origin);
 
         if (q) url.searchParams.set('title', q);
@@ -1061,9 +1056,8 @@
     listEl.addEventListener('click', (e) => {
         const btn = e.target.closest('button[data-id]');
         if (!btn) return;
-        const id    = btn.dataset.id;
-        const title = btn.dataset.title;
 
+        const {id, title} = btn.dataset;
         surveyTextInput.value = title;
         surveyIdInput.value   = id;
 
@@ -1074,7 +1068,6 @@
     async function applyFilters() {
         // 방식 1) Ajax로 서버 데이터 새로 가져오기 (SPA/partial render)
         // GET /api/logs?surveyId=...&academy=...
-        // fixme: 전역변수 참조 - window.location.origin
         const url = new URL('/api/logs', window.location.origin);
         if (surveyIdInput.value) url.searchParams.set('surveyId', surveyIdInput.value);
 
@@ -1088,8 +1081,6 @@
     }
 </script>
 <script type="module">
-    // fixme: 전역함수 정의 - exportData
-    // fixme: 전역변수 참조 - window.getFilters, window.location.assign
     function exportData() {
         const filters = window.getFilters();
         if (!filters) return;
@@ -1111,6 +1102,9 @@
         window.location.assign(url);
         // 새 탭으로 열고 싶으면: window.open(url, '_blank');
     }
+
+    // export module functions
+    window.exportData = exportData;
 </script>
 
 </body>

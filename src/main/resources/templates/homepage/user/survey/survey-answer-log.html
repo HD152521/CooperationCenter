@@ -485,7 +485,7 @@
                     <div class="flex items-center space-x-2">
                         <!-- 이전 버튼 -->
                         <a th:if="${AnswerDto.logs.hasPrevious()}"
-                           th:href="@{'/survey/log/{id}(id=${AnswerDto.surveyId}, page=${AnswerDto.logs.number - 1})}"
+                           th:href="@{/survey/log/{id}(id=${AnswerDto.surveyId}, page=${AnswerDto.logs.number - 1})}"
                            class="px-3 py-1 text-sm text-gray-700 bg-white border border-gray-300 rounded-button whitespace-nowrap">
                             이전
                         </a>
@@ -496,7 +496,7 @@
 
                         <!-- 페이지 번호 반복 -->
                         <a th:each="i : ${#numbers.sequence(1, AnswerDto.logs.totalPages)}"
-                           th:href="@{'/survey/log/{id}(id=${AnswerDto.surveyId}, page=${i - 1})}"
+                           th:href="@{/survey/log/{id}(id=${AnswerDto.surveyId}, page=${i - 1})}"
                            th:text="${i}"
                            th:class="'px-3 py-1 text-sm border rounded-button whitespace-nowrap ' +
                       (${i - 1} == ${AnswerDto.logs.number}
@@ -506,7 +506,7 @@
 
                         <!-- 다음 버튼 -->
                         <a th:if="${AnswerDto.logs.hasNext()}"
-                           th:href="@{'/survey/log/{id}(id=${AnswerDto.surveyId}, page=${AnswerDto.logs.number + 1})}"
+                           th:href="@{/survey/log/{id}(id=${AnswerDto.surveyId}, page=${AnswerDto.logs.number + 1})}"
                            class="px-3 py-1 text-sm text-gray-700 bg-white border border-gray-300 rounded-button whitespace-nowrap">
                             다음
                         </a>
@@ -1176,7 +1176,6 @@
         };
 
         try {
-            // fixme: 전역변수 참조 - surveyAdminUrl
             const response = await fetch(`${surveyAdminUrl}/log/csv`, {
                 method: 'POST',
                 headers: {
@@ -1247,7 +1246,6 @@
         const surveyId = document.getElementById("survey-title").dataset.id;
 
         try {
-            // fixme: 전역변수 참조 - surveyAdminUrl
             const response = await fetch(`${surveyAdminUrl}/log/${surveyId}`, {
                 method: 'POST',
             });
@@ -1315,7 +1313,6 @@
         const surveyId = document.getElementById("survey-title").dataset.id;
 
         try {
-            // fixme: 전역변수 참조 - surveyAdminUrl
             const response = await fetch(`${surveyAdminUrl}/log/file/student/${surveyId}`, {
                 method: 'POST',
             });
@@ -1383,7 +1380,6 @@
         const surveyId = document.getElementById("survey-title").dataset.id;
 
         try {
-            // fixme: 전역변수 참조 - surveyAdminUrl
             const response = await fetch(`${surveyAdminUrl}/log/file/survey/${surveyId}`, {
                 method: 'POST',
             });
@@ -1476,8 +1472,7 @@
         contentResponses.classList.add("hidden");
     });
 </script>
-<script id="chart-handler">
-    // fixme: 전역변수 참조 - echarts 객체 및 window.addEventListener
+<script id="chart-handler" type="module">
     // 만족도 차트
     const satisfactionChart = echarts.init(
         document.getElementById("chart-satisfaction"),

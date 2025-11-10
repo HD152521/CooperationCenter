@@ -342,97 +342,93 @@
 
     </main>
 <th:block th:fragment="script">
-    <script>
-        (function(){
-            const searchInput = document.getElementById("inhaDeptSearch");
-            const filterButtons = document.querySelectorAll("#inhaCollegeFilters button");
-            const collegeCards = document.querySelectorAll("#inhaCollegeGrid article");
+    <script type="module">
+        const searchInput = document.getElementById("inhaDeptSearch");
+        const filterButtons = document.querySelectorAll("#inhaCollegeFilters button");
+        const collegeCards = document.querySelectorAll("#inhaCollegeGrid article");
 
-            if (!searchInput || !filterButtons.length || !collegeCards.length) return;
+        // ✅ 단과대별 chip 개수 표시
+        collegeCards?.forEach(card => {
+            const chips = card.querySelectorAll("[data-dept]");
+            const countEl = card.querySelector("[data-count]");
+            if (countEl) countEl.textContent = `${chips.length}개 학과`;
+        });
 
-            // ✅ 단과대별 chip 개수 표시
-            collegeCards.forEach(card => {
-                const chips = card.querySelectorAll("[data-dept]");
-                const countEl = card.querySelector("[data-count]");
-                if (countEl) countEl.textContent = `${chips.length}개 학과`;
-            });
-
-            // ✅ 더보기 버튼 처리
-            collegeCards.forEach(card => {
-                const chips = card.querySelectorAll("[data-dept]");
-                const moreBtn = card.querySelector("[data-more]");
-                const limit = 5;
-                if (chips.length > limit && moreBtn) {
-                    chips.forEach((chip, i) => {
-                        if (i >= limit) chip.classList.add("hidden");
-                    });
-                    moreBtn.classList.remove("hidden");
-                    moreBtn.addEventListener("click", () => {
-                        card.querySelectorAll(".chip.hidden").forEach(chip => chip.classList.remove("hidden"));
-                        moreBtn.classList.add("hidden");
-                    });
-                }
-            });
-
-            // ✅ 필터 버튼 동작
-            filterButtons.forEach(btn => {
-                btn.addEventListener("click", () => {
-                    const filter = btn.getAttribute("data-filter");
-
-                    // 버튼 색상 초기화
-                    filterButtons.forEach(b => {
-                        b.classList.remove("bg-primary", "text-white");
-                        b.classList.add("bg-gray-100", "text-gray-700");
-                    });
-
-                    // 선택된 버튼 강조
-                    btn.classList.add("bg-primary", "text-white");
-                    btn.classList.remove("bg-gray-100", "text-gray-700");
-
-                    // 카드 필터링
-                    collegeCards.forEach(card => {
-                        if (filter === "all" || card.dataset.college === filter) {
-                            card.classList.remove("hidden");
-                        } else {
-                            card.classList.add("hidden");
-                        }
-                    });
+        // ✅ 더보기 버튼 처리
+        collegeCards?.forEach(card => {
+            const chips = card.querySelectorAll("[data-dept]");
+            const moreBtn = card.querySelector("[data-more]");
+            const limit = 5;
+            if (chips.length > limit && moreBtn) {
+                chips.forEach((chip, i) => {
+                    if (i >= limit) chip.classList.add("hidden");
                 });
-            });
+                moreBtn.classList.remove("hidden");
+                moreBtn?.addEventListener("click", () => {
+                    card.querySelectorAll(".chip.hidden").forEach(chip => chip.classList.remove("hidden"));
+                    moreBtn.classList.add("hidden");
+                });
+            }
+        });
 
-            // ✅ 검색 기능
-            searchInput.addEventListener("input", e => {
-                const keyword = e.target.value.trim().toLowerCase();
+        // ✅ 필터 버튼 동작
+        filterButtons?.forEach(btn => {
+            btn?.addEventListener("click", () => {
+                const filter = btn.getAttribute("data-filter");
 
-                collegeCards.forEach(card => {
-                    const chips = card.querySelectorAll("[data-dept]");
-                    let hasMatch = false;
+                // 버튼 색상 초기화
+                filterButtons?.forEach(b => {
+                    b.classList.remove("bg-primary", "text-white");
+                    b.classList.add("bg-gray-100", "text-gray-700");
+                });
 
-                    chips.forEach(chip => {
-                        const deptName = chip.textContent.toLowerCase();
+                // 선택된 버튼 강조
+                btn.classList.add("bg-primary", "text-white");
+                btn.classList.remove("bg-gray-100", "text-gray-700");
 
-                        if (!keyword || deptName.includes(keyword)) {
-                            chip.classList.remove("opacity-40");
-                            hasMatch = true;
-                        } else {
-                            chip.classList.add("opacity-40");
-                        }
-                    });
-
-                    // 카드 자체는 항상 보이게 유지
-                    if (!keyword) {
-                        chips.forEach(chip => chip.classList.remove("opacity-40"));
-                    }
-
-                    // 학과 중 하나라도 일치하면 카드 유지
-                    if (hasMatch || !keyword) {
+                // 카드 필터링
+                collegeCards?.forEach(card => {
+                    if (filter === "all" || card.dataset.college === filter) {
                         card.classList.remove("hidden");
                     } else {
                         card.classList.add("hidden");
                     }
                 });
             });
-        })();
+        });
+
+        // ✅ 검색 기능
+        searchInput?.addEventListener("input", e => {
+            const keyword = e.target.value.trim().toLowerCase();
+
+            collegeCards?.forEach(card => {
+                const chips = card.querySelectorAll("[data-dept]");
+                let hasMatch = false;
+
+                chips.forEach(chip => {
+                    const deptName = chip.textContent.toLowerCase();
+
+                    if (!keyword || deptName.includes(keyword)) {
+                        chip.classList.remove("opacity-40");
+                        hasMatch = true;
+                    } else {
+                        chip.classList.add("opacity-40");
+                    }
+                });
+
+                // 카드 자체는 항상 보이게 유지
+                if (!keyword) {
+                    chips.forEach(chip => chip.classList.remove("opacity-40"));
+                }
+
+                // 학과 중 하나라도 일치하면 카드 유지
+                if (hasMatch || !keyword) {
+                    card.classList.remove("hidden");
+                } else {
+                    card.classList.add("hidden");
+                }
+            });
+        });
     </script>
 </th:block>>
 

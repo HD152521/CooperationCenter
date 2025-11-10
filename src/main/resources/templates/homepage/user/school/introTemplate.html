@@ -913,8 +913,7 @@
         </div>
     </div>
 </footer>
-<script id="chart-script">
-    // fixme: 전역변수 참조 - echarts 객체 및 window.addEventListener
+<script id="chart-script" type="module">
     const chartDom = document.getElementById("internationalChart");
     const myChart = echarts.init(chartDom);
     const option = {
