@@ -15,10 +15,11 @@
 <textarea id="intro-editor" name="content"></textarea>
 
 <button id="file-upload-btn" type="button" style="margin-top: 10px;">📎 파일 첨부</button>
-<input type="file" id="file-input" style="display:none" multiple />
+<input type="file" id="file-input" style="display:none" multiple/>
 
 <!-- 저장 버튼 -->
-<button id="save-button" style="margin-top: 20px; padding: 10px 20px; background-color: #3B82F6; color: white; border: none; border-radius: 4px;">
+<button id="save-button"
+        style="margin-top: 20px; padding: 10px 20px; background-color: #3B82F6; color: white; border: none; border-radius: 4px;">
     저장하기
 </button>
 
@@ -55,7 +56,7 @@
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ content: content })
+            body: JSON.stringify({content: content})
         })
             .then(response => {
                 if (response.ok) {

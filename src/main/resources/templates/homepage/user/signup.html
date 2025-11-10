@@ -90,123 +90,67 @@
         <div class="text-center mb-8">
             <h1 class="text-3xl font-bold text-gray-800">유학원 회원가입</h1>
             <p class="text-gray-600 mt-2">
-                유학원 서비스 이용을 위한 회원가입 양식입니다.
-            </p>
+                유학원 서비스 이용을 위한 회원가입 양식입니다. </p>
         </div>
-        <form
-                id="signupForm"
-                action="/api/v1/member/signup"
-                method="POST"
-                class="space-y-8"
-        >
+        <form id="signupForm" action="/api/v1/member/signup" method="POST" class="space-y-8">
             <!-- 대표자 정보 섹션 -->
             <div>
-                <h2
-                        class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200"
-                >
-                    대표자 정보
-                </h2>
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">
+                    대표자 정보 </h2>
                 <div class="space-y-5">
                     <!-- 대표자 이름 -->
                     <div>
-                        <label
-                                for="name"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >대표자 이름 <span class="text-red-500">*</span></label
-                        >
-                        <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="홍길동"
-                        />
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">대표자 이름 <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" id="name" name="name" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="홍길동"/>
                     </div>
                     <!-- 아이디(이메일) -->
                     <div>
-                        <label
-                                for="email"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >아이디(이메일) <span class="text-red-500">*</span></label
-                        >
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">아이디(이메일) <span
+                                class="text-red-500">*</span></label>
                         <div class="flex gap-3">
-                            <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    required
-                                    class="flex-1 px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                    placeholder="example@domain.com"
-                            />
-                            <button
-                                    type="button"
-                                    id="checkUsername"
-                                    class="whitespace-nowrap !rounded-button bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 font-medium transition"
-                            >
+                            <input type="email" id="email" name="email" required
+                                   class="flex-1 px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                                   placeholder="example@domain.com"/>
+                            <button type="button" id="checkUsername"
+                                    class="whitespace-nowrap !rounded-button bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 font-medium transition">
                                 중복확인
                             </button>
                         </div>
                         <p id="usernameStatus" class="mt-1 text-sm text-gray-500">
-                            이메일 형식으로 입력해주세요.
-                        </p>
+                            이메일 형식으로 입력해주세요. </p>
                     </div>
                     <!-- 비밀번호 -->
                     <div>
-                        <label
-                                for="password"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >비밀번호 <span class="text-red-500">*</span></label
-                        >
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">비밀번호 <span
+                                class="text-red-500">*</span></label>
                         <div class="relative">
-                            <input
-                                    type="password"
-                                    id="password"
-                                    name="password"
-                                    required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                    placeholder="비밀번호를 입력해주세요"
-                            />
-                            <button
-                                    type="button"
-                                    id="togglePassword"
-                                    class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-500"
-                            >
+                            <input type="password" id="password" name="password" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                                   placeholder="비밀번호를 입력해주세요"/>
+                            <button type="button" id="togglePassword"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-500">
                                 <i class="ri-eye-line"></i>
                             </button>
                         </div>
                         <div class="password-strength-meter mt-2">
-                            <div
-                                    id="passwordStrength"
-                                    class="bg-gray-300"
-                                    style="width: 0%"
-                            ></div>
+                            <div id="passwordStrength" class="bg-gray-300" style="width: 0%"></div>
                         </div>
                         <p id="passwordStrengthText" class="mt-1 text-sm text-gray-500">
-                            영문, 숫자, 특수문자 조합 8자리 이상
-                        </p>
+                            영문, 숫자, 특수문자 조합 8자리 이상 </p>
                     </div>
                     <!-- 비밀번호 확인 -->
                     <div>
-                        <label
-                                for="confirmPassword"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >비밀번호 확인 <span class="text-red-500">*</span></label
-                        >
+                        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">비밀번호 확인 <span
+                                class="text-red-500">*</span></label>
                         <div class="relative">
-                            <input
-                                    type="password"
-                                    id="confirmPassword"
-                                    name="confirmPassword"
-                                    required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                    placeholder="비밀번호를 다시 입력해주세요"
-                            />
-                            <button
-                                    type="button"
-                                    id="toggleConfirmPassword"
-                                    class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-500"
-                            >
+                            <input type="password" id="confirmPassword" name="confirmPassword" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                                   placeholder="비밀번호를 다시 입력해주세요"/>
+                            <button type="button" id="toggleConfirmPassword"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-500">
                                 <i class="ri-eye-line"></i>
                             </button>
                         </div>
@@ -214,257 +158,136 @@
                     </div>
 
                     <div>
-                        <label
-                                for="birthDate"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >생년월일 <span class="text-red-500">*</span></label>
-                        <input
-                                type="date"
-                                id="birthDate"
-                                name="birthdate"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                max="2025-12-31"
-                                placeholder="YYYY-MM-DD"
-                        />
+                        <label for="birthDate" class="block text-sm font-medium text-gray-700 mb-1">생년월일 <span
+                                class="text-red-500">*</span></label>
+                        <input type="date" id="birthDate" name="birthdate" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               max="2025-12-31" placeholder="YYYY-MM-DD"/>
                     </div>
 
                     <div>
-                        <label
-                                for="telNum"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >대표자 전화번호 <span class="text-red-500">*</span></label
-                        >
-                        <input
-                                type="tel"
-                                id="telNum"
-                                name="telNum"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="02-1234-5678"
-                        />
+                        <label for="telNum" class="block text-sm font-medium text-gray-700 mb-1">대표자 전화번호 <span
+                                class="text-red-500">*</span></label>
+                        <input type="tel" id="telNum" name="telNum" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="02-1234-5678"/>
                         <p class="mt-1 text-sm text-gray-500">
-                            '-' 없이 숫자만 입력해주세요
-                        </p>
+                            '-' 없이 숫자만 입력해주세요 </p>
                     </div>
                     <!-- 대표자 휴대폰 번호 -->
                     <div>
-                        <label
-                                for="mobile"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >대표자 휴대폰 번호 <span class="text-red-500">*</span></label
-                        >
-                        <input
-                                type="tel"
-                                id="mobile"
-                                name="mobile"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="010-1234-5678"
-                        />
+                        <label for="mobile" class="block text-sm font-medium text-gray-700 mb-1">대표자 휴대폰 번호 <span
+                                class="text-red-500">*</span></label>
+                        <input type="tel" id="mobile" name="mobile" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="010-1234-5678"/>
                         <p class="mt-1 text-sm text-gray-500">
-                            '-' 없이 숫자만 입력해주세요
-                        </p>
+                            '-' 없이 숫자만 입력해주세요 </p>
                     </div>
                     <!-- 대표자 주소 -->
                     <div>
-                        <label
-                                for="address"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >대표자 주소 <span class="text-red-500">*</span></label
-                        >
+                        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">대표자 주소 <span
+                                class="text-red-500">*</span></label>
                         <div class="flex gap-3 mb-2">
-                            <input
-                                    type="text"
-                                    id="address"
-                                    name="address"
-                                    readonly
-                                    required
-                                    class="w-32 px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                    placeholder="우편번호"
-                            />
-                            <button
-                                    type="button"
-                                    id="searchAddress"
+                            <input type="text" id="address" name="address" readonly required
+                                   class="w-32 px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                                   placeholder="우편번호"/>
+                            <button type="button" id="searchAddress"
                                     class="whitespace-nowrap !rounded-button bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 font-medium transition"
-                                    onclick="openPostcode('member')"
-                            >
+                                    onclick="openPostcode('member')">
                                 한국 주소 검색
                             </button>
-                            <button
-                                    type="button"
-                                    id="openChineseModal"
+                            <button type="button" id="openChineseModal"
                                     class="whitespace-nowrap !rounded-button bg-blue-100 hover:bg-gray-200 text-gray-700 px-4 py-3 font-medium transition openChineseModal"
-                                    data-target="address"
-                            >
+                                    data-target="address">
                                 중국 주소 검색
                             </button>
                         </div>
-                        <input
-                                type="text"
-                                id="address1"
-                                name="address1"
-                                readonly
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition mb-2"
-                                placeholder="기본 주소"
-                        />
-                        <input
-                                type="text"
-                                id="address2"
-                                name="address2"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="상세 주소"
-                        />
+                        <input type="text" id="address1" name="address1" readonly required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition mb-2"
+                               placeholder="기본 주소"/>
+                        <input type="text" id="address2" name="address2" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="상세 주소"/>
                     </div>
                 </div>
             </div>
             <!-- 유학원 정보 섹션 -->
             <div>
-                <h2
-                        class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200"
-                >
-                    유학원 정보
-                </h2>
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">
+                    유학원 정보 </h2>
                 <div class="space-y-5">
                     <!-- 유학원 이름 -->
                     <div>
-                        <label
-                                for="agencyName"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >유학원 이름 <span class="text-red-500">*</span></label
-                        >
-                        <input
-                                type="text"
-                                id="agencyName"
-                                name="agencyName"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="글로벌 유학원"
-                        />
+                        <label for="agencyName" class="block text-sm font-medium text-gray-700 mb-1">유학원 이름 <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" id="agencyName" name="agencyName" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="글로벌 유학원"/>
                     </div>
                     <!-- 대표자 전화번호 -->
                     <div>
-                        <label
-                                for="owner"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >대표자 성함 <span class="text-red-500">*</span></label
-                        >
-                        <input
-                                type="text"
-                                id="owner"
-                                name="owner"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="김**"
-                        />
+                        <label for="owner" class="block text-sm font-medium text-gray-700 mb-1">대표자 성함 <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" id="owner" name="owner" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="김**"/>
                         <p class="mt-1 text-sm text-gray-500">
-                            대표자 성함을 입력해주세요.
-                        </p>
+                            대표자 성함을 입력해주세요. </p>
                     </div>
                     <div>
-                        <label
-                                for="owner"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >대표자 이메일 <span class="text-red-500">*</span></label
-                        >
-                        <input
-                                type="email"
-                                id="agencyEmail"
-                                name="agencyEmail"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="adf@asdf.com"
-                        />
+                        <label for="owner" class="block text-sm font-medium text-gray-700 mb-1">대표자 이메일 <span
+                                class="text-red-500">*</span></label>
+                        <input type="email" id="agencyEmail" name="agencyEmail" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="adf@asdf.com"/>
                         <p class="mt-1 text-sm text-gray-500">
-                            대표자 이메일을 입력해주세요
-                        </p>
+                            대표자 이메일을 입력해주세요 </p>
                     </div>
                     <div>
-                        <label
-                                for="agencyPhone"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >유학원 전화번호 <span class="text-red-500">*</span></label
-                        >
-                        <input
-                                type="tel"
-                                id="agencyPhone"
-                                name="agencyPhone"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="010-1234-5678"
-                        />
+                        <label for="agencyPhone" class="block text-sm font-medium text-gray-700 mb-1">유학원 전화번호 <span
+                                class="text-red-500">*</span></label>
+                        <input type="tel" id="agencyPhone" name="agencyPhone" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="010-1234-5678"/>
                         <p class="mt-1 text-sm text-gray-500">
-                            '-' 없이 숫자만 입력해주세요
-                        </p>
+                            '-' 없이 숫자만 입력해주세요 </p>
                     </div>
 
                     <!-- 유학원 위치 -->
                     <div>
-                        <label
-                                for="agencyAddress"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >유학원 위치 <span class="text-red-500">*</span></label
-                        >
+                        <label for="agencyAddress" class="block text-sm font-medium text-gray-700 mb-1">유학원 위치 <span
+                                class="text-red-500">*</span></label>
                         <div class="flex gap-3 mb-2">
-                            <input
-                                    type="text"
-                                    id="agencyAddress"
-                                    name="agencyAddress"
-                                    readonly
-                                    required
-                                    class="w-32 px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                    placeholder="우편번호"
-                            />
-                            <button
-                                    type="button"
-                                    id="searchAgencyAddress"
+                            <input type="text" id="agencyAddress" name="agencyAddress" readonly required
+                                   class="w-32 px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                                   placeholder="우편번호"/>
+                            <button type="button" id="searchAgencyAddress"
                                     class="whitespace-nowrap !rounded-button bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 font-medium transition"
-                                    onclick="openPostcode('agency')"
-                            >
+                                    onclick="openPostcode('agency')">
                                 한국 주소 검색
                             </button>
-                            <button
-                                    type="button"
+                            <button type="button"
                                     class="whitespace-nowrap !rounded-button bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-3 font-medium transition openChineseModal"
-                                    data-target="agency"
-                            >
+                                    data-target="agency">
                                 중국 주소 검색
                             </button>
                         </div>
-                        <input
-                                type="text"
-                                id="agencyAddress1"
-                                name="agencyAddress1"
-                                readonly
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition mb-2"
-                                placeholder="기본 주소"
-                        />
-                        <input
-                                type="text"
-                                id="agencyAddress2"
-                                name="agencyAddress2"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="상세 주소"
-                        />
+                        <input type="text" id="agencyAddress1" name="agencyAddress1" readonly required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition mb-2"
+                               placeholder="기본 주소"/>
+                        <input type="text" id="agencyAddress2" name="agencyAddress2" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="상세 주소"/>
                     </div>
 
                     <!-- 유학원 지역 선택 -->
                     <div>
-                        <label
-                                for="agencyRegion"
-                                class="block text-sm font-medium text-gray-700 mb-1">
+                        <label for="agencyRegion" class="block text-sm font-medium text-gray-700 mb-1">
                             유학원 지역 <span class="text-red-500">*</span></label>
                         <div class="relative">
-                            <select
-                                    id="agencyRegion"
-                                    name="agencyRegion"
-                                    required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition appearance-none pr-8"
-                            >
+                            <select id="agencyRegion" name="agencyRegion" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition appearance-none pr-8">
                                 <option value="" disabled selected>
                                     지역을 선택해주세요
                                 </option>
@@ -503,58 +326,36 @@
                                 <option value="香港特别行政区">香港特别行政区</option>
                                 <option value="澳门特别行政区">澳门特别行政区</option>
                             </select>
-                            <div
-                                    class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-500 pointer-events-none"
-                            >
+                            <div class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-500 pointer-events-none">
                                 <i class="ri-arrow-down-s-line"></i>
                             </div>
                         </div>
                     </div>
                     <!-- 유학원 대표 이미지 업로드 -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1"
-                        >유학원 대표 이미지 <span class="text-red-500">*</span></label
-                        >
+                        <label class="block text-sm font-medium text-gray-700 mb-1">유학원 대표 이미지 <span
+                                class="text-red-500">*</span></label>
                         <div id="imageDropArea" class="file-drop-area">
                             <div class="flex flex-col items-center">
-                                <div
-                                        class="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full mb-2"
-                                >
+                                <div class="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full mb-2">
                                     <i class="ri-image-add-line text-gray-500 ri-xl"></i>
                                 </div>
                                 <p class="text-sm text-gray-700 font-medium">
-                                    이미지를 여기에 끌어다 놓거나
-                                </p>
+                                    이미지를 여기에 끌어다 놓거나 </p>
                                 <p class="text-sm text-gray-500 mb-3">
-                                    JPG, PNG, GIF 파일 (최대 5MB)
-                                </p>
-                                <label
-                                        for="agencyImage"
-                                        class="whitespace-nowrap !rounded-button bg-primary hover:bg-primary/90 text-white px-4 py-2 font-medium transition cursor-pointer"
-                                >
+                                    JPG, PNG, GIF 파일 (최대 5MB) </p>
+                                <label for="agencyImage"
+                                       class="whitespace-nowrap !rounded-button bg-primary hover:bg-primary/90 text-white px-4 py-2 font-medium transition cursor-pointer">
                                     파일 선택
                                 </label>
-                                <input
-                                        type="file"
-                                        id="agencyImage"
-                                        name="agencyImage"
-                                        accept="image/jpeg, image/png, image/gif"
-                                        class="hidden"
-                                />
+                                <input type="file" id="agencyImage" name="agencyImage"
+                                       accept="image/jpeg, image/png, image/gif" class="hidden"/>
                             </div>
                             <div id="imagePreviewContainer" class="hidden mt-4">
-                                <img
-                                        id="imagePreview"
-                                        src="#"
-                                        alt="미리보기"
-                                        class="preview-image mx-auto"
-                                />
+                                <img id="imagePreview" src="#" alt="미리보기" class="preview-image mx-auto"/>
                                 <div class="flex justify-center mt-2">
-                                    <button
-                                            type="button"
-                                            id="removeImage"
-                                            class="text-sm text-red-500 hover:text-red-700"
-                                    >
+                                    <button type="button" id="removeImage"
+                                            class="text-sm text-red-500 hover:text-red-700">
                                         삭제
                                     </button>
                                 </div>
@@ -563,61 +364,35 @@
                     </div>
                     <!-- 사업자 등록증 업로드 -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1"
-                        >사업자 등록증 <span class="text-red-500">*</span></label
-                        >
+                        <label class="block text-sm font-medium text-gray-700 mb-1">사업자 등록증 <span
+                                class="text-red-500">*</span></label>
                         <div id="licenseDropArea" class="file-drop-area">
                             <div class="flex flex-col items-center">
-                                <div
-                                        class="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full mb-2"
-                                >
+                                <div class="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full mb-2">
                                     <i class="ri-file-upload-line text-gray-500 ri-xl"></i>
                                 </div>
                                 <p class="text-sm text-gray-700 font-medium">
-                                    파일을 여기에 끌어다 놓거나
-                                </p>
+                                    파일을 여기에 끌어다 놓거나 </p>
                                 <p class="text-sm text-gray-500 mb-3">
-                                    PDF, JPG, PNG 파일 (최대 10MB)
-                                </p>
-                                <label
-                                        for="businessLicense"
-                                        class="whitespace-nowrap !rounded-button bg-primary hover:bg-primary/90 text-white px-4 py-2 font-medium transition cursor-pointer"
-                                >
+                                    PDF, JPG, PNG 파일 (최대 10MB) </p>
+                                <label for="businessLicense"
+                                       class="whitespace-nowrap !rounded-button bg-primary hover:bg-primary/90 text-white px-4 py-2 font-medium transition cursor-pointer">
                                     파일 선택
                                 </label>
-                                <input
-                                        type="file"
-                                        id="businessLicense"
-                                        name="businessLicense"
-                                        accept="application/pdf, image/jpeg, image/png"
-                                        class="hidden"
-                                        required
-                                />
+                                <input type="file" id="businessLicense" name="businessLicense"
+                                       accept="application/pdf, image/jpeg, image/png" class="hidden" required/>
                             </div>
                             <div id="licenseFileInfo" class="hidden mt-4">
-                                <div
-                                        class="flex items-center justify-center p-3 bg-gray-50 rounded-lg"
-                                >
-                                    <div
-                                            class="w-8 h-8 flex items-center justify-center mr-2"
-                                    >
+                                <div class="flex items-center justify-center p-3 bg-gray-50 rounded-lg">
+                                    <div class="w-8 h-8 flex items-center justify-center mr-2">
                                         <i class="ri-file-line text-gray-500 ri-lg"></i>
                                     </div>
                                     <div class="flex-1">
-                                        <p
-                                                id="licenseFileName"
-                                                class="text-sm font-medium text-gray-700 truncate"
-                                        ></p>
-                                        <p
-                                                id="licenseFileSize"
-                                                class="text-xs text-gray-500"
-                                        ></p>
+                                        <p id="licenseFileName" class="text-sm font-medium text-gray-700 truncate"></p>
+                                        <p id="licenseFileSize" class="text-xs text-gray-500"></p>
                                     </div>
-                                    <button
-                                            type="button"
-                                            id="removeLicense"
-                                            class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-red-500"
-                                    >
+                                    <button type="button" id="removeLicense"
+                                            class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-red-500">
                                         <i class="ri-delete-bin-line"></i>
                                     </button>
                                 </div>
@@ -631,115 +406,63 @@
                 <div class="flex items-center">
                     <div class="relative w-5 h-5 mr-2">
                         <input type="checkbox" id="agreeAll" class="sr-only"/>
-                        <div
-                                class="w-5 h-5 border border-gray-300 rounded cursor-pointer flex items-center justify-center"
-                                id="agreeAllBox"
-                        >
+                        <div class="w-5 h-5 border border-gray-300 rounded cursor-pointer flex items-center justify-center"
+                             id="agreeAllBox">
                             <i class="ri-check-line text-white hidden"></i>
                         </div>
                     </div>
-                    <label
-                            for="agreeAll"
-                            class="text-sm font-medium text-gray-800 cursor-pointer"
-                    >전체 동의</label
-                    >
+                    <label for="agreeAll" class="text-sm font-medium text-gray-800 cursor-pointer">전체 동의</label>
                 </div>
                 <div class="ml-7 space-y-2">
                     <div class="flex items-center">
                         <div class="relative w-5 h-5 mr-2">
-                            <input
-                                    type="checkbox"
-                                    id="agreeTerms"
-                                    name="agreeTerms"
-                                    required
-                                    class="sr-only"
-                            />
-                            <div
-                                    class="w-5 h-5 border border-gray-300 rounded cursor-pointer flex items-center justify-center"
-                                    id="agreeTermsBox"
-                            >
+                            <input type="checkbox" id="agreeTerms" name="agreeTerms" required class="sr-only"/>
+                            <div class="w-5 h-5 border border-gray-300 rounded cursor-pointer flex items-center justify-center"
+                                 id="agreeTermsBox">
                                 <i class="ri-check-line text-white hidden"></i>
                             </div>
                         </div>
-                        <label
-                                for="agreeTerms"
-                                class="text-sm text-gray-700 cursor-pointer"
-                        >서비스 이용약관 동의
-                            <span class="text-red-500">*</span></label
-                        >
-                        <button
-                                type="button"
-                                class="ml-auto text-xs text-gray-500 underline"
-                        >
+                        <label for="agreeTerms" class="text-sm text-gray-700 cursor-pointer">서비스 이용약관 동의
+                            <span class="text-red-500">*</span></label>
+                        <button type="button" class="ml-auto text-xs text-gray-500 underline">
                             보기
                         </button>
                     </div>
                     <div class="flex items-center">
                         <div class="relative w-5 h-5 mr-2">
-                            <input
-                                    type="checkbox"
-                                    id="agreePrivacy"
-                                    name="agreePrivacy"
-                                    required
-                                    class="sr-only"
-                            />
-                            <div
-                                    class="w-5 h-5 border border-gray-300 rounded cursor-pointer flex items-center justify-center"
-                                    id="agreePrivacyBox"
-                            >
+                            <input type="checkbox" id="agreePrivacy" name="agreePrivacy" required class="sr-only"/>
+                            <div class="w-5 h-5 border border-gray-300 rounded cursor-pointer flex items-center justify-center"
+                                 id="agreePrivacyBox">
                                 <i class="ri-check-line text-white hidden"></i>
                             </div>
                         </div>
-                        <label
-                                for="agreePrivacy"
-                                class="text-sm text-gray-700 cursor-pointer"
-                        >개인정보 수집 및 이용 동의
-                            <span class="text-red-500">*</span></label
-                        >
-                        <button
-                                type="button"
-                                class="ml-auto text-xs text-gray-500 underline"
-                        >
+                        <label for="agreePrivacy" class="text-sm text-gray-700 cursor-pointer">개인정보 수집 및 이용 동의
+                            <span class="text-red-500">*</span></label>
+                        <button type="button" class="ml-auto text-xs text-gray-500 underline">
                             보기
                         </button>
                     </div>
                     <div class="flex items-center">
                         <div class="relative w-5 h-5 mr-2">
-                            <input
-                                    type="checkbox"
-                                    id="agreeMarketing"
-                                    name="agreeMarketing"
-                                    class="sr-only"
-                            />
-                            <div
-                                    class="w-5 h-5 border border-gray-300 rounded cursor-pointer flex items-center justify-center"
-                                    id="agreeMarketingBox"
-                            >
+                            <input type="checkbox" id="agreeMarketing" name="agreeMarketing" class="sr-only"/>
+                            <div class="w-5 h-5 border border-gray-300 rounded cursor-pointer flex items-center justify-center"
+                                 id="agreeMarketingBox">
                                 <i class="ri-check-line text-white hidden"></i>
                             </div>
                         </div>
-                        <label
-                                for="agreeMarketing"
-                                class="text-sm text-gray-700 cursor-pointer"
-                        >마케팅 정보 수신 동의 (선택)</label
-                        >
+                        <label for="agreeMarketing" class="text-sm text-gray-700 cursor-pointer">마케팅 정보 수신 동의
+                            (선택)</label>
                     </div>
                 </div>
             </div>
             <!-- 버튼 영역 -->
             <div class="flex justify-center gap-4 pt-4">
-                <button
-                        type="button"
-                        id="cancelButton"
-                        class="whitespace-nowrap !rounded-button bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 font-medium transition min-w-[120px]"
-                >
+                <button type="button" id="cancelButton"
+                        class="whitespace-nowrap !rounded-button bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 font-medium transition min-w-[120px]">
                     취소
                 </button>
-                <button
-                        type="submit"
-                        id="submitButton"
-                        class="whitespace-nowrap !rounded-button bg-primary hover:bg-primary/90 text-white px-6 py-3 font-medium transition min-w-[120px]"
-                >
+                <button type="submit" id="submitButton"
+                        class="whitespace-nowrap !rounded-button bg-primary hover:bg-primary/90 text-white px-6 py-3 font-medium transition min-w-[120px]">
                     회원가입
                 </button>
             </div>
@@ -760,8 +483,7 @@
 
 
 <!--중국 주소 검색-->
-<div id="chinese-address-modal"
-     class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2
+<div id="chinese-address-modal" class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2
             z-[9999] w-[400px] bg-white border border-gray-300 shadow-lg rounded-lg p-5">
     <div class="flex justify-between items-center mb-4 border-b pb-2">
         <h4 class="text-lg font-semibold text-gray-700">중국 주소 검색</h4>
@@ -770,16 +492,10 @@
         </button>
     </div>
 
-    <input
-            type="text"
-            id="chineseAddressInput"
-            placeholder="예: 上海市徐汇区漕溪北路333号"
-            class="w-full border border-gray-300 rounded-button px-4 py-2 mb-3 focus:ring-2 focus:ring-primary outline-none"
-    />
+    <input type="text" id="chineseAddressInput" placeholder="예: 上海市徐汇区漕溪北路333号"
+           class="w-full border border-gray-300 rounded-button px-4 py-2 mb-3 focus:ring-2 focus:ring-primary outline-none"/>
 
-    <ul id="chineseAddressList"
-        class="border border-gray-200 rounded-lg max-h-60 overflow-y-auto hidden">
-    </ul>
+    <ul id="chineseAddressList" class="border border-gray-200 rounded-lg max-h-60 overflow-y-auto hidden"></ul>
 </div>
 </body>
 

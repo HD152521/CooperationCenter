@@ -5,39 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>설문조사 참여</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <script>tailwind.config={theme:{extend:{colors:{primary:'#4F46E5',secondary:'#6366F1'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <script>tailwind.config = {
+        theme: {
+            extend: {
+                colors: {primary: '#4F46E5', secondary: '#6366F1'},
+                borderRadius: {
+                    'none': '0px',
+                    'sm': '4px',
+                    DEFAULT: '8px',
+                    'md': '12px',
+                    'lg': '16px',
+                    'xl': '20px',
+                    '2xl': '24px',
+                    '3xl': '32px',
+                    'full': '9999px',
+                    'button': '8px'
+                }
+            }
+        }
+    }</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
     <style>
-        :where([class^="ri-"])::before { content: "\f3c2"; }
+        :where([class^="ri-"])::before {
+            content: "\f3c2";
+        }
+
         body {
             font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
         }
+
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
+
         .custom-radio input:checked + span {
             border-color: #4F46E5;
         }
+
         .custom-radio input:checked + span:before {
             transform: scale(1);
         }
+
         .custom-checkbox input:checked + span {
             border-color: #4F46E5;
             background-color: #4F46E5;
         }
+
         .custom-checkbox input:checked + span:before {
             opacity: 1;
         }
+
         .rating-item input:checked + label {
             color: #4F46E5;
             border-color: #4F46E5;
             background-color: rgba(79, 70, 229, 0.1);
         }
+
         .progress-bar {
             transition: width 0.3s ease;
         }
@@ -75,14 +103,14 @@
             <h1 class="text-2xl font-bold text-gray-900 mb-2">제목</h1>
             <p class="text-gray-600 mb-4">설명</p>
             <div class="flex items-center text-sm text-gray-500 space-x-6">
-<!--                <div class="flex items-center">-->
-<!--                    <i class="ri-time-line mr-2"></i>-->
-<!--                    <span data-time>예상 소요 시간: 약 5분</span>-->
-<!--                </div>-->
-<!--                <div class="flex items-center">-->
-<!--                    <i class="ri-question-line mr-2"></i>-->
-<!--                    <span data-count>총 0개 문항</span>-->
-<!--                </div>-->
+                <!--                <div class="flex items-center">-->
+                <!--                    <i class="ri-time-line mr-2"></i>-->
+                <!--                    <span data-time>예상 소요 시간: 약 5분</span>-->
+                <!--                </div>-->
+                <!--                <div class="flex items-center">-->
+                <!--                    <i class="ri-question-line mr-2"></i>-->
+                <!--                    <span data-count>총 0개 문항</span>-->
+                <!--                </div>-->
             </div>
         </div>
         <form id="survey-form" enctype="multipart/form-data">
@@ -91,7 +119,8 @@
             </div>
 
             <div class="flex flex-col items-center mt-8">
-                <button type="submit" class="px-6 py-3 bg-primary text-white font-medium rounded-button whitespace-nowrap hover:bg-primary/90 transition-colors">
+                <button type="submit"
+                        class="px-6 py-3 bg-primary text-white font-medium rounded-button whitespace-nowrap hover:bg-primary/90 transition-colors">
                     제출하기
                 </button>
             </div>
@@ -554,82 +583,82 @@
     // window.renderQuestions = renderQuestions;
 </script>
 <script type="module">
-        // function setUpJumpHandlers() {
-        //     const allQuestions = Array.from(document.querySelectorAll('[id^="question-"]'));
-        //
-        //     function handleJump(e, nextIdxStr) {
-        //         const nextIdx = parseInt(nextIdxStr);
-        //         if (isNaN(nextIdx)) return;
-        //
-        //         const currentWrapper = e.target.closest('[id^="question-"]');
-        //         if (!currentWrapper) return;
-        //
-        //         const currentId = currentWrapper.id; // e.g., "question-3"
-        //         const currentIdx = parseInt(currentId.split('-')[1]);
-        //
-        //         if (isNaN(currentIdx)) return;
-        //
-        //         // 모든 문항 순회하면서 처리
-        //         allQuestions.forEach(el => {
-        //             const elIdx = parseInt(el.id.split('-')[1]);
-        //
-        //             // 현재 문항은 항상 보여야 함
-        //             if (elIdx === currentIdx || elIdx === nextIdx) {
-        //                 el.style.display = '';
-        //             }
-        //             // currentIdx < idx < nextIdx → 숨김
-        //             else if (elIdx > currentIdx && elIdx < nextIdx) {
-        //                 el.style.display = 'none';
-        //             }
-        //         });
-        //
-        //         const target = document.getElementById(`question-${nextIdx}`);
-        //         if (target) {
-        //             const topOffset = 80; // progress bar 높이보다 약간 더 여유있게
-        //             const top = target.getBoundingClientRect().top + window.scrollY - topOffset;
-        //
-        //             window.scrollTo({
-        //                 top,
-        //                 behavior: 'smooth'
-        //             });
-        //         }
-        //     }
-        //
-        //     document.querySelectorAll('input[type="radio"]').forEach(input => {
-        //         input.addEventListener('change', (e) => {
-        //             handleJump(e, e.target.dataset.nextQuestion);
-        //             updateProgress();
-        //         });
-        //     });
-        //
-        //     document.querySelectorAll('select').forEach(select => {
-        //         select.addEventListener('change', (e) => {
-        //             const selectedOption = e.target.options[e.target.selectedIndex];
-        //             const next = selectedOption.dataset.nextQuestion;
-        //
-        //             const currentWrapper = e.target.closest('[id^="question-"]');
-        //             if (!currentWrapper) return;
-        //             const currentIdx = parseInt(currentWrapper.id.split('-')[1]);
-        //
-        //             if (!next || selectedOption.value === '' || selectedOption.text === '선택하세요') {
-        //                 // 이전에 숨겼던 문항들 중 currentIdx 이후 것만 다시 보임
-        //                 allQuestions.forEach(el => {
-        //                     const elIdx = parseInt(el.id.split('-')[1]);
-        //                     if (elIdx > currentIdx) {
-        //                         el.style.display = '';
-        //                     }
-        //                 });
-        //             } else {
-        //                 handleJump(e, next);
-        //             }
-        //
-        //             updateProgress();
-        //         });
-        //     });
-        // }
+    // function setUpJumpHandlers() {
+    //     const allQuestions = Array.from(document.querySelectorAll('[id^="question-"]'));
+    //
+    //     function handleJump(e, nextIdxStr) {
+    //         const nextIdx = parseInt(nextIdxStr);
+    //         if (isNaN(nextIdx)) return;
+    //
+    //         const currentWrapper = e.target.closest('[id^="question-"]');
+    //         if (!currentWrapper) return;
+    //
+    //         const currentId = currentWrapper.id; // e.g., "question-3"
+    //         const currentIdx = parseInt(currentId.split('-')[1]);
+    //
+    //         if (isNaN(currentIdx)) return;
+    //
+    //         // 모든 문항 순회하면서 처리
+    //         allQuestions.forEach(el => {
+    //             const elIdx = parseInt(el.id.split('-')[1]);
+    //
+    //             // 현재 문항은 항상 보여야 함
+    //             if (elIdx === currentIdx || elIdx === nextIdx) {
+    //                 el.style.display = '';
+    //             }
+    //             // currentIdx < idx < nextIdx → 숨김
+    //             else if (elIdx > currentIdx && elIdx < nextIdx) {
+    //                 el.style.display = 'none';
+    //             }
+    //         });
+    //
+    //         const target = document.getElementById(`question-${nextIdx}`);
+    //         if (target) {
+    //             const topOffset = 80; // progress bar 높이보다 약간 더 여유있게
+    //             const top = target.getBoundingClientRect().top + window.scrollY - topOffset;
+    //
+    //             window.scrollTo({
+    //                 top,
+    //                 behavior: 'smooth'
+    //             });
+    //         }
+    //     }
+    //
+    //     document.querySelectorAll('input[type="radio"]').forEach(input => {
+    //         input.addEventListener('change', (e) => {
+    //             handleJump(e, e.target.dataset.nextQuestion);
+    //             updateProgress();
+    //         });
+    //     });
+    //
+    //     document.querySelectorAll('select').forEach(select => {
+    //         select.addEventListener('change', (e) => {
+    //             const selectedOption = e.target.options[e.target.selectedIndex];
+    //             const next = selectedOption.dataset.nextQuestion;
+    //
+    //             const currentWrapper = e.target.closest('[id^="question-"]');
+    //             if (!currentWrapper) return;
+    //             const currentIdx = parseInt(currentWrapper.id.split('-')[1]);
+    //
+    //             if (!next || selectedOption.value === '' || selectedOption.text === '선택하세요') {
+    //                 // 이전에 숨겼던 문항들 중 currentIdx 이후 것만 다시 보임
+    //                 allQuestions.forEach(el => {
+    //                     const elIdx = parseInt(el.id.split('-')[1]);
+    //                     if (elIdx > currentIdx) {
+    //                         el.style.display = '';
+    //                     }
+    //                 });
+    //             } else {
+    //                 handleJump(e, next);
+    //             }
+    //
+    //             updateProgress();
+    //         });
+    //     });
+    // }
 
-        // export module functions
-        // window.setUpJumpHandlers = setUpJumpHandlers;
+    // export module functions
+    // window.setUpJumpHandlers = setUpJumpHandlers;
 </script>
 
 <script id="submitForm" th:inline="javascript" type="module">
@@ -639,19 +668,19 @@
         let status = true;
         let isValid = true;
         const answers = [];
-        const templateAnswers=[];
+        const templateAnswers = [];
         let questionCnt = 0;
         for (let idx = 0; idx < window.questions.length; idx++) {
             const q = window.questions[idx];
             const optionName = `q${idx}`;
-            const problemName = `question-${idx+1}`;
+            const problemName = `question-${idx + 1}`;
             const inputs = document.querySelectorAll(`[name="${optionName}"]`);
             const problem = document.querySelector(`#${problemName}`);
             const qRealId = q.questionId;
             const type = q.type;
             const domainField = q.domainField;
 
-            if(getComputedStyle(problem).display === 'none') {
+            if (getComputedStyle(problem).display === 'none') {
                 continue;
             }
             questionCnt++;
@@ -661,7 +690,7 @@
             if (type === 'multiple') {
                 const selected = Array.from(inputs).find(input => input.checked);
                 valid = !!selected;
-                status = (valid&&status);
+                status = (valid && status);
                 // if (valid) answerValue = selected.nextElementSibling?.nextElementSibling?.textContent || selected.value;
                 if (valid) {
                     const inputsArray = Array.from(inputs);
@@ -672,7 +701,7 @@
             } else if (type === 'multiplecheck') {
                 const selected = Array.from(inputs).filter(input => input.checked);
                 valid = selected.length > 0;
-                status = (valid&&status);
+                status = (valid && status);
                 // if (valid) answerValue = selected.map(input => input.nextElementSibling?.nextElementSibling?.textContent || input.value);
                 if (valid) {
                     answerValue = selected.map(input => {
@@ -685,19 +714,19 @@
             } else if (['dropdown', 'short', 'essay', 'date'].includes(type)) {
                 const input = inputs[0];
                 valid = input && input.value.trim() !== '';
-                status = (valid&&status);
+                status = (valid && status);
                 if (valid) answerValue = input.value.trim();
             } else if (type === 'file') {
                 const input = inputs[0];
                 valid = input && input.files.length > 0;
-                status = (valid&&status);
-                if (valid) answerValue = "file-"+idx;
+                status = (valid && status);
+                if (valid) answerValue = "file-" + idx;
             } else if (type === 'image') {
                 const input = inputs[0];
                 valid = input && input.files.length > 0;
-                status = (valid&&status);
-                if (valid) answerValue = "image-"+idx;
-            }else if (type === 'hierarchy') {
+                status = (valid && status);
+                if (valid) answerValue = "image-" + idx;
+            } else if (type === 'hierarchy') {
                 const selects = problem.querySelectorAll('select');
                 const values = Array.from(selects).map(s => {
                     const selected = s.options[s.selectedIndex];
@@ -710,7 +739,7 @@
                 }).filter(Boolean);
 
                 valid = validateHierarchySelects(selects);
-                status = (valid&&status);
+                status = (valid && status);
                 if (valid) answerValue = values;
             }
 
@@ -727,20 +756,20 @@
                 }
             }
 
-            if(window.questions[idx].isTemplate){
+            if (window.questions[idx].isTemplate) {
                 templateAnswers.push({
                     questionId: idx + 1,
                     type: type,
                     answer: answerValue,
-                    questionRealId:qRealId,
-                    domainField:domainField
+                    questionRealId: qRealId,
+                    domainField: domainField
                 })
-            }else{
+            } else {
                 answers.push({
                     questionId: idx + 1,
                     type: type,
                     answer: answerValue,
-                    questionRealId:qRealId
+                    questionRealId: qRealId
                 });
             }
 
@@ -748,7 +777,7 @@
         }
         const fileMap = collectFiles();
 
-        if (!status){
+        if (!status) {
             alert("모든 문항 답변을 완료해주세요");
             return;
         }
@@ -761,12 +790,12 @@
                 surveyId: surveyId,
                 answers: answers,
                 templateAnswers: templateAnswers,
-                startTime : window.time,
-                questionCnt : questionCnt
+                startTime: window.time,
+                questionCnt: questionCnt
             }));
 
             for (const [questionId, file] of Object.entries(fileMap)) {
-                const matched = answers.find(ans => ans.questionId-1 === Number(questionId));
+                const matched = answers.find(ans => ans.questionId - 1 === Number(questionId));
 
                 if (!matched) {
                     console.warn(`❗ questionId ${questionId} 에 해당하는 답변을 찾을 수 없습니다.`);

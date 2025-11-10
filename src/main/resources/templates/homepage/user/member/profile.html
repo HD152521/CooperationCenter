@@ -1,27 +1,25 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>프로필 페이지</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet"
-    />
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-    />
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"/>
     <style>
-        :where([class^="ri-"])::before { content: "\f3c2"; }
+        :where([class^="ri-"])::before {
+            content: "\f3c2";
+        }
+
         body {
             font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
             background-color: #f9fafb;
         }
+
         .profile-image {
             width: 120px;
             height: 120px;
@@ -29,20 +27,25 @@
             border: 3px solid white;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         .card {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
         }
+
         .card:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
         }
+
         .survey-item {
             border-bottom: 1px solid #e5e7eb;
         }
+
         .survey-item:last-child {
             border-bottom: none;
         }
+
         input:focus, textarea:focus {
             outline: none;
             border-color: #3b82f6;
@@ -52,7 +55,7 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { primary: "#3b82f6", secondary: "#64748b" },
+                    colors: {primary: "#3b82f6", secondary: "#64748b"},
                     borderRadius: {
                         none: "0px",
                         sm: "4px",
@@ -79,17 +82,13 @@
     <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
         <div class="flex justify-between items-start mb-6">
             <h2 class="text-2xl font-bold text-gray-800">내 프로필</h2>
-            <button
-                    id="editProfileBtn"
-                    class="flex items-center space-x-1 text-primary hover:text-primary/80 !rounded-button px-4 py-2 border border-primary/30 bg-primary/5"
-            >
+            <button id="editProfileBtn"
+                    class="flex items-center space-x-1 text-primary hover:text-primary/80 !rounded-button px-4 py-2 border border-primary/30 bg-primary/5">
                 <i class="ri-edit-line ri-sm"></i>
                 <span class="whitespace-nowrap">프로필 편집</span>
             </button>
-            <div
-                    id="editProfileModal"
-                    class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50"
-            >
+            <div id="editProfileModal"
+                 class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
                 <div class="bg-white rounded-lg w-full max-w-2xl mx-4">
                     <div class="p-6 border-b border-gray-200">
                         <h3 class="text-xl font-bold text-gray-800">프로필 편집</h3>
@@ -98,132 +97,78 @@
                         <form id="profileEditForm">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label
-                                            class="block text-sm font-medium text-gray-500 mb-1"
-                                    >이름</label
-                                    >
-                                    <input
-                                            type="text"
-                                            name="name"
-                                            id="editName"
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
-                                            th:value="${profileDto.member.memberName}"
+                                    <label class="block text-sm font-medium text-gray-500 mb-1">이름</label>
+                                    <input type="text" name="name" id="editName"
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
+                                           th:value="${profileDto.member.memberName}"
 
                                     />
                                 </div>
                                 <div>
-                                    <label
-                                            class="block text-sm font-medium text-gray-500 mb-1"
-                                    >생년월일</label
-                                    >
-                                    <input
-                                            type="date"
-                                            name="birthdate"
-                                            id="editBirthdate"
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
-                                            th:value="${profileDto.member.birth}"
-                                    />
+                                    <label class="block text-sm font-medium text-gray-500 mb-1">생년월일</label>
+                                    <input type="date" name="birthdate" id="editBirthdate"
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
+                                           th:value="${profileDto.member.birth}"/>
                                 </div>
                                 <div>
-                                    <label
-                                            class="block text-sm font-medium text-gray-500 mb-1"
-                                    >이메일</label
-                                    >
-                                    <input
-                                            type="email"
-                                            name="email"
-                                            id="editEmail"
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
-                                            th:value="${profileDto.member.email}"
-                                    />
+                                    <label class="block text-sm font-medium text-gray-500 mb-1">이메일</label>
+                                    <input type="email" name="email" id="editEmail"
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
+                                           th:value="${profileDto.member.email}"/>
                                 </div>
                                 <div>
-                                    <label
-                                            class="block text-sm font-medium text-gray-500 mb-1"
-                                    >전화번호</label
-                                    >
-                                    <input
-                                            type="tel"
-                                            name="phone"
-                                            id="editHomePhoneNum"
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
-                                            th:value="${profileDto.member.homePhoneNumber}"
-                                    />
+                                    <label class="block text-sm font-medium text-gray-500 mb-1">전화번호</label>
+                                    <input type="tel" name="phone" id="editHomePhoneNum"
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
+                                           th:value="${profileDto.member.homePhoneNumber}"/>
                                 </div>
                                 <div>
-                                    <label
-                                            class="block text-sm font-medium text-gray-500 mb-1"
-                                    >휴대폰번호</label
-                                    >
-                                    <input
-                                            type="tel"
-                                            name="phone"
-                                            id="editPhoneNum"
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
-                                            th:value="${profileDto.member.phoneNumber}"
-                                    />
+                                    <label class="block text-sm font-medium text-gray-500 mb-1">휴대폰번호</label>
+                                    <input type="tel" name="phone" id="editPhoneNum"
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
+                                           th:value="${profileDto.member.phoneNumber}"/>
                                 </div>
                                 <div class="md:col-span-2">
                                     <div class="flex items-center justify-between mb-1">
                                         <label class="block text-sm font-medium text-gray-500">주소</label>
 
                                         <div class="flex items-center space-x-2 ml-auto">
-                                            <button
-                                                    type="button"
-                                                    id="openChineseModal"
+                                            <button type="button" id="openChineseModal"
                                                     class="whitespace-nowrap !rounded-button bg-blue-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 text-sm font-medium transition openChineseModal"
-                                                    data-target="address"
-                                            >
+                                                    data-target="address">
                                                 중국 주소 검색
                                             </button>
-                                            <button
-                                                    type="button"
+                                            <button type="button"
                                                     class="text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-button transition"
-                                                    onclick="openPostcode('member')"
-                                            >
+                                                    onclick="openPostcode('member')">
                                                 한국 주소 검색
                                             </button>
                                         </div>
                                     </div>
-                                    <input
-                                            id="editAddress1"
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
-                                            placeholder="기본 주소"
-                                            th:value="${profileDto.member.address1}"
-                                            readonly
-                                    />
-                                    <input
-                                            id="editAddress2"
-                                            class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
-                                            placeholder="상세 주소"
-                                            th:value="${profileDto.member.address2}"
-                                    />
+                                    <input id="editAddress1"
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
+                                           placeholder="기본 주소" th:value="${profileDto.member.address1}" readonly/>
+                                    <input id="editAddress2"
+                                           class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
+                                           placeholder="상세 주소" th:value="${profileDto.member.address2}"/>
                                 </div>
                             </div>
                         </form>
                     </div>
-                    <div
-                            class="p-6 border-t border-gray-200 flex justify-end space-x-3"
-                    >
-                        <button
-                                id="cancelEditBtn"
-                                class="px-4 py-2 border border-gray-300 text-gray-700 rounded-button hover:bg-gray-50"
-                        >
+                    <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                        <button id="cancelEditBtn"
+                                class="px-4 py-2 border border-gray-300 text-gray-700 rounded-button hover:bg-gray-50">
                             취소
                         </button>
-                        <button
-                                id="saveProfileBtn"
-                                class="px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90"
-                        >
+                        <button id="saveProfileBtn"
+                                class="px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90">
                             저장
                         </button>
                     </div>
                 </div>
             </div>
-            <div
-                    id="successToast"
-                    class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-full opacity-0 transition-all duration-300 hidden"
-            >
+            <div id="successToast"
+                 class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-full opacity-0 transition-all duration-300 hidden">
                 프로필이 성공적으로 업데이트되었습니다
             </div>
         </div>
@@ -231,42 +176,32 @@
             <div class="flex-1">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1"
-                        >이름</label
-                        >
+                        <label class="block text-sm font-medium text-gray-500 mb-1">이름</label>
                         <p class="text-gray-900 font-medium" th:text="${profileDto.member.memberName}">김지현</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1"
-                        >생년월일</label
-                        >
+                        <label class="block text-sm font-medium text-gray-500 mb-1">생년월일</label>
                         <p class="text-gray-900 font-medium" th:text="${profileDto.member.birth}">1998년 5월 12일</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1"
-                        >이메일</label
-                        >
-                        <p class="text-gray-900 font-medium" th:text="${profileDto.member.email}">jihyun.kim@example.com</p>
+                        <label class="block text-sm font-medium text-gray-500 mb-1">이메일</label>
+                        <p class="text-gray-900 font-medium" th:text="${profileDto.member.email}">
+                            jihyun.kim@example.com</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1"
-                        > 전화 번호</label
-                        >
-                        <p class="text-gray-900 font-medium" th:text="${profileDto.member.homePhoneNumber}">010-1234-5678</p>
+                        <label class="block text-sm font-medium text-gray-500 mb-1"> 전화 번호</label>
+                        <p class="text-gray-900 font-medium" th:text="${profileDto.member.homePhoneNumber}">
+                            010-1234-5678</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1"
-                        > 휴대전화 번호</label
-                        >
-                        <p class="text-gray-900 font-medium" th:text="${profileDto.member.phoneNumber}">010-1234-5678</p>
+                        <label class="block text-sm font-medium text-gray-500 mb-1"> 휴대전화 번호</label>
+                        <p class="text-gray-900 font-medium" th:text="${profileDto.member.phoneNumber}">
+                            010-1234-5678</p>
                     </div>
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-500 mb-1"
-                        >주소</label
-                        >
+                        <label class="block text-sm font-medium text-gray-500 mb-1">주소</label>
                         <p class="text-gray-700" th:text="${profileDto.member.address1+' '+profileDto.member.address2}">
-                            경기도 성남시
-                        </p>
+                            경기도 성남시 </p>
                     </div>
                 </div>
             </div>
@@ -276,49 +211,45 @@
     <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
         <div class="flex justify-between items-start mb-6">
             <h2 class="text-2xl font-bold text-gray-800">유학원 정보</h2>
-            <button
-                    id="editAgencyBtn"
-                    class="flex items-center space-x-1 text-primary hover:text-primary/80 !rounded-button px-4 py-2 border border-primary/30 bg-primary/5"
-            >
+            <button id="editAgencyBtn"
+                    class="flex items-center space-x-1 text-primary hover:text-primary/80 !rounded-button px-4 py-2 border border-primary/30 bg-primary/5">
                 <i class="ri-edit-line ri-sm"></i>
                 <span class="whitespace-nowrap">정보 수정</span>
             </button>
-            <div
-                    id="editAgencyModal"
-                    class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50"
-            >
+            <div id="editAgencyModal"
+                 class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
                 <div class="bg-white rounded-lg w-full max-w-2xl mx-4">
                     <div class="p-6 border-b border-gray-200">
                         <h3 class="text-xl font-bold text-gray-800">
-                            유학원 정보 수정
-                        </h3>
+                            유학원 정보 수정 </h3>
                     </div>
                     <div class="p-6">
                         <form id="agencyEditForm">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="md:col-span-2">
                                     <label class="block text-sm font-medium text-gray-500 mb-1">유학원명</label>
-                                    <input type="text" id="editAgencyName" class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
+                                    <input type="text" id="editAgencyName"
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
                                            th:value="${profileDto.member.agencyName}">
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500 mb-1">대표자</label>
-                                    <input type="text" id="editAgencyOwner" class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
+                                    <input type="text" id="editAgencyOwner"
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
                                            th:value="${profileDto.member.agencyOwner}">
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500 mb-1">대표 전화</label>
-                                    <input type="tel" id="editAgencyPhone" class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
+                                    <input type="tel" id="editAgencyPhone"
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
                                            th:value="${profileDto.member.agencyPhone}">
                                 </div>
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500 mb-1">유학원 지역</label>
-                                    <select
-                                            id="editAgencyRegion"
-                                            name="agencyRegion"
+                                    <select id="editAgencyRegion" name="agencyRegion"
                                             class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary">
                                         <option value="">지역 선택</option>
                                     </select>
@@ -326,7 +257,8 @@
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500 mb-1">이메일</label>
-                                    <input type="email" id="editAgencyEmail" class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
+                                    <input type="email" id="editAgencyEmail"
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
                                            th:value="${profileDto.member.agencyEmail}">
                                 </div>
 
@@ -334,84 +266,60 @@
                                     <div class="flex items-center justify-between mb-1">
                                         <label class="block text-sm font-medium text-gray-500">주소</label>
                                         <div class="flex items-center space-x-2 ml-auto">
-                                            <button
-                                                    type="button"
+                                            <button type="button"
                                                     class="whitespace-nowrap !rounded-button bg-blue-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 text-sm font-medium transition openChineseModal"
-                                                    data-target="agency"
-                                            >
+                                                    data-target="agency">
                                                 중국 주소 검색
                                             </button>
 
-                                            <button
-                                                    type="button"
+                                            <button type="button"
                                                     class="text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-button transition"
-                                                    onclick="openPostcode('member')"
-                                            >
+                                                    onclick="openPostcode('member')">
                                                 한국 주소 검색
                                             </button>
                                         </div>
                                     </div>
 
-                                    <input
-                                            id="editAgencyAddress1"
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
-                                            placeholder="기본 주소"
-                                            th:value="${profileDto.member.agencyAddress1}"
-                                            readonly
-                                    />
-                                    <input
-                                            id="editAgencyAddress2"
-                                            class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
-                                            placeholder="상세 주소"
-                                            th:value="${profileDto.member.agencyAddress2}"
-                                    />
+                                    <input id="editAgencyAddress1"
+                                           class="w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
+                                           placeholder="기본 주소" th:value="${profileDto.member.agencyAddress1}" readonly/>
+                                    <input id="editAgencyAddress2"
+                                           class="mt-2 w-full px-4 py-2 border border-gray-300 rounded-button focus:border-primary focus:ring-1 focus:ring-primary"
+                                           placeholder="상세 주소" th:value="${profileDto.member.agencyAddress2}"/>
                                 </div>
                             </div>
                         </form>
                     </div>
-                    <div
-                            class="p-6 border-t border-gray-200 flex justify-end space-x-3"
-                    >
-                        <button
-                                id="cancelAgencyBtn"
-                                class="px-4 py-2 border border-gray-300 text-gray-700 rounded-button hover:bg-gray-50"
-                        >
+                    <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                        <button id="cancelAgencyBtn"
+                                class="px-4 py-2 border border-gray-300 text-gray-700 rounded-button hover:bg-gray-50">
                             취소
                         </button>
-                        <button
-                                id="saveAgencyBtn"
-                                class="px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90"
-                        >
+                        <button id="saveAgencyBtn"
+                                class="px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90">
                             저장
                         </button>
                     </div>
                 </div>
             </div>
-            <div
-                    id="agencySuccessToast"
-                    class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-full opacity-0 transition-all duration-300 hidden"
-            >
+            <div id="agencySuccessToast"
+                 class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-full opacity-0 transition-all duration-300 hidden">
                 유학원 정보가 성공적으로 업데이트되었습니다
             </div>
         </div>
         <div class="card bg-white border border-gray-100 rounded-lg p-6">
             <div class="flex flex-col md:flex-row items-start gap-6">
                 <div class="flex-1">
-                    <div
-                            class="flex flex-col md:flex-row md:items-center justify-between mb-4"
-                    >
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
                         <h3 class="text-xl font-bold text-gray-800" th:text="${profileDto.member.agencyName}">
-                            글로벌 에듀케이션 센터
-                        </h3>
+                            글로벌 에듀케이션 센터 </h3>
 
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <p class="text-sm text-gray-500">대표자</p>
                             <div class="flex items-center mt-1">
-                                <div
-                                        class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-100 text-primary mr-2"
-                                >
+                                <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-100 text-primary mr-2">
                                     <i class="ri-user-line"></i>
                                 </div>
                                 <span class="font-medium" th:text="${profileDto.member.agencyOwner}"></span>
@@ -420,9 +328,7 @@
                         <div>
                             <p class="text-sm text-gray-500">컨설턴트 연락처</p>
                             <div class="flex items-center mt-1">
-                                <div
-                                        class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-100 text-primary mr-2"
-                                >
+                                <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-100 text-primary mr-2">
                                     <i class="ri-phone-line"></i>
                                 </div>
                                 <span th:text="${profileDto.member.agencyPhone}">010-9876-5432</span>
@@ -431,9 +337,7 @@
                         <div>
                             <p class="text-sm text-gray-500">유학원 지역</p>
                             <div class="flex items-center mt-1">
-                                <div
-                                        class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-100 text-primary mr-2"
-                                >
+                                <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-100 text-primary mr-2">
                                     <i class="ri-map-pin-line"></i>
                                 </div>
                                 <span th:text="${profileDto.member.agencyRegion}"></span>
@@ -442,9 +346,7 @@
                         <div>
                             <p class="text-sm text-gray-500">유학원 이메일</p>
                             <div class="flex items-center mt-1">
-                                <div
-                                        class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-100 text-primary mr-2"
-                                >
+                                <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-100 text-primary mr-2">
                                     <i class="ri-map-pin-line"></i>
                                 </div>
                                 <span th:text="${profileDto.member.agencyEmail}"></span>
@@ -453,9 +355,7 @@
                         <div class="md:col-span-2">
                             <p class="text-sm text-gray-500">유학원 주소</p>
                             <div class="flex items-center mt-1">
-                                <div
-                                        class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-100 text-primary mr-2"
-                                >
+                                <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-100 text-primary mr-2">
                                     <i class="ri-map-fill"></i>
                                 </div>
                                 <span th:text="${profileDto.member.agencyAddress1+' '+profileDto.member.agencyAddress2}"> 경기도 성남시 수정구 챔ㅇㄻㅇㄴㄻㄴㄹㄴ</span>
@@ -471,8 +371,7 @@
             <h2 class="text-2xl font-bold text-gray-800">사업자등록증</h2>
             <div class="flex items-center gap-2">
                 <a th:if="${profileDto?.businessCertification != null}"
-                   th:href="${profileDto.businessCertification.fileUrl}"
-                   download
+                   th:href="${profileDto.businessCertification.fileUrl}" download
                    class="px-4 py-2 border border-gray-300 text-gray-700 rounded-button hover:bg-gray-50">
                     다운로드
                 </a>
@@ -489,25 +388,27 @@
             <div class="md:col-span-1">
                 <div class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center aspect-[4/3]">
                     <img th:if="${#strings.startsWith(profileDto.businessCertification.contentType,'image/')}"
-                         th:src="${profileDto.businessCertification.fileViewUrl}"
-                         alt="사업자등록증"
-                         class="max-h-full max-w-full object-contain" />
+                         th:src="${profileDto.businessCertification.fileViewUrl}" alt="사업자등록증"
+                         class="max-h-full max-w-full object-contain"/>
                     <div th:if="${profileDto.businessCertification.contentType == 'application/pdf'}"
                          class="flex flex-col items-center justify-center text-gray-500">
                         <i class="ri-file-pdf-2-line text-5xl mb-2"></i>
-                        <a th:href="${profileDto.businessCertification.fileViewUrl}" target="_blank" class="text-sm underline">PDF 미리보기</a>
+                        <a th:href="${profileDto.businessCertification.fileViewUrl}" target="_blank"
+                           class="text-sm underline">PDF 미리보기</a>
                     </div>
                 </div>
             </div>
             <div class="md:col-span-2 space-y-3">
                 <div class="flex items-center gap-2">
                     <span class="text-sm text-gray-500">파일명</span>
-                    <p class="text-gray-900 font-medium" th:text="${profileDto.businessCertification.fileName}">biz-cert.pdf</p>
+                    <p class="text-gray-900 font-medium" th:text="${profileDto.businessCertification.fileName}">
+                        biz-cert.pdf</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="text-sm text-gray-500">업로드</span>
                     <p class="text-gray-900 font-medium"
-                       th:text="${profileDto.businessCertification.uploadedAt != null ? #temporals.format(profileDto.businessCertification.uploadedAt, 'yyyy-MM-dd HH:mm') : '-'}">-</p>
+                       th:text="${profileDto.businessCertification.uploadedAt != null ? #temporals.format(profileDto.businessCertification.uploadedAt, 'yyyy-MM-dd HH:mm') : '-'}">
+                        -</p>
                 </div>
                 <p class="text-sm text-gray-500">이미지(JPG/PNG/GIF/WEBP) 또는 PDF</p>
             </div>
@@ -536,12 +437,18 @@
                 <label for="bizCertFile"
                        class="block w-full border border-gray-300 rounded-button p-4 text-gray-600 cursor-pointer hover:bg-gray-50">
                     <i class="ri-attachment-2"></i><span class="ml-2">파일 선택</span>
-                    <input id="bizCertFile" name="businessCertificate" type="file" class="hidden" accept="image/*,application/pdf" />
+                    <input id="bizCertFile" name="businessCertificate" type="file" class="hidden"
+                           accept="image/*,application/pdf"/>
                 </label>
-                <div id="bizCertPreview" class="mt-4 border border-gray-200 rounded-lg bg-gray-50 flex items-center justify-center aspect-[4/3] hidden"></div>
+                <div id="bizCertPreview"
+                     class="mt-4 border border-gray-200 rounded-lg bg-gray-50 flex items-center justify-center aspect-[4/3] hidden"></div>
                 <div class="mt-6 flex justify-end gap-2 border-t border-gray-200 pt-6">
-                    <button type="button" id="closeBizCertModal" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-button hover:bg-gray-50">취소</button>
-                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90">업로드</button>
+                    <button type="button" id="closeBizCertModal"
+                            class="px-4 py-2 border border-gray-300 text-gray-700 rounded-button hover:bg-gray-50">취소
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90">
+                        업로드
+                    </button>
                 </div>
             </form>
         </div>
@@ -563,7 +470,8 @@
         <div th:if="${profileDto?.agencyPicture != null}" class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="md:col-span-1">
                 <div class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center aspect-[4/3]">
-                    <img th:src="${profileDto.agencyPicture.fileViewUrl}" alt="대표사진" class="max-h-full max-w-full object-contain" />
+                    <img th:src="${profileDto.agencyPicture.fileViewUrl}" alt="대표사진"
+                         class="max-h-full max-w-full object-contain"/>
                 </div>
             </div>
             <div class="md:col-span-2 space-y-3">
@@ -574,7 +482,8 @@
                 <div class="flex items-center gap-2">
                     <span class="text-sm text-gray-500">업로드</span>
                     <p class="text-gray-900 font-medium"
-                       th:text="${profileDto.agencyPicture.uploadedAt != null ? #temporals.format(profileDto.agencyPicture.uploadedAt, 'yyyy-MM-dd HH:mm') : '-'}">-</p>
+                       th:text="${profileDto.agencyPicture.uploadedAt != null ? #temporals.format(profileDto.agencyPicture.uploadedAt, 'yyyy-MM-dd HH:mm') : '-'}">
+                        -</p>
                 </div>
                 <p class="text-sm text-gray-500">이미지(JPG/PNG/GIF/WEBP) 권장</p>
             </div>
@@ -603,12 +512,17 @@
                 <label for="agencyPicFile"
                        class="block w-full border border-gray-300 rounded-button p-4 text-gray-600 cursor-pointer hover:bg-gray-50">
                     <i class="ri-attachment-2"></i><span class="ml-2">파일 선택</span>
-                    <input id="agencyPicFile" name="agencyPicture" type="file" class="hidden" accept="image/*" />
+                    <input id="agencyPicFile" name="agencyPicture" type="file" class="hidden" accept="image/*"/>
                 </label>
-                <div id="agencyPicPreview" class="mt-4 border border-gray-200 rounded-lg bg-gray-50 flex items-center justify-center aspect-[4/3] hidden"></div>
+                <div id="agencyPicPreview"
+                     class="mt-4 border border-gray-200 rounded-lg bg-gray-50 flex items-center justify-center aspect-[4/3] hidden"></div>
                 <div class="mt-6 flex justify-end gap-2 border-t border-gray-200 pt-6">
-                    <button type="button" id="closeAgencyPicModal" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-button hover:bg-gray-50">취소</button>
-                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90">업로드</button>
+                    <button type="button" id="closeAgencyPicModal"
+                            class="px-4 py-2 border border-gray-300 text-gray-700 rounded-button hover:bg-gray-50">취소
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90">
+                        업로드
+                    </button>
                 </div>
             </form>
         </div>
@@ -631,9 +545,8 @@
         <div class="overflow-hidden">
             <div class="survey-list">
                 <!-- 비어있는 경우 (null-safe) -->
-                <div
-                        class="py-10 text-center text-gray-500"
-                        th:if="${profileDto == null or profileDto.surveys == null or profileDto.surveys.totalElements == 0}">
+                <div class="py-10 text-center text-gray-500"
+                     th:if="${profileDto == null or profileDto.surveys == null or profileDto.surveys.totalElements == 0}">
                     아직 설문 기록이 없습니다.
                 </div>
 
@@ -655,7 +568,8 @@
 
                         <div class="flex items-center mt-4 md:mt-0 gap-4">
                             <span class="text-sm text-gray-500" th:text="${survey.submitTime}">2025년 5월 15일</span>
-                            <a th:href="@{${survey.logUrl}}" class="text-primary hover:text-primary/80 !rounded-button" title="로그 보기">
+                            <a th:href="@{${survey.logUrl}}" class="text-primary hover:text-primary/80 !rounded-button"
+                               title="로그 보기">
                                 <i class="ri-eye-line ri-lg"></i>
                             </a>
                         </div>
@@ -669,8 +583,7 @@
                 <div class="flex items-center space-x-2">
                     <!-- 이전 -->
                     <a class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-500 hover:bg-gray-50"
-                       th:classappend="${profileDto.surveys.first} ? ' pointer-events-none opacity-50' : ''"
-                       th:href="@{/profile(
+                       th:classappend="${profileDto.surveys.first} ? ' pointer-events-none opacity-50' : ''" th:href="@{/profile(
               page=${profileDto.surveys.number - 1}
             )}">
                         <i class="ri-arrow-left-s-line"></i>
@@ -681,8 +594,7 @@
           start=${T(java.lang.Math).max(0, profileDto.surveys.number - 2)},
           end=${T(java.lang.Math).min(profileDto.surveys.totalPages - 1, profileDto.surveys.number + 2)}">
                         <a class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50"
-                           th:each="i : ${#numbers.sequence(start, end)}"
-                           th:text="${i + 1}"
+                           th:each="i : ${#numbers.sequence(start, end)}" th:text="${i + 1}"
                            th:classappend="${i} == ${profileDto.surveys.number} ? ' !bg-primary !text-white border-primary' : ''"
                            th:href="@{/profile(
                 page=${i}
@@ -691,8 +603,7 @@
 
                     <!-- 다음 -->
                     <a class="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-500 hover:bg-gray-50"
-                       th:classappend="${profileDto.surveys.last} ? ' pointer-events-none opacity-50' : ''"
-                       th:href="@{/profile(
+                       th:classappend="${profileDto.surveys.last} ? ' pointer-events-none opacity-50' : ''" th:href="@{/profile(
               page=${profileDto.surveys.number + 1}
             )}">
                         <i class="ri-arrow-right-s-line"></i>
@@ -716,8 +627,7 @@
             <div class="mb-4 md:mb-0">
                 <h1 class="text-xl font-['Pacifico'] text-primary">logo</h1>
                 <p class="text-sm text-gray-500 mt-2">
-                    글로벌 유학 서비스의 새로운 기준
-                </p>
+                    글로벌 유학 서비스의 새로운 기준 </p>
             </div>
             <div class="flex space-x-6">
                 <a href="#" class="text-gray-500 hover:text-primary">
@@ -734,9 +644,7 @@
                 </a>
             </div>
         </div>
-        <div
-                class="border-t border-gray-200 mt-6 pt-6 text-sm text-gray-500 text-center"
-        >
+        <div class="border-t border-gray-200 mt-6 pt-6 text-sm text-gray-500 text-center">
             <p>© 2025 글로벌 에듀케이션 센터. All rights reserved.</p>
             <div class="mt-2 flex justify-center space-x-4">
                 <a href="#" class="hover:text-primary">이용약관</a>
@@ -748,7 +656,8 @@
 </footer>
 
 
-<div id="postcode-layer" class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] w-[360px] h-[480px] border border-gray-300 bg-white shadow-lg rounded-lg">
+<div id="postcode-layer"
+     class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] w-[360px] h-[480px] border border-gray-300 bg-white shadow-lg rounded-lg">
     <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
         <h4 class="font-semibold text-gray-700">주소 검색</h4>
         <button id="closePostcode" onclick="closePostcode()" class="text-gray-500 hover:text-gray-700">
@@ -759,8 +668,7 @@
 </div>
 
 
-<div id="chinese-address-modal"
-     class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2
+<div id="chinese-address-modal" class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2
             z-[9999] w-[400px] bg-white border border-gray-300 shadow-lg rounded-lg p-5">
     <div class="flex justify-between items-center mb-4 border-b pb-2">
         <h4 class="text-lg font-semibold text-gray-700">중국 주소 검색</h4>
@@ -769,16 +677,10 @@
         </button>
     </div>
 
-    <input
-            type="text"
-            id="chineseAddressInput"
-            placeholder="예: 上海市徐汇区漕溪北路333号"
-            class="w-full border border-gray-300 rounded-button px-4 py-2 mb-3 focus:ring-2 focus:ring-primary outline-none"
-    />
+    <input type="text" id="chineseAddressInput" placeholder="예: 上海市徐汇区漕溪北路333号"
+           class="w-full border border-gray-300 rounded-button px-4 py-2 mb-3 focus:ring-2 focus:ring-primary outline-none"/>
 
-    <ul id="chineseAddressList"
-        class="border border-gray-200 rounded-lg max-h-60 overflow-y-auto hidden">
-    </ul>
+    <ul id="chineseAddressList" class="border border-gray-200 rounded-lg max-h-60 overflow-y-auto hidden"></ul>
 </div>
 
 <script id="profileEditHandler" type="module">
@@ -794,13 +696,13 @@
     saveProfileBtn?.addEventListener("click", async () => {
         // DTO에 맞춰 JSON 구성
         const payload = {
-            memberName:        document.getElementById("editName").value?.trim() || null,
-            birth:             document.getElementById("editBirthdate").value || null, // YYYY-MM-DD
-            email:             document.getElementById("editEmail").value?.trim() || null,
-            homePhoneNumber:   document.getElementById("editHomePhoneNum").value?.trim() || null,
-            phoneNumber:       document.getElementById("editPhoneNum").value?.trim() || null,
-            address1:          document.getElementById("editAddress1").value?.trim() || null,
-            address2:          document.getElementById("editAddress2").value?.trim() || null
+            memberName: document.getElementById("editName").value?.trim() || null,
+            birth: document.getElementById("editBirthdate").value || null, // YYYY-MM-DD
+            email: document.getElementById("editEmail").value?.trim() || null,
+            homePhoneNumber: document.getElementById("editHomePhoneNum").value?.trim() || null,
+            phoneNumber: document.getElementById("editPhoneNum").value?.trim() || null,
+            address1: document.getElementById("editAddress1").value?.trim() || null,
+            address2: document.getElementById("editAddress2").value?.trim() || null
             // agency* 필드는 이 엔드포인트에선 생략(서버가 null 허용/무시하면 보내도 되지만 보통 생략 권장)
         };
 
@@ -814,7 +716,7 @@
             });
 
             if (!res.ok) {
-                const txt = await res.text().catch(()=> "");
+                const txt = await res.text().catch(() => "");
                 alert("프로필 저장 실패\n" + txt);
                 return;
             }
@@ -825,7 +727,9 @@
             successToast.classList.remove("translate-y-full", "opacity-0");
 
             // 최신 데이터 반영을 확실히: 새로고침(간단)
-            setTimeout(() => { location.reload(); }, 800);
+            setTimeout(() => {
+                location.reload();
+            }, 800);
 
         } catch (e) {
             console.error(e);
@@ -853,11 +757,11 @@
         const body = Object.fromEntries(formData.entries());
 
         const payload = {
-            agencyOwner:    document.getElementById("editAgencyOwner").value?.trim() || null,
-            agencyName:     document.getElementById("editAgencyName").value?.trim() || null,
-            agencyPhone:    document.getElementById("editAgencyPhone").value?.trim() || null,
-            agencyRegion:   document.getElementById("editAgencyRegion").value?.trim() || null,
-            agencyEmail:    document.getElementById("editAgencyEmail").value?.trim() || null,
+            agencyOwner: document.getElementById("editAgencyOwner").value?.trim() || null,
+            agencyName: document.getElementById("editAgencyName").value?.trim() || null,
+            agencyPhone: document.getElementById("editAgencyPhone").value?.trim() || null,
+            agencyRegion: document.getElementById("editAgencyRegion").value?.trim() || null,
+            agencyEmail: document.getElementById("editAgencyEmail").value?.trim() || null,
             agencyAddress1: document.getElementById("editAgencyAddress1").value?.trim() || null,
             agencyAddress2: document.getElementById("editAgencyAddress2").value?.trim() || null
             // member* 필드는 이 엔드포인트에선 생략
@@ -873,7 +777,7 @@
             });
 
             if (!res.ok) {
-                const txt = await res.text().catch(()=> "");
+                const txt = await res.text().catch(() => "");
                 alert("유학원 정보 저장 실패\n" + txt);
                 return;
             }
@@ -882,7 +786,9 @@
             agencySuccessToast.classList.remove("hidden");
             agencySuccessToast.classList.remove("translate-y-full", "opacity-0");
 
-            setTimeout(() => { location.reload(); }, 800);
+            setTimeout(() => {
+                location.reload();
+            }, 800);
 
         } catch (e) {
             console.error(e);
@@ -903,7 +809,7 @@
         if (!select) return;
 
         try {
-            const res = await fetch('/api/v1/agency/region', { method: 'GET' });
+            const res = await fetch('/api/v1/agency/region', {method: 'GET'});
             if (!res.ok) throw new Error('지역 목록 조회 실패');
             const regions = await res.json(); // ["서울", "부산", ...] 같은 label 배열
 
@@ -950,7 +856,7 @@
 </script>
 <script type="module">
     const BASE = "/api/v1/profile";
-    const csrfToken  = document.querySelector('meta[name="_csrf"]')?.getAttribute("content");
+    const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute("content");
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute("content");
     const toast = document.getElementById("profileToast");
 
@@ -965,9 +871,9 @@
                                  fileFieldName,    // e.g. "businessCertificate"
                                  acceptPdf = false // 사업자등록증만 true
                              }) => {
-        const modal   = document.getElementById(modalId);
-        const close   = document.getElementById(closeBtnId);
-        const form    = document.getElementById(formId);
+        const modal = document.getElementById(modalId);
+        const close = document.getElementById(closeBtnId);
+        const form = document.getElementById(formId);
         const fileInp = document.getElementById(fileInputId);
         const preview = document.getElementById(previewId);
 
@@ -975,26 +881,41 @@
         openBtnIds.map(id => document.getElementById(id))
             .filter(Boolean)
             .forEach(btn => btn.addEventListener("click", () => {
-                modal.classList.remove("hidden"); modal.classList.add("flex");
-                preview.classList.add("hidden"); preview.innerHTML = "";
+                modal.classList.remove("hidden");
+                modal.classList.add("flex");
+                preview.classList.add("hidden");
+                preview.innerHTML = "";
                 form.reset();
             }));
 
         // close
-        const closeModal = () => { modal.classList.add("hidden"); modal.classList.remove("flex"); };
+        const closeModal = () => {
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+        };
         close?.addEventListener("click", closeModal);
-        modal?.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+        modal?.addEventListener("click", e => {
+            if (e.target === modal) closeModal();
+        });
 
         // preview
         fileInp?.addEventListener("change", () => {
             const file = fileInp.files?.[0];
-            if (!file) { preview.classList.add("hidden"); preview.innerHTML = ""; return; }
-            preview.classList.remove("hidden"); preview.innerHTML = "";
+            if (!file) {
+                preview.classList.add("hidden");
+                preview.innerHTML = "";
+                return;
+            }
+            preview.classList.remove("hidden");
+            preview.innerHTML = "";
             const isImage = /^image\//.test(file.type);
             if (isImage) {
                 const img = document.createElement("img");
-                img.className = "max-h-full max-w-full object-contain"; img.alt = "미리보기";
-                const fr = new FileReader(); fr.onload = () => (img.src = fr.result); fr.readAsDataURL(file);
+                img.className = "max-h-full max-w-full object-contain";
+                img.alt = "미리보기";
+                const fr = new FileReader();
+                fr.onload = () => (img.src = fr.result);
+                fr.readAsDataURL(file);
                 preview.appendChild(img);
             } else {
                 const box = document.createElement("div");
@@ -1008,11 +929,21 @@
         form?.addEventListener("submit", async (e) => {
             e.preventDefault();
             const file = fileInp.files?.[0];
-            if (!file) { alert("파일을 선택해주세요."); return; }
-            if (file.size > 10 * 1024 * 1024) { alert("최대 10MB까지 업로드 가능합니다."); return; }
-            if (!acceptPdf && !/^image\//.test(file.type)) { alert("이미지 파일만 업로드할 수 있습니다."); return; }
-            if (acceptPdf && !( /^image\//.test(file.type) || file.type === "application/pdf" )) {
-                alert("이미지 또는 PDF만 업로드할 수 있습니다."); return;
+            if (!file) {
+                alert("파일을 선택해주세요.");
+                return;
+            }
+            if (file.size > 10 * 1024 * 1024) {
+                alert("최대 10MB까지 업로드 가능합니다.");
+                return;
+            }
+            if (!acceptPdf && !/^image\//.test(file.type)) {
+                alert("이미지 파일만 업로드할 수 있습니다.");
+                return;
+            }
+            if (acceptPdf && !(/^image\//.test(file.type) || file.type === "application/pdf")) {
+                alert("이미지 또는 PDF만 업로드할 수 있습니다.");
+                return;
             }
 
             const fd = new FormData();
@@ -1022,14 +953,18 @@
                 const res = await fetch(endpoint, {
                     method: "PATCH",
                     body: fd,
-                    headers: csrfToken && csrfHeader ? { [csrfHeader]: csrfToken } : undefined,
+                    headers: csrfToken && csrfHeader ? {[csrfHeader]: csrfToken} : undefined,
                 });
 
                 // 바디는 굳이 파싱 안 해도 됨 (BaseResponse<String> "success")
                 if (!res.ok) {
                     const text = await res.text();
                     let msg = res.status + " " + res.statusText;
-                    try { const err = text ? JSON.parse(text) : null; if (err?.message) msg = err.message; } catch {}
+                    try {
+                        const err = text ? JSON.parse(text) : null;
+                        if (err?.message) msg = err.message;
+                    } catch {
+                    }
                     throw new Error(msg);
                 }
 
@@ -1089,7 +1024,7 @@
     function openPostcode(type) {
         layer.classList.remove('hidden');
         new daum.Postcode({
-            oncomplete: function(data) {
+            oncomplete: function (data) {
                 const addr = data.roadAddress || data.jibunAddress;
                 if (type === 'member') {
                     addrEl.value = addr;

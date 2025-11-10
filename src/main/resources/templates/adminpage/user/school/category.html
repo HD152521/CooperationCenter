@@ -1,20 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>관리자 대시보드</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet"
-    />
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-    />
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"/>
     <script>
         tailwind.config = {
             theme: {
@@ -43,24 +37,26 @@
         :where([class^="ri-"])::before {
             content: "\f3c2";
         }
+
         .admin-card {
             background: linear-gradient(145deg, #2C2C3A, #232331);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
+
         .table-header {
             background: linear-gradient(135deg, #343446, #2A2A3C);
         }
+
         .table-row:hover {
             background: rgba(52, 152, 219, 0.1);
         }
+
         .status-badge {
             backdrop-filter: blur(10px);
         }
     </style>
 </head>
-<body
-        class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen text-gray-100"
->
+<body class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen text-gray-100">
 <div class="flex">
     <aside class="w-64 bg-gray-800 shadow-2xl min-h-screen">
         <div class="p-6 border-b border-gray-700">
@@ -70,10 +66,7 @@
         <nav class="p-4">
             <ul class="space-y-2">
                 <li>
-                    <a
-                            href="#"
-                            class="flex items-center p-3 rounded-lg bg-primary text-white"
-                    >
+                    <a href="#" class="flex items-center p-3 rounded-lg bg-primary text-white">
                         <div class="w-5 h-5 flex items-center justify-center mr-3">
                             <i class="ri-dashboard-line"></i>
                         </div>
@@ -81,10 +74,8 @@
                     </a>
                 </li>
                 <li>
-                    <a
-                            href="#"
-                            class="flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition-colors"
-                    >
+                    <a href="#"
+                       class="flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition-colors">
                         <div class="w-5 h-5 flex items-center justify-center mr-3">
                             <i class="ri-user-line"></i>
                         </div>
@@ -92,10 +83,8 @@
                     </a>
                 </li>
                 <li>
-                    <a
-                            href="#"
-                            class="flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition-colors"
-                    >
+                    <a href="#"
+                       class="flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition-colors">
                         <div class="w-5 h-5 flex items-center justify-center mr-3">
                             <i class="ri-file-list-line"></i>
                         </div>
@@ -103,10 +92,8 @@
                     </a>
                 </li>
                 <li>
-                    <a
-                            href="#"
-                            class="flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition-colors"
-                    >
+                    <a href="#"
+                       class="flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition-colors">
                         <div class="w-5 h-5 flex items-center justify-center mr-3">
                             <i class="ri-settings-line"></i>
                         </div>
@@ -125,9 +112,7 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="bg-red-500 text-white px-3 py-1 rounded-full text-sm">
-                        <div
-                                class="w-4 h-4 inline-flex items-center justify-center mr-1"
-                        >
+                        <div class="w-4 h-4 inline-flex items-center justify-center mr-1">
                             <i class="ri-notification-line ri-sm"></i>
                         </div>
                         5개 대기
@@ -143,9 +128,7 @@
             <div class="admin-card rounded-xl p-6">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-xl font-bold text-white flex items-center">
-                        <div
-                                class="w-6 h-6 flex items-center justify-center mr-3 text-primary"
-                        >
+                        <div class="w-6 h-6 flex items-center justify-center mr-3 text-primary">
                             <i class="ri-user-add-line"></i>
                         </div>
                         회원가입 승인 대기
@@ -177,14 +160,10 @@
                             <td class="p-3 text-gray-400">2025-01-08 14:32</td>
                             <td class="p-3">
                                 <div class="flex space-x-2">
-                                    <button
-                                            class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap"
-                                    >
+                                    <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
                                         상세보기
                                     </button>
-                                    <button
-                                            class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                                    >
+                                    <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
                                         승인하기
                                     </button>
                                 </div>
@@ -196,14 +175,10 @@
                             <td class="p-3 text-gray-400">2025-01-08 13:15</td>
                             <td class="p-3">
                                 <div class="flex space-x-2">
-                                    <button
-                                            class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap"
-                                    >
+                                    <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
                                         상세보기
                                     </button>
-                                    <button
-                                            class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                                    >
+                                    <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
                                         승인하기
                                     </button>
                                 </div>
@@ -215,14 +190,10 @@
                             <td class="p-3 text-gray-400">2025-01-08 11:45</td>
                             <td class="p-3">
                                 <div class="flex space-x-2">
-                                    <button
-                                            class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap"
-                                    >
+                                    <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
                                         상세보기
                                     </button>
-                                    <button
-                                            class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                                    >
+                                    <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
                                         승인하기
                                     </button>
                                 </div>
@@ -234,14 +205,10 @@
                             <td class="p-3 text-gray-400">2025-01-08 09:22</td>
                             <td class="p-3">
                                 <div class="flex space-x-2">
-                                    <button
-                                            class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap"
-                                    >
+                                    <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
                                         상세보기
                                     </button>
-                                    <button
-                                            class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                                    >
+                                    <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
                                         승인하기
                                     </button>
                                 </div>
@@ -254,9 +221,7 @@
             <div class="admin-card rounded-xl p-6">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-xl font-bold text-white flex items-center">
-                        <div
-                                class="w-6 h-6 flex items-center justify-center mr-3 text-primary"
-                        >
+                        <div class="w-6 h-6 flex items-center justify-center mr-3 text-primary">
                             <i class="ri-login-box-line"></i>
                         </div>
                         최근 로그인 기록
@@ -289,10 +254,7 @@
                             <td class="p-3 text-gray-300">2025-01-09 08:45</td>
                             <td class="p-3 text-gray-400">192.168.1.105</td>
                             <td class="p-3">
-                      <span
-                              class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full"
-                      >정상</span
-                      >
+                      <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">정상</span>
                             </td>
                         </tr>
                         <tr class="table-row border-b border-gray-700">
@@ -300,10 +262,7 @@
                             <td class="p-3 text-gray-300">2025-01-09 08:32</td>
                             <td class="p-3 text-gray-400">192.168.1.087</td>
                             <td class="p-3">
-                      <span
-                              class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full"
-                      >정상</span
-                      >
+                      <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">정상</span>
                             </td>
                         </tr>
                         <tr class="table-row border-b border-gray-700">
@@ -311,10 +270,7 @@
                             <td class="p-3 text-gray-300">2025-01-09 07:58</td>
                             <td class="p-3 text-gray-400">192.168.1.142</td>
                             <td class="p-3">
-                      <span
-                              class="status-badge px-2 py-1 bg-red-500 bg-opacity-20 text-red-400 text-xs rounded-full"
-                      >의심</span
-                      >
+                      <span class="status-badge px-2 py-1 bg-red-500 bg-opacity-20 text-red-400 text-xs rounded-full">의심</span>
                             </td>
                         </tr>
                         <tr class="table-row">
@@ -322,10 +278,7 @@
                             <td class="p-3 text-gray-300">2025-01-09 07:23</td>
                             <td class="p-3 text-gray-400">192.168.1.073</td>
                             <td class="p-3">
-                      <span
-                              class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full"
-                      >정상</span
-                      >
+                      <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">정상</span>
                             </td>
                         </tr>
                         </tbody>
@@ -336,17 +289,13 @@
         <div class="admin-card rounded-xl p-6">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-bold text-white flex items-center">
-                    <div
-                            class="w-6 h-6 flex items-center justify-center mr-3 text-primary"
-                    >
+                    <div class="w-6 h-6 flex items-center justify-center mr-3 text-primary">
                         <i class="ri-file-list-3-line"></i>
                     </div>
                     설문조사 참여 현황
                 </h2>
                 <div class="flex items-center space-x-4">
-                    <select
-                            class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8"
-                    >
+                    <select class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8">
                         <option>전체 기간</option>
                         <option>최근 7일</option>
                         <option>최근 30일</option>
@@ -382,10 +331,7 @@
                         <td class="p-3 text-gray-400">2025-01-09 08:15</td>
                         <td class="p-3 text-gray-300">12분</td>
                         <td class="p-3">
-                    <span
-                            class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full"
-                    >완료</span
-                    >
+                    <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">완료</span>
                         </td>
                     </tr>
                     <tr class="table-row border-b border-gray-700">
@@ -394,10 +340,7 @@
                         <td class="p-3 text-gray-400">2025-01-09 07:45</td>
                         <td class="p-3 text-gray-300">8분</td>
                         <td class="p-3">
-                    <span
-                            class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full"
-                    >완료</span
-                    >
+                    <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">완료</span>
                         </td>
                     </tr>
                     <tr class="table-row border-b border-gray-700">
@@ -406,10 +349,7 @@
                         <td class="p-3 text-gray-400">2025-01-09 07:30</td>
                         <td class="p-3 text-gray-300">15분</td>
                         <td class="p-3">
-                    <span
-                            class="status-badge px-2 py-1 bg-yellow-500 bg-opacity-20 text-yellow-400 text-xs rounded-full"
-                    >진행중</span
-                    >
+                    <span class="status-badge px-2 py-1 bg-yellow-500 bg-opacity-20 text-yellow-400 text-xs rounded-full">진행중</span>
                         </td>
                     </tr>
                     <tr class="table-row border-b border-gray-700">
@@ -418,10 +358,7 @@
                         <td class="p-3 text-gray-400">2025-01-09 07:15</td>
                         <td class="p-3 text-gray-300">20분</td>
                         <td class="p-3">
-                    <span
-                            class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full"
-                    >완료</span
-                    >
+                    <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">완료</span>
                         </td>
                     </tr>
                     <tr class="table-row border-b border-gray-700">
@@ -430,10 +367,7 @@
                         <td class="p-3 text-gray-400">2025-01-09 06:50</td>
                         <td class="p-3 text-gray-300">5분</td>
                         <td class="p-3">
-                    <span
-                            class="status-badge px-2 py-1 bg-red-500 bg-opacity-20 text-red-400 text-xs rounded-full"
-                    >중단</span
-                    >
+                    <span class="status-badge px-2 py-1 bg-red-500 bg-opacity-20 text-red-400 text-xs rounded-full">중단</span>
                         </td>
                     </tr>
                     <tr class="table-row">
@@ -442,10 +376,7 @@
                         <td class="p-3 text-gray-400">2025-01-09 06:30</td>
                         <td class="p-3 text-gray-300">18분</td>
                         <td class="p-3">
-                    <span
-                            class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full"
-                    >완료</span
-                    >
+                    <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">완료</span>
                         </td>
                     </tr>
                     </tbody>
@@ -454,47 +385,42 @@
         </div>
     </main>
 </div>
-<div
-        id="approval-modal"
-        class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
->
+<div id="approval-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4">
         <h3 class="text-xl font-bold text-white mb-4">회원가입 승인</h3>
         <p class="text-gray-300 mb-6">
-            선택한 사용자의 회원가입을 승인하시겠습니까?
-        </p>
+            선택한 사용자의 회원가입을 승인하시겠습니까? </p>
         <div class="flex space-x-4">
-            <button
-                    id="cancel-approval"
-                    class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap"
-            >
+            <button id="cancel-approval"
+                    class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
                 취소
             </button>
-            <button
-                    id="confirm-approval"
-                    class="flex-1 px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-            >
+            <button id="confirm-approval"
+                    class="flex-1 px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
                 승인하기
             </button>
         </div>
     </div>
 </div>
 <script id="approval-system">
-    (function() {
+    (function () {
         const approvalButtons = document.querySelectorAll(
             'button:contains("승인하기")',
         );
         const modal = document.getElementById("approval-modal");
         const cancelBtn = document.getElementById("cancel-approval");
         const confirmBtn = document.getElementById("confirm-approval");
+
         function showModal() {
             modal.classList.remove("hidden");
             modal.classList.add("flex");
         }
+
         function hideModal() {
             modal.classList.add("hidden");
             modal.classList.remove("flex");
         }
+
         document.querySelectorAll("td button").forEach((button) => {
             if (button.textContent.includes("승인하기")) {
                 button.addEventListener("click", showModal);
@@ -513,7 +439,7 @@
     })();
 </script>
 <script id="table-interactions">
-    (function() {
+    (function () {
         const detailButtons = document.querySelectorAll("button");
         detailButtons.forEach((button) => {
             if (button.textContent.includes("상세보기")) {
@@ -528,7 +454,7 @@
     })();
 </script>
 <script id="refresh-functionality">
-    (function() {
+    (function () {
         const refreshButtons = document.querySelectorAll("button i.ri-refresh-line");
         refreshButtons.forEach((button) => {
             button.parentElement.addEventListener("click", function () {

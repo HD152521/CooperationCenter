@@ -15,6 +15,7 @@
             background-color: #3B82F6;
             border: 2px solid white;
         }
+
         .timeline-item::after {
             content: '';
             position: absolute;
@@ -24,9 +25,11 @@
             height: calc(100% + 16px);
             background-color: #e5e7eb;
         }
+
         .timeline-item:last-child::after {
             display: none;
         }
+
         .custom-checkbox {
             appearance: none;
             width: 18px;
@@ -36,10 +39,12 @@
             position: relative;
             cursor: pointer;
         }
+
         .custom-checkbox:checked {
             background-color: #3B82F6;
             border-color: #3B82F6;
         }
+
         .custom-checkbox:checked::after {
             content: '';
             position: absolute;
@@ -51,19 +56,23 @@
             border-width: 0 2px 2px 0;
             transform: rotate(45deg);
         }
+
         .nav-item.active {
             border-left: 4px solid #3b82f6;
             background-color: rgba(59, 130, 246, 0.1);
         }
+
         .nav-item:hover:not(.active) {
             background-color: rgba(59, 130, 246, 0.05);
         }
     </style>
-    <style>:root{ --header-h: 72px; }</style>
+    <style>:root {
+        --header-h: 72px;
+    }</style>
 </head>
 <body class="bg-gray-50">
 <div class="container mx-auto px-4 py-8 pt-16 flex flex-col md:flex-row items-start gap-8">
-        <div th:replace="~{fragments/school/universityLeftSideBar:: school-left}"></div>
+    <div th:replace="~{fragments/school/universityLeftSideBar:: school-left}"></div>
 </div>
 </body>
 </html>

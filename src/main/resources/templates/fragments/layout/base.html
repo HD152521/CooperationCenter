@@ -1,31 +1,32 @@
 <!DOCTYPE html>
 <html lang="ko" th:fragment="base(base_head, base_body)" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"/>
     <style>
         @font-face {
-          font-family: 'PretendardVariable';
-          src: url('/fonts/PretendardVariable.woff2') format('woff2');
-          font-display: swap;
+            font-family: 'PretendardVariable';
+            src: url('/fonts/PretendardVariable.woff2') format('woff2');
+            font-display: swap;
         }
 
         body {
-          font-family: 'PretendardVariable', sans-serif;
+            font-family: 'PretendardVariable', sans-serif;
         }
     </style>
 
     <th:block th:replace="${base_head}"></th:block>
 
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@latest/dist/turbo.es2017-esm.min.js"></script>
-    <link rel="stylesheet" href="/js/css/output.css" />
+    <script type="module"
+            src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@latest/dist/turbo.es2017-esm.min.js"></script>
+    <link rel="stylesheet" href="/js/css/output.css"/>
 </head>
 <body class="min-h-screen">
-    <th:block th:replace="${base_body}"></th:block>
+<th:block th:replace="${base_body}"></th:block>
 </body>
 </html>
