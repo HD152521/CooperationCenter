@@ -102,9 +102,11 @@
 
 <th:block th:fragment="script">
     <script type="module">
+        import {addAsyncListener} from "/js/homepage/AsyncListener.js";
+
         const form = document.querySelector("form");
 
-        form?.addEventListener("submit", async (e) => {
+        addAsyncListener(form, "submit", async (e) => {
             e.preventDefault();
 
             const email = document.getElementById("email").value.trim();
@@ -130,7 +132,7 @@
                         title: "로그인 성공!",
                         message: "환영합니다. 로그인이 완료되었습니다.",
                         buttonText: "확인",
-                        onClose: () => window.location.href = "/home"
+                        onClose: () => Turbo.visit("/home")
                     });
                     return;
                 }
@@ -202,6 +204,8 @@
                     if (onClose) onClose();
                 }
             });
+
+            modal?.focus();
         }
     </script>
     <script id="password-toggle-script" type="module">
