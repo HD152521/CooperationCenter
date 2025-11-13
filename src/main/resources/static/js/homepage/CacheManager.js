@@ -24,6 +24,19 @@ class CacheManager {
         ];
     }
     
+    /**
+     * 캐시에 데이터를 저장하거나 업데이트한다.
+     * 기존 캐시가 없으면 새로 생성하고, 있으면 값을 업데이트한다.
+     * 데이터 변경 시 등록된 플러그인에 알림을 보낸다.
+     *
+     * @param {string} key 저장할 캐시의 키
+     * @param {*} value 저장할 데이터
+     * @param {object} [option] 캐시 옵션 객체.
+     *   - `maxAge`: 캐시의 유효 기간 (밀리초). 이 기간이 지나면 캐시는 무효화된다.
+     *               (예: `maxAge: 60000`은 1분 유효)
+     *               기본값은 `Infinity`이며, `500`ms 미만으로 설정 시 `500`ms로 조정된다.
+     * @public
+     */
     saveData(key, value, option) {
         const nowObj = this.#matchedCache(key);
         const prevObj = new CacheObject(nowObj);
@@ -133,7 +146,10 @@ class CacheObject {
         if (key instanceof CachePlugin) {
             this._key = key.key;
             this._value = key.value;
+            /** 사용자가 설정할 수 있는 설정 */
             this.option = key.option;
+            /** Plugin 이 관리할 수 있는 설정 */
+            this.meta = key.meta;
 
             return;
         }
@@ -141,6 +157,7 @@ class CacheObject {
         this._key = key;
         this._value = value;
         this.option = option;
+        this.meta = {};
     }
 
     get key() {
@@ -207,14 +224,19 @@ class CachePlugin {
  * @description 캐시 객체의 유효 기간을 관리하는 플러그인.
  */
 class MaxAgePlugin extends CachePlugin {
+    constructor() {
+        super();
+        this._DEFAULT_MAX_AGE = 500;
+    }
+
     onCacheCreated(cacheObj) {
         super.onCacheCreated(cacheObj);
 
         if (!Number.isInteger(cacheObj.option.maxAge)) {
             cacheObj.option.maxAge = Infinity;
         }
-        else if (cacheObj.option.maxAge < 500) {
-            cacheObj.option.maxAge = 500;
+        else if (cacheObj.option.maxAge < this._DEFAULT_MAX_AGE) {
+            cacheObj.option.maxAge = this._DEFAULT_MAX_AGE;
         }
     }
 
@@ -222,7 +244,7 @@ class MaxAgePlugin extends CachePlugin {
         super.onDataChanged(prevObj, nowObject);
 
         if (!nowObject.isInvalidated()) {
-            nowObject.option.lastModified = Date.now();
+            nowObject.meta.lastModified = Date.now();
         }
     }
 
@@ -232,7 +254,7 @@ class MaxAgePlugin extends CachePlugin {
         if (cacheObj.isInvalidated())
             return;
 
-        if (cacheObj.option.lastModified + cacheObj.option.maxAge >= Date.now()) {
+        if (cacheObj.meta.lastModified + cacheObj.option.maxAge >= Date.now()) {
             cacheObj.invalidate();
         }
     }
@@ -247,30 +269,30 @@ class EventNotifierPlugin extends CachePlugin {
     onCacheCreated(cacheObj) {
         super.onCacheCreated(cacheObj);
         
-        if (!cacheObj.option.changeEventListeners) 
-            cacheObj.option.changeEventListeners = [];
+        if (!cacheObj.meta.changeEventListeners)
+            cacheObj.meta.changeEventListeners = [];
     }
     
     onDataChanged(prevObj, nowObject) {
         super.onDataChanged(prevObj, nowObject);
         
-        nowObject.option.changeEventListeners.forEach(listener => {
+        nowObject.meta.changeEventListeners.forEach(listener => {
             if (listener) listener(prevObj, nowObject);
         });
     }
     
     addChangeListener(cacheObj, listener) {
-        if (!cacheObj.option.changeEventListeners) 
-            cacheObj.option.changeEventListeners = [];
+        if (!cacheObj.meta.changeEventListeners)
+            cacheObj.meta.changeEventListeners = [];
         
-        cacheObj.option.changeEventListeners.push(listener);
+        cacheObj.meta.changeEventListeners.push(listener);
     }
     
     removeChangeListener(cacheObj, listener) {
-        if (!cacheObj.option.changeEventListeners) 
+        if (!cacheObj.meta.changeEventListeners)
             return;
         
-        const removed = cacheObj.option.changeEventListeners.filter(l => l !== listener);
-        cacheObj.option.changeEventListeners = removed;
+        const removed = cacheObj.meta.changeEventListeners.filter(l => l !== listener);
+        cacheObj.meta.changeEventListeners = removed;
     }
 }
