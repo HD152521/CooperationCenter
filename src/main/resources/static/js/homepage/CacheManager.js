@@ -1,9 +1,6 @@
 /**
  * CacheManager 인스턴스 생성 및 내보내기
  */
-const cacheManager = new CacheManager();
-export default cacheManager;
-
 
 class CacheManager {
     constructor() {
@@ -18,32 +15,49 @@ class CacheManager {
          * @private
          * 캐시 동작에 영향을 주는 플러그인 목록. 플러그인은 캐시 생성, 데이터 변경, 무효화, 접근 시점에 특정 로직을 수행할 수 있다.
          */
-        this._plugins = [
-            new MaxAgePlugin(),
-            this._eventNotifierPlugin,
-        ];
+        this._plugins = [new MaxAgePlugin(), this._eventNotifierPlugin];
     }
-    
+
+    /**
+     * 캐시에 데이터를 저장하거나 업데이트한다.
+     * 기존 캐시가 없으면 새로 생성하고, 있으면 값을 업데이트한다.
+     * 데이터 변경 시 등록된 플러그인에 알림을 보낸다.
+     *
+     * @param {string} key 저장할 캐시의 키
+     * @param {*} value 저장할 데이터
+     * @param {object} [option] 캐시 옵션 객체.
+     *   - `maxAge`: 캐시의 유효 기간 (밀리초). 이 기간이 지나면 캐시는 무효화된다.
+     *               (예: `maxAge: 60000`은 1분 유효)
+     *               기본값은 `Infinity`이며, `500`ms 미만으로 설정 시 `500`ms로 조정된다.
+     * @public
+     */
     saveData(key, value, option) {
         const nowObj = this.#matchedCache(key);
-        const prevObj = new CacheObject(nowObj);
+        //TODO: 깊은 복사가 아니라 문제
+
+        const prevObj = new CacheObject(
+            nowObj.key,
+            structuredClone(nowObj.value),
+            structuredClone(nowObj.option)
+        );
+
         prevObj.freeze(); // prevObj 는 수정할 수 없어야 함.
 
         nowObj.value = value;
         nowObj.option = option ?? nowObj.option;
 
-        this._plugins.forEach(plugin => {
+        this._plugins.forEach((plugin) => {
             plugin.onDataChanged(prevObj, nowObj);
         });
 
         // 수정 후 invalidate 된 상태가 있을 수 있음.
         if (nowObj.isInvalidated()) {
-            this._plugins.forEach(plugin => {
+            this._plugins.forEach((plugin) => {
                 plugin.onDataInvalidated(nowObj);
             });
         }
     }
-    
+
     /**
      * 캐시에서 데이터를 조회한다.
      * @param {string} key 조회할 캐시의 키
@@ -53,7 +67,7 @@ class CacheManager {
     getData(key) {
         const cacheObj = this.#matchedCache(key);
 
-        this._plugins.forEach(plugin => {
+        this._plugins.forEach((plugin) => {
             plugin.onDataFetch(cacheObj);
         });
 
@@ -71,7 +85,7 @@ class CacheManager {
         if (!cacheObj) return;
 
         cacheObj.invalidate();
-        this._plugins.forEach(plugin => {
+        this._plugins.forEach((plugin) => {
             plugin.onDataInvalidated(cacheObj);
         });
     }
@@ -96,7 +110,7 @@ class CacheManager {
     removeChangeListener(key, listener) {
         const cacheObj = this.#matchedCache(key, false);
         if (!cacheObj) return;
-        
+
         this._eventNotifierPlugin.removeChangeListener(cacheObj, listener);
     }
 
@@ -106,13 +120,13 @@ class CacheManager {
      * @param key 캐시 키
      * @param returnDefaultValue 캐시가 없을 경우 기본값을 반환할지 여부
      */
-    #matchedCache(key, returnDefaultValue=true) {
+    #matchedCache(key, returnDefaultValue = true) {
         let cache = this._cacheStore.get(key);
         if (!cache && returnDefaultValue) {
             let cache = new CacheObject(key);
             this._cacheStore.set(key, cache);
 
-            this._plugins.forEach(plugin => {
+            this._plugins.forEach((plugin) => {
                 plugin.onCacheCreated(cache);
             });
 
@@ -128,12 +142,15 @@ class CacheManager {
  * @description 캐시 항목을 나타내는 클래스
  */
 class CacheObject {
-    constructor(key, value=undefined, option = {}) {
+    constructor(key, value = undefined, option = {}) {
         /* object가 들어오면, 객체 복사 */
         if (key instanceof CachePlugin) {
             this._key = key.key;
             this._value = key.value;
+            /** 사용자가 설정할 수 있는 설정 */
             this.option = key.option;
+            /** Plugin 이 관리할 수 있는 설정 */
+            this.meta = key.meta;
 
             return;
         }
@@ -141,6 +158,7 @@ class CacheObject {
         this._key = key;
         this._value = value;
         this.option = option;
+        this.meta = {};
     }
 
     get key() {
@@ -207,14 +225,18 @@ class CachePlugin {
  * @description 캐시 객체의 유효 기간을 관리하는 플러그인.
  */
 class MaxAgePlugin extends CachePlugin {
+    constructor() {
+        super();
+        this._DEFAULT_MAX_AGE = 500;
+    }
+
     onCacheCreated(cacheObj) {
         super.onCacheCreated(cacheObj);
 
         if (!Number.isInteger(cacheObj.option.maxAge)) {
             cacheObj.option.maxAge = Infinity;
-        }
-        else if (cacheObj.option.maxAge < 500) {
-            cacheObj.option.maxAge = 500;
+        } else if (cacheObj.option.maxAge < this._DEFAULT_MAX_AGE) {
+            cacheObj.option.maxAge = this._DEFAULT_MAX_AGE;
         }
     }
 
@@ -222,17 +244,16 @@ class MaxAgePlugin extends CachePlugin {
         super.onDataChanged(prevObj, nowObject);
 
         if (!nowObject.isInvalidated()) {
-            nowObject.option.lastModified = Date.now();
+            nowObject.meta.lastModified = Date.now();
         }
     }
 
     onDataFetch(cacheObj) {
         super.onDataFetch(cacheObj);
 
-        if (cacheObj.isInvalidated())
-            return;
+        if (cacheObj.isInvalidated()) return;
 
-        if (cacheObj.option.lastModified + cacheObj.option.maxAge >= Date.now()) {
+        if (cacheObj.meta.lastModified + cacheObj.option.maxAge < Date.now()) {
             cacheObj.invalidate();
         }
     }
@@ -246,31 +267,35 @@ class MaxAgePlugin extends CachePlugin {
 class EventNotifierPlugin extends CachePlugin {
     onCacheCreated(cacheObj) {
         super.onCacheCreated(cacheObj);
-        
-        if (!cacheObj.option.changeEventListeners) 
-            cacheObj.option.changeEventListeners = [];
+
+        if (!cacheObj.meta.changeEventListeners)
+            cacheObj.meta.changeEventListeners = [];
     }
-    
+
     onDataChanged(prevObj, nowObject) {
         super.onDataChanged(prevObj, nowObject);
-        
-        nowObject.option.changeEventListeners.forEach(listener => {
+
+        nowObject.meta.changeEventListeners.forEach((listener) => {
             if (listener) listener(prevObj, nowObject);
         });
     }
-    
+
     addChangeListener(cacheObj, listener) {
-        if (!cacheObj.option.changeEventListeners) 
-            cacheObj.option.changeEventListeners = [];
-        
-        cacheObj.option.changeEventListeners.push(listener);
+        if (!cacheObj.meta.changeEventListeners)
+            cacheObj.meta.changeEventListeners = [];
+
+        cacheObj.meta.changeEventListeners.push(listener);
     }
-    
+
     removeChangeListener(cacheObj, listener) {
-        if (!cacheObj.option.changeEventListeners) 
-            return;
-        
-        const removed = cacheObj.option.changeEventListeners.filter(l => l !== listener);
-        cacheObj.option.changeEventListeners = removed;
+        if (!cacheObj.meta.changeEventListeners) return;
+
+        const removed = cacheObj.meta.changeEventListeners.filter(
+            (l) => l !== listener
+        );
+        cacheObj.meta.changeEventListeners = removed;
     }
 }
+
+const cacheManager = new CacheManager();
+export default cacheManager;
