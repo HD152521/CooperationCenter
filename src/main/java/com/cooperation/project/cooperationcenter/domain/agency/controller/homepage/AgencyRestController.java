@@ -18,8 +18,10 @@ import java.util.List;
 public class AgencyRestController {
     @GetMapping("/region")
     public BaseResponse<?> getRegionList(){
-        return BaseResponse.onSuccess(Arrays.stream(AgencyRegion.values())
+        List<String> regions = Arrays.stream(AgencyRegion.values())
                 .map(AgencyRegion::getLabel)
-                .toList());
+                .toList();
+        log.info("{}", regions.toString());
+        return BaseResponse.onSuccess(regions);
     }
 }
