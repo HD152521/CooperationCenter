@@ -1,4 +1,4 @@
-import cacheManager from "/js/homepage/CacheManager.js";
+import cacheManager from "./CacheManager.js";
 
 //캐싱 시간에 따른 캐싱 여부 테스트 함수
 (async () => {

@@ -1,1 +1,3 @@
+# bundle files
 /static/js/css/output.css
+/static/js/homepage/build/*
