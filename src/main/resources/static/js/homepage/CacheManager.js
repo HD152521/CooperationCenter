@@ -1,24 +1,24 @@
 /**
- * CacheManager 인스턴스 생성 및 내보내기
+ * @public
+ * 캐시 동작을 관리하는 클래스.
  */
-
 class CacheManager {
-    constructor() {
+    constructor(plugins = []) {
         /**
-         * @private
+         * @protected
          * 캐시 데이터를 저장하는 Map 객체.
          * key: 캐시 키, value: CacheObject 인스턴스
          */
         this._cacheStore = new Map();
-        this._eventNotifierPlugin = new EventNotifierPlugin();
         /**
-         * @private
+         * @protected
          * 캐시 동작에 영향을 주는 플러그인 목록. 플러그인은 캐시 생성, 데이터 변경, 무효화, 접근 시점에 특정 로직을 수행할 수 있다.
          */
-        this._plugins = [new MaxAgePlugin(), this._eventNotifierPlugin];
+        this._plugins = Array.isArray(plugins) ? plugins : [plugins];
     }
 
     /**
+     * @public
      * 캐시에 데이터를 저장하거나 업데이트한다.
      * 기존 캐시가 없으면 새로 생성하고, 있으면 값을 업데이트한다.
      * 데이터 변경 시 등록된 플러그인에 알림을 보낸다.
@@ -29,18 +29,11 @@ class CacheManager {
      *   - `maxAge`: 캐시의 유효 기간 (밀리초). 이 기간이 지나면 캐시는 무효화된다.
      *               (예: `maxAge: 60000`은 1분 유효)
      *               기본값은 `Infinity`이며, `500`ms 미만으로 설정 시 `500`ms로 조정된다.
-     * @public
      */
     saveData(key, value, option) {
-        const nowObj = this.#matchedCache(key);
-        //TODO: 깊은 복사가 아니라 문제
+        const nowObj = this._matchedCache(key);
 
-        const prevObj = new CacheObject(
-            nowObj.key,
-            structuredClone(nowObj.value),
-            structuredClone(nowObj.option)
-        );
-
+        const prevObj = new CacheObject(nowObj);
         prevObj.freeze(); // prevObj 는 수정할 수 없어야 함.
 
         nowObj.value = value;
@@ -59,13 +52,13 @@ class CacheManager {
     }
 
     /**
+     * @public
      * 캐시에서 데이터를 조회한다.
      * @param {string} key 조회할 캐시의 키
      * @returns {*} 캐시된 데이터. 캐시가 없거나 유효하지 않은 경우 undefined 를 반환한다.
-     * @public
      */
     getData(key) {
-        const cacheObj = this.#matchedCache(key);
+        const cacheObj = this._matchedCache(key);
 
         this._plugins.forEach((plugin) => {
             plugin.onDataFetch(cacheObj);
@@ -74,13 +67,13 @@ class CacheManager {
         return cacheObj.value;
     }
     /**
+     * @public
      * 특정 캐시를 무효화한다.
      * 캐시된 데이터를 삭제하고, 플러그인에 알린다.
      * @param {string} key 무효화할 캐시의 키
-     * @public
      */
     invalidate(key) {
-        const cacheObj = this.#matchedCache(key, false);
+        const cacheObj = this._matchedCache(key, false);
 
         if (!cacheObj) return;
 
@@ -89,38 +82,14 @@ class CacheManager {
             plugin.onDataInvalidated(cacheObj);
         });
     }
-    /**
-     * 특정 캐시 키에 대한 변경 사항을 수신하는 리스너를 추가한다.
-     * @param {string} key 캐시 키
-     * @param {function} listener 변경 사항을 수신할 리스너 함수
-     * @public
-     */
-    addChangeListener(key, listener) {
-        const cacheObj = this.#matchedCache(key);
-        this._eventNotifierPlugin.addChangeListener(cacheObj, listener);
-    }
-    /**
-     * 특정 캐시 키에 대한 변경 사항을 수신하는 리스너를 제거한다.
-     * @param {string} key 캐시 키
-     * @param {function} listener 제거할 리스너 함수
-     * @public
-     *
-     */
-
-    removeChangeListener(key, listener) {
-        const cacheObj = this.#matchedCache(key, false);
-        if (!cacheObj) return;
-
-        this._eventNotifierPlugin.removeChangeListener(cacheObj, listener);
-    }
 
     /**
-     * @private
+     * @protected
      * 캐시 저장소에서 주어진 키에 해당하는 CacheObject 를 찾거나 생성한다.
      * @param key 캐시 키
      * @param returnDefaultValue 캐시가 없을 경우 기본값을 반환할지 여부
      */
-    #matchedCache(key, returnDefaultValue = true) {
+    _matchedCache(key, returnDefaultValue = true) {
         let cache = this._cacheStore.get(key);
         if (!cache && returnDefaultValue) {
             let cache = new CacheObject(key);
@@ -137,6 +106,38 @@ class CacheManager {
     }
 }
 
+class ApiCacheManager extends CacheManager {
+    constructor() {
+        super([new MaxAgePlugin(), new EventNotifierPlugin()]);
+        this._eventNotifierPlugin = this._plugins[1];
+    }
+
+    /**
+     * @public
+     * 특정 캐시 키에 대한 변경 사항을 수신하는 리스너를 추가한다.
+     * @param {string} key 캐시 키
+     * @param {function} listener 변경 사항을 수신할 리스너 함수
+     */
+    addChangeListener(key, listener) {
+        const cacheObj = this._matchedCache(key);
+        this._eventNotifierPlugin.addChangeListener(cacheObj, listener);
+    }
+
+    /**
+     * @public
+     * 특정 캐시 키에 대한 변경 사항을 수신하는 리스너를 제거한다.
+     * @param {string} key 캐시 키
+     * @param {function} listener 제거할 리스너 함수
+     *
+     */
+    removeChangeListener(key, listener) {
+        const cacheObj = this._matchedCache(key, false);
+        if (!cacheObj) return;
+
+        this._eventNotifierPlugin.removeChangeListener(cacheObj, listener);
+    }
+}
+
 /**
  * @class CacheObject
  * @description 캐시 항목을 나타내는 클래스
@@ -144,13 +145,13 @@ class CacheManager {
 class CacheObject {
     constructor(key, value = undefined, option = {}) {
         /* object가 들어오면, 객체 복사 */
-        if (key instanceof CachePlugin) {
+        if (key instanceof CacheObject) {
             this._key = key.key;
-            this._value = key.value;
+            this._value = structuredClone(key.value);
             /** 사용자가 설정할 수 있는 설정 */
-            this.option = key.option;
+            this.option = structuredClone(key.option);
             /** Plugin 이 관리할 수 있는 설정 */
-            this.meta = key.meta;
+            this.meta = structuredClone(key.meta);
 
             return;
         }
@@ -186,14 +187,15 @@ class CacheObject {
         Object.freeze(this._key);
         Object.freeze(this._value);
         Object.freeze(this.option);
+        Object.freeze(this.meta);
     }
 }
 
 /**
+ * @abstract
  * @class CachePlugin
  * @description CacheManager 에 적용할 수 있는 플러그인의 기본 클래스.
  * 플러그인을 사용하면 캐시 동작에 사용자 정의 로직을 추가할 수 있다.
- * @abstract
  */
 class CachePlugin {
     /**
@@ -297,5 +299,5 @@ class EventNotifierPlugin extends CachePlugin {
     }
 }
 
-const cacheManager = new CacheManager();
+const cacheManager = new ApiCacheManager();
 export default cacheManager;
