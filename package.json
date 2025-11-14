@@ -5,10 +5,15 @@
   "scripts": {
     "build:css": "node ./node_modules/tailwindcss/lib/cli.js -i ./src/main/resources/static/js/css/input.css -o ./src/main/resources/static/js/css/output.css --minify",
     "watch:css": "node ./node_modules/tailwindcss/lib/cli.js -i ./src/main/resources/static/js/css/input.css -o ./src/main/resources/static/js/css/output.css --watch",
-    "clean:css": "del ./src/main/resources/static/js/css/output.css"
+    "clean:css": "del ./src/main/resources/static/js/css/output.css",
+    "test": "jest"
   },
   "devDependencies": {
+    "@babel/core": "^7.24.7",
+    "@babel/preset-env": "^7.24.7",
     "autoprefixer": "^10.4.21",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.18"
   }
