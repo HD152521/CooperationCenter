@@ -15,4 +15,7 @@ function addAsyncListener(element, eventName, callback) {
     element?.addEventListener(eventName, func, { once: true });
 }
 
-export {addAsyncListener};
+const LeafEvent = {
+    addAsyncListener
+}
+export default LeafEvent;

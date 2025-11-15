@@ -301,3 +301,4 @@ class EventNotifierPlugin extends CachePlugin {
 
 const cacheManager = new ApiCacheManager();
 export default cacheManager;
+export {CacheObject, CachePlugin, MaxAgePlugin, EventNotifierPlugin};

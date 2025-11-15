@@ -102,15 +102,13 @@
 
 <th:block th:fragment="script">
     <script type="module">
-        import {addAsyncListener} from "/js/homepage/AsyncListener.js";
-
         const form = document.querySelector("form");
 
-        addAsyncListener(form, "submit", async (e) => {
+        LeafEvent.addAsyncListener(form, "submit", async (e) => {
             e.preventDefault();
 
-            const email = document.getElementById("email").value.trim();
-            const password = document.getElementById("password").value.trim();
+            const email = e.target['email'].value.trim();
+            const password = e.target['password'].value.trim();
 
             const loginDto = {email, password};
 

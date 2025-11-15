@@ -1,3 +1,5 @@
+import LeafEvent from "./AsyncListener.js";
+
 document.addEventListener("turbo:load", () => {
     const mobileBtn = document.getElementById("mobile-menu-button");
     const mobileMenu = document.getElementById("mobile-menu");
@@ -20,22 +22,25 @@ document.addEventListener("turbo:load", () => {
 
     // 로그아웃 기능
     const webLogoutBtn = document.getElementById("web-logout-button");
-    webLogoutBtn?.addEventListener("click", logoutListener);
+    LeafEvent.addAsyncListener(webLogoutBtn, "click", logoutListener);
 
-    function logoutListener() {
-        fetch("/api/v1/member/logout", {
-            method: "POST",
-            credentials: "include"
-        }).then(response => {
+    async function logoutListener() {
+        try {
+            const response = await fetch("/api/v1/member/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+
             if (response.ok) {
                 Turbo.visit("/home");
             } else {
                 throw new Error("로그아웃 실패");
             }
-        }).catch(err => {
+
+        } catch (err) {
             console.error("로그아웃 오류:", err);
             alert("로그아웃 오류 발생");
-        });
+        }
     }
 });
 

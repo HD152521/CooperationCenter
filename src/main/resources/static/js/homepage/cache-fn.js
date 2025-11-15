@@ -1,43 +1,43 @@
 import cacheManager from "./CacheManager.js";
 
-//캐싱 시간에 따른 캐싱 여부 테스트 함수
-(async () => {
-    // 1) 첫 호출 → fetch 실행
-    const a = await cacheFetch(
-        "test1",
-        "https://jsonplaceholder.typicode.com/posts/1"
-    );
-    console.log("첫 결과:", a);
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-    console.log("5초 후...");
-    // 2) 두 번째 호출 → 캐시 반환
-    const b = await cacheFetch(
-        "test1",
-        "https://jsonplaceholder.typicode.com/posts/1"
-    );
-    console.log("두번째 결과:", b);
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-    console.log("5초 후...");
-    // 3) 세 번째 호출 → 캐시 반환
-    const c = await cacheFetch(
-        "test1",
-        "https://jsonplaceholder.typicode.com/posts/1"
-    );
-    console.log("세번째 결과:", c);
-})();
-
-// 실패 시 재요청 되는지 여부 테스트
-(async () => {
-    try {
-        await cacheFetch("test2", "https://jsonplaceholder.typicodem/posts/1", {
-            maxAge: 6000,
-            retryCount: 2,
-            retryDelay: 1000,
-        });
-    } catch (err) {
-        console.error(err);
-    }
-})();
+// //캐싱 시간에 따른 캐싱 여부 테스트 함수
+// (async () => {
+//     // 1) 첫 호출 → fetch 실행
+//     const a = await cacheFetch(
+//         "test1",
+//         "https://jsonplaceholder.typicode.com/posts/1"
+//     );
+//     console.log("첫 결과:", a);
+//     await new Promise((resolve) => setTimeout(resolve, 5000));
+//     console.log("5초 후...");
+//     // 2) 두 번째 호출 → 캐시 반환
+//     const b = await cacheFetch(
+//         "test1",
+//         "https://jsonplaceholder.typicode.com/posts/1"
+//     );
+//     console.log("두번째 결과:", b);
+//     await new Promise((resolve) => setTimeout(resolve, 5000));
+//     console.log("5초 후...");
+//     // 3) 세 번째 호출 → 캐시 반환
+//     const c = await cacheFetch(
+//         "test1",
+//         "https://jsonplaceholder.typicode.com/posts/1"
+//     );
+//     console.log("세번째 결과:", c);
+// })();
+//
+// // 실패 시 재요청 되는지 여부 테스트
+// (async () => {
+//     try {
+//         await cacheFetch("test2", "https://jsonplaceholder.typicodem/posts/1", {
+//             maxAge: 6000,
+//             retryCount: 2,
+//             retryDelay: 1000,
+//         });
+//     } catch (err) {
+//         console.error(err);
+//     }
+// })();
 
 
 async function cacheFetch(key, url, options = {}) {
@@ -95,3 +95,9 @@ async function retryFetch(url, retryCount = 3, retryDelay = 0) {
     }
     throw lastError;
 }
+
+const LeafQuery = {
+    fetch: cacheFetch
+};
+
+export default LeafQuery;
