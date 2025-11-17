@@ -69,13 +69,20 @@
                 </div>
 
                 <div class="flex items-center">
-                    <input id="remember-me" name="remember-me" type="checkbox" class="hidden"/>
-                    <label for="remember-me" class="flex items-center cursor-pointer">
-                        <div class="w-5 h-5 border border-gray-300 rounded flex items-center justify-center mr-2 custom-checkbox">
-                            <i class="ri-check-line text-white text-xs hidden"></i>
-                        </div>
-                        <span class="text-sm text-gray-700">로그인 상태 유지</span>
-                    </label>
+                    <input
+                            id="remember-me"
+                            name="remember-me"
+                            type="checkbox"
+                            class="hidden"
+                    />
+<!--                    <label for="remember-me" class="flex items-center cursor-pointer">-->
+<!--                        <div-->
+<!--                                class="w-5 h-5 border border-gray-300 rounded flex items-center justify-center mr-2 custom-checkbox"-->
+<!--                        >-->
+<!--                            <i class="ri-check-line text-white text-xs hidden"></i>-->
+<!--                        </div>-->
+<!--                        <span class="text-sm text-gray-700">로그인 상태 유지</span>-->
+<!--                    </label>-->
                 </div>
 
                 <div>
@@ -101,6 +108,11 @@
 </body>
 
 <th:block th:fragment="script">
+    <script type="module" id="api-bootstrap">
+        import { api } from "/js/homepage/lib/apiClient.js";
+        window.api = api;
+        window.dispatchEvent(new Event("api-ready"));
+    </script>
     <script type="module">
         const form = document.querySelector("form");
 
@@ -113,51 +125,23 @@
             const loginDto = {email, password};
 
             try {
-                const response = await fetch(memberUrl + "/login", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(loginDto)
-                });
-
-                const responseBody = await response.json();
-
-                // ✅ 로그인 성공
-                if (response.ok && responseBody.isSuccess) {
-                    showModal({
-                        type: "success",
-                        title: "로그인 성공!",
-                        message: "환영합니다. 로그인이 완료되었습니다.",
-                        buttonText: "확인",
-                        onClose: () => Turbo.visit("/home")
-                    });
-                    return;
-                }
-
-                // ✅ 로그인 실패 (BaseResponse.isSuccess=false)
-                console.warn("❌ 로그인 실패:", responseBody);
-
-                let errorMessage = "로그인에 실패했습니다. 잠시 후 다시 시도해주세요.";
-                console.log("responseBody:" + responseBody);
-                if (responseBody.message) errorMessage = responseBody.message;
-
-
-                showModal({
-                    type: "error",
-                    title: "로그인 실패",
-                    message: errorMessage,
-                    buttonText: "다시 시도"
-                });
-
+                await api.postJson(`${memberUrl}/login`, loginDto);
+                 showModal({
+                       type: "success",
+                         title: "로그인 성공!",
+                       message: "환영합니다. 로그인이 완료되었습니다.",
+                       buttonText: "확인",
+                       onClose: () => window.location.href = "/home"
+                     });
+                 return;
             } catch (err) {
                 console.error("🚨 네트워크 또는 서버 오류:", err);
-                showModal({
-                    type: "error",
-                    title: "서버 오류",
-                    message: "로그인 중 오류가 발생했습니다. 네트워크 상태를 확인해주세요.",
-                    buttonText: "확인"
-                });
+                 showModal({
+                       type: "error",
+                       title: "로그인 실패",
+                       message: err?.message || "로그인 중 오류가 발생했습니다. 네트워크 상태를 확인해주세요.",
+                       buttonText: "확인"
+                 });
             }
         });
 
@@ -226,24 +210,27 @@
         });
     </script>
 
-    <script id="custom-checkbox-script" type="module">
-        const checkbox = document.getElementById("remember-me");
-        const customCheckbox = document.querySelector(".custom-checkbox");
-        const checkIcon = customCheckbox.querySelector("i");
+<!--<script id="custom-checkbox-script">-->
+<!--    document.addEventListener("DOMContentLoaded", function () {-->
+        // const checkbox = document.getElementById("remember-me");
+        // const customCheckbox = document.querySelector(".custom-checkbox");
+        // const checkIcon = customCheckbox.querySelector("i");
 
-        customCheckbox.addEventListener("click", function () {
-            checkbox.checked = !checkbox.checked;
+<!--        customCheckbox.addEventListener("click", function () {-->
+<!--            checkbox.checked = !checkbox.checked;-->
 
-            if (checkbox.checked) {
-                customCheckbox.classList.add("bg-primary", "border-primary");
-                customCheckbox.classList.remove("border-gray-300");
-                checkIcon.classList.remove("hidden");
-            } else {
-                customCheckbox.classList.remove("bg-primary", "border-primary");
-                customCheckbox.classList.add("border-gray-300");
-                checkIcon.classList.add("hidden");
-            }
-        });
-    </script>
+<!--            if (checkbox.checked) {-->
+<!--                customCheckbox.classList.add("bg-primary", "border-primary");-->
+<!--                customCheckbox.classList.remove("border-gray-300");-->
+<!--                checkIcon.classList.remove("hidden");-->
+<!--            } else {-->
+<!--                customCheckbox.classList.remove("bg-primary", "border-primary");-->
+<!--                customCheckbox.classList.add("border-gray-300");-->
+<!--                checkIcon.classList.add("hidden");-->
+<!--            }-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
+<script src="/js/homepage/common/url.js"></script>
 </th:block>
 </html>

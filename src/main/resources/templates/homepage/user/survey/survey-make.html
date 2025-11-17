@@ -619,8 +619,10 @@
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-gray-600">공개 여부</span>
                         <label class="custom-switch">
-                            <input id="isPublic" name="isShare" type="checkbox"
-                                   th:checked="${survey != null and survey.isShare}"/>
+                            <input id="isPublic"
+                                   name="isShare"
+                                   type="checkbox"
+                                   th:checked="${survey == null or survey.isShare}" />
 
                             <span class="slider"></span>
                         </label>
@@ -652,6 +654,8 @@
         </div>
     </div>
 </main>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
 <!-- 계층형 관련 스크립트 -->
 <script id="toast-management" type="module">
     function showToast(type, message, showRetry = false) {
@@ -680,19 +684,15 @@
         }, 3000);
     }
 
-    document.getElementById("toast-close").addEventListener("click", () => {
-        const toast = document.getElementById("toast");
-        toast.classList.remove("show");
-        setTimeout(() => {
-            toast.classList.add("hidden");
-        }, 300);
-    });
-
-    // export module
-    window.showToast = showToast;
+<script type="module" id="api-bootstrap">
+    import { api } from "/js/homepage/lib/apiClient.js";
+    window.api = api;
+    window.dispatchEvent(new Event("api-ready"));
 </script>
-<script id="hierarchy-management" type="module">
-    let hierarchyStore = {};
+
+<script id="hierarchy-management">
+    document.addEventListener("DOMContentLoaded", function(){
+        window.hierarchyStore = {};
 
     function initHierarchy(questionId) {
         hierarchyStore[questionId] = {
@@ -1587,13 +1587,246 @@
                 endDateInput.value = survey.endDate;
             }
 
-            renderExistingQuestions(survey);
-            updateJumpTargets();
-            restoreJumpTargetSelections();
+                renderExistingQuestions(survey);
+                updateJumpTargets();
+                restoreJumpTargetSelections();
+            }
+        } catch (e) {
+            console.warn("survey 데이터 없음");
         }
-    } catch (e) {
-        console.warn("survey 데이터 없음");
+    });
+</script>
+
+<script id="save-management">
+    function showToast(type, message, showRetry = false) {
+        const toast = document.getElementById("toast");
+        const toastIcon = document.getElementById("toast-icon");
+        const toastMessage = document.getElementById("toast-message");
+        const toastAction = document.getElementById("toast-action");
+
+        toastIcon.className =
+            type === "success"
+                ? "ri-checkbox-circle-line text-green-500"
+                : "ri-error-warning-line text-red-500";
+
+        toastMessage.textContent = message;
+        toastAction.classList.toggle("hidden", !showRetry);
+        toast.classList.remove("hidden");
+
+        setTimeout(() => {
+            toast.classList.add("show");
+        }, 100);
+        setTimeout(() => {
+            toast.classList.remove("show");
+            setTimeout(() => {
+                toast.classList.add("hidden");
+            }, 300);
+        }, 3000);
     }
+    document.getElementById("toast-close").addEventListener("click", () => {
+        const toast = document.getElementById("toast");
+        toast.classList.remove("show");
+        setTimeout(() => {
+            toast.classList.add("hidden");
+        }, 300);
+    });
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const saveButton = document.getElementById("saveButton")
+        saveButton.addEventListener("click", saveForm);
+    });
+
+</script>
+
+<script th:inline="javascript">
+    //note 설문 형태 저장하는 기능
+    function collectQuestions() {
+        const questionElements = document.querySelectorAll(
+            '#questions-container > .question-container:not(#question-template)'
+        );
+
+        const questions = [];
+        let collectionFailed = false;
+
+        questionElements.forEach((el) => {
+            const type = el.querySelector('.answer-container:not(.hidden)').dataset.type;
+            const title = el.querySelector('input[type="text"]').value.trim() || '';
+            const description = el.querySelector('textarea')?.value.trim() || '';
+            const questionId = el.dataset.id;
+            console.log(title);
+            if(!title) collectionFailed = true;
+            //fixme 이거 수정한거 spring dto에 추가해야함.
+            const isTemplate = el.dataset.template === "true";
+            const domainField = el.dataset.domainField || null;
+
+            const questionData = {
+                type,
+                question: title,
+                description,
+                ...(questionId && { questionId }),
+                ...(isTemplate && { isTemplate: true }),
+                ...(domainField && { domainField })
+            };
+
+            // 객관식/드롭다운 질문에 옵션이 있다면 추가
+            if (['multiple', 'multiple-checkbox', 'dropdown'].includes(type)) {
+                const optionInputs = el.querySelectorAll(
+                    `.answer-container[data-type="${type}"] input[type="text"]`
+                );
+                const optionPairs = Array.from(optionInputs).map((input) => {
+                    const text = input.value.trim();
+                        const select = input.parentElement.querySelector(".jump-target-select");
+                    const nextQuestion = select?.value || "";
+                    const optionId = input.dataset.id;
+                    return { text, nextQuestion , ...(optionId && { optionId: optionId })};
+                }).filter(
+                    opt => {
+                        const isValid = opt.text.length > 0;
+                        if (!isValid) collectionFailed = true; // 이것도 true로 설정해서 저장 실패 처리
+                        return isValid;
+                    });
+                questionData.options = optionPairs;
+            }else if (type === "hierarchy") {
+                const questionId = el.getAttribute("data-question-id");
+                const store = window.hierarchyStore?.[questionId];
+                if (!store) {
+                    collectionFailed = true;
+                    return;
+                }
+
+                const hierarchyOptions = [];
+
+                // 1단계
+                store.firstHierarchyData.forEach(first => {
+                    hierarchyOptions.push({
+                        text: first.text,
+                        hierarchyId: first.id,
+                        level: 1,
+                        parentOptionId: null,
+                        ...(first.optionId && { optionId: first.optionId })
+                    });
+
+                    const secondLevel = store.hierarchyData[first.id] || [];
+                    secondLevel.forEach(second => {
+                        hierarchyOptions.push({
+                            text: second.text,
+                            hierarchyId: second.id,
+                            level: 2,
+                            parentOptionId: first.id,
+                            ...(second.optionId && { optionId: second.optionId })
+                        });
+
+                        const thirdLevel = store.hierarchySubData[second.id] || [];
+                        thirdLevel.forEach(third => {
+                            hierarchyOptions.push({
+                                text: third.text,
+                                hierarchyId: third.id,
+                                level: 3,
+                                parentOptionId: second.id,
+                                ...(third.optionId && { optionId: third.optionId })
+                            });
+                        });
+                    });
+                });
+
+                questionData.options = hierarchyOptions;
+            }
+
+            questions.push(questionData);
+        });
+
+        return collectionFailed ? null : questions;
+    }
+
+    async function saveForm() {
+        console.log("save button click");
+        const titleInput = document.querySelector(
+            'input[placeholder="설문조사 제목을 입력하세요"]'
+        );
+
+        if (!titleInput.value.trim()) {
+            showToast("error", "설문조사 제목을 입력해주세요");
+            titleInput.focus();
+            return;
+        }
+
+        const description = document.querySelector("textarea").value.trim();
+        const questions = collectQuestions();
+
+        //저장 가능 체크
+        if(questions==null){
+            console.log("questions is null");
+            showToast("error","설문조사 문항을 제대로 입력해주세요");
+            return;
+        }
+
+        if (questions.length === 0) {
+            showToast("error", "문제를 하나 이상 추가해주세요");
+            return;
+        }
+
+        if(!validateDateRange()){
+            showToast("error", "날짜를 다시 확인해주세요");
+            return;
+        }
+
+        const originalContent = saveButton.innerHTML;
+        saveButton.innerHTML = `
+        <i class="ri-loader-4-line loading-spinner mr-2"></i>
+        저장 중...
+    `;
+        saveButton.disabled = true;
+
+        const startDate = document.getElementById("start-date").value;
+        const endDate = document.getElementById("end-date").value;
+
+        try {
+            const survey = /*[[${survey}]]*/ null;
+            if(survey) console.log("survey있음");
+            else console.log("survey없음");
+            const folderId = /*[[${folderId}]]*/ null;
+            const url = (survey) ? surveyAdminUrl+"/edit" : surveyAdminUrl + "/make";
+            const method = (survey) ? "PATCH" : "POST";
+            const surveyType=document.getElementById("survey-type")?.value || "normal";
+            const isShare = document.querySelector('#isPublic').checked;
+            console.log("surveyType:"+surveyType);
+            //fixme payload수정함 이거  dto에서 받아야함.
+
+            const payload = {
+                title: titleInput.value,
+                description,
+                questions,
+                startDate,
+                endDate,
+                surveyType: surveyType,
+                ...(survey && { surveyId: survey.surveyId }), // surveyId가 존재할 때만 id 추가
+                folderId,
+                isShare
+            };
+            if (method === "POST") {
+                   await api.postJson(url, payload);
+                 } else if (method === "PATCH") {
+                   await api.patchJson(url, payload);
+                 } else if (method === "PUT") {
+                   await api.putJson(url, payload);
+                 } else {
+                   await api._request(method, url, JSON.stringify(payload), {
+                         headers: { "Content-Type": "application/json" }
+                   });
+                 }
+
+            showToast("success", "설문조사가 저장되었습니다");
+            window.location.href = "/survey/list?folderId="+folderId;
+        } catch (error) {
+            showToast("error", "저장 중 오류가 발생했습니다", true);
+        } finally {
+            saveButton.innerHTML = originalContent;
+            saveButton.disabled = false;
+        }
+    }
+
 </script>
 <script id="change_template" type="module">
     const surveyTypeSelect = document.getElementById('survey-type');
@@ -1612,16 +1845,12 @@
         // 일반 설문은 빈 상태로 끝냄
         if (selectedType === "normal") return;
 
-        try {
-            // 템플릿 API 호출
-            const res = await fetch(`/api/v1/survey/admin/template?type=${selectedType}`);
-            if (!res.ok) throw new Error("템플릿 로드 실패");
-
-            const jsonResult = await res.json();
-            const templateQuestions = jsonResult.result;
-
-            console.log(jsonResult);
-            console.log(templateQuestions);
+            try {
+                // 템플릿 API 호출
+                const templateQuestions = await api.get(
+                       `/api/v1/survey/admin/template?type=${encodeURIComponent(selectedType)}`
+                     );
+                console.log("templateQuestions:", templateQuestions);
 
             // 템플릿 문항 생성
             templateQuestions.forEach((q) => {

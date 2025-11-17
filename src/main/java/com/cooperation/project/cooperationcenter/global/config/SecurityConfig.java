@@ -45,22 +45,24 @@ public class SecurityConfig {
 
                                 //note static 해제
                                 .requestMatchers("/css/**","/plugins/**","/js/**").permitAll()
-
                                 //fixme 임시용임 밑에는
-//                                .requestMatchers("/api/v1/**").permitAll()
-//                                .requestMatchers("/**").permitAll()
+                                .requestMatchers("/v3/**",
+                                        "/swagger-ui.html",
+                                        "/swagger-ui/**",
+                                        "/swagger-resources/**",
+                                        "/api-test/**").permitAll()
+
                                 //note 일반 사용자 페이지
                                 .requestMatchers("/","/home", "/member/signup","/member/login",
                                         "/member/login","/member/logout", "/admin/login","/agency/list").permitAll()
                                 .requestMatchers("/api/v1/member/**","/api/v1/file/img/**").permitAll()
                                 .requestMatchers("/school/**","/api/v1/file/school/**").permitAll()
                                 .requestMatchers("/check/**","/member/password/**","/api/v1/member/reset/**").permitAll()
-                                .requestMatchers("/api/v1/tencent/**").permitAll()
+                                .requestMatchers("/api/v1/tencent/**","/api/v1/agency/region").permitAll()
 
 
                                 //note 로그인한 사용자
                                 .requestMatchers("/survey/log/detail/**").authenticated()
-
 
                                 //note admin 페이지
                                 .requestMatchers("/admin/login").permitAll()
@@ -100,6 +102,7 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         configuration.addAllowedOriginPattern("http://172.30.1.70:8081");
+        configuration.addAllowedOriginPattern("http://localhost:8081");
         configuration.addAllowedOriginPattern("https://11680c706486.ngrok-free.app");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");

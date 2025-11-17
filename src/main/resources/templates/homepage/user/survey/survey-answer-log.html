@@ -898,14 +898,21 @@
         </div>
     </main>
 </div>
-<script id="checkbox-handler" type="module">
-    // 체크박스 기능 구현
-    const checkboxes = document.querySelectorAll(".custom-checkbox");
-    const selectAllCheckbox = document.getElementById("select-all");
-    const exportCsvButton = document.getElementById("export-csv");
-    const exportAllCsvButton = document.getElementById("export-csv-all");
-    const fileDownloadByStudentBtn = document.getElementById("fileDownload-student");
-    const fileDownloadBySurveyBtn = document.getElementById("fileDownload-survey");
+<script type="module" id="api-bootstrap">
+    import { api } from "/js/homepage/lib/apiClient.js";
+    window.api = api;
+    window.dispatchEvent(new Event("api-ready"));
+</script>
+
+<script id="checkbox-handler">
+    document.addEventListener("DOMContentLoaded", function () {
+        // 체크박스 기능 구현
+        const checkboxes = document.querySelectorAll(".custom-checkbox");
+        const selectAllCheckbox = document.getElementById("select-all");
+        const exportCsvButton = document.getElementById("export-csv");
+        const exportAllCsvButton = document.getElementById("export-csv-all");
+        const fileDownloadByStudentBtn = document.getElementById("fileDownload-student");
+        const fileDownloadBySurveyBtn = document.getElementById("fileDownload-survey");
 
     // 개별 체크박스 클릭 처리
     checkboxes.forEach((checkbox) => {
@@ -979,39 +986,30 @@
             logIds: logIds
         };
 
-        try {
-            const response = await fetch(`${surveyAdminUrl}/log/csv`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestDto),
-            });
+            try {
 
-            if (!response.ok) {
-                throw new Error('CSV 생성에 실패했습니다.');
-            }
-            const titleText = document.getElementById("survey-title").textContent;
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0'); // 0-based → +1
-            const day = String(today.getDate()).padStart(2, '0');
+                const csvText = await api.postJson(`${surveyAdminUrl}/log/csv`, requestDto);
+                const titleText = document.getElementById("survey-title").textContent;
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0'); // 0-based → +1
+                const day = String(today.getDate()).padStart(2, '0');
 
             const todayStr = `${year}-${month}-${day}`;
 
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = titleText + "_" + todayStr + '.csv';
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
-            const notification = document.createElement("div");
-            notification.className =
-                "fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded";
-            notification.innerHTML = `
+                const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = titleText+"_"+todayStr+'.csv';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+                const notification = document.createElement("div");
+                notification.className =
+                    "fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded";
+                notification.innerHTML = `
       <div class="flex items-center">
       <i class="ri-checkbox-circle-line mr-2"></i>
       <span>CSV 파일이 다운로드되었습니다.</span>
@@ -1049,25 +1047,22 @@
 
         const surveyId = document.getElementById("survey-title").dataset.id;
 
-        try {
-            const response = await fetch(`${surveyAdminUrl}/log/${surveyId}`, {
-                method: 'POST',
-            });
-
-            if (!response.ok) {
-                throw new Error('CSV 생성에 실패했습니다.');
-            }
-            const titleText = document.getElementById("survey-title").textContent;
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0'); // 0-based → +1
-            const day = String(today.getDate()).padStart(2, '0');
+            try {
+                const csvData = await api._request("POST", `${surveyAdminUrl}/log/${surveyId}`, null, {});
+                const titleText = document.getElementById("survey-title").textContent;
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0'); // 0-based → +1
+                const day = String(today.getDate()).padStart(2, '0');
 
             const todayStr = `${year}-${month}-${day}`;
 
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
+                const blob = csvData instanceof Response
+                    ? await csvData.blob()
+                      : new Blob([csvData], { type: "text/csv;charset=utf-8" });
+
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
 
             a.href = url;
             a.download = titleText + "_" + todayStr + '_all.csv';
@@ -1116,25 +1111,20 @@
 
         const surveyId = document.getElementById("survey-title").dataset.id;
 
-        try {
-            const response = await fetch(`${surveyAdminUrl}/log/file/student/${surveyId}`, {
-                method: 'POST',
-            });
+            try {
+                const res = await api._request("POST", `${surveyAdminUrl}/log/file/student/${surveyId}`, null, {});
 
-            if (!response.ok) {
-                throw new Error('유저별 파일 다운로드에 실패했습니다.');
-            }
-            const titleText = document.getElementById("survey-title").textContent;
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0'); // 0-based → +1
-            const day = String(today.getDate()).padStart(2, '0');
+                const titleText = document.getElementById("survey-title").textContent;
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0'); // 0-based → +1
+                const day = String(today.getDate()).padStart(2, '0');
 
             const todayStr = `${year}-${month}-${day}`;
 
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
 
             a.href = url;
             a.download = titleText + "_" + todayStr + '_all.zip';
@@ -1183,25 +1173,19 @@
 
         const surveyId = document.getElementById("survey-title").dataset.id;
 
-        try {
-            const response = await fetch(`${surveyAdminUrl}/log/file/survey/${surveyId}`, {
-                method: 'POST',
-            });
-
-            if (!response.ok) {
-                throw new Error('문항별 파일 다운로드에 실패했습니다.');
-            }
-            const titleText = document.getElementById("survey-title").textContent;
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0'); // 0-based → +1
-            const day = String(today.getDate()).padStart(2, '0');
+            try {
+                const res = await api._request("POST", `${surveyAdminUrl}/log/file/survey/${surveyId}`, null, {});
+                const titleText = document.getElementById("survey-title").textContent;
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0'); // 0-based → +1
+                const day = String(today.getDate()).padStart(2, '0');
 
             const todayStr = `${year}-${month}-${day}`;
 
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
 
             a.href = url;
             a.download = titleText + "_" + todayStr + '_all.zip';

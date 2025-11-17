@@ -89,15 +89,10 @@ public class SurveySaveService {
 
     @Transactional
     public void save(Survey survey, List<Question> questions, List<QuestionOption> options){
-        try {
             surveyRepository.save(survey);
             questionRepository.saveAll(questions);
             questionOptionRepository.saveAll(options);
             log.info("설문조사 저장 완료");
-        }catch (Exception e){
-            log.warn(e.getMessage());
-            log.warn("설문조사 저장 실패");
-        }
     }
 //HtmlUtils.htmlEscape(question);
     public List<Question> getQuestionsFromDto(List<QuestionDto> request, Survey survey){
@@ -114,7 +109,6 @@ public class SurveySaveService {
                     question.setQuestionType(questionType);
                     question.setOption(QuestionType.checkType(questionType));
                     question.setQuestionOrder(i++);
-                    question.setTemplate(dto.isTemplate());
                     question.setDomainField(dto.domainField());
                     question.setTemplate(dto.isTemplate());
                     questions.add(question);
@@ -195,7 +189,10 @@ public class SurveySaveService {
         List<QuestionDto> response = new ArrayList<>();
         Survey survey = surveyFindService.getSurveyFromId(surveyId);
 
-        if(!survey.isShare()) return null;
+        boolean expired = (survey.getEndDate() != null) && LocalDate.now().isAfter(survey.getEndDate());  // today > endDate
+
+        if(!survey.isShare()) throw new BaseException(ErrorCode.SURVEY_NOT_SHARE);
+        if(expired) throw new BaseException(ErrorCode.SURVEY_DATE_NOT_VALID);
 
         List<Question> questions = surveyFindService.getQuestions(survey);
         List<QuestionOption> options = surveyFindService.getOptions(survey);

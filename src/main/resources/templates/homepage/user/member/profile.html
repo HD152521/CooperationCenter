@@ -655,40 +655,20 @@
     </div>
 </footer>
 
+<script type="module" id="api-bootstrap">
+    import { api } from "/js/homepage/lib/apiClient.js";
+    api.setBaseURL("/api/v1");
+    window.api = api;
+    window.dispatchEvent(new Event("api-ready"));
+</script>
 
-<div id="postcode-layer"
-     class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] w-[360px] h-[480px] border border-gray-300 bg-white shadow-lg rounded-lg">
-    <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
-        <h4 class="font-semibold text-gray-700">주소 검색</h4>
-        <button id="closePostcode" onclick="closePostcode()" class="text-gray-500 hover:text-gray-700">
-            <i class="ri-close-line ri-lg"></i>
-        </button>
-    </div>
-    <div id="postcode-wrap" class="w-full h-[400px]"></div>
-</div>
-
-
-<div id="chinese-address-modal" class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2
-            z-[9999] w-[400px] bg-white border border-gray-300 shadow-lg rounded-lg p-5">
-    <div class="flex justify-between items-center mb-4 border-b pb-2">
-        <h4 class="text-lg font-semibold text-gray-700">중국 주소 검색</h4>
-        <button id="closeChineseModal" class="text-gray-500 hover:text-gray-700">
-            <i class="ri-close-line ri-lg"></i>
-        </button>
-    </div>
-
-    <input type="text" id="chineseAddressInput" placeholder="예: 上海市徐汇区漕溪北路333号"
-           class="w-full border border-gray-300 rounded-button px-4 py-2 mb-3 focus:ring-2 focus:ring-primary outline-none"/>
-
-    <ul id="chineseAddressList" class="border border-gray-200 rounded-lg max-h-60 overflow-y-auto hidden"></ul>
-</div>
-
-<script id="profileEditHandler" type="module">
-    const editProfileBtn = document.getElementById("editProfileBtn");
-    const editProfileModal = document.getElementById("editProfileModal");
-    const cancelEditBtn = document.getElementById("cancelEditBtn");
-    const saveProfileBtn = document.getElementById("saveProfileBtn");
-    const successToast = document.getElementById("successToast");
+<script id="profileEditHandler">
+    document.addEventListener("DOMContentLoaded", function () {
+        const editProfileBtn = document.getElementById("editProfileBtn");
+        const editProfileModal = document.getElementById("editProfileModal");
+        const cancelEditBtn = document.getElementById("cancelEditBtn");
+        const saveProfileBtn = document.getElementById("saveProfileBtn");
+        const successToast = document.getElementById("successToast");
 
     editProfileBtn?.addEventListener("click", () => editProfileModal.classList.remove("hidden"));
     cancelEditBtn?.addEventListener("click", () => editProfileModal.classList.add("hidden"));
@@ -706,36 +686,15 @@
             // agency* 필드는 이 엔드포인트에선 생략(서버가 null 허용/무시하면 보내도 되지만 보통 생략 권장)
         };
 
-        try {
-            const res = await fetch("/api/v1/profile/member", {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (!res.ok) {
-                const txt = await res.text().catch(() => "");
-                alert("프로필 저장 실패\n" + txt);
-                return;
+            try {
+                await window.api.patchJson("/profile/member", payload);
+                editProfileModal.classList.add("hidden");
+                successToast.classList.remove("hidden", "translate-y-full", "opacity-0");
+                setTimeout(() => location.reload(), 800);
+            } catch (e) {
+                console.error(e);
             }
-
-            // 성공 처리
-            editProfileModal.classList.add("hidden");
-            successToast.classList.remove("hidden");
-            successToast.classList.remove("translate-y-full", "opacity-0");
-
-            // 최신 데이터 반영을 확실히: 새로고침(간단)
-            setTimeout(() => {
-                location.reload();
-            }, 800);
-
-        } catch (e) {
-            console.error(e);
-            alert("프로필 저장 중 오류가 발생했습니다.");
-        }
-    });
+        }, { once: true });
 
     window?.addEventListener("click", (e) => {
         if (e.target === editProfileModal) editProfileModal.classList.add("hidden");
@@ -767,75 +726,68 @@
             // member* 필드는 이 엔드포인트에선 생략
         };
 
-        try {
-            const res = await fetch("/api/v1/profile/agency", {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            });
+            try {
+                await window.api.patchJson("/profile/agency", payload);
 
-            if (!res.ok) {
-                const txt = await res.text().catch(() => "");
-                alert("유학원 정보 저장 실패\n" + txt);
-                return;
+                editAgencyModal.classList.add("hidden");
+                agencySuccessToast.classList.remove("hidden", "translate-y-full", "opacity-0");
+                setTimeout(() => { location.reload(); }, 800);
+            } catch (e) {
+                console.error(e);
             }
-
-            editAgencyModal.classList.add("hidden");
-            agencySuccessToast.classList.remove("hidden");
-            agencySuccessToast.classList.remove("translate-y-full", "opacity-0");
-
-            setTimeout(() => {
-                location.reload();
-            }, 800);
-
-        } catch (e) {
-            console.error(e);
-            alert("유학원 정보 저장 중 오류가 발생했습니다.");
-        }
-    });
+        });
 
     window.addEventListener("click", (e) => {
         if (e.target === editAgencyModal) editAgencyModal.classList.add("hidden");
     });
 </script>
-<script type="module">
+<script th:inline="javascript">
     // 현재 저장된 지역(초기 선택값) — Thymeleaf 사용 중이면 아래 한 줄을 그대로 쓰세요.
     const CURRENT_REGION = /*[[${profileDto.member.agencyRegion}]]*/ '';
 
-    async function populateAgencyRegions() {
-        const select = document.getElementById('editAgencyRegion');
-        if (!select) return;
+    async function populateAgencyRegions(selectEl) {
+        // 선택 요소 결정 (파라미터 우선, 없으면 기본 ID)
+        const sel = selectEl ?? document.getElementById("editAgencyRegion");
 
         try {
-            const res = await fetch('/api/v1/agency/region', {method: 'GET'});
-            if (!res.ok) throw new Error('지역 목록 조회 실패');
-            const regions = await res.json(); // ["서울", "부산", ...] 같은 label 배열
+            if (!sel) throw new Error("지역 셀렉트 요소를 찾을 수 없습니다.");
 
-            // 기존 옵션 정리 후 기본값 추가
-            select.innerHTML = '<option value="">지역 선택</option>';
+            const res = await window.api.get("/agency/region");
 
-            regions.forEach((label) => {
-                const opt = document.createElement('option');
-                opt.value = label;     // 서버가 label을 받는다면 value=label
+            const regions =
+                Array.isArray(res) ? res :
+                    Array.isArray(res?.data) ? res.data :
+                        Array.isArray(res?.result) ? res.result : [];
+
+            sel.innerHTML = '<option value="">지역 선택</option>';
+
+            regions.forEach(label => {
+                const opt = document.createElement("option");
+                opt.value = label;
                 opt.textContent = label;
-                select.appendChild(opt);
+                sel.appendChild(opt);
             });
 
-            // 현재 값이 있으면 선택
-            if (CURRENT_REGION) {
-                select.value = CURRENT_REGION;
+            if (typeof CURRENT_REGION !== "undefined" && CURRENT_REGION) {
+                sel.value = CURRENT_REGION;
+                if (sel.value !== CURRENT_REGION) {
+                    const opt = document.createElement("option");
+                    opt.value = CURRENT_REGION;
+                    opt.textContent = `${CURRENT_REGION}`;
+                    opt.selected = true;
+                    sel.appendChild(opt);
+                }
             }
         } catch (e) {
-            console.error(e);
-            // 실패 시 최소한 현재 값만이라도 표시
-            if (CURRENT_REGION) {
-                const opt = document.createElement('option');
+            console.error("지역 목록 조회 실패:", e?.status, e?.code, e?.payload || e);
+
+            if (sel && typeof CURRENT_REGION !== "undefined" && CURRENT_REGION) {
+                sel.innerHTML = ""; // 깨끗이 비우고
+                const opt = document.createElement("option");
                 opt.value = CURRENT_REGION;
-                opt.textContent = CURRENT_REGION + ' (현재)';
+                opt.textContent = `${CURRENT_REGION}`;
                 opt.selected = true;
-                document.getElementById('editAgencyRegion').appendChild(opt);
+                sel.appendChild(opt);
             }
         }
     }
@@ -949,34 +901,16 @@
             const fd = new FormData();
             fd.append(fileFieldName, file);
 
-            try {
-                const res = await fetch(endpoint, {
-                    method: "PATCH",
-                    body: fd,
-                    headers: csrfToken && csrfHeader ? {[csrfHeader]: csrfToken} : undefined,
-                });
-
-                // 바디는 굳이 파싱 안 해도 됨 (BaseResponse<String> "success")
-                if (!res.ok) {
-                    const text = await res.text();
-                    let msg = res.status + " " + res.statusText;
-                    try {
-                        const err = text ? JSON.parse(text) : null;
-                        if (err?.message) msg = err.message;
-                    } catch {
-                    }
-                    throw new Error(msg);
+                try {
+                    await window.api.patchMultipart(endpoint, fd);
+                    closeModal();
+                    showToast("업데이트되었습니다.");
+                    location.reload();
+                } catch (err) {
+                    console.error("업로드 실패:", err);
                 }
-
-                closeModal();
-                showToast("업데이트되었습니다.");
-                location.reload();
-            } catch (err) {
-                console.error("업로드 실패:", err);
-                alert("업로드 중 오류가 발생했습니다: " + (err?.message || "Unknown"));
-            }
-        });
-    };
+            });
+        };
 
     function showToast(msg) {
         if (msg) toast.textContent = msg;
@@ -988,31 +922,32 @@
         }, 2000);
     }
 
-    // 사업자등록증: 이미지/PDF 허용, @RequestPart name = businessCertificate
-    wirePatchUpload({
-        openBtnIds: ["openBizCertModal", "openBizCertModal__empty"],
-        modalId: "bizCertModal",
-        closeBtnId: "closeBizCertModal",
-        formId: "bizCertForm",
-        fileInputId: "bizCertFile",
-        previewId: "bizCertPreview",
-        endpoint: `${BASE}/businessCert`,
-        fileFieldName: "businessCertificate",
-        acceptPdf: true
-    });
+        // 사업자등록증: 이미지/PDF 허용, @RequestPart name = businessCertificate
+        wirePatchUpload({
+            openBtnIds: ["openBizCertModal", "openBizCertModal__empty"],
+            modalId: "bizCertModal",
+            closeBtnId: "closeBizCertModal",
+            formId: "bizCertForm",
+            fileInputId: "bizCertFile",
+            previewId: "bizCertPreview",
+            endpoint: `/profile/businessCert`,
+            fileFieldName: "businessCertificate",
+            acceptPdf: true
+        });
 
-    // 유학원 대표사진: 이미지만, @RequestPart name = agencyPicture
-    wirePatchUpload({
-        openBtnIds: ["openAgencyPicModal", "openAgencyPicModal__empty"],
-        modalId: "agencyPicModal",
-        closeBtnId: "closeAgencyPicModal",
-        formId: "agencyPicForm",
-        fileInputId: "agencyPicFile",
-        previewId: "agencyPicPreview",
-        endpoint: `${BASE}/agencyPicture`,
-        fileFieldName: "agencyPicture",
-        acceptPdf: false
-    });
+        // 유학원 대표사진: 이미지만, @RequestPart name = agencyPicture
+        wirePatchUpload({
+            openBtnIds: ["openAgencyPicModal", "openAgencyPicModal__empty"],
+            modalId: "agencyPicModal",
+            closeBtnId: "closeAgencyPicModal",
+            formId: "agencyPicForm",
+            fileInputId: "agencyPicFile",
+            previewId: "agencyPicPreview",
+            endpoint: `/profile/agencyPicture`,
+            fileFieldName: "agencyPicture",
+            acceptPdf: false
+        });
+    })();
 </script>
 <script type="module">
     // address field
@@ -1142,6 +1077,5 @@
         list.classList.add("hidden");
     }
 </script>
-
 </body>
 </html>

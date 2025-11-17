@@ -10,6 +10,7 @@ public record SurveyFolderDto(
         String folderId,
         String displayName,
         String storedName,
+        int surveyCnt,
         LocalDateTime createdAt
 ) {
     public static SurveyFolderDto from(SurveyFolder surveyFolder) {
@@ -17,6 +18,7 @@ public record SurveyFolderDto(
                 surveyFolder.getFolderId(),
                 surveyFolder.getDisplayName(),
                 surveyFolder.getStoredName(),
+                surveyFolder.getSurveys().size(),
                 surveyFolder.getCreatedAt()
         );
     }

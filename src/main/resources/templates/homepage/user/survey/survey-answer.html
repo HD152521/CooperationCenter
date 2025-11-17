@@ -72,20 +72,7 @@
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-<header class="bg-white border-b border-gray-200 sticky top-0 z-10">
-    <div class="container mx-auto px-4">
-        <div class="flex items-center h-16">
-            <a href="/survey/list" data-readdy="true" class="flex items-center text-gray-600 hover:text-primary">
-                <i class="ri-arrow-left-line mr-2"></i>
-                <span>설문조사 목록으로 돌아가기</span>
-            </a>
-            <div class="mx-auto text-lg font-medium"></div>
-            <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white">
-                <span>관</span>
-            </div>
-        </div>
-    </div>
-</header>
+<header th:replace="~{homepage/common/survey-make-nav :: survey-make-nav}"></header>
 <div class="w-full bg-white shadow-sm progress-wrapper">
     <div class="container mx-auto px-4 py-2">
         <div class="relative h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -292,183 +279,171 @@
     // window.initializeSurveyInteractions = initializeSurveyInteractions;
     // window.updateProgress = updateProgress;
 </script>
-<script th:inline="javascript" type="module">
+<script type="module" id="api-bootstrap">
+    import { api } from "/js/homepage/lib/apiClient.js";
+    window.api = api;
+    window.dispatchEvent(new Event("api-ready"));
+</script>
+
+<script th:inline="javascript"  >
     //note API받아오는 코드
-    // fixme: 전역변수 최소화 할 것 - window.time, window.questions
-    // fixme: window.hierarchyStore -> 지역변수로 변환
-    // async function loadSurvey() {
-    //     try {
-    //         const surveyId = [[${surveyId}]];
-    //         const response = await fetch(`${surveyUrl}/${surveyId}`); // ← 필요시 ID 파라미터 수정
-    //         const text = await response.text();
-    //         if (!response.ok) {
-    //             let errMsg = `${response.status} ${response.statusText}`;
-    //             try {
-    //                 const e = text ? JSON.parse(text) : null;
-    //                 if (e?.message) errMsg = e.message;
-    //             } catch {}
-    //             showFatalError(errMsg);
-    //             return;
-    //         }
-    //
-    //         if (!text || !text.trim()) {
-    //             showFatalError('해당 신청 페이지는 공개 금지 상태입니다.');
-    //             return;
-    //         }
-    //         const jsonText = JSON.parse(text);
-    //         const data = jsonText.result;
-    //         const now = new Date();
-    //
-    //         const yyyy = now.getFullYear();
-    //         const mm = String(now.getMonth() + 1).padStart(2, '0');
-    //         const dd = String(now.getDate()).padStart(2, '0');
-    //         const hh = String(now.getHours()).padStart(2, '0');
-    //         const min = String(now.getMinutes()).padStart(2, '0');
-    //         const ss = String(now.getSeconds()).padStart(2, '0');
-    //
-    //         window.time = `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
-    //         window.questions = data.questions;
-    //         renderSurveyHeader(data.title, data.description);
-    //         renderQuestions(data.questions);
-    //         setHierarchy();
-    //         initializeSurveyInteractions(); // 이벤트 연결
-    //         setUpJumpHandlers();
-    //         updateProgress(); // 초기 진행률 설정
-    //     } catch (err) {
-    //         console.error("설문 로딩 오류:", err);
-    //     }
-    // }
-    // function setHierarchy(){
-    //     window.hierarchyStore = {};
-    //
-    //     window.questions.forEach((q, idx) => {
-    //         if (q.type === 'hierarchy') {
-    //             const store = {
-    //                 firstHierarchyData: [],
-    //                 secondHierarchyData: {},
-    //                 thirdHierarchyData: {}
-    //             };
-    //
-    //             q.options.forEach(opt => {
-    //                 const { hierarchyId, parentOptionId, text, optionId } = opt;
-    //                 const level = opt.level;
-    //
-    //                 const node = {
-    //                     id: hierarchyId,
-    //                     text: text,
-    //                     optionId: optionId
-    //                 };
-    //
-    //                 if (level === 1) {
-    //                     store.firstHierarchyData.push(node);
-    //                 } else if (level === 2) {
-    //                     if (!store.secondHierarchyData[parentOptionId]) {
-    //                         store.secondHierarchyData[parentOptionId] = [];
-    //                     }
-    //                     store.secondHierarchyData[parentOptionId].push(node);
-    //                 } else if (level === 3) {
-    //                     if (!store.thirdHierarchyData[parentOptionId]) {
-    //                         store.thirdHierarchyData[parentOptionId] = [];
-    //                     }
-    //                     store.thirdHierarchyData[parentOptionId].push(node);
-    //                 }
-    //             });
-    //
-    //             window.hierarchyStore[idx] = store; // question index 기반
-    //         }
-    //     });
-    //
-    //
-    //     for (const key in window.hierarchyStore) {
-    //         const store = window.hierarchyStore[key];
-    //         console.log(`질문 인덱스 ${key}:`, store);
-    //
-    //         console.log("  ➤ 1단계:", store.firstHierarchyData);
-    //         console.log("  ➤ 2단계:", store.secondHierarchyData);
-    //         console.log("  ➤ 3단계:", store.thirdHierarchyData);
-    //     }
-    //
-    //     document.querySelectorAll('.hierarchy-group').forEach(group => {
-    //         const questionId = group.getAttribute("name").match(/\d+/)?.[0];
-    //         const store = window.hierarchyStore?.[questionId];
-    //
-    //         if (!store || !store.firstHierarchyData) return;
-    //
-    //         const level1 = group.querySelector('[data-level="1"]');
-    //         const level2 = group.querySelector('[data-level="2"]');
-    //         const level3 = group.querySelector('[data-level="3"]');
-    //
-    //         // ✅ 처음엔 1단계만 표시
-    //         level2.style.display = "none";
-    //         level3.style.display = "none";
-    //
-    //         // 1단계 옵션 채우기
-    //         store.firstHierarchyData.forEach(opt => {
-    //             const o = document.createElement('option');
-    //             o.value = opt.id;
-    //             o.textContent = opt.text;
-    //             o.setAttribute('data-option-id', opt.optionId);
-    //             level1.appendChild(o);
-    //         });
-    //
-    //         // ✅ 1단계 선택 이벤트
-    //         level1?.addEventListener('change', () => {
-    //             const selected = level1.value;
-    //
-    //             // 초기화
-    //             level2.innerHTML = `<option value="">2단계 선택</option>`;
-    //             level3.innerHTML = `<option value="">3단계 선택</option>`;
-    //             level2.style.display = "none";
-    //             level3.style.display = "none";
-    //             level2.disabled = true;
-    //             level3.disabled = true;
-    //
-    //             // 2단계 데이터가 존재하면 표시
-    //             if (store.secondHierarchyData?.[selected]?.length > 0) {
-    //                 store.secondHierarchyData[selected].forEach(opt => {
-    //                     const o = document.createElement('option');
-    //                     o.value = opt.id;
-    //                     o.textContent = opt.text;
-    //                     o.setAttribute('data-option-id', opt.optionId);
-    //                     level2.appendChild(o);
-    //                 });
-    //                 level2.disabled = false;
-    //                 level2.style.display = "block";
-    //             }
-    //         });
-    //
-    //         // ✅ 2단계 선택 이벤트
-    //         level2?.addEventListener('change', () => {
-    //             const selected = level2.value;
-    //
-    //             level3.innerHTML = `<option value="">3단계 선택</option>`;
-    //             level3.style.display = "none";
-    //             level3.disabled = true;
-    //
-    //             // 3단계 데이터가 존재하면 표시
-    //             if (store.thirdHierarchyData?.[selected]?.length > 0) {
-    //                 store.thirdHierarchyData[selected].forEach(opt => {
-    //                     const o = document.createElement('option');
-    //                     o.value = opt.id;
-    //                     o.textContent = opt.text;
-    //                     o.setAttribute('data-option-id', opt.optionId);
-    //                     level3.appendChild(o);
-    //                 });
-    //                 level3.disabled = false;
-    //                 level3.style.display = "block";
-    //             }
-    //         });
-    //     });
-    //
-    // }
-    //
-    // function renderSurveyHeader(title, description) {
-    //     const titleEl = document.querySelector('h1');
-    //     const descEl = document.querySelector('p.text-gray-600');
-    //
-    //     titleEl.textContent = title;
-    //     descEl.textContent = description;
-    // }
+    document.addEventListener('DOMContentLoaded', loadSurvey);
+    async function loadSurvey() {
+        try {
+            const surveyId = [[${surveyId}]];
+            const data = await api.get(`${surveyUrl}/${surveyId}`);
+            const now = new Date();
+
+            const yyyy = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            const hh = String(now.getHours()).padStart(2, '0');
+            const min = String(now.getMinutes()).padStart(2, '0');
+            const ss = String(now.getSeconds()).padStart(2, '0');
+
+            window.time = `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
+            window.questions = data.questions;
+            renderSurveyHeader(data.title, data.description);
+            renderQuestions(data.questions);
+            setHierarchy();
+            initializeSurveyInteractions(); // 이벤트 연결
+            setUpJumpHandlers();
+            updateProgress(); // 초기 진행률 설정
+        } catch (err) {
+            console.error("설문 로딩 오류:", err);
+        }
+    }
+    function setHierarchy(){
+        window.hierarchyStore = {};
+
+        window.questions.forEach((q, idx) => {
+            if (q.type === 'hierarchy') {
+                const store = {
+                    firstHierarchyData: [],
+                    secondHierarchyData: {},
+                    thirdHierarchyData: {}
+                };
+
+                q.options.forEach(opt => {
+                    const { hierarchyId, parentOptionId, text, optionId } = opt;
+                    const level = opt.level;
+
+                    const node = {
+                        id: hierarchyId,
+                        text: text,
+                        optionId: optionId
+                    };
+
+                    if (level === 1) {
+                        store.firstHierarchyData.push(node);
+                    } else if (level === 2) {
+                        if (!store.secondHierarchyData[parentOptionId]) {
+                            store.secondHierarchyData[parentOptionId] = [];
+                        }
+                        store.secondHierarchyData[parentOptionId].push(node);
+                    } else if (level === 3) {
+                        if (!store.thirdHierarchyData[parentOptionId]) {
+                            store.thirdHierarchyData[parentOptionId] = [];
+                        }
+                        store.thirdHierarchyData[parentOptionId].push(node);
+                    }
+                });
+
+                window.hierarchyStore[idx] = store; // question index 기반
+            }
+        });
+
+
+        for (const key in window.hierarchyStore) {
+            const store = window.hierarchyStore[key];
+            console.log(`질문 인덱스 ${key}:`, store);
+
+            console.log("  ➤ 1단계:", store.firstHierarchyData);
+            console.log("  ➤ 2단계:", store.secondHierarchyData);
+            console.log("  ➤ 3단계:", store.thirdHierarchyData);
+        }
+
+        document.querySelectorAll('.hierarchy-group').forEach(group => {
+            const questionId = group.getAttribute("name").match(/\d+/)?.[0];
+            const store = window.hierarchyStore?.[questionId];
+
+            if (!store || !store.firstHierarchyData) return;
+
+            const level1 = group.querySelector('[data-level="1"]');
+            const level2 = group.querySelector('[data-level="2"]');
+            const level3 = group.querySelector('[data-level="3"]');
+
+            // ✅ 처음엔 1단계만 표시
+            level2.style.display = "none";
+            level3.style.display = "none";
+
+            // 1단계 옵션 채우기
+            store.firstHierarchyData.forEach(opt => {
+                const o = document.createElement('option');
+                o.value = opt.id;
+                o.textContent = opt.text;
+                o.setAttribute('data-option-id', opt.optionId);
+                level1.appendChild(o);
+            });
+
+            // ✅ 1단계 선택 이벤트
+            level1.addEventListener('change', () => {
+                const selected = level1.value;
+
+                // 초기화
+                level2.innerHTML = `<option value="">2단계 선택</option>`;
+                level3.innerHTML = `<option value="">3단계 선택</option>`;
+                level2.style.display = "none";
+                level3.style.display = "none";
+                level2.disabled = true;
+                level3.disabled = true;
+
+                // 2단계 데이터가 존재하면 표시
+                if (store.secondHierarchyData?.[selected]?.length > 0) {
+                    store.secondHierarchyData[selected].forEach(opt => {
+                        const o = document.createElement('option');
+                        o.value = opt.id;
+                        o.textContent = opt.text;
+                        o.setAttribute('data-option-id', opt.optionId);
+                        level2.appendChild(o);
+                    });
+                    level2.disabled = false;
+                    level2.style.display = "block";
+                }
+            });
+
+            // ✅ 2단계 선택 이벤트
+            level2.addEventListener('change', () => {
+                const selected = level2.value;
+
+                level3.innerHTML = `<option value="">3단계 선택</option>`;
+                level3.style.display = "none";
+                level3.disabled = true;
+
+                // 3단계 데이터가 존재하면 표시
+                if (store.thirdHierarchyData?.[selected]?.length > 0) {
+                    store.thirdHierarchyData[selected].forEach(opt => {
+                        const o = document.createElement('option');
+                        o.value = opt.id;
+                        o.textContent = opt.text;
+                        o.setAttribute('data-option-id', opt.optionId);
+                        level3.appendChild(o);
+                    });
+                    level3.disabled = false;
+                    level3.style.display = "block";
+                }
+            });
+        });
+
+    }
+
+    function renderSurveyHeader(title, description) {
+        const titleEl = document.querySelector('h1');
+        const descEl = document.querySelector('p.text-gray-600');
+
+        titleEl.textContent = title;
+        descEl.textContent = description;
+    }
 </script>
 <script type="module">
     //note 질문 가져와서 넣어주는 코드
@@ -809,20 +784,10 @@
                     }
                 }
             }
+            try{
+                const result = await api.postMultipart(`${surveyUrl}/answer`, formData);
+                console.log("✅ API 성공, payload:", result);
 
-            const response = await fetch(`${surveyUrl}/answer`, {
-                method: 'POST',
-                body: formData
-            });
-
-            console.log("🔍 response 객체:", response);
-
-// 개별 정보 출력
-            console.log("✅ 상태 코드:", response.status);       // ex: 200, 500
-            console.log("✅ 성공 여부:", response.ok);           // true/false
-            console.log("✅ 상태 메시지:", response.statusText); // ex: OK, Internal Server Error
-
-            if (response.ok) {
                 const successMessage = document.createElement('div');
                 successMessage.className = 'fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50';
                 successMessage.innerHTML = `
@@ -843,8 +808,8 @@
                 setTimeout(() => {
                     window.location.href = "/survey/list";
                 }, 3000);
-            } else {
-                alert("제출에 실패했습니다.");
+            } catch(e) {
+                console.error("파일 fetch 실패:", e);
             }
         } catch (error) {
             console.error("제출 중 오류:", error);

@@ -67,12 +67,9 @@
                     <p class="text-gray-400 mt-2">시스템 현황을 한눈에 확인하세요</p>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <div class="bg-red-500 text-white px-3 py-1 rounded-full text-sm">
-                        <div class="w-4 h-4 inline-flex items-center justify-center mr-1">
-                            <i class="ri-notification-line ri-sm"></i>
-                        </div>
-                        5개 대기
-                    </div>
+<!--                    <div c&lt;!&ndash;lass="bg-red-500 text-white px-3 py-1 rounded-full text-sm">-->
+<!--                        -->
+<!--                    </div>&ndash;&gt;-->
                     <div class="text-right">
                         <p class="text-white font-medium">김관리자</p>
                         <p class="text-sm text-gray-400">최고 관리자</p>
@@ -140,7 +137,7 @@
                         <div class="w-6 h-6 flex items-center justify-center mr-3 text-primary">
                             <i class="ri-login-box-line"></i>
                         </div>
-                        최근 로그인 기록 - 수정 필요
+                        최근 로그인 기록
                     </h2>
                     <button class="text-gray-400 hover:text-white transition-colors">
                         <div class="w-5 h-5 flex items-center justify-center">
@@ -174,12 +171,14 @@
                     설문조사 참여 현황-수정필요
                 </h2>
                 <div class="flex items-center space-x-4">
-                    <select class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8">
-                        <option>전체 기간</option>
-                        <option>최근 7일</option>
-                        <option>최근 30일</option>
-                    </select>
-                    <button class="text-gray-400 hover:text-white transition-colors">
+<!--                    <select-->
+<!--                            class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8"-->
+<!--                    >-->
+<!--                        <option>전체 기간</option>-->
+<!--                        <option>최근 7일</option>-->
+<!--                        <option>최근 30일</option>-->
+<!--                    </select>-->
+                    <button id="refresh-survey-answer" class="text-gray-400 hover:text-white transition-colors">
                         <div class="w-5 h-5 flex items-center justify-center">
                             <i class="ri-refresh-line"></i>
                         </div>
@@ -203,61 +202,8 @@
                         <th class="p-3 text-sm font-medium text-gray-300">상태</th>
                     </tr>
                     </thead>
-                    <tbody>
-                    <tr class="table-row border-b border-gray-700">
-                        <td class="p-3 text-white">안지영</td>
-                        <td class="p-3 text-gray-300">고객 만족도 조사</td>
-                        <td class="p-3 text-gray-400">2025-01-09 08:15</td>
-                        <td class="p-3 text-gray-300">12분</td>
-                        <td class="p-3">
-                    <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">완료</span>
-                        </td>
-                    </tr>
-                    <tr class="table-row border-b border-gray-700">
-                        <td class="p-3 text-white">류현우</td>
-                        <td class="p-3 text-gray-300">제품 개선 의견 수집</td>
-                        <td class="p-3 text-gray-400">2025-01-09 07:45</td>
-                        <td class="p-3 text-gray-300">8분</td>
-                        <td class="p-3">
-                    <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">완료</span>
-                        </td>
-                    </tr>
-                    <tr class="table-row border-b border-gray-700">
-                        <td class="p-3 text-white">김서현</td>
-                        <td class="p-3 text-gray-300">브랜드 인지도 조사</td>
-                        <td class="p-3 text-gray-400">2025-01-09 07:30</td>
-                        <td class="p-3 text-gray-300">15분</td>
-                        <td class="p-3">
-                    <span class="status-badge px-2 py-1 bg-yellow-500 bg-opacity-20 text-yellow-400 text-xs rounded-full">진행중</span>
-                        </td>
-                    </tr>
-                    <tr class="table-row border-b border-gray-700">
-                        <td class="p-3 text-white">박준혁</td>
-                        <td class="p-3 text-gray-300">사용자 경험 평가</td>
-                        <td class="p-3 text-gray-400">2025-01-09 07:15</td>
-                        <td class="p-3 text-gray-300">20분</td>
-                        <td class="p-3">
-                    <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">완료</span>
-                        </td>
-                    </tr>
-                    <tr class="table-row border-b border-gray-700">
-                        <td class="p-3 text-white">이소영</td>
-                        <td class="p-3 text-gray-300">신기능 피드백</td>
-                        <td class="p-3 text-gray-400">2025-01-09 06:50</td>
-                        <td class="p-3 text-gray-300">5분</td>
-                        <td class="p-3">
-                    <span class="status-badge px-2 py-1 bg-red-500 bg-opacity-20 text-red-400 text-xs rounded-full">중단</span>
-                        </td>
-                    </tr>
-                    <tr class="table-row">
-                        <td class="p-3 text-white">정민석</td>
-                        <td class="p-3 text-gray-300">시장 동향 분석</td>
-                        <td class="p-3 text-gray-400">2025-01-09 06:30</td>
-                        <td class="p-3 text-gray-300">18분</td>
-                        <td class="p-3">
-                    <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">완료</span>
-                        </td>
-                    </tr>
+                    <tbody id="survey-answer-body">
+
                     </tbody>
                 </table>
             </div>
@@ -503,57 +449,43 @@
 
     const viewDetailsButtons = document.querySelectorAll(".view-details-btn");
 
+        viewDetailsButtons.forEach((button) => {
+            button.addEventListener("click", function () {
+                const row = this.closest("tr");
+                const name = row.cells[0]?.textContent?.trim() || "-";
+                const email = row.cells[1]?.textContent?.trim() || "-";
+                const joinDate = row.cells[2]?.textContent?.trim() || "-";
+                const lastLogin = "2025-07-11";
+                const isActive = true;
 
-    viewDetailsButtons.forEach((button) => {
-        button.addEventListener("click", function () {
-            const row = this.closest("tr");
-            const name = row.cells[1].textContent;
-            const email = row.cells[2].textContent;
-            const joinDate = row.cells[3].textContent;
-            const lastLogin = "2025-07-11"
-            const isActive = true;
-            document.getElementById("detail-name").textContent = name;
-            document.getElementById("detail-email").textContent = email;
-            document.getElementById("detail-join-date").textContent = joinDate;
-            document.getElementById("detail-last-login").textContent = lastLogin;
-            document.getElementById("detail-status").textContent = isActive
-                ? "활성"
-                : "비활성";
-            document.getElementById(
-                "detail-status",
-            ).previousElementSibling.className = isActive
-                ? "w-2 h-2 rounded-full bg-green-500 mr-2"
-                : "w-2 h-2 rounded-full bg-red-500 mr-2";
-            showModal(userDetailsModal);
+                document.getElementById("detail-name").textContent = name;
+                document.getElementById("detail-email").textContent = email;
+                document.getElementById("detail-join-date").textContent = joinDate;
+                document.getElementById("detail-last-login").textContent = lastLogin;
+                document.getElementById("detail-status").textContent = isActive ? "활성" : "비활성";
+                document.getElementById("detail-status").previousElementSibling.className =
+                    isActive ? "w-2 h-2 rounded-full bg-green-500 mr-2" : "w-2 h-2 rounded-full bg-red-500 mr-2";
+
+                showModal(userDetailsModal);
+            });
         });
-    });
-    document
-        .getElementById("close-details")
-        .addEventListener("click", () => hideModal(userDetailsModal));
-    document
-        .getElementById("close-details-btn")
-        .addEventListener("click", () => hideModal(userDetailsModal));
-    const documentPreviewModal = document.getElementById(
-        "document-preview-modal",
-    );
-    const viewBusinessRegistrationBtn = document.getElementById(
-        "view-business-registration",
-    );
-    const closePreviewButtons = document.querySelectorAll(".close-preview");
-    viewBusinessRegistrationBtn.addEventListener("click", () => {
-        showModal(documentPreviewModal);
-    });
-    closePreviewButtons.forEach((button) => {
-        button.addEventListener("click", () => hideModal(documentPreviewModal));
-    });
-    [
-        userDetailsModal,
-        documentPreviewModal,
-    ].forEach((modal) => {
-        modal.addEventListener("click", function (e) {
-            if (e.target === modal) {
-                hideModal(modal);
-            }
+
+        document.getElementById("close-details").addEventListener("click", () => hideModal(userDetailsModal));
+        document.getElementById("close-details-btn").addEventListener("click", () => hideModal(userDetailsModal));
+
+        const documentPreviewModal = document.getElementById("document-preview-modal");
+        const viewBusinessRegistrationBtn = document.getElementById("view-business-registration");
+        const closePreviewButtons = document.querySelectorAll(".close-preview");
+
+        viewBusinessRegistrationBtn.addEventListener("click", () => showModal(documentPreviewModal));
+        closePreviewButtons.forEach((button) => {
+            button.addEventListener("click", () => hideModal(documentPreviewModal));
+        });
+
+        [userDetailsModal, documentPreviewModal].forEach((modal) => {
+            modal.addEventListener("click", function (e) {
+                if (e.target === modal) hideModal(modal);
+            });
         });
     });
 </script>
@@ -630,5 +562,97 @@
         });
     });
 </script>
+
+<script id="survey-answer-fetch">
+    document.addEventListener("DOMContentLoaded", () => {
+        const tbody = document.getElementById("survey-answer-body");
+        const refreshBtn = document.getElementById("refresh-survey-answer");
+
+        const statusClass = (status) => {
+            // finishStatus 예시: "완료", "진행중", "중단"
+            if (!status) return "bg-gray-500 bg-opacity-20 text-gray-300";
+            if (status.includes("완료")) return "bg-green-500 bg-opacity-20 text-green-400";
+            if (status.includes("진행")) return "bg-yellow-500 bg-opacity-20 text-yellow-400";
+            if (status.includes("중단") || status.includes("실패")) return "bg-red-500 bg-opacity-20 text-red-400";
+            return "bg-gray-500 bg-opacity-20 text-gray-300";
+        };
+
+        const fmtTime = (s) => {
+            // submitTime이 이미 'yyyy-MM-dd HH:mm'로 내려오면 그대로 표기
+            return s || "-";
+        };
+
+        const fmtSpend = (v) => {
+            // spendTime: 분 기준이라고 가정 (Long)
+            if (v == null) return "-";
+            const minutes = Number(v);
+            if (Number.isNaN(minutes)) return "-";
+            if (minutes >= 60) {
+                const h = Math.floor(minutes / 60);
+                const m = minutes % 60;
+                return m ? `${h}시간 ${m}분` : `${h}시간`;
+            }
+            return `${minutes}분`;
+        };
+
+        async function loadSurveyAnswers() {
+            try {
+                const res = await fetch("/api/v1/survey/admin/answer");
+                if (!res.ok) throw new Error("서버 오류");
+                const json = await res.json();
+
+                const list = json.result || json.data || json || [];
+                tbody.innerHTML = "";
+
+                if (!Array.isArray(list) || list.length === 0) {
+                    tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="p-3 text-center text-gray-400">참여 기록이 없습니다.</td>
+            </tr>`;
+                    return;
+                }
+
+                const frag = document.createDocumentFragment();
+                list.forEach((row) => {
+                    const tr = document.createElement("tr");
+                    tr.className = "table-row border-b border-gray-700";
+                    tr.innerHTML = `
+            <td class="p-3 text-white">${row.memberName ?? "알 수 없음"}</td>
+            <td class="p-3 text-gray-300">${row.surveyName ?? "-"}</td>
+            <td class="p-3 text-gray-400">${fmtTime(row.submitTime)}</td>
+            <td class="p-3 text-gray-300">${fmtSpend(row.spendTime)}</td>
+            <td class="p-3">
+              <span class="status-badge px-2 py-1 ${statusClass(row.finishStatus)} text-xs rounded-full">
+                ${row.finishStatus ?? "-"}
+              </span>
+            </td>
+          `;
+                    frag.appendChild(tr);
+                });
+                tbody.appendChild(frag);
+            } catch (e) {
+                console.error("설문 현황 로드 실패:", e);
+                tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="p-3 text-center text-red-400">데이터 로드 중 오류가 발생했습니다.</td>
+          </tr>`;
+            }
+        }
+
+        // 최초 로드 + 새로고침
+        loadSurveyAnswers();
+        if (refreshBtn) {
+            refreshBtn.addEventListener("click", () => {
+                refreshBtn.classList.add("animate-spin");
+                loadSurveyAnswers().finally(() => {
+                    setTimeout(() => refreshBtn.classList.remove("animate-spin"), 600);
+                });
+            });
+        }
+    });
+</script>
+
+
+
 </body>
 </html>

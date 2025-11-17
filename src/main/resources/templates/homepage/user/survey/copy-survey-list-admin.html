@@ -343,11 +343,19 @@
         </nav>
     </div>
 </main>
-<script id="delete-modal-management" type="module">
-    const deleteModal = document.getElementById("delete-confirm-modal");
-    const cancelDeleteBtn = document.getElementById("cancel-delete");
-    const confirmDeleteBtn = document.getElementById("confirm-delete");
-    let surveyToDelete = null;
+<script type="module" id="api-bootstrap">
+    import { api } from "/js/homepage/lib/apiClient.js";
+    api.setBaseURL("/api/v1");
+    window.api = api;
+    window.dispatchEvent(new Event("api-ready"));
+</script>
+
+<script id="delete-modal-management">
+    document.addEventListener("DOMContentLoaded", function () {
+        const deleteModal = document.getElementById("delete-confirm-modal");
+        const cancelDeleteBtn = document.getElementById("cancel-delete");
+        const confirmDeleteBtn = document.getElementById("confirm-delete");
+        let surveyToDelete = null;
 
     function openDeleteModal(surveyCard) {
         surveyToDelete = surveyCard;
@@ -373,34 +381,26 @@
         }
     });
 
-    cancelDeleteBtn?.addEventListener("click", closeDeleteModal);
-    confirmDeleteBtn?.addEventListener("click", function () {
-        console.log(surveyToDelete);
-        if (surveyToDelete) {
-            const surveyId = surveyToDelete.dataset.surveyId;
-            console.log(surveyId);
-            if (surveyId) {
-                console.log("fetch하기전");
-                fetch(`/api/v1/survey/${surveyId}`, {
-                    method: "DELETE"
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            surveyToDelete.remove();  // 화면에서 제거
-                            closeDeleteModal();       // 모달 닫기
-                            alert("삭제되었습니다.");
-                        } else {
-                            closeDeleteModal();
-                            alert("삭제 실패");
-                        }
-                    })
-                    .catch(error => {
-                        console.error("삭제 중 오류:", error);
-                        alert("서버 오류로 삭제에 실패했습니다.");
-                    });
+        cancelDeleteBtn.addEventListener("click", closeDeleteModal);
+        confirmDeleteBtn.addEventListener("click", async function () {
+            console.log(surveyToDelete);
+            if (surveyToDelete) {
+                const surveyId = surveyToDelete.dataset.surveyId;
+                console.log(surveyId);
+                if (surveyId) {
+                    console.log("fetch하기전");
+                    try{
+                        await api.delete(`/survey/${surveyId}`);
+                        surveyToDelete.remove();
+                        closeDeleteModal();
+                        alert("삭제되었습니다.");
+                    }catch(e){
+                        console.error("삭제 중 오류:", e);
+                        closeDeleteModal();
+                    }
+                }
             }
-        }
-    });
+        });
 
     deleteModal?.addEventListener("click", function (event) {
         if (event.target === deleteModal) {
@@ -438,35 +438,28 @@
         }
     });
 
-    cancelCopyBtn.addEventListener("click", closeCopyModal);
-    confirmCopyBtn.addEventListener("click", function () {
-        console.log(surveyToCopy);
-        if (surveyToCopy) {
-            const surveyId = surveyToCopy.dataset.surveyId;
-            console.log(surveyId);
-            if (surveyId) {
-                console.log("fetch하기전");
-                fetch(`/api/v1/survey/copy/${surveyId}`, {
-                    method: "POST"
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            surveyToCopy.remove();  // 화면에서 제거
-                            closeCopyModal();       // 모달 닫기
-                            alert("복사되었습니다.");
-                            location.reload();
-                        } else {
-                            closeCopyModal();
-                            alert("복사 실패");
-                        }
-                    })
-                    .catch(error => {
-                        console.error("복사 중 오류:", error);
-                        alert("서버 오류로 복사에 실패했습니다.");
-                    });
+        cancelCopyBtn.addEventListener("click", closeCopyModal);
+        confirmCopyBtn.addEventListener("click", async function () {
+            console.log(surveyToCopy);
+            if (surveyToCopy) {
+                const surveyId = surveyToCopy.dataset.surveyId;
+                console.log(surveyId);
+                if (surveyId) {
+                    console.log("fetch하기전");
+
+                    try{
+                        await api._request("POST", `/survey/copy/${surveyId}`, null, {});
+                        surveyToCopy.remove();  // 화면에서 제거
+                        closeCopyModal();       // 모달 닫기
+                        alert("복사되었습니다.");
+                        location.reload();
+                    }catch(e){
+                        console.error("복사 중 오류:", e);
+                        closeCopyModal();
+                    }
+                }
             }
-        }
-    });
+        });
 
     copyModal.addEventListener("click", function (event) {
         if (event.target === copyModal) {
@@ -557,12 +550,12 @@
     statusFilter.addEventListener("change", applyFilters);
     dateFilter.addEventListener("change", applyFilters);
 </script>
-<script type="module">
-    const container = document.getElementById("survey-list-container");
+<script>
+    document.addEventListener("DOMContentLoaded", async function () {
+        const container = document.getElementById("survey-list-container");
 
-    fetch("/api/v1/survey/getAll") // ←  리스트 반환하는 API 엔드포인트
-        .then((res) => res.json())
-        .then((data) => {
+        try {
+            const data = await api.get("/survey/getAll"); // baseURL이 /api/v1 이므로 최종 /api/v1/survey/getAll
             if (!Array.isArray(data)) {
                 throw new Error("Invalid response format");
             }
@@ -587,99 +580,99 @@
                     : "bg-red-100 text-red-800");
 
                 card.innerHTML = `
-                    <div class="p-6">
-                        <div class="flex items-start justify-between mb-3">
-                            <h3 class="text-lg font-bold text-gray-900 line-clamp-2">
-                                ${survey.title}
-                            </h3>
-                            <span class="px-2 py-1 ${badgeClass} text-xs font-medium rounded-full">${status}</span>
-                        </div>
-                        <div class="space-y-2 mb-4 text-sm text-gray-500">
-                            <div class="flex items-center">
-                                <i class="ri-calendar-line mr-2"></i>
-                                <span>생성일: ${formattedDate}</span>
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-3">
+                                <h3 class="text-lg font-bold text-gray-900 line-clamp-2">
+                                    ${survey.title}
+                                </h3>
+                                <span class="px-2 py-1 ${badgeClass} text-xs font-medium rounded-full">${status}</span>
                             </div>
-                            <div class="flex items-center">
-                                <i class="ri-user-line mr-2"></i>
-                                <span>응답 수: ${survey.participant}명</span>
-                            </div>
-                            <div class="flex items-center">
-                                <i class="ri-time-line mr-2"></i>
-                                <span>
-                                  ${survey.isBefore
+                            <div class="space-y-2 mb-4 text-sm text-gray-500">
+                                <div class="flex items-center">
+                                    <i class="ri-calendar-line mr-2"></i>
+                                    <span>생성일: ${formattedDate}</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="ri-user-line mr-2"></i>
+                                    <span>응답 수: ${survey.participant}명</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="ri-time-line mr-2"></i>
+                                    <span>
+                                      ${survey.isBefore
                     ? "시작 안함"
                     : (survey.lastDate > 0
                         ? `남은 기간: ${survey.lastDate}일`
                         : "종료일 지남")}
-                                </span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between border-t border-gray-100 pt-4">
+                                <div class="flex space-x-1">
+                                    <div class="tooltip-trigger">
+                                        <a
+                                                href="/survey/edit/${surveyId}"
+                                                data-readdy="true"
+                                                class="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 text-gray-600"
+                                        >
+                                            <i class="ri-edit-line"></i>
+                                        </a>
+                                        <div
+                                                class="tooltip bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full mb-2 left-1/2 transform -translate-x-1/2"
+                                        >
+                                            편집
+                                        </div>
+                                    </div>
+                                    <div class="tooltip-trigger">
+                                        <button
+                                                class="copy-survey-btn w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 text-gray-600"
+                                        >
+                                            <i class="ri-file-copy-line"></i>
+                                        </button>
+                                        <div
+                                                class="tooltip bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full mb-2 left-1/2 transform -translate-x-1/2"
+                                        >
+                                            복제
+                                        </div>
+                                    </div>
+                                    <div class="tooltip-trigger">
+                                        <button
+                                                class="delete-survey-btn w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 text-gray-600"
+                                        >
+                                            <i class="ri-delete-bin-line"></i>
+                                        </button>
+                                        <div
+                                                class="tooltip bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full mb-2 left-1/2 transform -translate-x-1/2"
+                                        >
+                                            삭제
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <form action="/survey/answer/${surveyId}" method="post">
+                                        <input type="hidden" name="surveyId" value="${surveyId}">
+                                        <button class="px-3 py-1 bg-white text-blue-600 border border-blue-600 text-sm rounded whitespace-nowrap hover:bg-blue-50 transition-colors">
+                                            설문
+                                        </button>
+                                    </form>
+                                    <form action="/survey/log/${surveyId}" method="post">
+                                        <input type="hidden" name="surveyId" value="${surveyId}">
+                                        <button class="px-3 py-1 bg-primary text-white text-sm rounded-button whitespace-nowrap">
+                                            결과
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
-                        <div class="flex items-center justify-between border-t border-gray-100 pt-4">
-                            <div class="flex space-x-1">
-                                <div class="tooltip-trigger">
-                                    <a
-                                            href="/survey/edit/${surveyId}"
-                                            data-readdy="true"
-                                            class="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 text-gray-600"
-                                    >
-                                        <i class="ri-edit-line"></i>
-                                    </a>
-                                    <div
-                                            class="tooltip bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full mb-2 left-1/2 transform -translate-x-1/2"
-                                    >
-                                        편집
-                                    </div>
-                                </div>
-                                <div class="tooltip-trigger">
-                                    <button
-                                            class="copy-survey-btn w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 text-gray-600"
-                                    >
-                                        <i class="ri-file-copy-line"></i>
-                                    </button>
-                                    <div
-                                            class="tooltip bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full mb-2 left-1/2 transform -translate-x-1/2"
-                                    >
-                                        복제
-                                    </div>
-                                </div>
-                                <div class="tooltip-trigger">
-                                    <button
-                                            class="delete-survey-btn w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 text-gray-600"
-                                    >
-                                        <i class="ri-delete-bin-line"></i>
-                                    </button>
-                                    <div
-                                            class="tooltip bg-gray-800 text-white text-xs rounded py-1 px-2 bottom-full mb-2 left-1/2 transform -translate-x-1/2"
-                                    >
-                                        삭제
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex gap-2">
-                                <form action="/survey/answer/${surveyId}" method="post">
-                                    <input type="hidden" name="surveyId" value="${surveyId}">
-                                    <button class="px-3 py-1 bg-white text-blue-600 border border-blue-600 text-sm rounded whitespace-nowrap hover:bg-blue-50 transition-colors">
-                                        설문
-                                    </button>
-                                </form>
-                                <form action="/survey/log/${surveyId}" method="post">
-                                    <input type="hidden" name="surveyId" value="${surveyId}">
-                                    <button class="px-3 py-1 bg-primary text-white text-sm rounded-button whitespace-nowrap">
-                                        결과
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
                 `;
 
                 container.appendChild(card);
             });
-        })
-        .catch((err) => {
+        } catch (err) {
             console.error("설문조사 불러오기 실패:", err);
             container.innerHTML = "<p class='text-gray-500'>설문조사를 불러오는 데 실패했습니다.</p>";
-        });
+        }
+    });
 </script>
 <script>
 
