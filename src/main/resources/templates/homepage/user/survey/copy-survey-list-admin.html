@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>설문조사 목록</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { primary: "#4F46E5", secondary: "#6366F1" },
+                    colors: {primary: "#4F46E5", secondary: "#6366F1"},
                     borderRadius: {
                         none: "0px",
                         sm: "4px",
@@ -26,44 +26,47 @@
             },
         };
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet"
-    />
-    <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-            rel="stylesheet"
-    />
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet"/>
     <style>
-        :where([class^="ri-"])::before { content: "\f3c2"; }
+        :where([class^="ri-"])::before {
+            content: "\f3c2";
+        }
+
         body {
             font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
         }
+
         .survey-card {
             transition: all 0.3s ease;
         }
+
         .survey-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
+
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
+
         .dropdown-menu {
             opacity: 0;
             visibility: hidden;
             transform: translateY(-10px);
             transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
         }
+
         .dropdown:hover .dropdown-menu {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
         }
+
         .tooltip {
             position: absolute;
             visibility: hidden;
@@ -71,10 +74,12 @@
             transition: opacity 0.2s ease, visibility 0.2s;
             z-index: 50;
         }
+
         .tooltip-trigger:hover .tooltip {
             visibility: visible;
             opacity: 1;
         }
+
         .custom-date-input::-webkit-calendar-picker-indicator {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
             cursor: pointer;
@@ -82,71 +87,50 @@
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-<div
-        id="delete-confirm-modal"
-        class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50"
->
+<div id="delete-confirm-modal"
+     class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50">
     <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 mx-4">
         <div class="text-center mb-5">
-            <div
-                    class="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-red-100 text-red-500 mb-4"
-            >
+            <div class="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-red-100 text-red-500 mb-4">
                 <i class="ri-delete-bin-line ri-xl"></i>
             </div>
             <h3 class="text-lg font-bold text-gray-900 mb-2">설문조사 삭제</h3>
             <p class="text-gray-500">
-                정말로 이 설문조사를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
-            </p>
+                정말로 이 설문조사를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다. </p>
         </div>
         <div class="flex space-x-3">
-            <button
-                    id="cancel-delete"
-                    class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-button whitespace-nowrap"
-            >
+            <button id="cancel-delete"
+                    class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-button whitespace-nowrap">
                 취소
             </button>
-            <button
-                    id="confirm-delete"
-                    class="flex-1 px-4 py-2 bg-red-500 text-white rounded-button whitespace-nowrap"
-            >
+            <button id="confirm-delete" class="flex-1 px-4 py-2 bg-red-500 text-white rounded-button whitespace-nowrap">
                 삭제
             </button>
         </div>
     </div>
 </div>
-<div
-        id="copy-confirm-modal"
-        class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50"
->
+<div id="copy-confirm-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50">
     <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 mx-4">
         <div class="text-center mb-5">
-            <div
-                    class="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-blue-100 text-blue-500 mb-4"
-            >
+            <div class="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-blue-100 text-blue-500 mb-4">
                 <i class="ri-file-copy-line"></i>
             </div>
             <h3 class="text-lg font-bold text-gray-900 mb-2">설문조사 복사</h3>
             <p class="text-gray-500">
-                설문조사를 복사 하시겠습니까?
-            </p>
+                설문조사를 복사 하시겠습니까? </p>
         </div>
         <div class="flex space-x-3">
-            <button
-                    id="cancel-copy"
-                    class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-button whitespace-nowrap"
-            >
+            <button id="cancel-copy"
+                    class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-button whitespace-nowrap">
                 취소
             </button>
-            <button
-                    id="confirm-copy"
-                    class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-button whitespace-nowrap"
-            >
+            <button id="confirm-copy" class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-button whitespace-nowrap">
                 복사
             </button>
         </div>
     </div>
 </div>
-<header th:replace="~{homepage/common/survey-nav :: survey-nav}"></header>
+<header th:replace="~{fragments/common/survey-nav :: survey-nav}"></header>
 <!--<header class="bg-white border-b border-gray-200 sticky top-0 z-10">-->
 <!--    <div class="container mx-auto px-4">-->
 <!--        <div class="flex items-center justify-between h-16">-->
@@ -197,161 +181,145 @@
 <main class="container mx-auto px-4 py-6">
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-bold">설문조사 목록</h1>
-        <a
-                href="/survey/make"
-                data-readdy="true"
-                class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap flex items-center"
-        >
+        <a href="/survey/make" data-readdy="true"
+           class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap flex items-center">
             <i class="ri-add-line mr-2"></i>
             새 설문조사 만들기
         </a>
     </div>
     <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
-        <div
-                class="flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-4"
-        >
+        <div class="flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-4">
             <div class="flex-1 relative">
-                <input
-                        type="text"
-                        placeholder="설문조사 제목 검색"
-                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"
-                />
-                <div
-                        class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 flex items-center justify-center text-gray-400"
-                >
+                <input type="text" placeholder="설문조사 제목 검색"
+                       class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"/>
+                <div class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 flex items-center justify-center text-gray-400">
                     <i class="ri-search-line"></i>
                 </div>
             </div>
             <div class="flex flex-wrap gap-3">
                 <div class="relative">
-                    <select
-                            class="appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"
-                    >
+                    <select class="appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary">
                         <option value="all">모든 상태</option>
                         <option value="before">진행 전</option>
                         <option value="active">진행 중</option>
                         <option value="ended">종료</option>
                     </select>
-                    <div
-                            class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-500"
-                    >
+                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-500">
                         <i class="ri-arrow-down-s-line"></i>
                     </div>
                 </div>
                 <div class="relative">
-                    <input
-                            type="date"
-                            class="custom-date-input appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"
-                    />
+                    <input type="date"
+                           class="custom-date-input appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"/>
                 </div>
-<!--                <div class="relative" id="advanced-filter">-->
-<!--                    <button-->
-<!--                            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-button whitespace-nowrap flex items-center"-->
-<!--                            id="filter-button"-->
-<!--                    >-->
-<!--                        <i class="ri-filter-3-line mr-2"></i>-->
-<!--                        필터-->
-<!--                    </button>-->
-<!--                    <div-->
-<!--                            class="hidden absolute right-0 top-full mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-20"-->
-<!--                            id="filter-dropdown"-->
-<!--                    >-->
-<!--                        <div class="p-4">-->
-<!--                            <h3 class="text-lg font-semibold mb-4">고급 필터</h3>-->
-<!--                            <div class="space-y-4">-->
-<!--                                <div>-->
-<!--                                    <label-->
-<!--                                            class="block text-sm font-medium text-gray-700 mb-1"-->
-<!--                                    >응답 수 범위</label-->
-<!--                                    >-->
-<!--                                    <div class="flex items-center space-x-2">-->
-<!--                                        <input-->
-<!--                                                type="number"-->
-<!--                                                min="0"-->
-<!--                                                placeholder="최소"-->
-<!--                                                class="w-24 px-3 py-1.5 border border-gray-300 rounded text-sm"-->
-<!--                                                id="response-min"-->
-<!--                                        />-->
-<!--                                        <span class="text-gray-500">-</span>-->
-<!--                                        <input-->
-<!--                                                type="number"-->
-<!--                                                min="0"-->
-<!--                                                placeholder="최대"-->
-<!--                                                class="w-24 px-3 py-1.5 border border-gray-300 rounded text-sm"-->
-<!--                                                id="response-max"-->
-<!--                                        />-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                                <div>-->
-<!--                                    <label-->
-<!--                                            class="block text-sm font-medium text-gray-700 mb-1"-->
-<!--                                    >생성일 기간</label-->
-<!--                                    >-->
-<!--                                    <div class="flex items-center space-x-2">-->
-<!--                                        <input-->
-<!--                                                type="date"-->
-<!--                                                class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm"-->
-<!--                                                id="created-start"-->
-<!--                                        />-->
-<!--                                        <span class="text-gray-500">-</span>-->
-<!--                                        <input-->
-<!--                                                type="date"-->
-<!--                                                class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm"-->
-<!--                                                id="created-end"-->
-<!--                                        />-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                                <div>-->
-<!--                                    <label-->
-<!--                                            class="block text-sm font-medium text-gray-700 mb-1"-->
-<!--                                    >종료일 기간</label-->
-<!--                                    >-->
-<!--                                    <div class="flex items-center space-x-2">-->
-<!--                                        <input-->
-<!--                                                type="date"-->
-<!--                                                class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm"-->
-<!--                                                id="end-start"-->
-<!--                                        />-->
-<!--                                        <span class="text-gray-500">-</span>-->
-<!--                                        <input-->
-<!--                                                type="date"-->
-<!--                                                class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm"-->
-<!--                                                id="end-end"-->
-<!--                                        />-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                                <div>-->
-<!--                                    <label-->
-<!--                                            class="block text-sm font-medium text-gray-700 mb-1"-->
-<!--                                    >정렬</label-->
-<!--                                    >-->
-<!--                                    <select-->
-<!--                                            class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm"-->
-<!--                                            id="sort-option"-->
-<!--                                    >-->
-<!--                                        <option value="newest">최신순</option>-->
-<!--                                        <option value="oldest">오래된순</option>-->
-<!--                                        <option value="responses">응답 수</option>-->
-<!--                                    </select>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                            <div class="flex justify-end space-x-2 mt-6 pt-4 border-t">-->
-<!--                                <button-->
-<!--                                        class="px-4 py-2 text-gray-700 bg-gray-100 rounded-button text-sm"-->
-<!--                                        id="reset-filter"-->
-<!--                                >-->
-<!--                                    초기화-->
-<!--                                </button>-->
-<!--                                <button-->
-<!--                                        class="px-4 py-2 text-white bg-primary rounded-button text-sm"-->
-<!--                                        id="apply-filter"-->
-<!--                                >-->
-<!--                                    적용-->
-<!--                                </button>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
+                <!--                <div class="relative" id="advanced-filter">-->
+                <!--                    <button-->
+                <!--                            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-button whitespace-nowrap flex items-center"-->
+                <!--                            id="filter-button"-->
+                <!--                    >-->
+                <!--                        <i class="ri-filter-3-line mr-2"></i>-->
+                <!--                        필터-->
+                <!--                    </button>-->
+                <!--                    <div-->
+                <!--                            class="hidden absolute right-0 top-full mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-20"-->
+                <!--                            id="filter-dropdown"-->
+                <!--                    >-->
+                <!--                        <div class="p-4">-->
+                <!--                            <h3 class="text-lg font-semibold mb-4">고급 필터</h3>-->
+                <!--                            <div class="space-y-4">-->
+                <!--                                <div>-->
+                <!--                                    <label-->
+                <!--                                            class="block text-sm font-medium text-gray-700 mb-1"-->
+                <!--                                    >응답 수 범위</label-->
+                <!--                                    >-->
+                <!--                                    <div class="flex items-center space-x-2">-->
+                <!--                                        <input-->
+                <!--                                                type="number"-->
+                <!--                                                min="0"-->
+                <!--                                                placeholder="최소"-->
+                <!--                                                class="w-24 px-3 py-1.5 border border-gray-300 rounded text-sm"-->
+                <!--                                                id="response-min"-->
+                <!--                                        />-->
+                <!--                                        <span class="text-gray-500">-</span>-->
+                <!--                                        <input-->
+                <!--                                                type="number"-->
+                <!--                                                min="0"-->
+                <!--                                                placeholder="최대"-->
+                <!--                                                class="w-24 px-3 py-1.5 border border-gray-300 rounded text-sm"-->
+                <!--                                                id="response-max"-->
+                <!--                                        />-->
+                <!--                                    </div>-->
+                <!--                                </div>-->
+                <!--                                <div>-->
+                <!--                                    <label-->
+                <!--                                            class="block text-sm font-medium text-gray-700 mb-1"-->
+                <!--                                    >생성일 기간</label-->
+                <!--                                    >-->
+                <!--                                    <div class="flex items-center space-x-2">-->
+                <!--                                        <input-->
+                <!--                                                type="date"-->
+                <!--                                                class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm"-->
+                <!--                                                id="created-start"-->
+                <!--                                        />-->
+                <!--                                        <span class="text-gray-500">-</span>-->
+                <!--                                        <input-->
+                <!--                                                type="date"-->
+                <!--                                                class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm"-->
+                <!--                                                id="created-end"-->
+                <!--                                        />-->
+                <!--                                    </div>-->
+                <!--                                </div>-->
+                <!--                                <div>-->
+                <!--                                    <label-->
+                <!--                                            class="block text-sm font-medium text-gray-700 mb-1"-->
+                <!--                                    >종료일 기간</label-->
+                <!--                                    >-->
+                <!--                                    <div class="flex items-center space-x-2">-->
+                <!--                                        <input-->
+                <!--                                                type="date"-->
+                <!--                                                class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm"-->
+                <!--                                                id="end-start"-->
+                <!--                                        />-->
+                <!--                                        <span class="text-gray-500">-</span>-->
+                <!--                                        <input-->
+                <!--                                                type="date"-->
+                <!--                                                class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm"-->
+                <!--                                                id="end-end"-->
+                <!--                                        />-->
+                <!--                                    </div>-->
+                <!--                                </div>-->
+                <!--                                <div>-->
+                <!--                                    <label-->
+                <!--                                            class="block text-sm font-medium text-gray-700 mb-1"-->
+                <!--                                    >정렬</label-->
+                <!--                                    >-->
+                <!--                                    <select-->
+                <!--                                            class="w-full px-3 py-1.5 border border-gray-300 rounded text-sm"-->
+                <!--                                            id="sort-option"-->
+                <!--                                    >-->
+                <!--                                        <option value="newest">최신순</option>-->
+                <!--                                        <option value="oldest">오래된순</option>-->
+                <!--                                        <option value="responses">응답 수</option>-->
+                <!--                                    </select>-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                            <div class="flex justify-end space-x-2 mt-6 pt-4 border-t">-->
+                <!--                                <button-->
+                <!--                                        class="px-4 py-2 text-gray-700 bg-gray-100 rounded-button text-sm"-->
+                <!--                                        id="reset-filter"-->
+                <!--                                >-->
+                <!--                                    초기화-->
+                <!--                                </button>-->
+                <!--                                <button-->
+                <!--                                        class="px-4 py-2 text-white bg-primary rounded-button text-sm"-->
+                <!--                                        id="apply-filter"-->
+                <!--                                >-->
+                <!--                                    적용-->
+                <!--                                </button>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+                <!--                </div>-->
             </div>
         </div>
     </div>
@@ -360,24 +328,16 @@
     </div>
     <div class="mt-8 flex justify-center">
         <nav class="inline-flex rounded-md shadow">
-            <button
-                    class="px-3 py-2 rounded-l-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50"
-            >
+            <button class="px-3 py-2 rounded-l-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50">
                 <i class="ri-arrow-left-s-line"></i>
             </button>
-            <button
-                    class="px-4 py-2 border-t border-b border-gray-300 bg-primary text-white"
-            >
+            <button class="px-4 py-2 border-t border-b border-gray-300 bg-primary text-white">
                 1
             </button>
-            <button
-                    class="px-4 py-2 border-t border-b border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
-            >
+            <button class="px-4 py-2 border-t border-b border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
                 2
             </button>
-            <button
-                    class="px-3 py-2 rounded-r-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50"
-            >
+            <button class="px-3 py-2 rounded-r-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50">
                 <i class="ri-arrow-right-s-line"></i>
             </button>
         </nav>
@@ -397,29 +357,29 @@
         const confirmDeleteBtn = document.getElementById("confirm-delete");
         let surveyToDelete = null;
 
-        function openDeleteModal(surveyCard) {
-            surveyToDelete = surveyCard;
-            deleteModal.classList.remove("hidden");
-            document.body.style.overflow = "hidden";
-        }
+    function openDeleteModal(surveyCard) {
+        surveyToDelete = surveyCard;
+        deleteModal.classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+    }
 
-        function closeDeleteModal() {
-            deleteModal.classList.add("hidden");
-            document.body.style.overflow = "";
-            surveyToDelete = null;
-        }
+    function closeDeleteModal() {
+        deleteModal.classList.add("hidden");
+        document.body.style.overflow = "";
+        surveyToDelete = null;
+    }
 
-        // 이벤트 위임으로 모든 삭제 버튼 처리
-            document.addEventListener("click", function (event) {
-                const deleteBtn = event.target.closest(".delete-survey-btn");
-                if (deleteBtn) {
-                    const surveyCard = deleteBtn.closest(".survey-card");
-                    if (surveyCard) {
-                        console.log("삭제할 카드:", surveyCard);
-                        openDeleteModal(surveyCard);
-                    }
-                }
-            });
+    // 이벤트 위임으로 모든 삭제 버튼 처리
+    document.addEventListener("click", function (event) {
+        const deleteBtn = event.target.closest(".delete-survey-btn");
+        if (deleteBtn) {
+            const surveyCard = deleteBtn.closest(".survey-card");
+            if (surveyCard) {
+                console.log("삭제할 카드:", surveyCard);
+                openDeleteModal(surveyCard);
+            }
+        }
+    });
 
         cancelDeleteBtn.addEventListener("click", closeDeleteModal);
         confirmDeleteBtn.addEventListener("click", async function () {
@@ -442,43 +402,41 @@
             }
         });
 
-        deleteModal.addEventListener("click", function (event) {
-            if (event.target === deleteModal) {
-                closeDeleteModal();
-            }
-        });
+    deleteModal?.addEventListener("click", function (event) {
+        if (event.target === deleteModal) {
+            closeDeleteModal();
+        }
     });
 </script>
-<script id="copy-modal-management">
-    document.addEventListener("DOMContentLoaded", function () {
-        const copyModal = document.getElementById("copy-confirm-modal");
-        const cancelCopyBtn = document.getElementById("cancel-copy");
-        const confirmCopyBtn = document.getElementById("confirm-copy");
-        let surveyToCopy = null;
+<script id="copy-modal-management" type="module">
+    const copyModal = document.getElementById("copy-confirm-modal");
+    const cancelCopyBtn = document.getElementById("cancel-copy");
+    const confirmCopyBtn = document.getElementById("confirm-copy");
+    let surveyToCopy = null;
 
-        function openCopyModal(surveyCard) {
-            surveyToCopy = surveyCard;
-            copyModal.classList.remove("hidden");
-            document.body.style.overflow = "hidden";
-        }
+    function openCopyModal(surveyCard) {
+        surveyToCopy = surveyCard;
+        copyModal.classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+    }
 
-        function closeCopyModal() {
-            copyModal.classList.add("hidden");
-            document.body.style.overflow = "";
-            surveyToCopy = null;
-        }
+    function closeCopyModal() {
+        copyModal.classList.add("hidden");
+        document.body.style.overflow = "";
+        surveyToCopy = null;
+    }
 
-        // 이벤트 위임으로 모든 삭제 버튼 처리
-        document.addEventListener("click", function (event) {
-            const copyBtn = event.target.closest(".copy-survey-btn");
-            if (copyBtn) {
-                const surveyCard = copyBtn.closest(".survey-card");
-                if (surveyCard) {
-                    console.log("삭제할 카드:", surveyCard);
-                    openCopyModal(surveyCard);
-                }
+    // 이벤트 위임으로 모든 삭제 버튼 처리
+    document.addEventListener("click", function (event) {
+        const copyBtn = event.target.closest(".copy-survey-btn");
+        if (copyBtn) {
+            const surveyCard = copyBtn.closest(".survey-card");
+            if (surveyCard) {
+                console.log("삭제할 카드:", surveyCard);
+                openCopyModal(surveyCard);
             }
-        });
+        }
+    });
 
         cancelCopyBtn.addEventListener("click", closeCopyModal);
         confirmCopyBtn.addEventListener("click", async function () {
@@ -503,96 +461,94 @@
             }
         });
 
-        copyModal.addEventListener("click", function (event) {
-            if (event.target === copyModal) {
-                closeCopyModal();
-            }
-        });
+    copyModal.addEventListener("click", function (event) {
+        if (event.target === copyModal) {
+            closeCopyModal();
+        }
     });
 </script>
-<script id="survey-filter-management">
-    document.addEventListener("DOMContentLoaded", function () {
-        const statusFilter = document.querySelector("select");
-        const dateFilter = document.querySelector('input[type="date"]');
-        const searchInput = document.querySelector(
-            'input[placeholder="설문조사 제목 검색"]',
-        );
-        // 현재 날짜 설정
-        const today = new Date();
-        const formattedDate = today.toISOString().split("T")[0];
-        dateFilter.value = formattedDate;
+<script id="survey-filter-management" type="module">
+    const statusFilter = document.querySelector("select");
+    const dateFilter = document.querySelector('input[type="date"]');
+    const searchInput = document.querySelector(
+        'input[placeholder="설문조사 제목 검색"]',
+    );
+    // 현재 날짜 설정
+    const today = new Date();
+    const formattedDate = today.toISOString().split("T")[0];
+    dateFilter.value = formattedDate;
 
-        // 필터 적용 함수
-        function applyFilters() {
-            const searchTerm = searchInput.value.toLowerCase();
-            const status = statusFilter.value;
-            const date = dateFilter.value;
+    // 필터 적용 함수
+    function applyFilters() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const status = statusFilter.value;
+        const date = dateFilter.value;
 
-            const surveyCards = document.querySelectorAll(".survey-card");
-            surveyCards.forEach((card) => {
-                let visible = true;
-                // 제목 검색
-                const title = card.querySelector("h3").textContent.toLowerCase();
-                if (searchTerm && !title.includes(searchTerm)) {
+        const surveyCards = document.querySelectorAll(".survey-card");
+        surveyCards.forEach((card) => {
+            let visible = true;
+            // 제목 검색
+            const title = card.querySelector("h3").textContent.toLowerCase();
+            if (searchTerm && !title.includes(searchTerm)) {
+                visible = false;
+            }
+            // 상태 필터
+            if (status !== "all") {
+                const statusBadge = card.querySelector("span").textContent;
+                if (
+                    (status === "active" && statusBadge !== "진행 중") ||
+                    (status === "ended" && statusBadge !== "종료") ||
+                    (status === "before" && statusBadge !== "진행 전")
+                ) {
                     visible = false;
                 }
-                // 상태 필터
-                if (status !== "all") {
-                    const statusBadge = card.querySelector("span").textContent;
-                    if (
-                        (status === "active" && statusBadge !== "진행 중") ||
-                        (status === "ended" && statusBadge !== "종료") ||
-                        (status === "before" && statusBadge !== "진행 전")
-                    ) {
-                        visible = false;
-                    }
-                }
-                // 날짜 필터 (간단한 구현)
+            }
+            // 날짜 필터 (간단한 구현)
 
 
-                // 카드 표시/숨김
-                card.style.display = visible ? "" : "none";
-            });
-            // 정렬 적용
-            const surveyContainer = document.querySelector(".grid");
-            const sortedCards = Array.from(surveyContainer.children);
-            sortedCards.sort((a, b) => {
-                if (sort === "newest" || sort === "oldest") {
-                    const dateA = new Date(
-                        a
-                            .querySelector(".ri-calendar-line")
-                            .nextElementSibling.textContent.replace("생성일: ", ""),
-                    );
-                    const dateB = new Date(
-                        b
-                            .querySelector(".ri-calendar-line")
-                            .nextElementSibling.textContent.replace("생성일: ", ""),
-                    );
-                    return sort === "newest" ? dateB - dateA : dateA - dateB;
-                } else if (sort === "responses") {
-                    const responsesA = parseInt(
-                        a
-                            .querySelector(".ri-user-line")
-                            .nextElementSibling.textContent.match(/\d+/)[0],
-                    );
-                    const responsesB = parseInt(
-                        b
-                            .querySelector(".ri-user-line")
-                            .nextElementSibling.textContent.match(/\d+/)[0],
-                    );
-                    return responsesB - responsesA;
-                }
-            });
-            sortedCards.forEach((card) => {
-                surveyContainer.appendChild(card);
-            });
-            filterDropdown.classList.add("hidden");
-        }
-        // 이벤트 리스너 설정
-        searchInput.addEventListener("input", applyFilters);
-        statusFilter.addEventListener("change", applyFilters);
-        dateFilter.addEventListener("change", applyFilters);
-    });
+            // 카드 표시/숨김
+            card.style.display = visible ? "" : "none";
+        });
+        // 정렬 적용
+        const surveyContainer = document.querySelector(".grid");
+        const sortedCards = Array.from(surveyContainer.children);
+        sortedCards.sort((a, b) => {
+            if (sort === "newest" || sort === "oldest") {
+                const dateA = new Date(
+                    a
+                        .querySelector(".ri-calendar-line")
+                        .nextElementSibling.textContent.replace("생성일: ", ""),
+                );
+                const dateB = new Date(
+                    b
+                        .querySelector(".ri-calendar-line")
+                        .nextElementSibling.textContent.replace("생성일: ", ""),
+                );
+                return sort === "newest" ? dateB - dateA : dateA - dateB;
+            } else if (sort === "responses") {
+                const responsesA = parseInt(
+                    a
+                        .querySelector(".ri-user-line")
+                        .nextElementSibling.textContent.match(/\d+/)[0],
+                );
+                const responsesB = parseInt(
+                    b
+                        .querySelector(".ri-user-line")
+                        .nextElementSibling.textContent.match(/\d+/)[0],
+                );
+                return responsesB - responsesA;
+            }
+        });
+        sortedCards.forEach((card) => {
+            surveyContainer.appendChild(card);
+        });
+        filterDropdown.classList.add("hidden");
+    }
+
+    // 이벤트 리스너 설정
+    searchInput.addEventListener("input", applyFilters);
+    statusFilter.addEventListener("change", applyFilters);
+    dateFilter.addEventListener("change", applyFilters);
 </script>
 <script>
     document.addEventListener("DOMContentLoaded", async function () {

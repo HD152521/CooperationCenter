@@ -1,20 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>사용자 관리 - 관리자 대시보드</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet"
-    />
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-    />
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"/>
     <script>
         tailwind.config = {
             theme: {
@@ -43,30 +37,37 @@
         :where([class^="ri-"])::before {
             content: "\f3c2";
         }
+
         .admin-card {
             background: linear-gradient(145deg, #2C2C3A, #232331);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
+
         .table-header {
             background: linear-gradient(135deg, #343446, #2A2A3C);
         }
+
         .table-row:hover {
             background: rgba(52, 152, 219, 0.1);
         }
+
         .status-badge {
             backdrop-filter: blur(10px);
         }
+
         .custom-switch {
             position: relative;
             display: inline-block;
             width: 44px;
             height: 24px;
         }
+
         .custom-switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
+
         .slider {
             position: absolute;
             cursor: pointer;
@@ -78,6 +79,7 @@
             transition: .4s;
             border-radius: 24px;
         }
+
         .slider:before {
             position: absolute;
             content: "";
@@ -89,23 +91,28 @@
             transition: .4s;
             border-radius: 50%;
         }
+
         input:checked + .slider {
             background-color: #3498DB;
         }
+
         input:checked + .slider:before {
             transform: translateX(20px);
         }
+
         .custom-checkbox {
             position: relative;
             display: inline-block;
             width: 18px;
             height: 18px;
         }
+
         .custom-checkbox input {
             opacity: 0;
             width: 0;
             height: 0;
         }
+
         .checkmark {
             position: absolute;
             top: 0;
@@ -117,20 +124,25 @@
             cursor: pointer;
             transition: all 0.3s;
         }
+
         .custom-checkbox:hover input ~ .checkmark {
             background-color: #5a6578;
         }
+
         .custom-checkbox input:checked ~ .checkmark {
             background-color: #3498DB;
         }
+
         .checkmark:after {
             content: "";
             position: absolute;
             display: none;
         }
+
         .custom-checkbox input:checked ~ .checkmark:after {
             display: block;
         }
+
         .custom-checkbox .checkmark:after {
             left: 6px;
             top: 2px;
@@ -142,9 +154,7 @@
         }
     </style>
 </head>
-<body
-        class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen text-gray-100"
->
+<body class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen text-gray-100">
 <div class="flex">
     <aside th:replace="~{adminpage/common/leftSide :: leftSide}"></aside>
     <main class="flex-1 p-8">
@@ -179,9 +189,7 @@
                         <p class="text-gray-400 text-sm">전체 사용자</p>
                         <p class="text-3xl font-bold text-white mt-2" th:text="${userDto.totalUser}">2,847</p>
                     </div>
-                    <div
-                            class="w-12 h-12 bg-primary bg-opacity-20 rounded-lg flex items-center justify-center"
-                    >
+                    <div class="w-12 h-12 bg-primary bg-opacity-20 rounded-lg flex items-center justify-center">
                         <i class="ri-user-line text-primary text-xl"></i>
                     </div>
                 </div>
@@ -192,9 +200,7 @@
                         <p class="text-gray-400 text-sm">활성 사용자</p>
                         <p class="text-3xl font-bold text-white mt-2" th:text="${userDto.activeUser}">2,156</p>
                     </div>
-                    <div
-                            class="w-12 h-12 bg-green-500 bg-opacity-20 rounded-lg flex items-center justify-center"
-                    >
+                    <div class="w-12 h-12 bg-green-500 bg-opacity-20 rounded-lg flex items-center justify-center">
                         <i class="ri-user-check-line text-green-400 text-xl"></i>
                     </div>
                 </div>
@@ -205,9 +211,7 @@
                         <p class="text-gray-400 text-sm">이번 달 신규</p>
                         <p class="text-3xl font-bold text-white mt-2" th:text="${userDto.newUser}">234</p>
                     </div>
-                    <div
-                            class="w-12 h-12 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center"
-                    >
+                    <div class="w-12 h-12 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
                         <i class="ri-user-add-line text-blue-400 text-xl"></i>
                     </div>
                 </div>
@@ -218,9 +222,7 @@
                         <p class="text-gray-400 text-sm">승인 대기</p>
                         <p class="text-3xl font-bold text-white mt-2" th:text="${userDto.pendingUser}">5</p>
                     </div>
-                    <div
-                            class="w-12 h-12 bg-red-500 bg-opacity-20 rounded-lg flex items-center justify-center"
-                    >
+                    <div class="w-12 h-12 bg-red-500 bg-opacity-20 rounded-lg flex items-center justify-center">
                         <i class="ri-user-unfollow-line text-red-400 text-xl"></i>
                     </div>
                 </div>
@@ -232,28 +234,23 @@
                 <!-- 왼쪽: 인풋 + 셀렉트들 -->
                 <div class="flex flex-col md:flex-row md:items-center gap-3 md:flex-1"><!-- md:flex-1로 남는 공간 확보 -->
                     <div class="relative md:flex-1 min-w-0"><!-- 인풋이 가로로 확장 -->
-                        <input
-                                type="text"
-                                id="search-input"
-                                placeholder="이름 또는 이메일로 검색"
-                                class="bg-gray-700 text-white pl-10 pr-4 py-2 rounded-lg text-sm border-none w-full"
-                                th:value="${condition.keyword}"
-                        />
+                        <input type="text" id="search-input" placeholder="이름 또는 이메일로 검색"
+                               class="bg-gray-700 text-white pl-10 pr-4 py-2 rounded-lg text-sm border-none w-full"
+                               th:value="${condition.keyword}"/>
                         <div class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center text-gray-400">
                             <i class="ri-search-line"></i>
                         </div>
                     </div>
 
-                    <select
-                            id="status-filter"
+                    <select id="status-filter"
                             class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8 shrink-0">
-                        <option value="" th:selected="${condition.status} == null or condition.status == ''">전체 상태</option>
+                        <option value="" th:selected="${condition.status} == null or condition.status == ''">전체 상태
+                        </option>
                         <option value="APPROVED" th:selected="${condition.status} == 'APPROVED'">활성</option>
                         <option value="PENDING" th:selected="${condition.status} == 'PENDING'">비활성</option>
                     </select>
 
-                    <select
-                            id="date-filter"
+                    <select id="date-filter"
                             class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8 shrink-0">
                         <option value="" th:selected="${condition.date} == null or condition.date == ''">전체 기간</option>
                         <option value="7" th:selected="${condition.date} == '7'">최근 7일</option>
@@ -264,8 +261,7 @@
 
                 <!-- 오른쪽: 검색 버튼 -->
                 <div class="flex items-center space-x-4 shrink-0 md:ml-3">
-                    <button
-                            id="filter-btn"
+                    <button id="filter-btn"
                             class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
                         <span class="w-4 h-4 inline-flex items-center justify-center mr-2">
                           <i class="ri-search-line"></i>
@@ -273,14 +269,14 @@
                         검색
                     </button>
                 </div>
-        </div>
+            </div>
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead>
                     <tr class="table-header text-left">
                         <th class="p-3 text-sm font-medium text-gray-300">
                             <label class="custom-checkbox">
-                                <input type="checkbox" id="select-all" />
+                                <input type="checkbox" id="select-all"/>
                                 <span class="checkmark"></span>
                             </label>
                         </th>
@@ -298,17 +294,21 @@
                     <tr class="table-row border-b border-gray-700" th:each="user : ${userDto.users}">
                         <td class="p-3">
                             <label class="custom-checkbox">
-                                <input type="checkbox" class="user-checkbox" />
+                                <input type="checkbox" class="user-checkbox"/>
                                 <span class="checkmark"></span>
                             </label>
                         </td>
                         <td class="p-3 text-white" th:text="${user.userName}">이름</td>
                         <td class="p-3 text-gray-300" th:text="${user.userEmail}">이메일</td>
-                        <td class="p-3 text-gray-400" th:text="${#temporals.format(user.userCreatedAt, 'yyyy-MM-dd')}">가입일</td>
-                        <td class="p-3 text-gray-300" th:text="${#temporals.format(user.userApprovedAt, 'yyyy-MM-dd')}">로그인</td>
+                        <td class="p-3 text-gray-400" th:text="${#temporals.format(user.userCreatedAt, 'yyyy-MM-dd')}">
+                            가입일
+                        </td>
+                        <td class="p-3 text-gray-300" th:text="${#temporals.format(user.userApprovedAt, 'yyyy-MM-dd')}">
+                            로그인
+                        </td>
                         <td class="p-3">
                             <label class="custom-switch">
-                                <input type="checkbox" th:checked="${user.isApproval}" />
+                                <input type="checkbox" th:checked="${user.isApproval}"/>
                                 <span class="slider"></span>
                             </label>
                         </td>
@@ -340,19 +340,19 @@
             </div>
             <div class="flex items-center justify-between mt-6">
                 <div class="flex items-center space-x-4">
-<!--                    <select-->
-<!--                            id="per-page"-->
-<!--                            class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8"-->
-<!--                    >-->
-<!--                        <option value="10">10개씩 보기</option>-->
-<!--                        <option value="25">25개씩 보기</option>-->
-<!--                        <option value="50">50개씩 보기</option>-->
-<!--                        <option value="100">100개씩 보기</option>-->
-<!--                    </select>-->
-<!--                    <p class="text-sm text-gray-400"-->
-<!--                       th:text="'총 ' + ${userDto.totalUser} + '명 중 ' + (${userDto.users.number} * ${userDto.users.size} + 1) + '~' + ${T(java.lang.Math).min((${userDto.users.number} + 1) * ${userDto.users.size}, ${userDto.users.totalElements})} + '명 표시'">-->
-<!--                        총 0명 중 1~10명 표시-->
-<!--                    </p>-->
+                    <!--                    <select-->
+                    <!--                            id="per-page"-->
+                    <!--                            class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8"-->
+                    <!--                    >-->
+                    <!--                        <option value="10">10개씩 보기</option>-->
+                    <!--                        <option value="25">25개씩 보기</option>-->
+                    <!--                        <option value="50">50개씩 보기</option>-->
+                    <!--                        <option value="100">100개씩 보기</option>-->
+                    <!--                    </select>-->
+                    <!--                    <p class="text-sm text-gray-400"-->
+                    <!--                       th:text="'총 ' + ${userDto.totalUser} + '명 중 ' + (${userDto.users.number} * ${userDto.users.size} + 1) + '~' + ${T(java.lang.Math).min((${userDto.users.number} + 1) * ${userDto.users.size}, ${userDto.users.totalElements})} + '명 표시'">-->
+                    <!--                        총 0명 중 1~10명 표시-->
+                    <!--                    </p>-->
                 </div>
                 <div class="flex items-center space-x-2 mt-6 justify-center">
                     <!-- 이전 버튼 -->
@@ -385,79 +385,53 @@
         </div>
     </main>
 </div>
-<div
-        id="edit-modal"
-        class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
->
+<div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4">
         <h3 class="text-xl font-bold text-white mb-4">사용자 편집</h3>
         <div class="space-y-4">
             <div>
                 <label class="block text-gray-300 text-sm mb-2">이름</label>
-                <input
-                        type="text"
-                        id="edit-name"
-                        class="w-full bg-gray-700 text-white px-3 py-2 rounded-lg border-none"
-                />
+                <input type="text" id="edit-name"
+                       class="w-full bg-gray-700 text-white px-3 py-2 rounded-lg border-none"/>
             </div>
             <div>
                 <label class="block text-gray-300 text-sm mb-2">이메일</label>
-                <input
-                        type="email"
-                        id="edit-email"
-                        class="w-full bg-gray-700 text-white px-3 py-2 rounded-lg border-none"
-                />
+                <input type="email" id="edit-email"
+                       class="w-full bg-gray-700 text-white px-3 py-2 rounded-lg border-none"/>
             </div>
         </div>
         <div class="flex space-x-4 mt-6">
-            <button
-                    id="cancel-edit"
-                    class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap"
-            >
+            <button id="cancel-edit"
+                    class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
                 취소
             </button>
-            <button
-                    id="confirm-edit"
-                    class="flex-1 px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-            >
+            <button id="confirm-edit"
+                    class="flex-1 px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
                 저장
             </button>
         </div>
     </div>
 </div>
-<div
-        id="delete-modal"
-        class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
->
+<div id="delete-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4">
         <h3 class="text-xl font-bold text-white mb-4">사용자 삭제</h3>
         <p class="text-gray-300 mb-6">
-            선택한 사용자를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
-        </p>
+            선택한 사용자를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다. </p>
         <div class="flex space-x-4">
-            <button
-                    id="cancel-delete"
-                    class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap"
-            >
+            <button id="cancel-delete"
+                    class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
                 취소
             </button>
-            <button
-                    id="confirm-delete"
-                    class="flex-1 px-4 py-2 bg-red-600 text-white rounded-button hover:bg-red-500 transition-colors whitespace-nowrap"
-            >
+            <button id="confirm-delete"
+                    class="flex-1 px-4 py-2 bg-red-600 text-white rounded-button hover:bg-red-500 transition-colors whitespace-nowrap">
                 삭제
             </button>
         </div>
     </div>
 </div>
-<div
-        id="user-details-modal"
-        class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
->
-    <div
-            id="document-preview-modal"
-            class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
-    >
+<div id="user-details-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div id="document-preview-modal"
+         class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
         <div class="bg-gray-800 rounded-xl p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-auto">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-xl font-bold text-white">사업자등록증</h3>
@@ -468,25 +442,17 @@
                 </button>
             </div>
             <div class="bg-gray-700 rounded-lg p-4 justify-center">
-                <img
-                        id="business-registration-img"
-                        src=""
-                        alt="사업자등록증"
-                        class="h-auto w-auto max-w-full max-h-[80vh] rounded-lg"
-                />
+                <img id="business-registration-img" src="" alt="사업자등록증"
+                     class="h-auto w-auto max-w-full max-h-[80vh] rounded-lg"/>
                 <a id="business-registration-pdf" href="" target="_blank">
                     PDF 열기
                 </a>
             </div>
             <div class="mt-6 flex justify-end gap-x-4">
-                <button
-                        class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap"
-                >
+                <button class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
                     <a id="business-registration-download" class="text-primary" target="_blank"></a>
                 </button>
-                <button
-                        class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap close-preview"
-                >
+                <button class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap close-preview">
                     닫기
                 </button>
             </div>
@@ -513,20 +479,17 @@
                         <div>
                             <p class="text-gray-400 text-sm">회사 번호</p>
                             <p class="text-white" id="detail-tel">
-                                231213-123123
-                            </p>
+                                231213-123123 </p>
                         </div>
                         <div>
                             <p class="text-gray-400 text-sm">회사 주소</p>
                             <p class="text-white" id="detail-address">
-                                서울특별시 강남구 테헤란로 123
-                            </p>
+                                서울특별시 강남구 테헤란로 123 </p>
                         </div>
                         <div>
                             <p class="text-gray-400 text-sm">사업자등록번호</p>
                             <p class="text-white" id="detail-business-number">
-                                123-45-67890
-                            </p>
+                                123-45-67890 </p>
                         </div>
                     </div>
                 </div>
@@ -540,8 +503,7 @@
                         <div class="mb-3">
                             <p class="text-gray-400 text-sm">이메일</p>
                             <p class="text-white" id="detail-email">
-                                suyeon.jung@email.com
-                            </p>
+                                suyeon.jung@email.com </p>
                         </div>
                         <div class="mb-3">
                             <p class="text-gray-400 text-sm">대표 전화번호</p>
@@ -555,12 +517,12 @@
                             <p class="text-gray-400 text-sm">주소</p>
                             <p class="text-white" id="detail-owner-address">2024-12-15</p>
                         </div>
-<!--                        <div class="mb-3">-->
-<!--                            <p class="text-gray-400 text-sm">담당자 연락처</p>-->
-<!--                            <p class="text-white" id="detail-contact-phone">-->
-<!--                                010-1234-5678-->
-<!--                            </p>-->
-<!--                        </div>-->
+                        <!--                        <div class="mb-3">-->
+                        <!--                            <p class="text-gray-400 text-sm">담당자 연락처</p>-->
+                        <!--                            <p class="text-white" id="detail-contact-phone">-->
+                        <!--                                010-1234-5678-->
+                        <!--                            </p>-->
+                        <!--                        </div>-->
 
                     </div>
                 </div>
@@ -579,8 +541,7 @@
                         <div class="mb-3">
                             <p class="text-gray-400 text-sm">마지막 로그인</p>
                             <p class="text-white" id="detail-last-login">
-                                2025-01-09 08:45
-                            </p>
+                                2025-01-09 08:45 </p>
                         </div>
                         <div>
                             <p class="text-gray-400 text-sm">로그인 방식</p>
@@ -598,19 +559,17 @@
                                 <p class="text-white">확인 완료</p>
                             </div>
                         </div>
-<!--                        <div class="mb-3">-->
-<!--                            <p class="text-gray-400 text-sm">제출일</p>-->
-<!--                            <p class="text-white">2024-12-15</p>-->
-<!--                        </div>-->
+                        <!--                        <div class="mb-3">-->
+                        <!--                            <p class="text-gray-400 text-sm">제출일</p>-->
+                        <!--                            <p class="text-white">2024-12-15</p>-->
+                        <!--                        </div>-->
                         <div>
-                            <button
-                                    class="mt-2 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap flex items-center"
-                                    id="view-business-registration"
-                            >
+                            <button class="mt-2 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap flex items-center"
+                                    id="view-business-registration">
                                 <div class="w-4 h-4 flex items-center justify-center mr-2">
                                     <i class="ri-file-text-line"></i>
                                 </div>
-                                    사업자등록증 보기
+                                사업자등록증 보기
                             </button>
                         </div>
                     </div>
@@ -618,10 +577,8 @@
             </div>
         </div>
         <div class="mt-6 flex justify-end">
-            <button
-                    id="close-details-btn"
-                    class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap"
-            >
+            <button id="close-details-btn"
+                    class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
                 닫기
             </button>
         </div>
@@ -629,7 +586,7 @@
 </div>
 
 <script id="checkbox-functionality">
-    document.addEventListener("DOMContentLoaded", function () {
+    (function () {
         const selectAllCheckbox = document.getElementById("select-all");
         const userCheckboxes = document.querySelectorAll(".user-checkbox");
         selectAllCheckbox.addEventListener("change", function () {
@@ -647,23 +604,26 @@
                     checkedCount > 0 && checkedCount < userCheckboxes.length;
             });
         });
-    });
+    })();
 </script>
 <script id="modal-functionality">
-    document.addEventListener("DOMContentLoaded", function () {
+    (function () {
         const editModal = document.getElementById("edit-modal");
         const deleteModal = document.getElementById("delete-modal");
         const userDetailsModal = document.getElementById("user-details-modal");
         const editButtons = document.querySelectorAll(".edit-btn");
         const deleteButtons = document.querySelectorAll(".delete-btn");
+
         function showModal(modal) {
             modal.classList.remove("hidden");
             modal.classList.add("flex");
         }
+
         function hideModal(modal) {
             modal.classList.add("hidden");
             modal.classList.remove("flex");
         }
+
         editButtons.forEach((button) => {
             button.addEventListener("click", function () {
                 const row = this.closest("tr");
@@ -722,9 +682,9 @@
 
                 try {
                     const response = await fetch(`/api/v1/admin/detail/${encodeURIComponent(email)}`);
-                    console.log("response"+response);
+                    console.log("response" + response);
                     const result = await response.json();
-                    console.log("result"+result);
+                    console.log("result" + result);
 
                     if (response.ok && result.isSuccess) {
                         const data = result.result;
@@ -740,15 +700,15 @@
                         const pdfEl = document.getElementById("business-registration-pdf");
                         const downloadLinkEl = document.getElementById("business-registration-download");
 
-                        console.log("businessCertificationType:"+data.businessCertificationType);
-                        console.log("url:"+data.businessCertificationURL);
-                        console.log("downLoadurl:"+data.businessCertificationURL);
+                        console.log("businessCertificationType:" + data.businessCertificationType);
+                        console.log("url:" + data.businessCertificationURL);
+                        console.log("downLoadurl:" + data.businessCertificationURL);
 
                         if (data.businessCertificationType === "IMG") {
                             imageEl.src = data.businessCertificationURL;
                             imageEl.classList.remove("hidden");
                             pdfEl.classList.add("hidden");
-                        }else if(data.businessCertificationType === "FILE"){
+                        } else if (data.businessCertificationType === "FILE") {
                             pdfEl.href = data.businessCertificationURL;
                             pdfEl.classList.remove("hidden");
                             imageEl.classList.add("hidden");
@@ -797,10 +757,10 @@
                 }
             });
         });
-    });
+    })();
 </script>
 <script id="status-toggle-functionality">
-    document.addEventListener("DOMContentLoaded", function () {
+    (function () {
         const statusSwitches = document.querySelectorAll(".custom-switch input");
         statusSwitches.forEach((switchElement) => {
             switchElement.addEventListener("change", async function () {
@@ -834,10 +794,10 @@
                 }
             });
         });
-    });
+    })();
 </script>
 <script id="filter">
-    document.addEventListener("DOMContentLoaded", function () {
+    (function () {
         const filterButton = document.getElementById("filter-btn");
         filterButton.addEventListener("click", function () {
             const keyword = document.getElementById("search-input").value.trim();
@@ -852,7 +812,7 @@
 
             location.href = `/admin/user?${params.toString()}`;
         });
-    });
+    })();
 </script>
 </body>
 </html>

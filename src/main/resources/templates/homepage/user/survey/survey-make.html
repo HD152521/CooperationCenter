@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>설문조사 관리</title>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { primary: "#4F46E5", secondary: "#6366F1" },
+                    colors: {primary: "#4F46E5", secondary: "#6366F1"},
                     borderRadius: {
                         none: "0px",
                         sm: "4px",
@@ -26,44 +27,47 @@
             },
         };
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet"
-    />
-    <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-            rel="stylesheet"
-    />
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet"/>
     <style>
-        :where([class^="ri-"])::before { content: "\f3c2"; }
+        :where([class^="ri-"])::before {
+            content: "\f3c2";
+        }
+
         body {
             font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
         }
+
         .question-container {
             transition: all 0.3s ease;
             cursor: move;
         }
+
         .question-container:hover {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
+
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
+
         .custom-switch {
             position: relative;
             display: inline-block;
             width: 44px;
             height: 24px;
         }
+
         .custom-switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
+
         .slider {
             position: absolute;
             cursor: pointer;
@@ -75,6 +79,7 @@
             transition: .4s;
             border-radius: 24px;
         }
+
         .slider:before {
             position: absolute;
             content: "";
@@ -86,28 +91,34 @@
             transition: .4s;
             border-radius: 50%;
         }
+
         input:checked + .slider {
             background-color: #4F46E5;
         }
+
         input:checked + .slider:before {
             transform: translateX(20px);
         }
+
         .hierarchy-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
             min-height: 300px;
         }
+
         .hierarchy-column {
             border: 1px solid #e5e7eb;
             border-radius: 8px;
             background: #fafafa;
             position: relative;
         }
+
         .hierarchy-column.active {
             border-color: #4F46E5;
             background: #f8faff;
         }
+
         .hierarchy-option {
             padding: 0.75rem;
             margin: 0.25rem;
@@ -117,15 +128,18 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
+
         .hierarchy-option:hover {
             border-color: #4F46E5;
             background: #f8faff;
         }
+
         .hierarchy-option.selected {
             border-color: #4F46E5;
             background: #4F46E5;
             color: white;
         }
+
         .hierarchy-option input {
             background: transparent;
             border: none;
@@ -133,9 +147,11 @@
             width: 100%;
             color: inherit;
         }
+
         .hierarchy-option.selected input {
             color: white;
         }
+
         .hierarchy-option.selected input::placeholder {
             color: rgba(255, 255, 255, 0.7);
         }
@@ -143,10 +159,7 @@
 </head>
 <body class="bg-gray-50 min-h-screen">
 <!-- 상단 배너 -->
-<div
-        id="toast"
-        class="toast hidden max-w-sm bg-white shadow-lg rounded-lg pointer-events-auto"
->
+<div id="toast" class="toast hidden max-w-sm bg-white shadow-lg rounded-lg pointer-events-auto">
     <div class="p-4">
         <div class="flex items-center">
             <div class="flex-shrink-0">
@@ -156,10 +169,7 @@
                 <p id="toast-message" class="text-sm font-medium text-gray-900"></p>
             </div>
             <div class="ml-4 flex-shrink-0 flex">
-                <button
-                        id="toast-close"
-                        class="inline-flex text-gray-400 hover:text-gray-500"
-                >
+                <button id="toast-close" class="inline-flex text-gray-400 hover:text-gray-500">
                     <i class="ri-close-line"></i>
                 </button>
             </div>
@@ -171,110 +181,75 @@
 </div>
 
 <!--header자리-->
-<header th:replace="~{homepage/common/survey-nav :: survey-nav}"></header>
+<header th:replace="~{fragments/common/survey-nav :: survey-nav}"></header>
 
-<main class="container mx-auto px-4 py-6 flex">
+<main class="px-4 py-6 flex">
     <!-- 좌측 사이드바 - 문제 유형 선택 -->
- <!-- fixme    <div class="w-64 shrink-0 mr-6 ">-->
-    <div id="left-sidebar" class="w-64 shrink-0 mr-6 hidden fixed top-0 left-0 h-full bg-white z-40 sm:block sm:relative sm:h-auto sm:top-auto sm:left-auto">
+    <!-- fixme    <div class="w-64 shrink-0 mr-6 ">-->
+    <div id="left-sidebar"
+         class="w-64 shrink-0 mr-6 hidden fixed top-0 left-0 h-full z-40 sm:block sm:relative sm:h-auto sm:top-auto sm:left-auto">
         <div class="bg-white rounded-lg shadow-sm p-4 sticky top-20">
             <h2 class="text-lg font-semibold mb-4">문제 유형</h2>
             <div class="space-y-2">
-                <button
-                        class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200 bg-primary bg-opacity-5"
-                        data-question-type="short"
-                >
-                    <div
-                            class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-primary bg-opacity-10 text-primary"
-                    >
+                <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200 bg-primary bg-opacity-5"
+                        data-question-type="short">
+                    <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-primary bg-opacity-10 text-primary">
                         <i class="ri-text-line"></i>
                     </div>
                     <span>단답형</span>
                 </button>
-                <button
-                        class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
-                        data-question-type="essay"
-                >
-                    <div
-                            class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600"
-                    >
+                <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
+                        data-question-type="essay">
+                    <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                         <i class="ri-file-text-line"></i>
                     </div>
                     <span>서술형</span>
                 </button>
-                <button
-                        class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
-                        data-question-type="multiple"
-                >
-                    <div
-                            class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600"
-                    >
+                <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
+                        data-question-type="multiple">
+                    <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                         <i class="ri-radio-button-line"></i>
                     </div>
                     <span>객관식 (단일 선택)</span>
                 </button>
-                <button
-                        class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
-                        data-question-type="multiple-checkbox"
-                >
-                    <div
-                            class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600"
-                    >
+                <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
+                        data-question-type="multiple-checkbox">
+                    <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                         <i class="ri-checkbox-multiple-line"></i>
                     </div>
                     <span>객관식 (다중 선택)</span>
                 </button>
-                <button
-                        class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
-                        data-question-type="dropdown"
-                >
-                    <div
-                            class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600"
-                    >
+                <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
+                        data-question-type="dropdown">
+                    <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                         <i class="ri-list-unordered"></i>
                     </div>
                     <span>드롭다운</span>
                 </button>
-                <button
-                        class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
-                        data-question-type="date"
-                >
-                    <div
-                            class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600"
-                    >
+                <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
+                        data-question-type="date">
+                    <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                         <i class="ri-calendar-line"></i>
                     </div>
                     <span>날짜 답변</span>
                 </button>
-                <button
-                        class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
-                        data-question-type="file"
-                >
-                    <div
-                            class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600"
-                    >
+                <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
+                        data-question-type="file">
+                    <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                         <i class="ri-file-upload-line"></i>
                     </div>
                     <span>파일 업로드</span>
                 </button>
-                <button
-                        class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
-                        data-question-type="image"
-                >
-                    <div
-                            class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600"
-                    >
+                <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
+                        data-question-type="image">
+                    <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                         <i class="ri-image-line"></i>
                     </div>
                     <span>이미지 업로드</span>
                 </button>
-                <button
-                        class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
-                        data-question-type="hierarchy"
-                >
-                    <div
-                            class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600"
-                    >
+                <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
+                        data-question-type="hierarchy">
+                    <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                         <i class="ri-node-tree"></i>
                     </div>
                     <span>계층형 선택</span>
@@ -287,16 +262,10 @@
     <div class="flex-1 min-w-0">
         <div class="bg-white rounded-lg shadow-sm p-6 mb-4">
             <div class="flex items-center justify-between mb-4">
-                <input
-                        id="survey-title"
-                        type="text"
-                        placeholder="설문조사 제목을 입력하세요"
-                        class="text-xl font-bold w-full focus:outline-none"
-                        value="새 설문조사" />
-                <button
-                        class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap flex items-center",
-                        id="saveButton"
-                >
+                <input id="survey-title" type="text" placeholder="설문조사 제목을 입력하세요"
+                       class="text-xl font-bold w-full focus:outline-none" value="새 설문조사"/>
+                <button id="saveButton"
+                        class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap flex items-center">
                     <i class="ri-save-line mr-2"></i>
                     저장하기
                 </button>
@@ -307,79 +276,54 @@
                 <!--                        placeholder="설문조사 제목을 입력하세요"-->
                 <!--                        class="w-full text-xl font-semibold border-none focus:ring-0 focus:outline-none"-->
                 <!--                />-->
-                <textarea
-                        placeholder="설문조사에 대한 설명을 입력하세요"
-                        class="w-full mt-2 border-none focus:ring-0 focus:outline-none resize-none text-gray-600"
-                ></textarea>
+                <textarea placeholder="설문조사에 대한 설명을 입력하세요"
+                          class="w-full mt-2 border-none focus:ring-0 focus:outline-none resize-none text-gray-600">
+                </textarea>
             </div>
         </div>
         <div id="questions-container" class="space-y-4">
             <!-- 초기 상태: 문제 만들기 버튼 -->
-            <div
-                    id="empty-state"
-                    class="bg-white rounded-lg shadow-sm p-8 flex flex-col items-center justify-center min-h-[300px]"
-            >
-                <div
-                        class="w-16 h-16 flex items-center justify-center rounded-full bg-primary bg-opacity-10 text-primary mb-4"
-                >
+            <div id="empty-state"
+                 class="bg-white rounded-lg shadow-sm p-8 flex flex-col items-center justify-center min-h-[300px]">
+                <div class="w-16 h-16 flex items-center justify-center rounded-full bg-primary bg-opacity-10 text-primary mb-4">
                     <i class="ri-add-line ri-xl"></i>
                 </div>
                 <h3 class="text-lg font-medium mb-2">문제가 없습니다</h3>
                 <p class="text-gray-500 mb-4 text-center">
-                    왼쪽 메뉴에서 문제 유형을 선택하거나<br />아래 버튼을 클릭하여
-                    문제를 추가하세요
-                </p>
-                <button
-                        id="add-question-btn"
-                        class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap"
-                >
+                    왼쪽 메뉴에서 문제 유형을 선택하거나<br/>아래 버튼을 클릭하여
+                    문제를 추가하세요 </p>
+                <button id="add-question-btn" class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap">
                     문제 만들기
                 </button>
             </div>
             <!-- 문제 템플릿 (기본적으로 숨겨져 있음) -->
-            <div
-                    id="question-template"
-                    class="question-container bg-white rounded-lg shadow-sm p-6 hidden"
-                    data-question-id="1"
-            >
+            <div id="question-template" class="question-container bg-white rounded-lg shadow-sm p-6 hidden"
+                 data-question-id="1">
                 <div class="flex items-start justify-between mb-4">
                     <div class="flex-1 min-w-0">
-                        <input
-                                type="text"
-                                placeholder="문제 제목을 입력하세요"
-                                class="w-full text-lg font-medium border-none focus:ring-0 focus:outline-none"
-                        />
-                        <textarea
-                                placeholder="문제에 대한 설명을 입력하세요 (선택사항)"
-                                class="w-full mt-2 text-sm border-none focus:ring-0 focus:outline-none resize-none text-gray-600"
-                        ></textarea>
+                        <input type="text" placeholder="문제 제목을 입력하세요"
+                               class="w-full text-lg font-medium border-none focus:ring-0 focus:outline-none"/>
+                        <textarea placeholder="문제에 대한 설명을 입력하세요 (선택사항)"
+                                  class="w-full mt-2 text-sm border-none focus:ring-0 focus:outline-none resize-none text-gray-600"></textarea>
                     </div>
                     <div class="flex items-center space-x-2 ml-4">
-                        <button
-                                class="w-8 h-8 flex items-center justify-center rounded text-gray-500 hover:bg-gray-100"
-                        >
+                        <button class="w-8 h-8 flex items-center justify-center rounded text-gray-500 hover:bg-gray-100">
                             <i class="ri-delete-bin-line"></i>
                         </button>
-                        <button
-                                class="w-8 h-8 flex items-center justify-center rounded text-gray-500 hover:bg-gray-100"
-                        >
+                        <button class="w-8 h-8 flex items-center justify-center rounded text-gray-500 hover:bg-gray-100">
                             <i class="ri-file-copy-line"></i>
                         </button>
                     </div>
                 </div>
                 <!-- 단답형 답변 영역 -->
                 <div class="answer-container" data-type="short">
-                    <div
-                            class="bg-gray-50 border border-gray-200 rounded p-3 text-gray-500"
-                    >
+                    <div class="bg-gray-50 border border-gray-200 rounded p-3 text-gray-500">
                         단답형 텍스트
                     </div>
                 </div>
                 <!-- 서술형 답변 영역 -->
                 <div class="answer-container hidden" data-type="essay">
-                    <div
-                            class="bg-gray-50 border border-gray-200 rounded p-3 text-gray-500 h-36"
-                    >
+                    <div class="bg-gray-50 border border-gray-200 rounded p-3 text-gray-500 h-36">
                         서술형 텍스트
                     </div>
                 </div>
@@ -388,18 +332,11 @@
                     <div class="space-y-2">
                         <div class="flex items-center">
                             <div class="w-6 h-6 flex items-center justify-center mr-2">
-                                <div
-                                        class="w-4 h-4 rounded-full border border-gray-400"
-                                ></div>
+                                <div class="w-4 h-4 rounded-full border border-gray-400"></div>
                             </div>
-                            <input
-                                    type="text"
-                                    placeholder="옵션 1"
-                                    class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"
-                            />
-                            <button
-                                    class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option"
-                            >
+                            <input type="text" placeholder="옵션 1"
+                                   class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
+                            <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                                 <i class="ri-delete-bin-line"></i>
                             </button>
                             <div class="flex items-center space-x-2 ml-8 mt-1">
@@ -412,18 +349,11 @@
 
                         <div class="flex items-center">
                             <div class="w-6 h-6 flex items-center justify-center mr-2">
-                                <div
-                                        class="w-4 h-4 rounded-full border border-gray-400"
-                                ></div>
+                                <div class="w-4 h-4 rounded-full border border-gray-400"></div>
                             </div>
-                            <input
-                                    type="text"
-                                    placeholder="옵션 2"
-                                    class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"
-                            />
-                            <button
-                                    class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option"
-                            >
+                            <input type="text" placeholder="옵션 2"
+                                   class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
+                            <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                                 <i class="ri-delete-bin-line"></i>
                             </button>
                             <div class="flex items-center space-x-2 ml-8 mt-1">
@@ -446,14 +376,9 @@
                             <div class="w-6 h-6 flex items-center justify-center mr-2">
                                 <div class="w-4 h-4 rounded border border-gray-400"></div>
                             </div>
-                            <input
-                                    type="text"
-                                    placeholder="옵션 1"
-                                    class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"
-                            />
-                            <button
-                                    class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option"
-                            >
+                            <input type="text" placeholder="옵션 1"
+                                   class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
+                            <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                                 <i class="ri-delete-bin-line"></i>
                             </button>
                         </div>
@@ -461,14 +386,9 @@
                             <div class="w-6 h-6 flex items-center justify-center mr-2">
                                 <div class="w-4 h-4 rounded border border-gray-400"></div>
                             </div>
-                            <input
-                                    type="text"
-                                    placeholder="옵션 2"
-                                    class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"
-                            />
-                            <button
-                                    class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option"
-                            >
+                            <input type="text" placeholder="옵션 2"
+                                   class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
+                            <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                                 <i class="ri-delete-bin-line"></i>
                             </button>
                         </div>
@@ -482,14 +402,9 @@
                 <div class="answer-container hidden" data-type="dropdown">
                     <div class="space-y-2">
                         <div class="flex items-center">
-                            <input
-                                    type="text"
-                                    placeholder="옵션 1"
-                                    class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"
-                            />
-                            <button
-                                    class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option"
-                            >
+                            <input type="text" placeholder="옵션 1"
+                                   class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
+                            <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                                 <i class="ri-delete-bin-line"></i>
                             </button>
                             <div class="flex items-center space-x-2 ml-8 mt-1">
@@ -500,14 +415,9 @@
                             </div>
                         </div>
                         <div class="flex items-center">
-                            <input
-                                    type="text"
-                                    placeholder="옵션 2"
-                                    class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"
-                            />
-                            <button
-                                    class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option"
-                            >
+                            <input type="text" placeholder="옵션 2"
+                                   class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
+                            <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                                 <i class="ri-delete-bin-line"></i>
                             </button>
                             <div class="flex items-center space-x-2 ml-8 mt-1">
@@ -522,66 +432,53 @@
                             옵션 추가
                         </button>
                     </div>
-                    <div
-                            class="bg-gray-50 border border-gray-200 rounded p-3 mt-4 text-gray-500 flex items-center"
-                    >
+                    <div class="bg-gray-50 border border-gray-200 rounded p-3 mt-4 text-gray-500 flex items-center">
                         <i class="ri-arrow-down-s-line mr-2"></i>
                         <span>드롭다운 선택</span>
                     </div>
                 </div>
                 <!-- 날짜 답변 영역 -->
                 <div class="answer-container hidden" data-type="date">
-                    <div
-                            class="bg-gray-50 border border-gray-200 rounded p-3 text-gray-500 flex items-center"
-                    >
+                    <div class="bg-gray-50 border border-gray-200 rounded p-3 text-gray-500 flex items-center">
                         <i class="ri-calendar-line mr-2"></i>
                         날짜 선택
                     </div>
                 </div>
                 <!-- 파일 업로드 답변 영역 -->
                 <div class="answer-container hidden" data-type="file">
-                    <div
-                            class="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-6 text-center"
-                    >
-                        <div
-                                class="w-12 h-12 mx-auto flex items-center justify-center rounded-full bg-gray-100 text-gray-500 mb-2"
-                        >
+                    <div class="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-6 text-center">
+                        <div class="w-12 h-12 mx-auto flex items-center justify-center rounded-full bg-gray-100 text-gray-500 mb-2">
                             <i class="ri-upload-cloud-line ri-lg"></i>
                         </div>
                         <p class="text-gray-500">
-                            파일을 여기에 끌어다 놓거나 클릭하여 업로드
-                        </p>
+                            파일을 여기에 끌어다 놓거나 클릭하여 업로드 </p>
                         <p class="text-xs text-gray-400 mt-1">최대 파일 크기: 10MB</p>
                     </div>
                 </div>
                 <!-- 이미지 업로드 답변 영역 -->
                 <div class="answer-container hidden" data-type="image">
-                    <div
-                            class="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-6 text-center"
-                    >
-                        <div
-                                class="w-12 h-12 mx-auto flex items-center justify-center rounded-full bg-gray-100 text-gray-500 mb-2"
-                        >
+                    <div class="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-6 text-center">
+                        <div class="w-12 h-12 mx-auto flex items-center justify-center rounded-full bg-gray-100 text-gray-500 mb-2">
                             <i class="ri-upload-cloud-line ri-lg"></i>
                         </div>
                         <p class="text-gray-500">
-                            이미지를 여기에 끌어다 놓거나 클릭하여 업로드
-                        </p>
+                            이미지를 여기에 끌어다 놓거나 클릭하여 업로드 </p>
                         <p class="text-xs text-gray-400 mt-1">최대 파일 크기: 10MB</p>
                     </div>
                 </div>
-<!--                계층형 문제유형-->
+                <!--                계층형 문제유형-->
                 <div class="answer-container hidden" data-type="hierarchy">
-<!--                    <select class="w-full border border-gray-300 rounded p-2 text-sm" id="hierarchy-levels">-->
-<!--                        <option value="2">2단계</option>-->
-<!--                        <option value="3" selected>3단계</option>-->
-<!--                    </select>-->
+                    <!--                    <select class="w-full border border-gray-300 rounded p-2 text-sm" id="hierarchy-levels">-->
+                    <!--                        <option value="2">2단계</option>-->
+                    <!--                        <option value="3" selected>3단계</option>-->
+                    <!--                    </select>-->
                     <div class="hierarchy-grid">
                         <div class="hierarchy-column active" data-level="1">
                             <div class="p-4 border-b border-gray-200 bg-white rounded-t-lg">
                                 <h4 class="font-semibold text-gray-800 flex items-center justify-between">
                                     1단계 - 대분류
-                                    <button class="text-sm text-primary font-medium flex items-center" data-add-option="1">
+                                    <button class="text-sm text-primary font-medium flex items-center"
+                                            data-add-option="1">
                                         <i class="ri-add-line mr-1"></i>
                                         추가
                                     </button>
@@ -596,7 +493,8 @@
                             <div class="p-4 border-b border-gray-200 bg-white rounded-t-lg">
                                 <h4 class="font-semibold text-gray-800 flex items-center justify-between">
                                     2단계 - 세부전공
-                                    <button class="text-sm text-primary font-medium flex items-center" data-add-option="2">
+                                    <button class="text-sm text-primary font-medium flex items-center"
+                                            data-add-option="2">
                                         <i class="ri-add-line mr-1"></i>
                                         추가
                                     </button>
@@ -611,7 +509,8 @@
                             <div class="p-4 border-b border-gray-200 bg-white rounded-t-lg">
                                 <h4 class="font-semibold text-gray-800 flex items-center justify-between">
                                     3단계 - 세부분야
-                                    <button class="text-sm text-primary font-medium flex items-center" data-add-option="3">
+                                    <button class="text-sm text-primary font-medium flex items-center"
+                                            data-add-option="3">
                                         <i class="ri-add-line mr-1"></i>
                                         추가
                                     </button>
@@ -627,95 +526,50 @@
 
                 <div class="flex items-center mt-4 pt-4 border-t border-gray-100">
                     <div class="relative inline-block text-left">
-                        <button
-                                type="button"
-                                class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
-                                id="question-type-menu-button"
-                                aria-expanded="false"
-                                aria-haspopup="true"
-                        >
+                        <button type="button" class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
+                                id="question-type-menu-button" aria-expanded="false" aria-haspopup="true">
                             <span class="mr-1">문제 유형:</span>
                             <span class="font-medium question-type-text">단답형</span>
                             <i class="ri-arrow-down-s-line ml-1"></i>
                         </button>
-                        <div
-                                class="hidden origin-top-left absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
-                                role="menu"
-                                aria-orientation="vertical"
-                                aria-labelledby="question-type-menu-button"
-                                tabindex="-1"
-                        >
+                        <div class="hidden origin-top-left absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                             role="menu" aria-orientation="vertical" aria-labelledby="question-type-menu-button"
+                             tabindex="-1">
                             <div class="py-1" role="none">
-                                <button
-                                        class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
-                                        role="menuitem"
-                                        tabindex="-1"
-                                        data-type="short"
-                                >
+                                <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
+                                        role="menuitem" tabindex="-1" data-type="short">
                                     단답형
                                 </button>
-                                <button
-                                        class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
-                                        role="menuitem"
-                                        tabindex="-1"
-                                        data-type="essay"
-                                >
+                                <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
+                                        role="menuitem" tabindex="-1" data-type="essay">
                                     서술형
                                 </button>
-                                <button
-                                        class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
-                                        role="menuitem"
-                                        tabindex="-1"
-                                        data-type="multiple"
-                                >
+                                <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
+                                        role="menuitem" tabindex="-1" data-type="multiple">
                                     객관식 (단일 선택)
                                 </button>
-                                <button
-                                        class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
-                                        role="menuitem"
-                                        tabindex="-1"
-                                        data-type="multiple-checkbox"
-                                >
+                                <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
+                                        role="menuitem" tabindex="-1" data-type="multiple-checkbox">
                                     객관식 (다중 선택)
                                 </button>
-                                <button
-                                        class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
-                                        role="menuitem"
-                                        tabindex="-1"
-                                        data-type="dropdown"
-                                >
+                                <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
+                                        role="menuitem" tabindex="-1" data-type="dropdown">
                                     드롭다운
                                 </button>
-                                <button
-                                        class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
-                                        role="menuitem"
-                                        tabindex="-1"
-                                        data-type="date"
-                                >
+                                <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
+                                        role="menuitem" tabindex="-1" data-type="date">
                                     날짜 답변
                                 </button>
-                                <button
-                                        class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
-                                        role="menuitem"
-                                        tabindex="-1"
-                                        data-type="file"
-                                >
+                                <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
+                                        role="menuitem" tabindex="-1" data-type="file">
                                     파일 업로드
                                 </button>
-                                <button
-                                        class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
-                                        role="menuitem"
-                                        tabindex="-1"
-                                        data-type="image"
-                                >
+                                <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
+                                        role="menuitem" tabindex="-1" data-type="image">
                                     이미지 업로드
                                 </button>
-                                <button
-                                        class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
-                                        role="menuitem"
-                                        tabindex="-1"
-                                        data-type="hierarchy"
-                                >
+                                <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
+                                        role="menuitem" tabindex="-1" data-type="hierarchy">
                                     계층형 선택
                                 </button>
 
@@ -732,21 +586,19 @@
 
 
         <div class="mt-4 flex justify-center">
-            <button
-                    id="add-question-btn-bottom"
-                    class="flex items-center text-primary font-medium px-4 py-2 rounded-button border border-primary bg-white whitespace-nowrap"
-            >
+            <button id="add-question-btn-bottom"
+                    class="flex items-center text-primary font-medium px-4 py-2 rounded-button border border-primary bg-white whitespace-nowrap">
                 <i class="ri-add-line mr-2"></i>
                 문제 추가하기
             </button>
         </div>
     </div>
 
-
     <!-- 우측 사이드바 - 설정 패널 -->
-<!--fixme     <div class="w-72 shrink-0 ml-6">-->
-    <div id="right-sidebar" class="w-72 shrink-0 ml-6 hidden fixed top-0 right-0 h-full bg-white z-40 sm:block sm:relative sm:h-auto sm:right-auto">
-        <div class="bg-white rounded-lg shadow-sm p-4 sticky top-20">
+    <!--fixme     <div class="w-72 shrink-0 ml-6">-->
+    <div id="right-sidebar"
+         class="w-72 shrink-0 ml-6 hidden fixed top-0 right-0 h-full z-40 sm:block sm:relative sm:h-auto sm:right-auto">
+        <div class="bg-white rounded-lg shadow-sm sticky top-20 p-4">
             <h2 class="text-lg font-semibold mb-4">설정</h2>
 
             <div class="border-t border-gray-100 my-4"></div>
@@ -755,17 +607,13 @@
                 <h3 class="font-medium text-gray-700 mb-3">설문지 설정</h3>
                 <div class="space-y-4">
                     <div>
-                        <label class="text-sm text-gray-600 block mb-1"
-                        >응답 기간</label
-                        >
+                        <label class="text-sm text-gray-600 block mb-1">응답 기간</label>
                         <div class="flex items-center space-x-2">
-                            <input id="start-date" type="date"
-                                   th:value="${survey != null ? survey.startDate : ''}" />
+                            <input id="start-date" type="date" th:value="${survey != null ? survey.startDate : ''}"/>
 
                             <span class="text-gray-400">~</span>
 
-                            <input id="end-date" type="date"
-                                   th:value="${survey != null ? survey.endDate : ''}" />
+                            <input id="end-date" type="date" th:value="${survey != null ? survey.endDate : ''}"/>
                         </div>
                     </div>
                     <div class="flex items-center justify-between">
@@ -782,16 +630,23 @@
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-gray-600">응답자 정보 수집</span>
                         <label class="custom-switch">
-                            <input type="checkbox" checked />
+                            <input type="checkbox" checked/>
                             <span class="slider"></span>
                         </label>
                     </div>
                     <div class="flex items-center justify-between">
                         <label class="text-sm text-gray-600">설문지 유형</label>
-                        <select id="survey-type" name="surveyType" class="border border-gray-300 text-sm rounded px-2 py-1">
-                            <option value="normal" th:selected="${survey != null and survey.surveyType == 'NORMAL'}">일반</option>
-                            <option value="student" th:selected="${survey != null and survey.surveyType == 'STUDENT'}">학생</option>
-                            <option value="promotion" th:selected="${survey != null and survey.surveyType == 'PROMOTION'}">홍보 수수료</option>
+                        <select id="survey-type" name="surveyType"
+                                class="border border-gray-300 text-sm rounded px-2 py-1">
+                            <option value="normal" th:selected="${survey != null and survey.surveyType == 'NORMAL'}">
+                                일반
+                            </option>
+                            <option value="student" th:selected="${survey != null and survey.surveyType == 'STUDENT'}">
+                                학생
+                            </option>
+                            <option value="promotion"
+                                    th:selected="${survey != null and survey.surveyType == 'PROMOTION'}">홍보 수수료
+                            </option>
                         </select>
                     </div>
                 </div>
@@ -799,10 +654,35 @@
         </div>
     </div>
 </main>
-<script src="/js/homepage/common/url.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 <!-- 계층형 관련 스크립트 -->
+<script id="toast-management" type="module">
+    function showToast(type, message, showRetry = false) {
+        const toast = document.getElementById("toast");
+        const toastIcon = document.getElementById("toast-icon");
+        const toastMessage = document.getElementById("toast-message");
+        const toastAction = document.getElementById("toast-action");
+
+        toastIcon.className =
+            type === "success"
+                ? "ri-checkbox-circle-line text-green-500"
+                : "ri-error-warning-line text-red-500";
+
+        toastMessage.textContent = message;
+        toastAction.classList.toggle("hidden", !showRetry);
+        toast.classList.remove("hidden");
+
+        setTimeout(() => {
+            toast.classList.add("show");
+        }, 100);
+        setTimeout(() => {
+            toast.classList.remove("show");
+            setTimeout(() => {
+                toast.classList.add("hidden");
+            }, 300);
+        }, 3000);
+    }
 
 <script type="module" id="api-bootstrap">
     import { api } from "/js/homepage/lib/apiClient.js";
@@ -814,280 +694,364 @@
     document.addEventListener("DOMContentLoaded", function(){
         window.hierarchyStore = {};
 
-        function initHierarchy(questionId) {
-            hierarchyStore[questionId] = {
-                firstHierarchyData: [],
-                hierarchyData: {},
-                hierarchySubData: {},
-                selectedOptions: {
-                    1: null,
-                    2: null,
-                    3: null,
-                },
-                hierarchyOptionCount: {
-                    1: 0,
-                    2: 0,
-                    3: 0,
-                }
-            };
-        }window.initHierarchy = initHierarchy;
-
-        function getStore(questionId) {
-            console.log("enter");
-            if (!hierarchyStore[questionId]) {
-                initHierarchy(questionId);
+    function initHierarchy(questionId) {
+        hierarchyStore[questionId] = {
+            firstHierarchyData: [],
+            hierarchyData: {},
+            hierarchySubData: {},
+            selectedOptions: {
+                1: null,
+                2: null,
+                3: null,
+            },
+            hierarchyOptionCount: {
+                1: 0,
+                2: 0,
+                3: 0,
             }
-            return hierarchyStore[questionId];
-        }window.getStore = getStore;
+        };
+    }
 
-        function updateHierarchyColumn(level, parentId = null, container, questionId) {
-            const store = getStore(questionId);
-            container.innerHTML = "";
+    function getStore(questionId) {
+        console.log("enter");
+        if (!hierarchyStore[questionId]) {
+            initHierarchy(questionId);
+        }
+        return hierarchyStore[questionId];
+    }
 
-            console.log("✅ 호출된 questionId:", questionId);
-            console.log("✅ store.selectedOptions:", store.selectedOptions);
-            console.log("✅ store.hierarchyData:", store.hierarchyData);
-            console.log("✅ store.subhierarchyData:", store.hierarchySubData);
-            console.log("✅ container:", container);
+    function updateHierarchyColumn(level, parentId = null, container, questionId) {
+        const store = getStore(questionId);
+        container.innerHTML = "";
 
-            let options = [];
-            if (level === 1) options = store.firstHierarchyData;
-            else if (level === 2 && parentId && store.hierarchyData[parentId]) options = store.hierarchyData[parentId];
-            else if (level === 3 && parentId && store.hierarchySubData[parentId]) options = store.hierarchySubData[parentId];
+        console.log("✅ 호출된 questionId:", questionId);
+        console.log("✅ store.selectedOptions:", store.selectedOptions);
+        console.log("✅ store.hierarchyData:", store.hierarchyData);
+        console.log("✅ store.subhierarchyData:", store.hierarchySubData);
+        console.log("✅ container:", container);
+
+        let options = [];
+        if (level === 1) options = store.firstHierarchyData;
+        else if (level === 2 && parentId && store.hierarchyData[parentId]) options = store.hierarchyData[parentId];
+        else if (level === 3 && parentId && store.hierarchySubData[parentId]) options = store.hierarchySubData[parentId];
 
 
-
-            options.forEach((option) => {
-                const optionDiv = document.createElement("div");
-                optionDiv.className = "hierarchy-option group relative";
-                optionDiv.setAttribute("data-option-id", option.id);
-                optionDiv.setAttribute("data-parent", parentId);
-                optionDiv.innerHTML = `
+        options.forEach((option) => {
+            const optionDiv = document.createElement("div");
+            optionDiv.className = "hierarchy-option group relative";
+            optionDiv.setAttribute("data-option-id", option.id);
+            optionDiv.setAttribute("data-parent", parentId);
+            optionDiv.innerHTML = `
         <input type="text" value="${option.text}" placeholder="옵션명 입력">
         <button class="absolute top-2 right-2 w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100" data-delete-option>
             <i class="ri-close-line text-xs"></i>
         </button>
         `;
-                container.appendChild(optionDiv);
-            });
+            container.appendChild(optionDiv);
+        });
 
-            if (options.length > 0) {
-                console.log("option길이"+options.length);
-                const currentSelectedId = store.selectedOptions[level];
-                const allOptions = container.querySelectorAll(".hierarchy-option");
-                let selectedFound = false;
-                allOptions.forEach(opt => {
-                    const optId = opt.getAttribute("data-option-id");
-                    if (optId === currentSelectedId) {
-                        opt.classList.add("selected");
-                        selectedFound = true;
+        if (options.length > 0) {
+            console.log("option길이" + options.length);
+            const currentSelectedId = store.selectedOptions[level];
+            const allOptions = container.querySelectorAll(".hierarchy-option");
+            let selectedFound = false;
+            allOptions.forEach(opt => {
+                const optId = opt.getAttribute("data-option-id");
+                if (optId === currentSelectedId) {
+                    opt.classList.add("selected");
+                    selectedFound = true;
+                }
+            });
+            // 선택된 게 없으면 첫 번째를 기본 선택으로
+            if (!selectedFound) {
+                const firstOption = container.querySelector(".hierarchy-option");
+                if (firstOption) {
+                    firstOption.classList.add("selected");
+                    store.selectedOptions[level] = firstOption.getAttribute("data-option-id");
+                }
+            }
+            // 다음 단계 업데이트
+            if (level < 3) {
+                const questionContainer = container.closest(".question-container");
+                const nextParentId = store.selectedOptions[level];  // 위에서 보정된 값 사용
+                const nextLevel = level + 1;
+                const nextContainer = questionContainer.querySelector(`[data-options-container="${nextLevel}"]`);
+                updateHierarchyColumn(level + 1, nextParentId, nextContainer, questionId);
+            }
+        } else {
+            store.selectedOptions[level] = "";
+            if (level < 3) {
+                const questionContainer = container.closest(".question-container");
+                const nextContainer = questionContainer.querySelector(`[data-options-container="${level + 1}"]`);
+                if (nextContainer) nextContainer.innerHTML = "";
+                store.selectedOptions[level + 1] = "";
+            }
+        }
+    }
+
+    document.addEventListener("click", function (event) {
+        const option = event.target.closest(".hierarchy-option");
+        if (
+            option &&
+            !event.target.closest("button") &&
+            !event.target.matches("input")
+        ) {
+            // ✅ 현재 column(계층)을 정확히 찾기
+            const levelElement = option.closest("[data-level]");
+            const level = parseInt(levelElement.getAttribute("data-level"));
+            const questionContainer = option.closest(".question-container");
+
+            // ✅ container를 column 내부에서 찾기 (핵심 수정)
+            const container = levelElement.querySelector(`[data-options-container="${level}"]`);
+
+            const questionId = questionContainer.getAttribute("data-question-id");
+            if (!levelElement || !container) return;
+
+            const optionId = option.getAttribute("data-option-id");
+            const store = getStore(questionId);
+
+            // ✅ 선택 상태 갱신
+            container.querySelectorAll(".hierarchy-option").forEach((opt) => {
+                opt.classList.remove("selected");
+            });
+            option.classList.add("selected");
+
+            store.selectedOptions[level] = optionId;
+            console.log(`✅ 선택됨: level=${level}, optionId=${optionId}`);
+
+            // ✅ 다음 단계 갱신
+            if (level < 3) {
+                const nextColumn = questionContainer.querySelector(
+                    `[data-level="${level + 1}"]`
+                );
+                const nextContainer = nextColumn.querySelector(
+                    `[data-options-container="${level + 1}"]`
+                );
+                updateHierarchyColumn(level + 1, optionId, nextContainer, questionId);
+            }
+        }
+    });
+
+    document.addEventListener("click", function (event) {
+        const addButton = event.target.closest("[data-add-option]");
+        if (addButton) {
+            event.stopPropagation();
+            const level = parseInt(addButton.getAttribute("data-add-option"));
+            const questionContainer = addButton.closest(".question-container");
+            const questionId = questionContainer.getAttribute("data-question-id");
+            const store = getStore(questionId);
+
+            const container = questionContainer.querySelector(`[data-options-container="${level}"]`);
+            const newOptionId = `${level}-${store.hierarchyOptionCount[level] + 1}`;
+            const newOptionText = "옵션";
+
+            if (level === 1) {
+                store.firstHierarchyData.push({id: newOptionId, text: newOptionText});
+                store.hierarchyOptionCount[level]++;
+                updateHierarchyColumn(level, null, container, questionId);
+            } else {
+                const parentId = store.selectedOptions[level - 1];
+
+                if (!parentId || parentId === "") {
+                    alert(`⚠️ ${level - 1}단계에서 옵션을 먼저 선택해주세요.`);
+                    return;
+                }
+
+                if (level === 2) {
+                    if (!store.hierarchyData[parentId]) store.hierarchyData[parentId] = [];
+                    store.hierarchyData[parentId].push({id: newOptionId, text: newOptionText});
+                } else if (level === 3) {
+                    if (!store.hierarchySubData[parentId]) store.hierarchySubData[parentId] = [];
+                    store.hierarchySubData[parentId].push({id: newOptionId, text: newOptionText});
+                }
+                store.hierarchyOptionCount[level]++;
+                updateHierarchyColumn(level, parentId, container, questionId);
+            }
+        }
+    });
+
+    document.addEventListener("click", function (event) {
+        const deleteButton = event.target.closest("[data-delete-option]");
+        if (deleteButton) {
+            const option = deleteButton.closest(".hierarchy-option");
+            const container = option.closest("[data-options-container]");
+            const questionContainer = option.closest(".question-container");
+            const questionId = questionContainer.getAttribute("data-question-id");
+            const store = getStore(questionId);
+
+            const level = parseInt(container.getAttribute("data-options-container"));
+            const id = option.getAttribute("data-option-id");
+            const parentId = option.getAttribute("data-parent");
+
+            const optionsCount = container.querySelectorAll(".hierarchy-option").length;
+            if (optionsCount > 2) {
+                const wasSelected = option.classList.contains("selected");
+                option.remove();
+
+                if (level === 1) {
+                    store.firstHierarchyData = store.firstHierarchyData.filter(opt => opt.id !== id);
+                } else if (level === 2) {
+                    if (store.hierarchyData[parentId]) {
+                        store.hierarchyData[parentId] = store.hierarchyData[parentId].filter(opt => opt.id !== id);
                     }
-                });
-                // 선택된 게 없으면 첫 번째를 기본 선택으로
-                if (!selectedFound) {
+                    delete store.hierarchySubData[id];
+                } else if (level === 3) {
+                    if (store.hierarchySubData[parentId]) {
+                        store.hierarchySubData[parentId] = store.hierarchySubData[parentId].filter(opt => opt.id !== id);
+                    }
+                }
+
+                if (wasSelected) {
                     const firstOption = container.querySelector(".hierarchy-option");
                     if (firstOption) {
                         firstOption.classList.add("selected");
                         store.selectedOptions[level] = firstOption.getAttribute("data-option-id");
-                    }
-                }
-                // 다음 단계 업데이트
-                if (level < 3) {
-                    const questionContainer = container.closest(".question-container");
-                    const nextParentId = store.selectedOptions[level];  // 위에서 보정된 값 사용
-                    const nextLevel = level + 1;
-                    const nextContainer = questionContainer.querySelector(`[data-options-container="${nextLevel}"]`);
-                    updateHierarchyColumn(level + 1, nextParentId, nextContainer, questionId);
-                }
-            }else {
-                store.selectedOptions[level] = "";
-                if (level < 3) {
-                    const questionContainer = container.closest(".question-container");
-                    const nextContainer = questionContainer.querySelector(`[data-options-container="${level + 1}"]`);
-                    if (nextContainer) nextContainer.innerHTML = "";
-                    store.selectedOptions[level + 1] = "";
-                }
-            }
-        }window.updateHierarchyColumn = updateHierarchyColumn;
-
-        document.addEventListener("click", function (event) {
-            const option = event.target.closest(".hierarchy-option");
-            if (
-                option &&
-                !event.target.closest("button") &&
-                !event.target.matches("input")
-            ) {
-                // ✅ 현재 column(계층)을 정확히 찾기
-                const levelElement = option.closest("[data-level]");
-                const level = parseInt(levelElement.getAttribute("data-level"));
-                const questionContainer = option.closest(".question-container");
-
-                // ✅ container를 column 내부에서 찾기 (핵심 수정)
-                const container = levelElement.querySelector(`[data-options-container="${level}"]`);
-
-                const questionId = questionContainer.getAttribute("data-question-id");
-                if (!levelElement || !container) return;
-
-                const optionId = option.getAttribute("data-option-id");
-                const store = getStore(questionId);
-
-                // ✅ 선택 상태 갱신
-                container.querySelectorAll(".hierarchy-option").forEach((opt) => {
-                    opt.classList.remove("selected");
-                });
-                option.classList.add("selected");
-
-                store.selectedOptions[level] = optionId;
-                console.log(`✅ 선택됨: level=${level}, optionId=${optionId}`);
-
-                // ✅ 다음 단계 갱신
-                if (level < 3) {
-                    const nextColumn = questionContainer.querySelector(
-                        `[data-level="${level + 1}"]`
-                    );
-                    const nextContainer = nextColumn.querySelector(
-                        `[data-options-container="${level + 1}"]`
-                    );
-                    updateHierarchyColumn(level + 1, optionId, nextContainer, questionId);
-                }
-            }
-        });
-
-
-        document.addEventListener("click", function (event) {
-            const addButton = event.target.closest("[data-add-option]");
-            if (addButton) {
-                event.stopPropagation();
-                const level = parseInt(addButton.getAttribute("data-add-option"));
-                const questionContainer = addButton.closest(".question-container");
-                const questionId = questionContainer.getAttribute("data-question-id");
-                const store = getStore(questionId);
-
-                const container = questionContainer.querySelector(`[data-options-container="${level}"]`);
-                const newOptionId = `${level}-${store.hierarchyOptionCount[level] + 1}`;
-                const newOptionText = "옵션";
-
-                if (level === 1) {
-                    store.firstHierarchyData.push({ id: newOptionId, text: newOptionText });
-                    store.hierarchyOptionCount[level]++;
-                    updateHierarchyColumn(level, null, container, questionId);
-                } else {
-                    const parentId = store.selectedOptions[level - 1];
-
-                    if (!parentId || parentId === "") {
-                        alert(`⚠️ ${level - 1}단계에서 옵션을 먼저 선택해주세요.`);
-                        return;
-                    }
-
-                    if (level === 2) {
-                        if (!store.hierarchyData[parentId]) store.hierarchyData[parentId] = [];
-                        store.hierarchyData[parentId].push({ id: newOptionId, text: newOptionText });
-                    } else if (level === 3) {
-                        if (!store.hierarchySubData[parentId]) store.hierarchySubData[parentId] = [];
-                        store.hierarchySubData[parentId].push({ id: newOptionId, text: newOptionText });
-                    }
-                    store.hierarchyOptionCount[level]++;
-                    updateHierarchyColumn(level, parentId, container, questionId);
-                }
-            }
-        });
-
-        document.addEventListener("click", function (event) {
-            const deleteButton = event.target.closest("[data-delete-option]");
-            if (deleteButton) {
-                const option = deleteButton.closest(".hierarchy-option");
-                const container = option.closest("[data-options-container]");
-                const questionContainer = option.closest(".question-container");
-                const questionId = questionContainer.getAttribute("data-question-id");
-                const store = getStore(questionId);
-
-                const level = parseInt(container.getAttribute("data-options-container"));
-                const id = option.getAttribute("data-option-id");
-                const parentId = option.getAttribute("data-parent");
-
-                const optionsCount = container.querySelectorAll(".hierarchy-option").length;
-                if (optionsCount > 2) {
-                    const wasSelected = option.classList.contains("selected");
-                    option.remove();
-
-                    if (level === 1) {
-                        store.firstHierarchyData = store.firstHierarchyData.filter(opt => opt.id !== id);
-                    } else if (level === 2) {
-                        if (store.hierarchyData[parentId]) {
-                            store.hierarchyData[parentId] = store.hierarchyData[parentId].filter(opt => opt.id !== id);
-                        }
-                        delete store.hierarchySubData[id];
-                    } else if (level === 3) {
-                        if (store.hierarchySubData[parentId]) {
-                            store.hierarchySubData[parentId] = store.hierarchySubData[parentId].filter(opt => opt.id !== id);
+                        const tmpContainer = questionContainer.querySelectorAll(`[data-options-container]`);
+                        if (level < 3) {
+                            updateHierarchyColumn(level + 1, store.selectedOptions[level], tmpContainer[level], questionId);
                         }
                     }
-
-                    if (wasSelected) {
-                        const firstOption = container.querySelector(".hierarchy-option");
-                        if (firstOption) {
-                            firstOption.classList.add("selected");
-                            store.selectedOptions[level] = firstOption.getAttribute("data-option-id");
-                            const tmpContainer = questionContainer.querySelectorAll(`[data-options-container]`);
-                            if (level < 3) {
-                                updateHierarchyColumn(level + 1, store.selectedOptions[level], tmpContainer[level], questionId);
-                            }
-                        }
-                    }
-                } else {
-                    alert("각 계층에는 최소 2개의 옵션이 필요합니다.");
                 }
+            } else {
+                alert("각 계층에는 최소 2개의 옵션이 필요합니다.");
             }
-        });
-
-        document.addEventListener("input", function (event) {
-            const input = event.target;
-            const option = input.closest(".hierarchy-option");
-            if (!option) return;
-
-            const id = option.getAttribute("data-option-id");
-            const parentId = option.getAttribute("data-parent");
-            const levelElement = option.closest("[data-options-container]");
-            const questionId = option.closest(".question-container").getAttribute("data-question-id");
-            if (!levelElement || !questionId) return;
-
-            const level = parseInt(levelElement.getAttribute("data-options-container"));
-            const newText = input.value;
-            const store = hierarchyStore[questionId];
-
-            if (level === 1) {
-                const target = store.firstHierarchyData.find(opt => opt.id === id);
-                if (target) target.text = newText;
-            } else if (level === 2 && store.hierarchyData[parentId]) {
-                const target = store.hierarchyData[parentId].find(opt => opt.id === id);
-                if (target) target.text = newText;
-            } else if (level === 3 && store.hierarchySubData[parentId]) {
-                const target = store.hierarchySubData[parentId].find(opt => opt.id === id);
-                if (target) target.text = newText;
-            }
-        });
+        }
     });
+
+    document.addEventListener("input", function (event) {
+        const input = event.target;
+        const option = input.closest(".hierarchy-option");
+        if (!option) return;
+
+        const id = option.getAttribute("data-option-id");
+        const parentId = option.getAttribute("data-parent");
+        const levelElement = option.closest("[data-options-container]");
+        const questionId = option.closest(".question-container").getAttribute("data-question-id");
+        if (!levelElement || !questionId) return;
+
+        const level = parseInt(levelElement.getAttribute("data-options-container"));
+        const newText = input.value;
+        const store = hierarchyStore[questionId];
+
+        if (level === 1) {
+            const target = store.firstHierarchyData.find(opt => opt.id === id);
+            if (target) target.text = newText;
+        } else if (level === 2 && store.hierarchyData[parentId]) {
+            const target = store.hierarchyData[parentId].find(opt => opt.id === id);
+            if (target) target.text = newText;
+        } else if (level === 3 && store.hierarchySubData[parentId]) {
+            const target = store.hierarchySubData[parentId].find(opt => opt.id === id);
+            if (target) target.text = newText;
+        }
+    });
+
+    // export module
+    window.hierarchyStore = hierarchyStore;
+    window.initHierarchy = initHierarchy;
+    window.getStore = getStore;
+    window.updateHierarchyColumn = updateHierarchyColumn;
 </script>
-<script id="init">
-    window.addEventListener('DOMContentLoaded', () => {
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
-        const todayStr = `${yyyy}-${mm}-${dd}`;
+<script th:inline="javascript" type="module">
+    //note 설문 형태 저장하는 기능
+    function collectQuestions() {
+        const questionElements = document.querySelectorAll(
+            '#questions-container > .question-container:not(#question-template)'
+        );
 
-        const startInput = document.getElementById('start-date');
-        const endInput = document.getElementById('end-date');
+        const questions = [];
+        let collectionFailed = false;
 
-        if (!startInput.value) {
-            startInput.value = todayStr;
-        }
+        questionElements.forEach((el) => {
+            const type = el.querySelector('.answer-container:not(.hidden)').dataset.type;
+            const title = el.querySelector('input[type="text"]').value.trim() || '';
+            const description = el.querySelector('textarea')?.value.trim() || '';
+            const questionId = el.dataset.id;
+            console.log(title);
+            if (!title) collectionFailed = true;
+            //fixme 이거 수정한거 spring dto에 추가해야함.
+            const isTemplate = el.dataset.template === "true";
+            const domainField = el.dataset.domainField || null;
 
-        if (!endInput.value) {
-            endInput.value = todayStr;
-        }
-    });
+            const questionData = {
+                type,
+                question: title,
+                description,
+                ...(questionId && {questionId}),
+                ...(isTemplate && {isTemplate: true}),
+                ...(domainField && {domainField})
+            };
 
+            // 객관식/드롭다운 질문에 옵션이 있다면 추가
+            if (['multiple', 'multiple-checkbox', 'dropdown'].includes(type)) {
+                const optionInputs = el.querySelectorAll(
+                    `.answer-container[data-type="${type}"] input[type="text"]`
+                );
+                const optionPairs = Array.from(optionInputs).map((input) => {
+                    const text = input.value.trim();
+                    const select = input.parentElement.querySelector(".jump-target-select");
+                    const nextQuestion = select?.value || "";
+                    const optionId = input.dataset.id;
+                    return {text, nextQuestion, ...(optionId && {optionId: optionId})};
+                }).filter(
+                    opt => {
+                        const isValid = opt.text.length > 0;
+                        if (!isValid) collectionFailed = true; // 이것도 true로 설정해서 저장 실패 처리
+                        return isValid;
+                    });
+                questionData.options = optionPairs;
+            } else if (type === "hierarchy") {
+                const questionId = el.getAttribute("data-question-id");
+                const store = window.hierarchyStore?.[questionId];
+                if (!store) {
+                    collectionFailed = true;
+                    return;
+                }
+
+                const hierarchyOptions = [];
+
+                // 1단계
+                store.firstHierarchyData.forEach(first => {
+                    hierarchyOptions.push({
+                        text: first.text,
+                        hierarchyId: first.id,
+                        level: 1,
+                        parentOptionId: null,
+                        ...(first.optionId && {optionId: first.optionId})
+                    });
+
+                    const secondLevel = store.hierarchyData[first.id] || [];
+                    secondLevel.forEach(second => {
+                        hierarchyOptions.push({
+                            text: second.text,
+                            hierarchyId: second.id,
+                            level: 2,
+                            parentOptionId: first.id,
+                            ...(second.optionId && {optionId: second.optionId})
+                        });
+
+                        const thirdLevel = store.hierarchySubData[second.id] || [];
+                        thirdLevel.forEach(third => {
+                            hierarchyOptions.push({
+                                text: third.text,
+                                hierarchyId: third.id,
+                                level: 3,
+                                parentOptionId: second.id,
+                                ...(third.optionId && {optionId: third.optionId})
+                            });
+                        });
+                    });
+                });
+
+                questionData.options = hierarchyOptions;
+            }
+
+            questions.push(questionData);
+        });
+
+        return collectionFailed ? null : questions;
+    }
+
+    // Date validation
     function validateDateRange() {
         const startInput = document.getElementById('start-date');
         const endInput = document.getElementById('end-date');
@@ -1104,24 +1068,127 @@
         return true;
     }
 
-    //옮길수있는걸로 변경
-    document.addEventListener("DOMContentLoaded", function () {
-        const questionsContainer = document.getElementById("questions-container");
+    async function saveForm() {
+        console.log("save button click");
+        const titleInput = document.querySelector(
+            'input[placeholder="설문조사 제목을 입력하세요"]'
+        );
 
-        new Sortable(questionsContainer, {
-            handle: ".question-container", // 클릭 가능한 핸들 (필요 시 바꿀 수 있음)
-            animation: 150,
-            ghostClass: "bg-gray-100", // 드래그 시 배경색 효과
-            filter: "#question-template, #empty-state", // 드래그 제외할 요소
-            onEnd: function (/**Event*/ evt) {
-                console.log(`문항 ${evt.oldIndex + 1} → ${evt.newIndex + 1}로 이동`);
-                updateJumpTargets(); // 점프 대상 다시 정렬
-            },
-        });
+        if (!titleInput.value.trim()) {
+            showToast("error", "설문조사 제목을 입력해주세요");
+            titleInput.focus();
+            return;
+        }
+
+        const description = document.querySelector("textarea").value.trim();
+        const questions = collectQuestions();
+
+        //저장 가능 체크
+        if (questions == null) {
+            console.log("questions is null");
+            showToast("error", "설문조사 문항을 제대로 입력해주세요");
+            return;
+        }
+
+        if (questions.length === 0) {
+            showToast("error", "문제를 하나 이상 추가해주세요");
+            return;
+        }
+
+        if (!validateDateRange()) {
+            showToast("error", "날짜를 다시 확인해주세요");
+            return;
+        }
+
+        const originalContent = saveButton.innerHTML;
+        saveButton.innerHTML = `
+        <i class="ri-loader-4-line loading-spinner mr-2"></i>
+        저장 중...
+    `;
+        saveButton.disabled = true;
+
+        const startDate = document.getElementById("start-date").value;
+        const endDate = document.getElementById("end-date").value;
+
+        try {
+            const survey = /*[[${survey}]]*/ null;
+            if (survey) console.log("survey있음");
+            else console.log("survey없음");
+            const folderId = /*[[${folderId}]]*/ null;
+            const url = (survey) ? surveyAdminUrl + "/edit" : surveyAdminUrl + "/make";
+            const method = (survey) ? "PATCH" : "POST";
+            const surveyType = document.getElementById("survey-type")?.value || "normal";
+            const isShare = document.querySelector('#isPublic').checked;
+            console.log("surveyType:" + surveyType);
+            //fixme payload수정함 이거  dto에서 받아야함.
+
+            const payload = {
+                title: titleInput.value,
+                description,
+                questions,
+                startDate,
+                endDate,
+                surveyType: surveyType,
+                ...(survey && {surveyId: survey.surveyId}), // surveyId가 존재할 때만 id 추가
+                folderId,
+                isShare
+            };
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) throw new Error("저장 실패");
+
+            showToast("success", "설문조사가 저장되었습니다");
+            window.location.href = "/survey/list?folderId=" + folderId;
+        } catch (error) {
+            showToast("error", "저장 중 오류가 발생했습니다", true);
+        } finally {
+            saveButton.innerHTML = originalContent;
+            saveButton.disabled = false;
+        }
+    }
+
+    const saveButton = document.getElementById("saveButton")
+    saveButton.addEventListener("click", saveForm);
+</script>
+<script id="init" type="module">
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    const startInput = document.getElementById('start-date');
+    const endInput = document.getElementById('end-date');
+
+    if (!startInput.value) {
+        startInput.value = todayStr;
+    }
+
+    if (!endInput.value) {
+        endInput.value = todayStr;
+    }
+
+    //옮길수있는걸로 변경
+    const questionsContainer = document.getElementById("questions-container");
+
+    new Sortable(questionsContainer, {
+        handle: ".question-container", // 클릭 가능한 핸들 (필요 시 바꿀 수 있음)
+        animation: 150,
+        ghostClass: "bg-gray-100", // 드래그 시 배경색 효과
+        filter: "#question-template, #empty-state", // 드래그 제외할 요소
+        onEnd: function (/**Event*/ evt) {
+            console.log(`문항 ${evt.oldIndex + 1} → ${evt.newIndex + 1}로 이동`);
+            updateJumpTargets(); // 점프 대상 다시 정렬
+        },
     });
 </script>
-
-<script id="multiple-choice-management">
+<script id="multiple-choice-management" type="module">
     function createOptionElement(type, optionCount) {
         console.log("enter cereateOptionElement");
         const wrapper = document.createElement("div");
@@ -1153,7 +1220,7 @@
                 </button>`;
         }
 
-        if(type === "dropdown" || type === "multiple") {
+        if (type === "dropdown" || type === "multiple") {
             const selectWrapper = document.createElement("div");
             selectWrapper.className = "flex items-center space-x-2 ml-8 mt-1";
 
@@ -1168,91 +1235,89 @@
         return wrapper;
     }
 
+    function updateJumpTargets() {
+        const allQuestions = document.querySelectorAll('.question-container:not(#question-template)');
+        allQuestions.forEach((question, index) => {
+            const selects = question.querySelectorAll(".jump-target-select");
+            selects.forEach(select => {
+                const currentValue = select.value;
+                select.innerHTML = '<option value="">선택 시 이동할 문항</option>';
 
+                for (let i = index + 1; i < allQuestions.length; i++) {
+                    // const targetQuestion = allQuestions[i];
+                    const displayNumber = i + 1; // 순서대로 1, 2, 3처럼 표기
+                    const option = document.createElement("option");
+                    option.value = displayNumber;
+                    option.textContent = `${displayNumber}번 문항`; // UI에 보이는 순서 기준
+                    if (String(displayNumber) === currentValue) option.selected = true;
+                    select.appendChild(option);
+                }
+            });
+        });
+    }
 
-        function updateJumpTargets() {
-            const allQuestions = document.querySelectorAll('.question-container:not(#question-template)');
-            allQuestions.forEach((question, index) => {
-                const selects = question.querySelectorAll(".jump-target-select");
-                selects.forEach(select => {
-                    const currentValue = select.value;
-                    select.innerHTML = '<option value="">선택 시 이동할 문항</option>';
+    document.addEventListener("click", function (event) {
+        // ✅ 옵션 추가 버튼 처리
+        const addButton = event.target.closest("button");
+        if (
+            addButton &&
+            addButton.textContent.trim().includes("옵션 추가")
+        ) {
+            const container = addButton.closest(
+                '.answer-container[data-type="multiple"], .answer-container[data-type="multiple-checkbox"], .answer-container[data-type="dropdown"]'
+            );
+            if (!container) return;
 
-                    for (let i = index + 1; i < allQuestions.length; i++) {
-                        // const targetQuestion = allQuestions[i];
-                        const displayNumber = i + 1; // 순서대로 1, 2, 3처럼 표기
-                        const option = document.createElement("option");
-                        option.value = displayNumber;
-                        option.textContent = `${displayNumber}번 문항`; // UI에 보이는 순서 기준
-                        if (String(displayNumber) === currentValue) option.selected = true;
-                        select.appendChild(option);
-                    }
-                });
+            const optionsContainer = addButton.closest(".space-y-2");
+            const type = container.dataset.type;
+
+            const optionCount = Array.from(optionsContainer.children)
+                .filter((el) => el.classList.contains("flex") && el.classList.contains("items-center"))
+                .length;
+
+            const newOption = createOptionElement(type, optionCount + 1);
+            optionsContainer.insertBefore(newOption, addButton);
+            updateJumpTargets();
+
+            // 옵션 placeholder 재정렬
+            const inputs = optionsContainer.querySelectorAll('input[type="text"]');
+            let count = 1;
+            inputs.forEach(input => {
+                if (input.placeholder.startsWith("옵션")) {
+                    input.placeholder = `옵션 ${count++}`;
+                }
             });
         }
 
-    document.addEventListener("DOMContentLoaded", function () {
-        document.addEventListener("click", function (event) {
-            // ✅ 옵션 추가 버튼 처리
-            const addButton = event.target.closest("button");
-            if (
-                addButton &&
-                addButton.textContent.trim().includes("옵션 추가")
-            ) {
-                const container = addButton.closest(
-                    '.answer-container[data-type="multiple"], .answer-container[data-type="multiple-checkbox"], .answer-container[data-type="dropdown"]'
-                );
-                if (!container) return;
-
-                const optionsContainer = addButton.closest(".space-y-2");
-                const type = container.dataset.type;
-
+        // ✅ 옵션 삭제 버튼 처리
+        const deleteBtn = event.target.closest(".delete-option");
+        if (deleteBtn) {
+            const optionsContainer = deleteBtn.closest(".space-y-2");
+            if (optionsContainer) {
                 const optionCount = Array.from(optionsContainer.children)
                     .filter((el) => el.classList.contains("flex") && el.classList.contains("items-center"))
                     .length;
 
-                const newOption = createOptionElement(type, optionCount + 1);
-                optionsContainer.insertBefore(newOption, addButton);
-                updateJumpTargets();
+                console.log("현재 옵션 개수:", optionCount);
 
-                // 옵션 placeholder 재정렬
-                const inputs = optionsContainer.querySelectorAll('input[type="text"]');
-                let count = 1;
-                inputs.forEach(input => {
-                    if (input.placeholder.startsWith("옵션")) {
-                        input.placeholder = `옵션 ${count++}`;
+                if (optionCount < 4) {
+                    alert("최소 2개의 옵션이 필요합니다.");
+                } else {
+                    const optionRow = deleteBtn.closest("div.flex.items-center");
+                    if (optionRow) {
+                        optionRow.remove();
                     }
-                });
-            }
-
-            // ✅ 옵션 삭제 버튼 처리
-            const deleteBtn = event.target.closest(".delete-option");
-            if (deleteBtn) {
-                const optionsContainer = deleteBtn.closest(".space-y-2");
-                if (optionsContainer) {
-                    const optionCount = Array.from(optionsContainer.children)
-                        .filter((el) => el.classList.contains("flex") && el.classList.contains("items-center"))
-                        .length;
-
-                    console.log("현재 옵션 개수:", optionCount);
-
-                    if (optionCount < 4) {
-                        alert("최소 2개의 옵션이 필요합니다.");
-                    } else {
-                        const optionRow = deleteBtn.closest("div.flex.items-center");
-                        if (optionRow) {
-                            optionRow.remove();
-                        } else {
-                            console.warn("삭제할 div를 찾을 수 없습니다.");
-                        }
-                    }
+                    updateJumpTargets();
                 }
             }
-        });
+        }
     });
-</script>
 
-<script id="question-management" th:inline="javascript">
+    // export window functions
+    window.createOptionElement = createOptionElement;
+    window.updateJumpTargets = updateJumpTargets;
+</script>
+<script id="question-management" th:inline="javascript" type="module">
     let questionCounter = 0;
 
     // ✅ 밖으로 뺀 함수들 (전역)
@@ -1271,11 +1336,12 @@
         newQuestion.setAttribute("data-question-id", questionCounter);
 
         setQuestionType(newQuestion, type);
-        questionsContainer.appendChild(newQuestion);
         setupTypeDropdown(newQuestion);
         setupDeleteButton(newQuestion);
 
-        newQuestion.scrollIntoView({ behavior: "smooth", block: "start" });
+        questionsContainer.appendChild(newQuestion);
+
+        newQuestion.scrollIntoView({behavior: "smooth", block: "start"});
 
         return newQuestion;
     }
@@ -1355,173 +1421,171 @@
         });
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
-        const addQuestionBtn = document.getElementById("add-question-btn");
-        const addQuestionBtnBottom = document.getElementById("add-question-btn-bottom");
+    const addQuestionBtn = document.getElementById("add-question-btn");
+    const addQuestionBtnBottom = document.getElementById("add-question-btn-bottom");
 
-        addQuestionBtn.addEventListener("click", function () {
-            addQuestion("short");
+    addQuestionBtn?.addEventListener("click", function () {
+        addQuestion("short");
+        updateJumpTargets();
+    });
+
+    addQuestionBtnBottom?.addEventListener("click", function () {
+        addQuestion("short");
+        updateJumpTargets();
+    });
+
+    const typeButtons = document.querySelectorAll("[data-question-type]");
+    typeButtons?.forEach((button) => {
+        button.addEventListener("click", function () {
+            const type = this.getAttribute("data-question-type");
+            addQuestion(type);
             updateJumpTargets();
-        });
-
-        addQuestionBtnBottom.addEventListener("click", function () {
-            addQuestion("short");
-            updateJumpTargets();
-        });
-
-        const typeButtons = document.querySelectorAll("[data-question-type]");
-        typeButtons.forEach((button) => {
-            button.addEventListener("click", function () {
-                const type = this.getAttribute("data-question-type");
-                addQuestion(type);
-                updateJumpTargets();
-            });
         });
     });
+
+    // export window functions
+    window.addQuestion = addQuestion;
 </script>
+<script id="dataLoad" th:inline="javascript" type="module">
+    function renderExistingQuestions(survey) {
+        survey.questions.forEach((q) => {
+            const questionType = q.type.toLowerCase();
+            const qEl = addQuestion(questionType);
+            qEl.setAttribute("data-id", q.questionId);
+            qEl.setAttribute("data-template", q.isTemplate);
+            qEl.setAttribute("data-domain-field", q.domainField);
+            if (q.isTemplate) qEl.setAttribute("domainField", q.domainField);
+            qEl.querySelector('input[type="text"]').value = q.question;
+            const textarea = qEl.querySelector('textarea');
+            if (textarea) {
+                textarea.value = q.description || "";
+            }
+            if (q.required) {
+                qEl.querySelector(".required-checkbox").checked = true;
+            }
 
-<script id="dataLoad" th:inline="javascript">
-    document.addEventListener("DOMContentLoaded", function () {
+            if (["multiple", "multiple-checkbox", "dropdown"].includes(questionType)) {
+                const container = qEl.querySelector(`.answer-container[data-type="${questionType}"]`);
+                const optionsContainer = container.querySelector(".space-y-2");
+                const addButton = optionsContainer.querySelector(".add-option-button");
 
-        function renderExistingQuestions(survey) {
-            survey.questions.forEach((q) => {
-                const questionType = q.type.toLowerCase();
-                const qEl = addQuestion(questionType);
-                qEl.setAttribute("data-id", q.questionId);
-                qEl.setAttribute("data-template",q.isTemplate);
-                qEl.setAttribute("data-domain-field",q.domainField);
-                if(q.isTemplate) qEl.setAttribute("domainField",q.domainField);
-                qEl.querySelector('input[type="text"]').value = q.question;
-                const textarea = qEl.querySelector('textarea');
-                if (textarea) {
-                    textarea.value = q.description || "";
+                if (!addButton) {
+                    console.warn("addButton이 존재하지 않습니다. 현재 옵션 추가 불가능한 상태.");
+                    return;
                 }
-                if (q.required) {
-                    qEl.querySelector(".required-checkbox").checked = true;
-                }
 
-                if (["multiple", "multiple-checkbox", "dropdown"].includes(questionType)) {
-                    const container = qEl.querySelector(`.answer-container[data-type="${questionType}"]`);
-                    const optionsContainer = container.querySelector(".space-y-2");
-                    const addButton = optionsContainer.querySelector(".add-option-button");
+                q.options?.forEach((option, index) => {
+                    const existingInputs = optionsContainer.querySelectorAll("input[type='text']");
 
-                    if (!addButton) {
-                        console.warn("addButton이 존재하지 않습니다. 현재 옵션 추가 불가능한 상태.");
-                        return;
-                    }
+                    const text = typeof option === "string" ? option : option.text;
+                    const nextQuestion = option?.nextQuestion ?? "";
+                    const realNextQuestion = option?.realNextQuestion ?? "";
+                    const optionId = (option && option.optionId) ? option.optionId : 0;
 
-                    q.options?.forEach((option, index) => {
-                        const existingInputs = optionsContainer.querySelectorAll("input[type='text']");
+                    if (index < existingInputs.length) {
+                        const input = existingInputs[index];
+                        input.value = text;
+                        input.dataset.nextQuestion = nextQuestion;
+                        input.dataset.realNextQuestion = realNextQuestion;
+                        input.dataset.id = optionId;
+                        // input.setAttribute("data-next-question", nextQuestion);
+                        // input.setAttribute("data-real-next-question", realNextQuestion);
+                    } else {
+                        const newOption = createOptionElement(questionType, index);
+                        optionsContainer.insertBefore(newOption, addButton);
 
-                        const text = typeof option === "string" ? option : option.text;
-                        const nextQuestion = option?.nextQuestion ?? "";
-                        const realNextQuestion = option?.realNextQuestion ?? "";
-                        const optionId = (option && option.optionId) ? option.optionId : 0;
-
-                        if (index < existingInputs.length) {
-                            const input = existingInputs[index];
-                            input.value = text;
-                            input.dataset.nextQuestion = nextQuestion;
-                            input.dataset.realNextQuestion = realNextQuestion;
-                            input.dataset.id = optionId;
-                            // input.setAttribute("data-next-question", nextQuestion);
-                            // input.setAttribute("data-real-next-question", realNextQuestion);
+                        // setTimeout(() => {
+                        const newInputs = optionsContainer.querySelectorAll("input[type='text']");
+                        const newInput = newInputs[index];
+                        if (newInput) {
+                            newInput.value = text;
+                            newInput.dataset.nextQuestion = nextQuestion;
+                            newInput.dataset.realNextQuestion = realNextQuestion;
+                            newInput.dataset.id = optionId;
+                            console.log(`옵션 ${index + 1} 값 및 dataset 설정됨`);
                         } else {
-                            const newOption = createOptionElement(questionType, index);
-                            optionsContainer.insertBefore(newOption, addButton);
-
-                            // setTimeout(() => {
-                                const newInputs = optionsContainer.querySelectorAll("input[type='text']");
-                                const newInput = newInputs[index];
-                                if (newInput) {
-                                    newInput.value = text;
-                                    newInput.dataset.nextQuestion = nextQuestion;
-                                    newInput.dataset.realNextQuestion = realNextQuestion;
-                                    newInput.dataset.id = optionId;
-                                    console.log(`옵션 ${index + 1} 값 및 dataset 설정됨`);
-                                } else {
-                                    console.warn(`옵션 ${index + 1}용 input 찾을 수 없음`);
-                                }
-                            // }, 10);
+                            console.warn(`옵션 ${index + 1}용 input 찾을 수 없음`);
                         }
-                    });
-
-                }else if(["hierarchy"].includes(questionType)){
-
-                    const questionId = qEl.getAttribute("data-question-id");
-                    const store = window.getStore(questionId);
-                    store.firstHierarchyData = [];
-                    q.options.forEach((option) => {
-                        const level = option.level;
-                        const parentId = option.parentOptionId ?? null;
-                        const text = option.text ?? "옵션";
-                        const id = option.hierarchyId;
-                        const optionId = option.optionId;
-                        if (level === 1) {
-                                store.firstHierarchyData.push({ id, text,optionId:optionId });
-                        } else if (level === 2) {
-                            if (!store.hierarchyData[parentId]) store.hierarchyData[parentId] = [];
-                            store.hierarchyData[parentId].push({ id, text,optionId:optionId });
-                        } else if (level === 3) {
-                            if (!store.hierarchySubData[parentId]) store.hierarchySubData[parentId] = [];
-                            store.hierarchySubData[parentId].push({ id, text,optionId:optionId });
-                        }
-                        store.hierarchyOptionCount[level] = (store.hierarchyOptionCount[level] || 0) + 1;
-                    });
-                    const container = qEl.querySelector(`[data-options-container="1"]`);
-                    window.updateHierarchyColumn(1, null, container, questionId);
-
-                }
-            });
-        }
-
-        function restoreJumpTargetSelections() {
-            const allQuestions = document.querySelectorAll('.question-container:not(#question-template)');
-
-            allQuestions.forEach((question) => {
-                const inputs = question.querySelectorAll('input[type="text"][data-next-question]');
-
-                inputs.forEach((input) => {
-                    const targetId = input.dataset.nextQuestion;
-                    if (targetId===0) return;
-                    console.log("targetId:",targetId);
-
-                    // 바로 아래에 있는 select 찾기 (HTML 구조에 맞춰서 보장됨)
-                    const select = input.closest(".flex")?.querySelector(".jump-target-select")
-                        || input.parentElement?.querySelector(".jump-target-select");
-
-                    console.log("select:"+select);
-
-                    if (select) {
-                        const matchingOption = Array.from(select.options).find(opt => opt.value === targetId);
-                        if (matchingOption) {
-                            select.value = targetId;
-                        } else {
-                            console.warn(`옵션 ${input.placeholder}의 점프 대상(${targetId})을 select에서 찾을 수 없습니다.`);
-                        }
+                        // }, 10);
                     }
                 });
+
+            } else if (["hierarchy"].includes(questionType)) {
+
+                const questionId = qEl.getAttribute("data-question-id");
+                const store = window.getStore(questionId);
+                store.firstHierarchyData = [];
+                q.options.forEach((option) => {
+                    const level = option.level;
+                    const parentId = option.parentOptionId ?? null;
+                    const text = option.text ?? "옵션";
+                    const id = option.hierarchyId;
+                    const optionId = option.optionId;
+                    if (level === 1) {
+                        store.firstHierarchyData.push({id, text, optionId: optionId});
+                    } else if (level === 2) {
+                        if (!store.hierarchyData[parentId]) store.hierarchyData[parentId] = [];
+                        store.hierarchyData[parentId].push({id, text, optionId: optionId});
+                    } else if (level === 3) {
+                        if (!store.hierarchySubData[parentId]) store.hierarchySubData[parentId] = [];
+                        store.hierarchySubData[parentId].push({id, text, optionId: optionId});
+                    }
+                    store.hierarchyOptionCount[level] = (store.hierarchyOptionCount[level] || 0) + 1;
+                });
+                const container = qEl.querySelector(`[data-options-container="1"]`);
+                window.updateHierarchyColumn(1, null, container, questionId);
+
+            }
+        });
+    }
+
+    function restoreJumpTargetSelections() {
+        const allQuestions = document.querySelectorAll('.question-container:not(#question-template)');
+
+        allQuestions.forEach((question) => {
+            const inputs = question.querySelectorAll('input[type="text"][data-next-question]');
+
+            inputs.forEach((input) => {
+                const targetId = input.dataset.nextQuestion;
+                if (targetId === 0) return;
+                console.log("targetId:", targetId);
+
+                // 바로 아래에 있는 select 찾기 (HTML 구조에 맞춰서 보장됨)
+                const select = input.closest(".flex")?.querySelector(".jump-target-select")
+                    || input.parentElement?.querySelector(".jump-target-select");
+
+                console.log("select:" + select);
+
+                if (select) {
+                    const matchingOption = Array.from(select.options).find(opt => opt.value === targetId);
+                    if (matchingOption) {
+                        select.value = targetId;
+                    } else {
+                        console.warn(`옵션 ${input.placeholder}의 점프 대상(${targetId})을 select에서 찾을 수 없습니다.`);
+                    }
+                }
             });
-        }
+        });
+    }
 
-        try {
-            const survey = [[${survey}]];
-            if (survey && survey.questions?.length > 0) {
-                document.getElementById("survey-title").value = survey.title || "새 설문조사";
-                // 설명
-                document.querySelector("textarea").value = survey.description || "";
+    try {
+        const survey = /*[[${survey}]]*/ null;
+        if (survey && survey.questions?.length > 0) {
+            document.getElementById("survey-title").value = survey.title || "새 설문조사";
+            // 설명
+            document.querySelector("textarea").value = survey.description || "";
 
-                // 시작일
-                const startDateInput = document.getElementById("start-date");
-                if (startDateInput && survey.startDate) {
-                    startDateInput.value = survey.startDate;
-                }
+            // 시작일
+            const startDateInput = document.getElementById("start-date");
+            if (startDateInput && survey.startDate) {
+                startDateInput.value = survey.startDate;
+            }
 
-                // 종료일
-                const endDateInput = document.getElementById("end-date");
-                if (endDateInput && survey.endDate) {
-                    endDateInput.value = survey.endDate;
-                }
+            // 종료일
+            const endDateInput = document.getElementById("end-date");
+            if (endDateInput && survey.endDate) {
+                endDateInput.value = survey.endDate;
+            }
 
                 renderExistingQuestions(survey);
                 updateJumpTargets();
@@ -1764,24 +1828,22 @@
     }
 
 </script>
-<script id="change_template">
-    document.addEventListener('DOMContentLoaded', function () {
-        const surveyTypeSelect = document.getElementById('survey-type');
-        const questionsContainer = document.getElementById('questions-container');
-        const emptyState = document.getElementById('empty-state');
+<script id="change_template" type="module">
+    const surveyTypeSelect = document.getElementById('survey-type');
+    const emptyState = document.getElementById('empty-state');
 
-        surveyTypeSelect.addEventListener('change', async function () {
-            const selectedType = this.value;
+    surveyTypeSelect?.addEventListener('change', async function () {
+        const selectedType = this.value;
 
-            // 기존 문항 초기화
-            const existingQuestions = document.querySelectorAll(
-                '#questions-container > .question-container:not(#question-template)'
-            );
-            existingQuestions.forEach((el) => el.remove());
-            emptyState.classList.remove("hidden");
+        // 기존 문항 초기화
+        const existingQuestions = document.querySelectorAll(
+            '#questions-container > .question-container:not(#question-template)'
+        );
+        existingQuestions.forEach((el) => el.remove());
+        emptyState?.classList.remove("hidden");
 
-            // 일반 설문은 빈 상태로 끝냄
-            if (selectedType === "normal") return;
+        // 일반 설문은 빈 상태로 끝냄
+        if (selectedType === "normal") return;
 
             try {
                 // 템플릿 API 호출
@@ -1790,89 +1852,86 @@
                      );
                 console.log("templateQuestions:", templateQuestions);
 
-                // 템플릿 문항 생성
-                templateQuestions.forEach((q) => {
-                    const el = addQuestion(q.type);
-                    el.setAttribute('data-template', 'true');
-                    if (q.domainField) el.setAttribute('data-domain-field', q.domainField);
-                    if (q.questionId) el.dataset.id = q.questionId;
+            // 템플릿 문항 생성
+            templateQuestions.forEach((q) => {
+                const el = addQuestion(q.type);
+                el.setAttribute('data-template', 'true');
+                if (q.domainField) el.setAttribute('data-domain-field', q.domainField);
+                if (q.questionId) el.dataset.id = q.questionId;
 
-                    const titleInput = el.querySelector('input[type="text"]');
-                    if (titleInput) titleInput.value = q.question || '';
+                const titleInput = el.querySelector('input[type="text"]');
+                if (titleInput) titleInput.value = q.question || '';
 
-                    const descArea = el.querySelector('textarea');
-                    if (descArea) descArea.value = q.description || '';
+                const descArea = el.querySelector('textarea');
+                if (descArea) descArea.value = q.description || '';
 
-                    const reqCheckbox = el.querySelector('.required-checkbox');
-                    if (reqCheckbox) reqCheckbox.checked = !!q.required;
+                const reqCheckbox = el.querySelector('.required-checkbox');
+                if (reqCheckbox) reqCheckbox.checked = !!q.required;
 
-                    // 옵션 문항일 경우 옵션도 추가
-                    if (['multiple', 'multiple-checkbox', 'dropdown'].includes(q.type)) {
-                        const container = el.querySelector(`.answer-container[data-type="${q.type}"]`);
-                        const optionsContainer = container.querySelector(".space-y-2");
-                        const addButton = optionsContainer.querySelector(".add-option-button");
+                // 옵션 문항일 경우 옵션도 추가
+                if (['multiple', 'multiple-checkbox', 'dropdown'].includes(q.type)) {
+                    const container = el.querySelector(`.answer-container[data-type="${q.type}"]`);
+                    const optionsContainer = container.querySelector(".space-y-2");
+                    const addButton = optionsContainer.querySelector(".add-option-button");
 
-                        const existingInputs = optionsContainer.querySelectorAll("input[type='text']");
+                    const existingInputs = optionsContainer.querySelectorAll("input[type='text']");
 
-                        q.options?.forEach((option, idx) => {
-                            if (idx < existingInputs.length) {
-                                // 기존 옵션 1, 2에 덮어쓰기
-                                const input = existingInputs[idx];
-                                input.value = option.text || '';
-                            } else {
-                                // 3번째 이후는 새로 추가
-                                const optEl = createOptionElement(q.type, idx + 1);
-                                const input = optEl.querySelector('input[type="text"]');
-                                if (input) input.value = option.text || '';
-                                optionsContainer.insertBefore(optEl, addButton);
-                            }
-                        });
-                    }
-                    else if (q.type === 'hierarchy') {
-                        const questionId = el.getAttribute('data-question-id');
-                        window.initHierarchy(questionId); // ✅ 스토어 초기화
-                        const store = window.getStore(questionId);
+                    q.options?.forEach((option, idx) => {
+                        if (idx < existingInputs.length) {
+                            // 기존 옵션 1, 2에 덮어쓰기
+                            const input = existingInputs[idx];
+                            input.value = option.text || '';
+                        } else {
+                            // 3번째 이후는 새로 추가
+                            const optEl = createOptionElement(q.type, idx + 1);
+                            const input = optEl.querySelector('input[type="text"]');
+                            if (input) input.value = option.text || '';
+                            optionsContainer.insertBefore(optEl, addButton);
+                        }
+                    });
+                } else if (q.type === 'hierarchy') {
+                    const questionId = el.getAttribute('data-question-id');
+                    window.initHierarchy(questionId); // ✅ 스토어 초기화
+                    const store = window.getStore(questionId);
 
-                        // 계층 데이터 초기화
-                        store.firstHierarchyData = [];
-                        store.hierarchyData = {};
-                        store.hierarchySubData = {};
-                        store.hierarchyOptionCount = { 1: 0, 2: 0, 3: 0 };
+                    // 계층 데이터 초기화
+                    store.firstHierarchyData = [];
+                    store.hierarchyData = {};
+                    store.hierarchySubData = {};
+                    store.hierarchyOptionCount = {1: 0, 2: 0, 3: 0};
 
-                        q.options?.forEach(option => {
-                            const level = option.level;
-                            const parentId = option.parentOptionId ?? null;
-                            const text = option.text ?? '옵션';
-                            const id = option.hierarchyId;
-                            const optionId = option.optionId;
+                    q.options?.forEach(option => {
+                        const level = option.level;
+                        const parentId = option.parentOptionId ?? null;
+                        const text = option.text ?? '옵션';
+                        const id = option.hierarchyId;
+                        const optionId = option.optionId;
 
-                            if (level === 1) {
-                                store.firstHierarchyData.push({ id, text, optionId });
-                            } else if (level === 2) {
-                                if (!store.hierarchyData[parentId]) store.hierarchyData[parentId] = [];
-                                store.hierarchyData[parentId].push({ id, text, optionId });
-                            } else if (level === 3) {
-                                if (!store.hierarchySubData[parentId]) store.hierarchySubData[parentId] = [];
-                                store.hierarchySubData[parentId].push({ id, text, optionId });
-                            }
+                        if (level === 1) {
+                            store.firstHierarchyData.push({id, text, optionId});
+                        } else if (level === 2) {
+                            if (!store.hierarchyData[parentId]) store.hierarchyData[parentId] = [];
+                            store.hierarchyData[parentId].push({id, text, optionId});
+                        } else if (level === 3) {
+                            if (!store.hierarchySubData[parentId]) store.hierarchySubData[parentId] = [];
+                            store.hierarchySubData[parentId].push({id, text, optionId});
+                        }
 
-                            store.hierarchyOptionCount[level]++;
-                        });
+                        store.hierarchyOptionCount[level]++;
+                    });
 
-                        // ✅ DOM 렌더링은 store 기반으로 실행
-                        const container = el.querySelector(`[data-options-container="1"]`);
-                        window.updateHierarchyColumn(1, null, container, questionId);
-                    }
-                });
+                    // ✅ DOM 렌더링은 store 기반으로 실행
+                    const container = el.querySelector(`[data-options-container="1"]`);
+                    window.updateHierarchyColumn(1, null, container, questionId);
+                }
+            });
 
-                updateJumpTargets();
-            } catch (e) {
-                console.warn("템플릿 불러오기 실패:", e);
-                showToast("error", "템플릿 불러오기에 실패했습니다");
-            }
-        });
+            updateJumpTargets();
+        } catch (e) {
+            console.warn("템플릿 불러오기 실패:", e);
+            showToast("error", "템플릿 불러오기에 실패했습니다");
+        }
     });
 </script>
-
 </body>
 </html>

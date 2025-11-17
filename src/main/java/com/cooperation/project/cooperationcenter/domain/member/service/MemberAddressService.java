@@ -1,5 +1,9 @@
 package com.cooperation.project.cooperationcenter.domain.member.service;
 
+import com.cooperation.project.cooperationcenter.global.exception.BaseException;
+import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,9 +40,17 @@ public class MemberAddressService {
 
             ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
-            return ResponseEntity.status(response.getStatusCode())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(response.getBody());
+            // 2) JSON 파싱해서 텐센트 status 체크
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(response.getBody());
+
+            int tencentStatus = root.path("status").asInt(-1);
+            String tencentMessage = root.path("message").asText("");
+
+            if (tencentStatus != 0) {
+                throw new Exception("status :"+ tencentStatus + " message : "+tencentMessage);
+            }
+            return response;
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("{\"error\": \"Tencent API 호출 실패: " + e.getMessage() + "\"}");

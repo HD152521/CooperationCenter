@@ -145,9 +145,9 @@
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-lg font-medium text-gray-900 mb-6">응답 내용</h2>
 
-                <!-- ✅ 여기 루프 안에서만 an/questionId 사용 -->
-                <div class="space-y-8" th:each="an, iterStat : ${answerLog.answer}">
-                    <div class="space-y-4">
+                <div>
+                    <div th:each="an, iterStat : ${answerLog.answer}"
+                         class="space-y-4 py-5 border-gray-200 last:border-b-0">
 
                         <!-- 질문 헤더 + 타입 뱃지 -->
                         <div class="flex items-start justify-between gap-3">

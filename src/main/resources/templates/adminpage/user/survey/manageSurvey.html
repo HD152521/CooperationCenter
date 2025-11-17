@@ -1,20 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>설문조사 관리 - 관리자 대시보드</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet"
-    />
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-    />
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"/>
     <script>
         tailwind.config = {
             theme: {
@@ -43,30 +37,37 @@
         :where([class^="ri-"])::before {
             content: "\f3c2";
         }
+
         .admin-card {
             background: linear-gradient(145deg, #2C2C3A, #232331);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
+
         .table-header {
             background: linear-gradient(135deg, #343446, #2A2A3C);
         }
+
         .table-row:hover {
             background: rgba(52, 152, 219, 0.1);
         }
+
         .status-badge {
             backdrop-filter: blur(10px);
         }
+
         .custom-switch {
             position: relative;
             display: inline-block;
             width: 44px;
             height: 24px;
         }
+
         .custom-switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
+
         .slider {
             position: absolute;
             cursor: pointer;
@@ -78,6 +79,7 @@
             transition: .4s;
             border-radius: 24px;
         }
+
         .slider:before {
             position: absolute;
             content: "";
@@ -89,23 +91,28 @@
             transition: .4s;
             border-radius: 50%;
         }
+
         input:checked + .slider {
             background-color: #3498DB;
         }
+
         input:checked + .slider:before {
             transform: translateX(20px);
         }
+
         .custom-checkbox {
             position: relative;
             display: inline-block;
             width: 18px;
             height: 18px;
         }
+
         .custom-checkbox input {
             opacity: 0;
             width: 0;
             height: 0;
         }
+
         .checkmark {
             position: absolute;
             top: 0;
@@ -117,20 +124,25 @@
             cursor: pointer;
             transition: all 0.3s;
         }
+
         .custom-checkbox:hover input ~ .checkmark {
             background-color: #5a6578;
         }
+
         .custom-checkbox input:checked ~ .checkmark {
             background-color: #3498DB;
         }
+
         .checkmark:after {
             content: "";
             position: absolute;
             display: none;
         }
+
         .custom-checkbox input:checked ~ .checkmark:after {
             display: block;
         }
+
         .custom-checkbox .checkmark:after {
             left: 6px;
             top: 2px;
@@ -140,27 +152,29 @@
             border-width: 0 2px 2px 0;
             transform: rotate(45deg);
         }
+
         .status-active {
             background: linear-gradient(135deg, #10B981, #059669);
             color: white;
         }
+
         .status-completed {
             background: linear-gradient(135deg, #6366F1, #4F46E5);
             color: white;
         }
+
         .status-draft {
             background: linear-gradient(135deg, #F59E0B, #D97706);
             color: white;
         }
+
         .status-inactive {
             background: linear-gradient(135deg, #6B7280, #4B5563);
             color: white;
         }
     </style>
 </head>
-<body
-        class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen text-gray-100"
->
+<body class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen text-gray-100">
 <div class="flex">
     <aside th:replace="~{adminpage/common/leftSide :: leftSide}"></aside>
     <main class="flex-1 p-8">
@@ -169,8 +183,7 @@
                 <div>
                     <h1 class="text-3xl font-bold text-white">설문조사 관리</h1>
                     <p class="text-gray-400 mt-2">
-                        설문조사 현황을 관리하고 모니터링하세요
-                    </p>
+                        설문조사 현황을 관리하고 모니터링하세요 </p>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="text-right">
@@ -184,13 +197,10 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-400 text-sm">전체 설문</p>
-                        <p class="text-3xl font-bold text-white mt-2" th:text="${stats.total}" >0</p>
-                        <p class="text-green-400 text-sm mt-1">
-                        </p>
+                        <p class="text-3xl font-bold text-white mt-2" th:text="${stats.total}">0</p>
+                        <p class="text-green-400 text-sm mt-1"></p>
                     </div>
-                    <div
-                            class="w-12 h-12 bg-primary bg-opacity-20 rounded-lg flex items-center justify-center"
-                    >
+                    <div class="w-12 h-12 bg-primary bg-opacity-20 rounded-lg flex items-center justify-center">
                         <i class="ri-file-list-line text-primary text-xl"></i>
                     </div>
                 </div>
@@ -201,9 +211,7 @@
                         <p class="text-gray-400 text-sm">진행전</p>
                         <p class="text-3xl font-bold text-white mt-2" th:text="${stats.before}">0</p>
                     </div>
-                    <div
-                            class="w-12 h-12 bg-yellow-500 bg-opacity-20 rounded-lg flex items-center justify-center"
-                    >
+                    <div class="w-12 h-12 bg-yellow-500 bg-opacity-20 rounded-lg flex items-center justify-center">
                         <i class="ri-draft-line text-yellow-400 text-xl"></i>
                     </div>
                 </div>
@@ -215,9 +223,7 @@
                         <p class="text-3xl font-bold text-white mt-2" th:text="${stats.active}">0</p>
 
                     </div>
-                    <div
-                            class="w-12 h-12 bg-green-500 bg-opacity-20 rounded-lg flex items-center justify-center"
-                    >
+                    <div class="w-12 h-12 bg-green-500 bg-opacity-20 rounded-lg flex items-center justify-center">
                         <i class="ri-play-circle-line text-green-400 text-xl"></i>
                     </div>
                 </div>
@@ -228,46 +234,32 @@
                         <p class="text-gray-400 text-sm">완료됨</p>
                         <p class="text-3xl font-bold text-white mt-2" th:text="${stats.completed}">0</p>
                     </div>
-                    <div
-                            class="w-12 h-12 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center"
-                    >
+                    <div class="w-12 h-12 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
                         <i class="ri-check-circle-line text-blue-400 text-xl"></i>
                     </div>
                 </div>
             </div>
         </div>
         <div class="admin-card rounded-xl p-6 mb-8">
-            <div
-                    class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6"
-            >
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
                 <div class="flex items-center space-x-4">
                     <div class="relative">
-                        <input
-                                type="text"
-                                id="search-input"
-                                placeholder="설문 제목 또는 설명으로 검색"
-                                class="bg-gray-700 text-white pl-10 pr-4 py-2 rounded-lg text-sm border-none w-64"
-                        />
-                        <div
-                                class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 flex items-center justify-center text-gray-400"
-                        >
+                        <input type="text" id="search-input" placeholder="설문 제목 또는 설명으로 검색"
+                               class="bg-gray-700 text-white pl-10 pr-4 py-2 rounded-lg text-sm border-none w-64"/>
+                        <div class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 flex items-center justify-center text-gray-400">
                             <i class="ri-search-line"></i>
                         </div>
                     </div>
-                    <select
-                            id="status-filter"
-                            class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8"
-                    >
+                    <select id="status-filter"
+                            class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8">
                         <option value="">전체 상태</option>
                         <option value="active">진행중</option>
                         <option value="completed">완료됨</option>
                         <option value="draft">임시저장</option>
                         <option value="inactive">비활성</option>
                     </select>
-                    <select
-                            id="date-filter"
-                            class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8"
-                    >
+                    <select id="date-filter"
+                            class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8">
                         <option value="">전체 기간</option>
                         <option value="7days">최근 7일</option>
                         <option value="30days">최근 30일</option>
@@ -275,10 +267,8 @@
                     </select>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <select
-                            id="sort-filter"
-                            class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8"
-                    >
+                    <select id="sort-filter"
+                            class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8">
                         <option value="latest">최신순</option>
                         <option value="title">제목순</option>
                         <option value="responses">응답수순</option>
@@ -292,7 +282,7 @@
                     <tr class="table-header text-left">
                         <th class="p-3 text-sm font-medium text-gray-300">
                             <label class="custom-checkbox">
-                                <input type="checkbox" id="select-all" />
+                                <input type="checkbox" id="select-all"/>
                                 <span class="checkmark"></span>
                             </label>
                         </th>
@@ -307,32 +297,34 @@
                     </tr>
                     </thead>
                     <tbody id="survey-table-body">
-                    <tr class="table-row border-b border-gray-700"
-                        th:each="survey : ${surveys.content}"
+                    <tr class="table-row border-b border-gray-700" th:each="survey : ${surveys.content}"
                         th:attr="data-survey-id=${survey.surveyId}">
                         <td class="p-3">
                             <label class="custom-checkbox">
-                                <input type="checkbox" class="survey-checkbox" />
+                                <input type="checkbox" class="survey-checkbox"/>
                                 <span class="checkmark"></span>
                             </label>
                         </td>
                         <td class="p-3">
                             <div>
                                 <p class="text-white font-medium" th:text="${survey.title}">설문 제목</p>
-<!--                                <p class="text-gray-400 text-sm" th:text="${survey.description}">설문 설명</p>-->
+                                <!--                                <p class="text-gray-400 text-sm" th:text="${survey.description}">설문 설명</p>-->
                             </div>
                         </td>
-                        <td class="p-3 text-gray-400" th:text="${#temporals.format(survey.createdAt, 'yyyy-MM-dd')}">생성일</td>
+                        <td class="p-3 text-gray-400" th:text="${#temporals.format(survey.createdAt, 'yyyy-MM-dd')}">
+                            생성일
+                        </td>
                         <td class="p-3 text-gray-300">
                             <div class="text-sm">
                                 <p th:text="${survey.startDate} + ' ~ ' + ${survey.endDate}">기간</p>
-                                <p class="text-gray-400" th:text="${survey.lastDate >= 0} ? ${survey.lastDate} + '일간' : '종료일 지남'">일수</p>
+                                <p class="text-gray-400"
+                                   th:text="${survey.lastDate >= 0} ? ${survey.lastDate} + '일간' : '종료일 지남'">일수</p>
                             </div>
                         </td>
                         <td class="p-3">
                             <div class="text-center">
                                 <p class="text-white font-bold text-lg" th:text="${survey.participant}">응답수</p>
-<!--                                <p class="text-gray-400 text-sm" th:text="'목표: ' + ${survey.targetCount}">목표 응답</p>-->
+                                <!--                                <p class="text-gray-400 text-sm" th:text="'목표: ' + ${survey.targetCount}">목표 응답</p>-->
                             </div>
                         </td>
                         <td class="p-3">
@@ -346,15 +338,18 @@
                         <td class="p-3">
                             <div class="flex space-x-2">
                                 <button class="px-3 py-1 bg-blue-600 text-white text-sm rounded-button hover:bg-blue-500 transition-colors whitespace-nowrap view-details-btn">
-                                    <div class="w-3 h-3 inline-flex items-center justify-center mr-1"><i class="ri-eye-line"></i></div>
+                                    <div class="w-3 h-3 inline-flex items-center justify-center mr-1"><i
+                                            class="ri-eye-line"></i></div>
                                     상세
                                 </button>
                                 <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap edit-btn">
-                                    <div class="w-3 h-3 inline-flex items-center justify-center mr-1"><i class="ri-edit-line"></i></div>
+                                    <div class="w-3 h-3 inline-flex items-center justify-center mr-1"><i
+                                            class="ri-edit-line"></i></div>
                                     편집
                                 </button>
                                 <button class="px-3 py-1 bg-red-600 text-white text-sm rounded-button hover:bg-red-500 transition-colors whitespace-nowrap delete-btn">
-                                    <div class="w-3 h-3 inline-flex items-center justify-center mr-1"><i class="ri-delete-bin-line"></i></div>
+                                    <div class="w-3 h-3 inline-flex items-center justify-center mr-1"><i
+                                            class="ri-delete-bin-line"></i></div>
                                     삭제
                                 </button>
                             </div>
@@ -366,34 +361,29 @@
             <div class="flex items-center justify-between mt-6" th:if="${surveys != null}">
                 <div class="flex items-center space-x-4">
                     <!-- per-page -->
-                    <select id="per-page"
-                            class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8"
+                    <select id="per-page" class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8"
                             onchange="(function(sel){
               const url = new URL(window.location.href);
               url.searchParams.set('size', sel.value);
               url.searchParams.set('page', 0); // 사이즈 바꾸면 첫 페이지로
               window.location.href = url.toString();
             })(this)">
-                        <option th:value="10"  th:selected="${surveys.size == 10}">10개씩 보기</option>
-                        <option th:value="25"  th:selected="${surveys.size == 25}">25개씩 보기</option>
-                        <option th:value="50"  th:selected="${surveys.size == 50}">50개씩 보기</option>
+                        <option th:value="10" th:selected="${surveys.size == 10}">10개씩 보기</option>
+                        <option th:value="25" th:selected="${surveys.size == 25}">25개씩 보기</option>
+                        <option th:value="50" th:selected="${surveys.size == 50}">50개씩 보기</option>
                         <option th:value="100" th:selected="${surveys.size == 100}">100개씩 보기</option>
                     </select>
 
                     <!-- "총 X개 중 A-B개 표시" -->
-                    <p class="text-gray-400 text-sm"
-                       th:with="
+                    <p class="text-gray-400 text-sm" th:with="
      start=${surveys.totalElements == 0 ? 0 : (surveys.number * surveys.size + 1)},
      end=${surveys.number * surveys.size + surveys.numberOfElements}
-   "
-                       th:text="'총 ' + ${surveys.totalElements} + '개 중 ' + ${start} + '-' + ${end} + '개 표시'">
-                        총 0개 중 0-0개 표시
-                    </p>
+   " th:text="'총 ' + ${surveys.totalElements} + '개 중 ' + ${start} + '-' + ${end} + '개 표시'">
+                        총 0개 중 0-0개 표시 </p>
                 </div>
 
                 <!-- 페이지 버튼들 -->
-                <div class="flex items-center space-x-2"
-                     th:with="
+                <div class="flex items-center space-x-2" th:with="
          curr=${surveys.number},
          total=${surveys.totalPages},
          start=${T(java.lang.Math).max(0, curr - 2)},
@@ -401,8 +391,7 @@
        ">
                     <!-- 이전 -->
                     <a class="px-3 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                       th:classappend="${surveys.first} ? ' opacity-50 pointer-events-none' : ''"
-                       th:href="@{/admin/surveys(
+                       th:classappend="${surveys.first} ? ' opacity-50 pointer-events-none' : ''" th:href="@{/admin/surveys(
          page=${curr - 1},
          size=${surveys.size},
          sort=${param.sort},
@@ -414,8 +403,7 @@
                     </a>
 
                     <!-- 윈도우 페이지 번호 -->
-                    <a class="px-3 py-2 rounded-lg transition-colors"
-                       th:each="i : ${#numbers.sequence(start, end)}"
+                    <a class="px-3 py-2 rounded-lg transition-colors" th:each="i : ${#numbers.sequence(start, end)}"
                        th:text="${i + 1}"
                        th:classappend="${i} == ${curr} ? ' bg-primary text-white' : ' bg-gray-700 text-white hover:bg-gray-600'"
                        th:href="@{/admin/surveys(
@@ -428,12 +416,9 @@
        )}">1</a>
 
                     <!-- 말줄임 + 마지막 페이지(옵션) -->
-                    <span class="px-3 py-2 text-gray-400"
-                          th:if="${end < total - 1}">...</span>
+                    <span class="px-3 py-2 text-gray-400" th:if="${end < total - 1}">...</span>
                     <a class="px-3 py-2 rounded-lg transition-colors bg-gray-700 text-white hover:bg-gray-600"
-                       th:if="${end < total - 1}"
-                       th:text="${total}"
-                       th:href="@{/admin/surveys(
+                       th:if="${end < total - 1}" th:text="${total}" th:href="@{/admin/surveys(
          page=${total - 1},
          size=${surveys.size},
          sort=${param.sort},
@@ -444,8 +429,7 @@
 
                     <!-- 다음 -->
                     <a class="px-3 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                       th:classappend="${surveys.last} ? ' opacity-50 pointer-events-none' : ''"
-                       th:href="@{/admin/surveys(
+                       th:classappend="${surveys.last} ? ' opacity-50 pointer-events-none' : ''" th:href="@{/admin/surveys(
          page=${curr + 1},
          size=${surveys.size},
          sort=${param.sort},
@@ -461,178 +445,167 @@
     </main>
 </div>
 
-<div
-        id="delete-survey-modal"
-        class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
->
+<div id="delete-survey-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4">
         <h3 class="text-xl font-bold text-white mb-4">설문조사 삭제</h3>
         <p class="text-gray-300 mb-6">
             선택한 설문조사를 삭제하시겠습니까? 모든 응답 데이터도 함께 삭제되며,
-            이 작업은 되돌릴 수 없습니다.
-        </p>
+            이 작업은 되돌릴 수 없습니다. </p>
         <div class="flex space-x-4">
-            <button
-                    id="cancel-delete-survey"
-                    class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap"
-            >
+            <button id="cancel-delete-survey"
+                    class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
                 취소
             </button>
-            <button
-                    id="confirm-delete-survey"
-                    class="flex-1 px-4 py-2 bg-red-600 text-white rounded-button hover:bg-red-500 transition-colors whitespace-nowrap"
-            >
+            <button id="confirm-delete-survey"
+                    class="flex-1 px-4 py-2 bg-red-600 text-white rounded-button hover:bg-red-500 transition-colors whitespace-nowrap">
                 삭제
             </button>
         </div>
     </div>
 </div>
 
-<script id="checkbox-functionality">
-    document.addEventListener("DOMContentLoaded", function () {
-        const selectAllCheckbox = document.getElementById("select-all");
-        const surveyCheckboxes = document.querySelectorAll(".survey-checkbox");
-        selectAllCheckbox.addEventListener("change", function () {
-            surveyCheckboxes.forEach((checkbox) => {
-                checkbox.checked = this.checked;
-            });
-        });
+<script id="checkbox-functionality" type="module">
+    const selectAllCheckbox = document.getElementById("select-all");
+    const surveyCheckboxes = document.querySelectorAll(".survey-checkbox");
+    selectAllCheckbox.addEventListener("change", function () {
         surveyCheckboxes.forEach((checkbox) => {
-            checkbox.addEventListener("change", function () {
-                const checkedCount = document.querySelectorAll(
-                    ".survey-checkbox:checked",
-                ).length;
-                selectAllCheckbox.checked = checkedCount === surveyCheckboxes.length;
-                selectAllCheckbox.indeterminate =
-                    checkedCount > 0 && checkedCount < surveyCheckboxes.length;
-            });
+            checkbox.checked = this.checked;
+        });
+    });
+    surveyCheckboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", function () {
+            const checkedCount = document.querySelectorAll(
+                ".survey-checkbox:checked",
+            ).length;
+            selectAllCheckbox.checked = checkedCount === surveyCheckboxes.length;
+            selectAllCheckbox.indeterminate =
+                checkedCount > 0 && checkedCount < surveyCheckboxes.length;
         });
     });
 </script>
-<script id="modal-functionality">
-    document.addEventListener("DOMContentLoaded", function () {
-        // 모달 요소 (필요시 유지)
-        const deleteSurveyModal = document.getElementById("delete-survey-modal");
+<script id="modal-functionality" type="module">
+    // 모달 요소 (필요시 유지)
+    const deleteSurveyModal = document.getElementById("delete-survey-modal");
 
-        // 현재 삭제 대상 ID 저장
-        let currentDeleteSurveyId = null;
+    // 현재 삭제 대상 ID 저장
+    let currentDeleteSurveyId = null;
 
-        function showModal(modal) {
-            modal.classList.remove("hidden");
-            modal.classList.add("flex");
-        }
-        function hideModal(modal) {
-            modal.classList.add("hidden");
-            modal.classList.remove("flex");
-        }
+    function showModal(modal) {
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+    }
 
-        // 상세/편집/삭제 버튼 핸들러
-        document.querySelectorAll("#survey-table-body .table-row").forEach((row) => {
-            const surveyId = row.getAttribute("data-survey-id");
+    function hideModal(modal) {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+    }
 
-            const viewBtn = row.querySelector(".view-details-btn");
-            const editBtn = row.querySelector(".edit-btn");
-            const delBtn  = row.querySelector(".delete-btn");
+    // 상세/편집/삭제 버튼 핸들러
+    document.querySelectorAll("#survey-table-body .table-row").forEach((row) => {
+        const surveyId = row.getAttribute("data-survey-id");
 
-            if (viewBtn) {
-                viewBtn.addEventListener("click", () => {
-                    if (!surveyId) return;
-                    // 1) 상세: 이동
-                    window.location.href = `/survey/log/list/${surveyId}`;
-                });
-            }
+        const viewBtn = row.querySelector(".view-details-btn");
+        const editBtn = row.querySelector(".edit-btn");
+        const delBtn = row.querySelector(".delete-btn");
 
-            if (editBtn) {
-                editBtn.addEventListener("click", () => {
-                    if (!surveyId) return;
-                    // 2) 편집: 이동
-                    window.location.href = `/survey/edit/${surveyId}`;
-                });
-            }
-
-            if (delBtn) {
-                delBtn.addEventListener("click", () => {
-                    if (!surveyId) return;
-                    // 확인 모달을 유지하려면 아래 두 줄 사용:
-                    currentDeleteSurveyId = surveyId;
-                    showModal(deleteSurveyModal);
-                });
-            }
-        });
-
-        // 삭제 모달 버튼들
-        document.getElementById("cancel-delete-survey")
-            .addEventListener("click", () => hideModal(deleteSurveyModal));
-
-        document.getElementById("confirm-delete-survey")
-            .addEventListener("click", async function () {
-                if (!currentDeleteSurveyId) return;
-
-                try {
-                    const res = await fetch(`/api/v1/survey/admin/${currentDeleteSurveyId}`, {
-                        method: "DELETE",
-                        headers: { "Accept": "application/json" }
-                    });
-
-                    if (!res.ok) {
-                        const msg = `삭제 실패(${res.status})`;
-                        alert(msg);
-                        return;
-                    }
-
-                    // 행 제거
-                    const row = document.querySelector(
-                        `#survey-table-body tr[data-survey-id="${currentDeleteSurveyId}"]`
-                    );
-                    if (row) row.remove();
-
-                    hideModal(deleteSurveyModal);
-                    currentDeleteSurveyId = null;
-                    // TODO: 총 개수/페이지 정보 갱신이 필요하면 여기서 갱신 로직 추가
-                } catch (e) {
-                    alert("삭제 중 오류가 발생했습니다.");
-                }
+        if (viewBtn) {
+            viewBtn.addEventListener("click", () => {
+                if (!surveyId) return;
+                // 1) 상세: 이동
+                window.location.href = `/survey/log/list/${surveyId}`;
             });
+        }
+
+        if (editBtn) {
+            editBtn.addEventListener("click", () => {
+                if (!surveyId) return;
+                // 2) 편집: 이동
+                window.location.href = `/survey/edit/${surveyId}`;
+            });
+        }
+
+        if (delBtn) {
+            delBtn.addEventListener("click", () => {
+                if (!surveyId) return;
+                // 확인 모달을 유지하려면 아래 두 줄 사용:
+                currentDeleteSurveyId = surveyId;
+                showModal(deleteSurveyModal);
+            });
+        }
     });
-</script>
-<script id="search-filter-functionality">
-    document.addEventListener("DOMContentLoaded", function () {
-        const searchInput = document.getElementById("search-input");
-        const statusFilter = document.getElementById("status-filter");
-        const dateFilter = document.getElementById("date-filter");
-        const sortFilter = document.getElementById("sort-filter");
-        function filterTable() {
-            const searchTerm = searchInput.value.toLowerCase();
-            const statusValue = statusFilter.value;
-            const rows = document.querySelectorAll("#survey-table-body tr");
-            rows.forEach((row) => {
-                const titleElement = row.querySelector("td:nth-child(2) p:first-child");
-                const descElement = row.querySelector("td:nth-child(2) p:last-child");
-                const statusElement = row.querySelector("td:nth-child(6) span");
-                const title = titleElement.textContent.toLowerCase();
-                const description = descElement.textContent.toLowerCase();
-                const status = statusElement.textContent.toLowerCase();
-                const matchesSearch =
-                    title.includes(searchTerm) || description.includes(searchTerm);
-                const matchesStatus =
-                    !statusValue ||
-                    (statusValue === "active" && status === "진행중") ||
-                    (statusValue === "completed" && status === "완료됨") ||
-                    (statusValue === "draft" && status === "임시저장") ||
-                    (statusValue === "inactive" && status === "비활성");
-                if (matchesSearch && matchesStatus) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
+
+    // 삭제 모달 버튼들
+    document.getElementById("cancel-delete-survey")
+        .addEventListener("click", () => hideModal(deleteSurveyModal));
+
+    document.getElementById("confirm-delete-survey")
+        .addEventListener("click", async function () {
+            if (!currentDeleteSurveyId) return;
+
+            try {
+                const res = await fetch(`/api/v1/survey/admin/${currentDeleteSurveyId}`, {
+                    method: "DELETE",
+                    headers: {"Accept": "application/json"}
+                });
+
+                if (!res.ok) {
+                    const msg = `삭제 실패(${res.status})`;
+                    alert(msg);
+                    return;
                 }
-            });
-        }
-        searchInput.addEventListener("input", filterTable);
-        statusFilter.addEventListener("change", filterTable);
-        dateFilter.addEventListener("change", filterTable);
-        sortFilter.addEventListener("change", function () {
-            alert("정렬 기능이 적용되었습니다.");
+
+                // 행 제거
+                const row = document.querySelector(
+                    `#survey-table-body tr[data-survey-id="${currentDeleteSurveyId}"]`
+                );
+                if (row) row.remove();
+
+                hideModal(deleteSurveyModal);
+                currentDeleteSurveyId = null;
+                // TODO: 총 개수/페이지 정보 갱신이 필요하면 여기서 갱신 로직 추가
+            } catch (e) {
+                alert("삭제 중 오류가 발생했습니다.");
+            }
         });
+</script>
+<script id="search-filter-functionality" type="module">
+    const searchInput = document.getElementById("search-input");
+    const statusFilter = document.getElementById("status-filter");
+    const dateFilter = document.getElementById("date-filter");
+    const sortFilter = document.getElementById("sort-filter");
+
+    function filterTable() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const statusValue = statusFilter.value;
+        const rows = document.querySelectorAll("#survey-table-body tr");
+        rows.forEach((row) => {
+            const titleElement = row.querySelector("td:nth-child(2) p:first-child");
+            const descElement = row.querySelector("td:nth-child(2) p:last-child");
+            const statusElement = row.querySelector("td:nth-child(6) span");
+            const title = titleElement.textContent.toLowerCase();
+            const description = descElement.textContent.toLowerCase();
+            const status = statusElement.textContent.toLowerCase();
+            const matchesSearch =
+                title.includes(searchTerm) || description.includes(searchTerm);
+            const matchesStatus =
+                !statusValue ||
+                (statusValue === "active" && status === "진행중") ||
+                (statusValue === "completed" && status === "완료됨") ||
+                (statusValue === "draft" && status === "임시저장") ||
+                (statusValue === "inactive" && status === "비활성");
+            if (matchesSearch && matchesStatus) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+
+    searchInput.addEventListener("input", filterTable);
+    statusFilter.addEventListener("change", filterTable);
+    dateFilter.addEventListener("change", filterTable);
+    sortFilter.addEventListener("change", function () {
+        alert("정렬 기능이 적용되었습니다.");
     });
 </script>
 </body>

@@ -22,36 +22,6 @@ public class SchoolController {
     private final String schoolPath = "homepage/user/school/";
     private final SchoolFindService schoolFindService;
 
-//    @RequestMapping("/{school}/intro")
-//    public String schoolIntro(@PathVariable String school, Model model){
-//        model.addAttribute("school",school);
-//        return schoolPath+school+"/school-introduction";
-//    }
-//
-//    @RequestMapping("/{school}/curriculum")
-//    public String schoolCurriculum(@PathVariable String school,Model model){
-//        model.addAttribute("school",school);
-//        return schoolPath+school+"/school-curriculum";
-//    }
-//
-//    @RequestMapping("/{school}/board")
-//    public String schoolBoard(@PathVariable String school,Model model){
-//        model.addAttribute("school",school);
-//        return schoolPath+school+"/school-board";
-//    }
-//
-//    @RequestMapping("/{school}/schedule")
-//    public String schoolSchedule(@PathVariable String school,Model model){
-//        model.addAttribute("school",school);
-//        return schoolPath+school+"/school-schedule";
-//    }
-//
-//    @RequestMapping("/{school}/contact")
-//    public String schoolContact(@PathVariable String school,Model model){
-//        model.addAttribute("school",school);
-//        return schoolPath+school+"/school-contact";
-//    }
-
     @RequestMapping("/{school}/board/{boardId}")
     public String schoolBoard(@PathVariable String school, @PathVariable Long boardId, Model model,
                               @PageableDefault(size = 9, sort = "createdAt", direction = Sort.Direction.DESC)
