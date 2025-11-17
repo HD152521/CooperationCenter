@@ -473,39 +473,7 @@
                                 <option value="" disabled selected>
                                     지역을 선택해주세요
                                 </option>
-                                <option value="北京市">北京市</option>
-                                <option value="天津市">天津市</option>
-                                <option value="上海市">上海市</option>
-                                <option value="重庆市">重庆市</option>
-                                <option value="河北省">河北省</option>
-                                <option value="山西省">山西省</option>
-                                <option value="辽宁省">辽宁省</option>
-                                <option value="吉林省">吉林省</option>
-                                <option value="黑龙江省">黑龙江省</option>
-                                <option value="江苏省">江苏省</option>
-                                <option value="浙江省">浙江省</option>
-                                <option value="安徽省">安徽省</option>
-                                <option value="福建省">福建省</option>
-                                <option value="江西省">江西省</option>
-                                <option value="山东省">山东省</option>
-                                <option value="河南省">河南省</option>
-                                <option value="湖北省">湖北省</option>
-                                <option value="湖南省">湖南省</option>
-                                <option value="广东省">广东省</option>
-                                <option value="海南省">海南省</option>
-                                <option value="四川省">四川省</option>
-                                <option value="贵州省">贵州省</option>
-                                <option value="云南省">云南省</option>
-                                <option value="陕西省">陕西省</option>
-                                <option value="甘肃省">甘肃省</option>
-                                <option value="青海省">青海省</option>
-                                <option value="内蒙古自治区">内蒙古自治区</option>
-                                <option value="广西壮族自治区">广西壮族自治区</option>
-                                <option value="西藏自治区">西藏自治区</option>
-                                <option value="宁夏回族自治区">宁夏回族自治区</option>
-                                <option value="新疆维吾尔自治区">新疆维吾尔自治区</option>
-                                <option value="香港特别行政区">香港特别行政区</option>
-                                <option value="澳门特别行政区">澳门特别行政区</option>
+
                             </select>
                             <div
                                     class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-500 pointer-events-none"
@@ -1344,7 +1312,7 @@
 <script id="chinese-address-modal-script">
     document.addEventListener("DOMContentLoaded", () => {
         const modal = document.getElementById("chinese-address-modal");
-        const closeBtn = document.getElementById("closeChineseModal");
+        const closeBtn = document.getElementById("closeChineseModal"  );
         const input = document.getElementById("chineseAddressInput");
         const list = document.getElementById("chineseAddressList");
 
@@ -1439,6 +1407,51 @@
         }
     });
 </script>
+<script id="agency-region-loader">
+    document.addEventListener("DOMContentLoaded", async () => {
+        const select = document.getElementById("agencyRegion");
+        if (!select || !window.api) {
+            console.warn("agencyRegion select 또는 window.api 없음");
+            return;
+        }
+
+        try {
+            // /agency/region 호출
+            const res = await window.api.get("/api/v1/agency/region");
+            console.log("region api result:", res);
+
+            const regions =
+                Array.isArray(res) ? res
+                    : Array.isArray(res.data) ? res.data
+                        : Array.isArray(res.result) ? res.result
+                            : [];
+
+            regions.forEach(region => {
+                let value, label;
+
+                if (typeof region === "string") {
+                    value = region;
+                    label = region;
+                } else {
+                    // 객체일 경우 필드 이름 몇 가지 가정
+                    label = region.name || region.label || region.regionName || region.value;
+                    value = region.code || label;
+                }
+
+                if (!label) return; // 제대로된 이름이 없으면 패스
+
+                const option = document.createElement("option");
+                option.value = value;
+                option.textContent = label;
+                select.appendChild(option);
+            });
+        } catch (e) {
+            console.error("지역 목록 불러오기 실패:", e);
+            // 필요하면 여기서 토스트/알림 띄워도 됨
+        }
+    });
+</script>
+
 <script src="/js/homepage/common/url.js"></script>
 </body>
 </html>
