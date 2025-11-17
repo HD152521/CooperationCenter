@@ -205,12 +205,12 @@
                 const confirmButton = modal.querySelector("button");
                 confirmButton.addEventListener("click", () => {
                     modal.remove();
-                    window.location.href = "/admin/home"; // 원하는 페이지로 리다이렉트
+                    Turbo.visit("/admin/home"); // 원하는 페이지로 리다이렉트
                 });
                 modal.addEventListener("click", (e) => {
                     if (e.target === modal) {
                         modal.remove();
-                        window.location.href = "/admin/home"; // 원하는 페이지로 리다이렉트
+                        Turbo.visit("/admin/home"); // 원하는 페이지로 리다이렉트
                     }
                 });
 

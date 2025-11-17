@@ -308,10 +308,7 @@
 
 <th:block th:fragment="script">
     <script type="module" id="api-bootstrap">
-        import { api } from "/js/homepage/lib/apiClient.js";
         api.setBaseURL("/api/v1");
-        window.api = api;
-        window.dispatchEvent(new Event("api-ready"));
     </script>
     <script id="delete-modal-management" type="module">
         const deleteModal = document.getElementById("delete-confirm-modal");

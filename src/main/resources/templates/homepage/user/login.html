@@ -108,11 +108,6 @@
 </body>
 
 <th:block th:fragment="script">
-    <script type="module" id="api-bootstrap">
-        import { api } from "/js/homepage/lib/apiClient.js";
-        window.api = api;
-        window.dispatchEvent(new Event("api-ready"));
-    </script>
     <script type="module">
         const form = document.querySelector("form");
 
@@ -131,7 +126,7 @@
                          title: "로그인 성공!",
                        message: "환영합니다. 로그인이 완료되었습니다.",
                        buttonText: "확인",
-                       onClose: () => window.location.href = "/home"
+                       onClose: () => Turbo.visit("/home")
                      });
                  return;
             } catch (err) {

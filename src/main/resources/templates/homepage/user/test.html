@@ -1,9 +1,7 @@
 <!doctype html>
-<html lang="ko">
+<html th:replace="~{fragments/layout/base :: base(~{::head}, ~{::body})}" xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <meta charset="utf-8"/>
     <title>주소 자동완성 (Daum 우편번호)</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <!-- 키 필요 없음 -->
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <style>
