@@ -1,6 +1,13 @@
 <div class="w-full md:w-64 flex-shrink-0" th:fragment="school-left">
     <div class="bg-white rounded shadow p-4">
-        <div class="font-['Pacifico'] text-2xl text-primary mb-6 text-center">logo</div>
+        <div class="font-['Pacifico'] text-2xl text-primary mb-6 text-center">
+            <img
+                    th:if="${schoolLogo != null}"
+                    th:src="${schoolLogo}"
+                    alt="School Logo"
+                    class="h-12 mx-auto object-contain"
+            />
+        </div>
 
         <nav>
             <ul class="space-y-1">

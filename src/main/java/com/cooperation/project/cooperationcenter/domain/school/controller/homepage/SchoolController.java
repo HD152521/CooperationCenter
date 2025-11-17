@@ -1,6 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.school.controller.homepage;
 
 import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolResponse;
+import com.cooperation.project.cooperationcenter.domain.school.handler.BoardViewDispatcher;
 import com.cooperation.project.cooperationcenter.domain.school.model.SchoolBoard;
 import com.cooperation.project.cooperationcenter.domain.school.service.SchoolFindService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class SchoolController {
 
     private final String schoolPath = "homepage/user/school/";
     private final SchoolFindService schoolFindService;
+    private final BoardViewDispatcher boardViewDispatcher;
 
     @RequestMapping("/{school}/board/{boardId}")
     public String schoolBoard(@PathVariable String school, @PathVariable Long boardId, Model model,
@@ -29,28 +31,8 @@ public class SchoolController {
         model.addAttribute("school",school);
         model.addAttribute("boardId",boardId);
         SchoolBoard schoolBoard = schoolFindService.loadBoardById(boardId);
-        if(schoolBoard.getType().equals(SchoolBoard.BoardType.NOTICE)) {
-            model.addAttribute("postDto", schoolFindService.loadPostByBoardByDto(schoolBoard,pageable));
-            return schoolPath  + "postTemplate";
-        }else if(schoolBoard.getType().equals(SchoolBoard.BoardType.INTRO)){
-            String content = schoolFindService.loadIntroByBoard(schoolBoard).getContent();
-            log.info("content:{}",content);
-            model.addAttribute("content",content);
-//            return schoolPath + school + "/introductionTemplate";
-            String url = schoolPath + school + "/" +content;
-            log.info("url:{}",url);
-            return url;
-        }
-        else if(schoolBoard.getType().equals(SchoolBoard.BoardType.FILES)){
-            model.addAttribute("filePostDto",schoolFindService.loadFilePostPageByBoardByDto(schoolBoard,pageable));
-            return schoolPath  + "school-board";
-        }
-        else if(schoolBoard.getType().equals(SchoolBoard.BoardType.SCHEDULE)){
-            log.info("response:{}",schoolFindService.loadScheduleDtoByBoard(schoolBoard));
-            model.addAttribute("SchoolScheduleDto",schoolFindService.loadScheduleDtoByBoard(schoolBoard));
-            return schoolPath + "school-schedule";
-        }
-        return null;
+        model.addAttribute("schoolLogo",schoolBoard.getSchool().getLogoUrl());
+        return boardViewDispatcher.dispatch(schoolBoard, school, model, pageable);
     }
 
     @RequestMapping("/{school}/files/{boardId}")
