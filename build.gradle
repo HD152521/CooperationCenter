@@ -73,14 +73,14 @@ node {
     nodeProjectDir = file("${project.projectDir}")
 }
 
-tasks.register('buildTailwind', com.github.gradle.node.npm.task.NpmTask) {
+tasks.register('bundlingJsCss', com.github.gradle.node.npm.task.NpmTask) {
     group = 'build'
-    description = 'Build Tailwind CSS using npm'
-    args = ['run', 'build:css']
+    description = 'Bundling JavaScript and Tailwind CSS using npm/rollup'
+    args = ['run', 'build']
 }
 
 tasks.named('processResources') {
-    dependsOn(tasks.named('buildTailwind'))
+    dependsOn(tasks.named('bundlingJsCss'))
 }
 
 tasks.named('test') {
