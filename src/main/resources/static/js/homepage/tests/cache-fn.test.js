@@ -1,9 +1,9 @@
-import cacheManager from '../CacheManager.js';
+import cacheManager from '../common/CacheManager.js';
 // cache-fn.js에서 cacheFetch와 retryFetch를 export해야 합니다.
 // 현재 파일에서는 함수가 export되지 않았으므로, 테스트를 위해 임시로 수정이 필요합니다.
 // 이 예제에서는 cache-fn.js가 수정되었다고 가정하고 진행합니다.
 // 예: export { cacheFetch, retryFetch };
-import { cacheFetch, retryFetch } from '../cache-fn.js';
+import { cacheFetch, retryFetch } from '../common/cache-fn.js';
 
 // 전역 fetch를 모킹합니다.
 global.fetch = jest.fn();

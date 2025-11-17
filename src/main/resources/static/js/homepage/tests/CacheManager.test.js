@@ -1,4 +1,4 @@
-import cacheManager from '../CacheManager.js';
+import cacheManager from '../common/CacheManager.js';
 
 // Jest의 fake timers를 사용하여 시간 기반 테스트(maxAge)를 제어합니다.
 jest.useFakeTimers();
