@@ -23,6 +23,6 @@ for (const key in Url) {
 }
 
 import {api} from "./lib/apiClient.js";
-
+api.setBaseURL("/api/v1");
 window.api = api;
 window.dispatchEvent(new Event("api-ready"));
