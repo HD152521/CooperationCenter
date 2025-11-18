@@ -1,50 +1,9 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout/main-layout :: main-layout(~{::head}, ~{::body}, ~{::script})}">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title th:text="${school}">학교 소개 - 대학교</title>
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet"
-    />
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-    />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#3B82F6",
-                        secondary: "#10B981"
-                    },
-                    borderRadius: {
-                        none: "0px",
-                        sm: "4px",
-                        DEFAULT: "8px",
-                        md: "12px",
-                        lg: "16px",
-                        xl: "20px",
-                        "2xl": "24px",
-                        "3xl": "32px",
-                        full: "9999px",
-                        button: "8px",
-                    },
-                },
-            },
-        };
-    </script>
     <style>
-        :where([class^="ri-"])::before { content: "\f3c2"; }
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-        }
         .timeline-item::before {
             content: '';
             position: absolute;
@@ -56,6 +15,7 @@
             background-color: #3B82F6;
             border: 2px solid white;
         }
+
         .timeline-item::after {
             content: '';
             position: absolute;
@@ -65,9 +25,11 @@
             height: calc(100% + 16px);
             background-color: #e5e7eb;
         }
+
         .timeline-item:last-child::after {
             display: none;
         }
+
         .custom-checkbox {
             appearance: none;
             width: 18px;
@@ -77,10 +39,12 @@
             position: relative;
             cursor: pointer;
         }
+
         .custom-checkbox:checked {
             background-color: #3B82F6;
             border-color: #3B82F6;
         }
+
         .custom-checkbox:checked::after {
             content: '';
             position: absolute;
@@ -92,139 +56,23 @@
             border-width: 0 2px 2px 0;
             transform: rotate(45deg);
         }
+
         .nav-item.active {
             border-left: 4px solid #3b82f6;
             background-color: rgba(59, 130, 246, 0.1);
         }
+
         .nav-item:hover:not(.active) {
             background-color: rgba(59, 130, 246, 0.05);
         }
     </style>
-    <style>:root{ --header-h: 72px; }</style>
+    <style>:root {
+        --header-h: 72px;
+    }</style>
 </head>
 <body class="bg-gray-50">
-<!-- 상단 배너 -->
-<nav th:replace="~{homepage/common/nav-user :: nav-user}"></nav>
 <div class="container mx-auto px-4 py-8 pt-16 flex flex-col md:flex-row items-start gap-8">
-    <!-- 좌측 네비게이션 -->
-    <aside class="w-full md:w-64 md:shrink-0 md:self-start md:sticky md:top-[calc(var(--header-h)+16px)]">
-        <div th:replace="~{homepage/user/school/school-left-sidebar :: school-left}"></div>
-    </aside>
-
-<!--    main자리-->
+    <div th:replace="~{fragments/school/universityLeftSideBar:: school-left}"></div>
 </div>
-<footer class="bg-gray-800 text-white py-10 mt-10">
-    <div class="container mx-auto px-4">
-        <div class="flex flex-col md:flex-row justify-between mb-8">
-            <div class="mb-6 md:mb-0">
-                <h2 class="text-2xl font-['Pacifico'] text-white mb-4">logo</h2>
-                <p class="text-gray-300 max-w-md">
-                    한국대학교는 창의적 사고와 국제적 시각을 갖춘 미래 지향적 인재
-                    양성을 위해 최선을 다하고 있습니다.
-                </p>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">빠른 링크</h3>
-                    <ul class="space-y-2">
-                        <li>
-                            <a href="#" class="text-gray-300 hover:text-white"
-                            >학교 소개</a
-                            >
-                        </li>
-                        <li>
-                            <a
-                                    href="https://readdy.ai/home/d027a641-c27a-4a46-8bd3-4dec8c797f39/0c56e8ce-323f-465a-83a2-3b7026a8823f"
-                                    data-readdy="true"
-                                    class="text-gray-300 hover:text-white"
-                            >학교 신청 양식들</a
-                            >
-                        </li>
-                        <li>
-                            <a href="#" class="text-gray-300 hover:text-white"
-                            >학사 일정</a
-                            >
-                        </li>
-                        <li>
-                            <a href="#" class="text-gray-300 hover:text-white"
-                            >입학 안내</a
-                            >
-                        </li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">연락처</h3>
-                    <ul class="space-y-2">
-                        <li class="flex items-center">
-                  <span class="w-5 h-5 flex items-center justify-center mr-2">
-                    <i class="ri-phone-line"></i>
-                  </span>
-                            <span>02-123-4567</span>
-                        </li>
-                        <li class="flex items-center">
-                  <span class="w-5 h-5 flex items-center justify-center mr-2">
-                    <i class="ri-mail-line"></i>
-                  </span>
-                            <span>info@university.ac.kr</span>
-                        </li>
-                        <li class="flex items-center">
-                  <span class="w-5 h-5 flex items-center justify-center mr-2">
-                    <i class="ri-map-pin-line"></i>
-                  </span>
-                            <span>서울시 강남구 테헤란로 123</span>
-                        </li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">팔로우</h3>
-                    <div class="flex space-x-3">
-                        <a
-                                href="#"
-                                class="w-10 h-10 flex items-center justify-center bg-gray-700 rounded-full hover:bg-primary transition"
-                        >
-                            <i class="ri-facebook-fill"></i>
-                        </a>
-                        <a
-                                href="#"
-                                class="w-10 h-10 flex items-center justify-center bg-gray-700 rounded-full hover:bg-primary transition"
-                        >
-                            <i class="ri-instagram-line"></i>
-                        </a>
-                        <a
-                                href="#"
-                                class="w-10 h-10 flex items-center justify-center bg-gray-700 rounded-full hover:bg-primary transition"
-                        >
-                            <i class="ri-youtube-line"></i>
-                        </a>
-                        <a
-                                href="#"
-                                class="w-10 h-10 flex items-center justify-center bg-gray-700 rounded-full hover:bg-primary transition"
-                        >
-                            <i class="ri-twitter-x-line"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div
-                class="border-t border-gray-700 pt-6 flex flex-col md:flex-row justify-between items-center"
-        >
-            <p class="text-gray-400 text-sm mb-4 md:mb-0">
-                © 2025 한국대학교. All rights reserved.
-            </p>
-            <div class="flex space-x-4">
-                <a href="#" class="text-gray-400 hover:text-white text-sm"
-                >개인정보처리방침</a
-                >
-                <a href="#" class="text-gray-400 hover:text-white text-sm"
-                >이용약관</a
-                >
-                <a href="#" class="text-gray-400 hover:text-white text-sm"
-                >사이트맵</a
-                >
-            </div>
-        </div>
-    </div>
-</footer>
 </body>
 </html>

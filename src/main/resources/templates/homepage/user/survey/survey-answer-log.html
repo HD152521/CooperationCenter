@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="${AnswerDto.surveyTitle}">설문조사 로그</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { primary: "#4F46E5", secondary: "#818CF8" },
+                    colors: {primary: "#4F46E5", secondary: "#818CF8"},
                     borderRadius: {
                         none: "0px",
                         sm: "4px",
@@ -26,32 +26,32 @@
             },
         };
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet"
-    />
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-    />
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
     <style>
-        :where([class^="ri-"])::before { content: "\f3c2"; }
+        :where([class^="ri-"])::before {
+            content: "\f3c2";
+        }
+
         body {
             font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
             background-color: #f9fafb;
         }
+
         .tab-active {
             color: #4F46E5;
             border-bottom: 2px solid #4F46E5;
         }
+
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
+
         .custom-checkbox {
             position: relative;
             display: inline-block;
@@ -61,10 +61,12 @@
             border-radius: 4px;
             transition: all 0.2s;
         }
+
         .custom-checkbox.checked {
             background-color: #4F46E5;
             border-color: #4F46E5;
         }
+
         .custom-checkbox.checked::after {
             content: '';
             position: absolute;
@@ -76,6 +78,7 @@
             border-width: 0 2px 2px 0;
             transform: rotate(45deg);
         }
+
         .custom-radio {
             position: relative;
             display: inline-block;
@@ -85,9 +88,11 @@
             border-radius: 50%;
             transition: all 0.2s;
         }
+
         .custom-radio.checked {
             border-color: #4F46E5;
         }
+
         .custom-radio.checked::after {
             content: '';
             position: absolute;
@@ -98,6 +103,7 @@
             border-radius: 50%;
             background-color: #4F46E5;
         }
+
         .custom-switch {
             position: relative;
             display: inline-block;
@@ -107,9 +113,11 @@
             border-radius: 34px;
             transition: all 0.3s;
         }
+
         .custom-switch.checked {
             background-color: #4F46E5;
         }
+
         .custom-switch::after {
             content: '';
             position: absolute;
@@ -121,9 +129,11 @@
             border-radius: 50%;
             transition: all 0.3s;
         }
+
         .custom-switch.checked::after {
             transform: translateX(18px);
         }
+
         .custom-range {
             -webkit-appearance: none;
             width: 100%;
@@ -132,6 +142,7 @@
             background: #e5e7eb;
             outline: none;
         }
+
         .custom-range::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
@@ -141,6 +152,7 @@
             background: #4F46E5;
             cursor: pointer;
         }
+
         .custom-range::-moz-range-thumb {
             width: 18px;
             height: 18px;
@@ -149,12 +161,14 @@
             cursor: pointer;
             border: none;
         }
+
         .word-cloud {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             justify-content: center;
         }
+
         .word-cloud span {
             margin: 5px;
             display: inline-block;
@@ -165,40 +179,37 @@
 <div class="min-h-screen flex flex-col">
     <!-- 헤더 -->
     <header class="bg-white shadow-sm">
-        <div
-                class="container mx-auto px-4 py-4 flex items-center justify-between"
-        >
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
             <div class="flex items-center space-x-4">
-                <button
-                        class="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-primary"
-                >
+                <button class="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-primary">
                     <a href="/survey/list">
                         <i class="ri-arrow-left-line ri-lg"></i>
                     </a>
                 </button>
                 <h1 class="text-xl font-bold">설문조사 결과</h1>
             </div>
-<!--            <div class="flex items-center space-x-3">-->
-<!--                <button-->
-<!--                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-button hover:bg-gray-50 whitespace-nowrap flex items-center"-->
-<!--                >-->
-<!--                    <i class="ri-share-line mr-1"></i>-->
-<!--                    공유하기-->
-<!--                </button>-->
-<!--                <button-->
-<!--                        class="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-button whitespace-nowrap flex items-center"-->
-<!--                >-->
-<!--                    <i class="ri-download-line mr-1"></i>-->
-<!--                    내보내기-->
-<!--                </button>-->
-<!--            </div>-->
+            <!--            <div class="flex items-center space-x-3">-->
+            <!--                <button-->
+            <!--                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-button hover:bg-gray-50 whitespace-nowrap flex items-center"-->
+            <!--                >-->
+            <!--                    <i class="ri-share-line mr-1"></i>-->
+            <!--                    공유하기-->
+            <!--                </button>-->
+            <!--                <button-->
+            <!--                        class="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-button whitespace-nowrap flex items-center"-->
+            <!--                >-->
+            <!--                    <i class="ri-download-line mr-1"></i>-->
+            <!--                    내보내기-->
+            <!--                </button>-->
+            <!--            </div>-->
         </div>
     </header>
     <!-- 메인 컨텐츠 -->
     <main class="flex-1 container mx-auto px-4 py-6">
         <!-- 설문 제목 및 정보 -->
         <div class="mb-6">
-            <h2 id="survey-title" class="text-2xl font-bold mb-2" th:data-id="${AnswerDto.surveyId}" th:text="${AnswerDto.surveyTitle}">제목</h2>
+            <h2 id="survey-title" class="text-2xl font-bold mb-2" th:data-id="${AnswerDto.surveyId}"
+                th:text="${AnswerDto.surveyTitle}">제목</h2>
             <p class="text-gray-500" th:text="${AnswerDto.surveyStartDate}+'~'+${AnswerDto.surveyEndDate}"></p>
         </div>
         <!-- 요약 통계 카드 -->
@@ -209,65 +220,55 @@
                         <p class="text-gray-500 text-sm">총 응답 수</p>
                         <p class="text-2xl font-bold mt-1" th:text="${AnswerDto.participantCnt} + '명'"></p>
                     </div>
-                    <div
-                            class="w-12 h-12 flex items-center justify-center bg-primary/10 text-primary rounded-full"
-                    >
+                    <div class="w-12 h-12 flex items-center justify-center bg-primary/10 text-primary rounded-full">
                         <i class="ri-user-line ri-lg"></i>
                     </div>
                 </div>
-<!--                <div class="mt-3 text-xs text-gray-500">-->
-<!--                    전주 대비-->
-<!--                    <span class="text-green-500 font-medium">+12%</span> 증가-->
-<!--                </div>-->
+                <!--                <div class="mt-3 text-xs text-gray-500">-->
+                <!--                    전주 대비-->
+                <!--                    <span class="text-green-500 font-medium">+12%</span> 증가-->
+                <!--                </div>-->
             </div>
             <div class="bg-white p-5 rounded shadow-sm border border-gray-100">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500 text-sm">완료율</p>
-                        <p class="text-2xl font-bold mt-1" th:text="${#numbers.formatDecimal(AnswerDto.finishPercent, 1, 1)} + '%'"></p>
+                        <p class="text-2xl font-bold mt-1"
+                           th:text="${#numbers.formatDecimal(AnswerDto.finishPercent, 1, 1)} + '%'"></p>
                     </div>
-                    <div
-                            class="w-12 h-12 flex items-center justify-center bg-green-100 text-green-600 rounded-full"
-                    >
+                    <div class="w-12 h-12 flex items-center justify-center bg-green-100 text-green-600 rounded-full">
                         <i class="ri-check-line ri-lg"></i>
                     </div>
                 </div>
-<!--                <div class="mt-3 text-xs text-gray-500">-->
-<!--                    목표 완료율-->
-<!--                    <span class="text-gray-700 font-medium">90%</span> 달성-->
-<!--                </div>-->
+                <!--                <div class="mt-3 text-xs text-gray-500">-->
+                <!--                    목표 완료율-->
+                <!--                    <span class="text-gray-700 font-medium">90%</span> 달성-->
+                <!--                </div>-->
             </div>
             <div class="bg-white p-5 rounded shadow-sm border border-gray-100">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500 text-sm">평균 응답 시간</p>
-                        <p class="text-2xl font-bold mt-1" th:text="${AnswerDto.avgSpendTime / 60} + '분 ' + (${AnswerDto.avgSpendTime} % 60) + '초'"></p>
+                        <p class="text-2xl font-bold mt-1"
+                           th:text="${AnswerDto.avgSpendTime / 60} + '분 ' + (${AnswerDto.avgSpendTime} % 60) + '초'"></p>
                     </div>
-                    <div
-                            class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full"
-                    >
+                    <div class="w-12 h-12 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full">
                         <i class="ri-time-line ri-lg"></i>
                     </div>
                 </div>
-<!--                <div class="mt-3 text-xs text-gray-500">-->
-<!--                    최근 응답:-->
-<!--                    <span class="text-gray-700 font-medium">2025-06-28 09:15</span>-->
-<!--                </div>-->
+                <!--                <div class="mt-3 text-xs text-gray-500">-->
+                <!--                    최근 응답:-->
+                <!--                    <span class="text-gray-700 font-medium">2025-06-28 09:15</span>-->
+                <!--                </div>-->
             </div>
         </div>
         <!-- 탭 네비게이션 -->
         <div class="border-b border-gray-200 mb-6">
             <div class="flex space-x-8">
-                <button
-                        id="tab-responses"
-                        class="tab-active py-4 px-1 font-medium text-sm"
-                >
+                <button id="tab-responses" class="tab-active py-4 px-1 font-medium text-sm">
                     응답 기록
                 </button>
-                <button
-                        id="tab-analysis"
-                        class="text-gray-500 py-4 px-1 font-medium text-sm"
-                >
+                <button id="tab-analysis" class="text-gray-500 py-4 px-1 font-medium text-sm">
                     문항별 분석
                 </button>
             </div>
@@ -275,162 +276,117 @@
         <!-- 응답 기록 탭 내용 -->
         <div id="content-responses" class="block">
             <!-- 필터링 섹션 -->
-            <div
-                    class="bg-white p-5 rounded shadow-sm border border-gray-100 mb-6"
-            >
+            <div class="bg-white p-5 rounded shadow-sm border border-gray-100 mb-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1"
-                        >기간 선택</label
-                        >
+                        <label class="block text-sm font-medium text-gray-700 mb-1">기간 선택</label>
                         <div class="flex items-center space-x-2">
                             <div class="relative flex-1">
-                                <input
-                                        type="date"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-                                        value="2025-06-01"
-                                />
+                                <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                                       value="2025-06-01"/>
                             </div>
                             <span class="text-gray-500">~</span>
                             <div class="relative flex-1">
-                                <input
-                                        type="date"
-                                        class="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-                                        value="2025-06-28"
-                                />
+                                <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                                       value="2025-06-28"/>
                             </div>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1"
-                        >응답자 유형</label
-                        >
+                        <label class="block text-sm font-medium text-gray-700 mb-1">응답자 유형</label>
                         <div class="relative">
-                            <button
-                                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-sm text-left flex items-center justify-between"
-                            >
+                            <button class="w-full px-3 py-2 bg-white border border-gray-300 rounded text-sm text-left flex items-center justify-between">
                                 <span>전체 응답자</span>
                                 <i class="ri-arrow-down-s-line"></i>
                             </button>
                         </div>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1"
-                        >검색</label
-                        >
+                        <label class="block text-sm font-medium text-gray-700 mb-1">검색</label>
                         <div class="relative">
-                            <input
-                                    type="text"
-                                    placeholder="응답자명 또는 이메일 검색"
-                                    class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded text-sm"
-                            />
-                            <div
-                                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                            >
+                            <input type="text" placeholder="응답자명 또는 이메일 검색"
+                                   class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded text-sm"/>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="ri-search-line text-gray-400"></i>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div
-                        class="flex items-center justify-end mt-4 pt-4 border-t border-gray-100 space-x-4"
-                >
+                <div class="flex items-center justify-end mt-4 pt-4 border-t border-gray-100 space-x-4">
                     <div class="flex items-center space-x-4">
-<!--                        <div class="flex items-center">-->
-<!--                            <div class="custom-checkbox" id="checkbox-complete"></div>-->
-<!--                            <label-->
-<!--                                    for="checkbox-complete"-->
-<!--                                    class="ml-2 text-sm text-gray-700"-->
-<!--                            >완료된 응답만</label-->
-<!--                            >-->
-<!--                        </div>-->
-<!--                        <div class="flex items-center">-->
-<!--                            <div class="custom-checkbox" id="checkbox-recent"></div>-->
-<!--                            <label-->
-<!--                                    for="checkbox-recent"-->
-<!--                                    class="ml-2 text-sm text-gray-700"-->
-<!--                            >최근 7일 응답</label-->
-<!--                            >-->
-<!--                        </div>-->
+                        <!--                        <div class="flex items-center">-->
+                        <!--                            <div class="custom-checkbox" id="checkbox-complete"></div>-->
+                        <!--                            <label-->
+                        <!--                                    for="checkbox-complete"-->
+                        <!--                                    class="ml-2 text-sm text-gray-700"-->
+                        <!--                            >완료된 응답만</label-->
+                        <!--                            >-->
+                        <!--                        </div>-->
+                        <!--                        <div class="flex items-center">-->
+                        <!--                            <div class="custom-checkbox" id="checkbox-recent"></div>-->
+                        <!--                            <label-->
+                        <!--                                    for="checkbox-recent"-->
+                        <!--                                    class="ml-2 text-sm text-gray-700"-->
+                        <!--                            >최근 7일 응답</label-->
+                        <!--                            >-->
+                        <!--                        </div>-->
                     </div>
                     <div class="flex items-center">
                         <div class="custom-checkbox" id="select-all"></div>
-                        <label class="ml-2 text-sm text-gray-700"
-                        >전체 선택</label
-                        >
+                        <label class="ml-2 text-sm text-gray-700">전체 선택</label>
                     </div>
-                    <button
-                            id="export-csv"
-                            class="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-button whitespace-nowrap flex items-center"
-                    >
+                    <button id="export-csv"
+                            class="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-button whitespace-nowrap flex items-center">
                         <i class="ri-file-download-line mr-1"></i>
                         선택항목 CSV 추출
                     </button>
-                    <button
-                            id="export-csv-all"
-                            class="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-button whitespace-nowrap flex items-center"
-                    >
+                    <button id="export-csv-all"
+                            class="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-button whitespace-nowrap flex items-center">
                         <i class="ri-file-download-line mr-1"></i>
                         모든항목 CSV 추출
                     </button>
-                    <button
-                            id="fileDownload-student"
-                            class="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-button whitespace-nowrap flex items-center"
-                    >
+                    <button id="fileDownload-student"
+                            class="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-button whitespace-nowrap flex items-center">
                         <i class="ri-file-download-line mr-1"></i>
                         학생별로 파일 다운로드
                     </button>
-                    <button
-                            id="fileDownload-survey"
-                            class="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-button whitespace-nowrap flex items-center"
-                    >
+                    <button id="fileDownload-survey"
+                            class="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-button whitespace-nowrap flex items-center">
                         <i class="ri-file-download-line mr-1"></i>
                         문항별로 파일 다운로드
                     </button>
 
-<!--                    <button-->
-<!--                            class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-button whitespace-nowrap"-->
-<!--                    >-->
-<!--                        필터 초기화-->
-<!--                    </button>-->
+                    <!--                    <button-->
+                    <!--                            class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-button whitespace-nowrap"-->
+                    <!--                    >-->
+                    <!--                        필터 초기화-->
+                    <!--                    </button>-->
                 </div>
             </div>
             <!-- 응답 목록 테이블 -->
-            <div
-                    class="bg-white rounded shadow-sm border border-gray-100 overflow-hidden"
-            >
+            <div class="bg-white rounded shadow-sm border border-gray-100 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                         <tr>
-                            <th
-                                    scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            >
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 응답자
                             </th>
-                            <th
-                                    scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            >
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 응답 일시
                             </th>
-                            <th
-                                    scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            >
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 소요 시간
                             </th>
-                            <th
-                                    scope="col"
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            >
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 상태
                             </th>
-                            <th
-                                    scope="col"
-                                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            >
+                            <th scope="col"
+                                class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 액션
                             </th>
                         </tr>
@@ -439,13 +395,18 @@
                         <tr class="hover:bg-gray-50 cursor-pointer" th:each="log, iterStat : ${AnswerDto.logs.content}">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    <div class="custom-checkbox mr-3" th:attr="data-id=${iterStat.index + 1}, data-log-id=${log.logId}"></div>
+                                    <div class="custom-checkbox mr-3"
+                                         th:attr="data-id=${iterStat.index + 1}, data-log-id=${log.logId}"></div>
                                     <div class="w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full mr-3">
-                                        <span class="text-sm font-medium" th:text="${log.memberName.substring(0,1)}">김</span>
+                                        <span class="text-sm font-medium"
+                                              th:text="${log.memberName.substring(0,1)}">김</span>
                                     </div>
                                     <div>
-                                        <div class="text-sm font-medium text-gray-900" th:text="${log.memberName}">김민준</div>
-                                        <div class="text-sm text-gray-500" th:text="${log.memberEmail}">minjun.kim@example.com</div>
+                                        <div class="text-sm font-medium text-gray-900" th:text="${log.memberName}">김민준
+                                        </div>
+                                        <div class="text-sm text-gray-500" th:text="${log.memberEmail}">
+                                            minjun.kim@example.com
+                                        </div>
                                     </div>
                                 </div>
                             </td>
@@ -468,8 +429,9 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a th:href="@{'/survey/log/detail/'+ ${log.logId}}" class="text-primary hover:text-primary/80 mr-3">상세보기</a>
-<!--                                <button class="text-primary hover:text-primary/80 mr-3">상세보기</button>-->
+                                <a th:href="@{'/survey/log/detail/'+ ${log.logId}}"
+                                   class="text-primary hover:text-primary/80 mr-3">상세보기</a>
+                                <!--                                <button class="text-primary hover:text-primary/80 mr-3">상세보기</button>-->
                             </td>
                         </tr>
                         </tbody>
@@ -496,8 +458,7 @@
 
                         <!-- 페이지 번호 반복 -->
                         <a th:each="i : ${#numbers.sequence(1, AnswerDto.logs.totalPages)}"
-                           th:href="@{/survey/log/{id}(id=${AnswerDto.surveyId}, page=${i - 1})}"
-                           th:text="${i}"
+                           th:href="@{/survey/log/{id}(id=${AnswerDto.surveyId}, page=${i - 1})}" th:text="${i}"
                            th:class="'px-3 py-1 text-sm border rounded-button whitespace-nowrap ' +
                       (${i - 1} == ${AnswerDto.logs.number}
                           ? 'text-white bg-primary border-primary'
@@ -522,19 +483,12 @@
         <div id="content-analysis" class="hidden">
             <div class="flex flex-col md:flex-row gap-6">
                 <!-- 좌측 문항 네비게이션 -->
-                <div
-                        class="w-full md:w-64 bg-white rounded shadow-sm border border-gray-100 p-4 h-fit"
-                >
+                <div class="w-full md:w-64 bg-white rounded shadow-sm border border-gray-100 p-4 h-fit">
                     <div class="mb-4">
                         <div class="relative">
-                            <input
-                                    type="text"
-                                    placeholder="문항 검색"
-                                    class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded text-sm"
-                            />
-                            <div
-                                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                            >
+                            <input type="text" placeholder="문항 검색"
+                                   class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded text-sm"/>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="ri-search-line text-gray-400"></i>
                             </div>
                         </div>
@@ -546,35 +500,23 @@
                         <div class="space-y-2">
                             <div class="flex items-center">
                                 <div class="custom-checkbox checked" id="filter-all"></div>
-                                <label for="filter-all" class="ml-2 text-sm text-gray-700"
-                                >전체 문항 (15)</label
-                                >
+                                <label for="filter-all" class="ml-2 text-sm text-gray-700">전체 문항 (15)</label>
                             </div>
                             <div class="flex items-center">
                                 <div class="custom-checkbox" id="filter-choice"></div>
-                                <label
-                                        for="filter-choice"
-                                        class="ml-2 text-sm text-gray-700"
-                                >객관식 (8)</label
-                                >
+                                <label for="filter-choice" class="ml-2 text-sm text-gray-700">객관식 (8)</label>
                             </div>
                             <div class="flex items-center">
                                 <div class="custom-checkbox" id="filter-text"></div>
-                                <label for="filter-text" class="ml-2 text-sm text-gray-700"
-                                >서술형 (4)</label
-                                >
+                                <label for="filter-text" class="ml-2 text-sm text-gray-700">서술형 (4)</label>
                             </div>
                             <div class="flex items-center">
                                 <div class="custom-checkbox" id="filter-date"></div>
-                                <label for="filter-date" class="ml-2 text-sm text-gray-700"
-                                >날짜형 (2)</label
-                                >
+                                <label for="filter-date" class="ml-2 text-sm text-gray-700">날짜형 (2)</label>
                             </div>
                             <div class="flex items-center">
                                 <div class="custom-checkbox" id="filter-file"></div>
-                                <label for="filter-file" class="ml-2 text-sm text-gray-700"
-                                >파일형 (1)</label
-                                >
+                                <label for="filter-file" class="ml-2 text-sm text-gray-700">파일형 (1)</label>
                             </div>
                         </div>
                     </div>
@@ -583,17 +525,11 @@
                             <h3 class="text-sm font-medium text-gray-700">문항 목록</h3>
                             <div class="flex items-center">
                                 <div class="custom-switch" id="switch-main-only"></div>
-                                <label
-                                        for="switch-main-only"
-                                        class="ml-2 text-xs text-gray-500"
-                                >주요 문항만</label
-                                >
+                                <label for="switch-main-only" class="ml-2 text-xs text-gray-500">주요 문항만</label>
                             </div>
                         </div>
                         <div class="space-y-2 max-h-96 overflow-y-auto pr-2">
-                            <div
-                                    class="p-2 bg-primary/5 border-l-2 border-primary rounded text-sm"
-                            >
+                            <div class="p-2 bg-primary/5 border-l-2 border-primary rounded text-sm">
                                 Q1. 전반적인 직무 만족도
                             </div>
                             <div class="p-2 hover:bg-gray-50 rounded text-sm">
@@ -628,39 +564,27 @@
                 </div>
                 <!-- 우측 문항별 결과 표시 -->
                 <div class="flex-1">
-                    <div
-                            class="bg-white rounded shadow-sm border border-gray-100 p-6 mb-6"
-                    >
+                    <div class="bg-white rounded shadow-sm border border-gray-100 p-6 mb-6">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-bold">Q1. 전반적인 직무 만족도</h3>
                             <div class="flex items-center space-x-2">
-                                <button
-                                        class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-button whitespace-nowrap flex items-center"
-                                >
+                                <button class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-button whitespace-nowrap flex items-center">
                                     <i class="ri-download-line mr-1"></i>
                                     내보내기
                                 </button>
-                                <button
-                                        class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-button whitespace-nowrap flex items-center"
-                                >
+                                <button class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-button whitespace-nowrap flex items-center">
                                     <i class="ri-more-2-fill"></i>
                                 </button>
                             </div>
                         </div>
                         <p class="text-gray-500 text-sm mb-6">
-                            귀하의 현재 직무에 대한 전반적인 만족도를 선택해 주세요.
-                        </p>
+                            귀하의 현재 직무에 대한 전반적인 만족도를 선택해 주세요. </p>
                         <!-- 차트 표시 영역 -->
                         <div class="flex flex-col md:flex-row gap-6">
                             <div class="flex-1">
-                                <div
-                                        id="chart-satisfaction"
-                                        style="width: 100%; height: 300px;"
-                                ></div>
+                                <div id="chart-satisfaction" style="width: 100%; height: 300px;"></div>
                             </div>
-                            <div
-                                    class="w-full md:w-64 border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6"
-                            >
+                            <div class="w-full md:w-64 border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6">
                                 <h4 class="text-sm font-medium text-gray-700 mb-3">요약</h4>
                                 <div class="space-y-3">
                                     <div>
@@ -669,10 +593,7 @@
                                             <span class="font-medium">4.2/5</span>
                                         </div>
                                         <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1">
-                                            <div
-                                                    class="bg-primary h-1.5 rounded-full"
-                                                    style="width: 84%"
-                                            ></div>
+                                            <div class="bg-primary h-1.5 rounded-full" style="width: 84%"></div>
                                         </div>
                                     </div>
                                     <div>
@@ -681,10 +602,7 @@
                                             <span class="font-medium">76%</span>
                                         </div>
                                         <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1">
-                                            <div
-                                                    class="bg-green-500 h-1.5 rounded-full"
-                                                    style="width: 76%"
-                                            ></div>
+                                            <div class="bg-green-500 h-1.5 rounded-full" style="width: 76%"></div>
                                         </div>
                                     </div>
                                     <div>
@@ -693,10 +611,7 @@
                                             <span class="font-medium">8%</span>
                                         </div>
                                         <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1">
-                                            <div
-                                                    class="bg-red-500 h-1.5 rounded-full"
-                                                    style="width: 8%"
-                                            ></div>
+                                            <div class="bg-red-500 h-1.5 rounded-full" style="width: 8%"></div>
                                         </div>
                                     </div>
                                     <div>
@@ -705,48 +620,34 @@
                                             <span class="font-medium">16%</span>
                                         </div>
                                         <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1">
-                                            <div
-                                                    class="bg-yellow-500 h-1.5 rounded-full"
-                                                    style="width: 16%"
-                                            ></div>
+                                            <div class="bg-yellow-500 h-1.5 rounded-full" style="width: 16%"></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div
-                            class="bg-white rounded shadow-sm border border-gray-100 p-6 mb-6"
-                    >
+                    <div class="bg-white rounded shadow-sm border border-gray-100 p-6 mb-6">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-bold">Q9. 개선이 필요한 부분</h3>
                             <div class="flex items-center space-x-2">
-                                <button
-                                        class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-button whitespace-nowrap flex items-center"
-                                >
+                                <button class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-button whitespace-nowrap flex items-center">
                                     <i class="ri-download-line mr-1"></i>
                                     내보내기
                                 </button>
-                                <button
-                                        class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-button whitespace-nowrap flex items-center"
-                                >
+                                <button class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-button whitespace-nowrap flex items-center">
                                     <i class="ri-more-2-fill"></i>
                                 </button>
                             </div>
                         </div>
                         <p class="text-gray-500 text-sm mb-6">
                             회사에서 개선이 필요하다고 생각하는 부분이 있다면 자유롭게
-                            작성해 주세요.
-                        </p>
+                            작성해 주세요. </p>
                         <!-- 워드 클라우드 및 서술형 답변 -->
                         <div class="flex flex-col md:flex-row gap-6">
                             <div class="flex-1">
-                                <div
-                                        class="word-cloud p-4 bg-gray-50 rounded h-64 flex items-center justify-center"
-                                >
-                      <span class="text-primary text-3xl font-bold"
-                      >업무 프로세스</span
-                      >
+                                <div class="word-cloud p-4 bg-gray-50 rounded h-64 flex items-center justify-center">
+                      <span class="text-primary text-3xl font-bold">업무 프로세스</span>
                                     <span class="text-blue-500 text-2xl">의사소통</span>
                                     <span class="text-green-500 text-xl">회의 시간</span>
                                     <span class="text-yellow-500 text-2xl">업무 환경</span>
@@ -758,86 +659,63 @@
                                     <span class="text-indigo-500 text-2xl">보고 체계</span>
                                 </div>
                             </div>
-                            <div
-                                    class="w-full md:w-96 border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6"
-                            >
+                            <div class="w-full md:w-96 border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6">
                                 <h4 class="text-sm font-medium text-gray-700 mb-3">
-                                    주요 응답 (15/156)
-                                </h4>
+                                    주요 응답 (15/156) </h4>
                                 <div class="space-y-4 max-h-64 overflow-y-auto pr-2">
                                     <div class="p-3 bg-gray-50 rounded text-sm">
                                         <p class="text-gray-700">
                                             "업무 프로세스가 너무 복잡하고 비효율적입니다. 결재
-                                            단계를 줄이고 디지털화가 필요합니다."
-                                        </p>
+                                            단계를 줄이고 디지털화가 필요합니다." </p>
                                         <p class="text-gray-500 text-xs mt-2">
-                                            김민준 | 2025-06-28
-                                        </p>
+                                            김민준 | 2025-06-28 </p>
                                     </div>
                                     <div class="p-3 bg-gray-50 rounded text-sm">
                                         <p class="text-gray-700">
                                             "부서 간 의사소통이 원활하지 않아 업무 진행에 어려움이
-                                            있습니다. 정기적인 부서 간 미팅이 필요합니다."
-                                        </p>
+                                            있습니다. 정기적인 부서 간 미팅이 필요합니다." </p>
                                         <p class="text-gray-500 text-xs mt-2">
-                                            이서연 | 2025-06-27
-                                        </p>
+                                            이서연 | 2025-06-27 </p>
                                     </div>
                                     <div class="p-3 bg-gray-50 rounded text-sm">
                                         <p class="text-gray-700">
                                             "회의 시간이 너무 길고 비생산적입니다. 회의 시간을
-                                            줄이고 효율적으로 진행했으면 합니다."
-                                        </p>
+                                            줄이고 효율적으로 진행했으면 합니다." </p>
                                         <p class="text-gray-500 text-xs mt-2">
-                                            박지훈 | 2025-06-27
-                                        </p>
+                                            박지훈 | 2025-06-27 </p>
                                     </div>
                                     <div class="p-3 bg-gray-50 rounded text-sm">
                                         <p class="text-gray-700">
                                             "재택근무 기회가 더 많았으면 좋겠습니다. 현재는 주
-                                            1회만 가능한데, 주 2-3회로 확대되면 좋겠습니다."
-                                        </p>
+                                            1회만 가능한데, 주 2-3회로 확대되면 좋겠습니다." </p>
                                         <p class="text-gray-500 text-xs mt-2">
-                                            최수진 | 2025-06-26
-                                        </p>
+                                            최수진 | 2025-06-26 </p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div
-                            class="bg-white rounded shadow-sm border border-gray-100 p-6 mb-6"
-                    >
+                    <div class="bg-white rounded shadow-sm border border-gray-100 p-6 mb-6">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-bold">Q10. 입사일</h3>
                             <div class="flex items-center space-x-2">
-                                <button
-                                        class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-button whitespace-nowrap flex items-center"
-                                >
+                                <button class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-button whitespace-nowrap flex items-center">
                                     <i class="ri-download-line mr-1"></i>
                                     내보내기
                                 </button>
-                                <button
-                                        class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-button whitespace-nowrap flex items-center"
-                                >
+                                <button class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-button whitespace-nowrap flex items-center">
                                     <i class="ri-more-2-fill"></i>
                                 </button>
                             </div>
                         </div>
                         <p class="text-gray-500 text-sm mb-6">
-                            귀하의 입사일을 선택해 주세요.
-                        </p>
+                            귀하의 입사일을 선택해 주세요. </p>
                         <!-- 날짜형 응답 분석 -->
                         <div class="flex flex-col md:flex-row gap-6">
                             <div class="flex-1">
-                                <div
-                                        id="chart-join-date"
-                                        style="width: 100%; height: 300px;"
-                                ></div>
+                                <div id="chart-join-date" style="width: 100%; height: 300px;"></div>
                             </div>
-                            <div
-                                    class="w-full md:w-64 border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6"
-                            >
+                            <div class="w-full md:w-64 border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6">
                                 <h4 class="text-sm font-medium text-gray-700 mb-3">요약</h4>
                                 <div class="space-y-3">
                                     <div class="flex justify-between items-center text-sm">
@@ -864,147 +742,98 @@
                             </div>
                         </div>
                     </div>
-                    <div
-                            class="bg-white rounded shadow-sm border border-gray-100 p-6"
-                    >
+                    <div class="bg-white rounded shadow-sm border border-gray-100 p-6">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-bold">Q15. 증빙 자료 제출</h3>
                             <div class="flex items-center space-x-2">
-                                <button
-                                        class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-button whitespace-nowrap flex items-center"
-                                >
+                                <button class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-button whitespace-nowrap flex items-center">
                                     <i class="ri-download-line mr-1"></i>
                                     내보내기
                                 </button>
-                                <button
-                                        class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-button whitespace-nowrap flex items-center"
-                                >
+                                <button class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-button whitespace-nowrap flex items-center">
                                     <i class="ri-more-2-fill"></i>
                                 </button>
                             </div>
                         </div>
                         <p class="text-gray-500 text-sm mb-6">
                             업무 개선 제안과 관련된 증빙 자료가 있다면 제출해 주세요.
-                            (선택사항)
-                        </p>
+                            (선택사항) </p>
                         <!-- 파일형 응답 분석 -->
                         <div class="flex flex-col md:flex-row gap-6">
                             <div class="flex-1">
-                                <div
-                                        class="border border-dashed border-gray-300 rounded p-4"
-                                >
-                                    <div
-                                            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-                                    >
+                                <div class="border border-dashed border-gray-300 rounded p-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                         <div class="p-3 bg-gray-50 rounded flex items-center">
-                                            <div
-                                                    class="w-10 h-10 flex items-center justify-center bg-blue-100 text-blue-600 rounded mr-3"
-                                            >
+                                            <div class="w-10 h-10 flex items-center justify-center bg-blue-100 text-blue-600 rounded mr-3">
                                                 <i class="ri-file-pdf-line ri-lg"></i>
                                             </div>
                                             <div class="flex-1 min-w-0">
-                                                <p
-                                                        class="text-sm font-medium text-gray-900 truncate"
-                                                >
-                                                    업무개선제안서.pdf
-                                                </p>
+                                                <p class="text-sm font-medium text-gray-900 truncate">
+                                                    업무개선제안서.pdf </p>
                                                 <p class="text-xs text-gray-500">2.4MB</p>
                                             </div>
-                                            <button
-                                                    class="ml-2 text-gray-400 hover:text-gray-600"
-                                            >
+                                            <button class="ml-2 text-gray-400 hover:text-gray-600">
                                                 <i class="ri-download-line"></i>
                                             </button>
                                         </div>
                                         <div class="p-3 bg-gray-50 rounded flex items-center">
-                                            <div
-                                                    class="w-10 h-10 flex items-center justify-center bg-green-100 text-green-600 rounded mr-3"
-                                            >
+                                            <div class="w-10 h-10 flex items-center justify-center bg-green-100 text-green-600 rounded mr-3">
                                                 <i class="ri-file-excel-line ri-lg"></i>
                                             </div>
                                             <div class="flex-1 min-w-0">
-                                                <p
-                                                        class="text-sm font-medium text-gray-900 truncate"
-                                                >
-                                                    업무효율성분석.xlsx
-                                                </p>
+                                                <p class="text-sm font-medium text-gray-900 truncate">
+                                                    업무효율성분석.xlsx </p>
                                                 <p class="text-xs text-gray-500">1.8MB</p>
                                             </div>
-                                            <button
-                                                    class="ml-2 text-gray-400 hover:text-gray-600"
-                                            >
+                                            <button class="ml-2 text-gray-400 hover:text-gray-600">
                                                 <i class="ri-download-line"></i>
                                             </button>
                                         </div>
                                         <div class="p-3 bg-gray-50 rounded flex items-center">
-                                            <div
-                                                    class="w-10 h-10 flex items-center justify-center bg-purple-100 text-purple-600 rounded mr-3"
-                                            >
+                                            <div class="w-10 h-10 flex items-center justify-center bg-purple-100 text-purple-600 rounded mr-3">
                                                 <i class="ri-file-word-line ri-lg"></i>
                                             </div>
                                             <div class="flex-1 min-w-0">
-                                                <p
-                                                        class="text-sm font-medium text-gray-900 truncate"
-                                                >
-                                                    회의록_20250615.docx
-                                                </p>
+                                                <p class="text-sm font-medium text-gray-900 truncate">
+                                                    회의록_20250615.docx </p>
                                                 <p class="text-xs text-gray-500">856KB</p>
                                             </div>
-                                            <button
-                                                    class="ml-2 text-gray-400 hover:text-gray-600"
-                                            >
+                                            <button class="ml-2 text-gray-400 hover:text-gray-600">
                                                 <i class="ri-download-line"></i>
                                             </button>
                                         </div>
                                         <div class="p-3 bg-gray-50 rounded flex items-center">
-                                            <div
-                                                    class="w-10 h-10 flex items-center justify-center bg-red-100 text-red-600 rounded mr-3"
-                                            >
+                                            <div class="w-10 h-10 flex items-center justify-center bg-red-100 text-red-600 rounded mr-3">
                                                 <i class="ri-file-ppt-line ri-lg"></i>
                                             </div>
                                             <div class="flex-1 min-w-0">
-                                                <p
-                                                        class="text-sm font-medium text-gray-900 truncate"
-                                                >
-                                                    개선안_발표자료.pptx
-                                                </p>
+                                                <p class="text-sm font-medium text-gray-900 truncate">
+                                                    개선안_발표자료.pptx </p>
                                                 <p class="text-xs text-gray-500">3.2MB</p>
                                             </div>
-                                            <button
-                                                    class="ml-2 text-gray-400 hover:text-gray-600"
-                                            >
+                                            <button class="ml-2 text-gray-400 hover:text-gray-600">
                                                 <i class="ri-download-line"></i>
                                             </button>
                                         </div>
                                         <div class="p-3 bg-gray-50 rounded flex items-center">
-                                            <div
-                                                    class="w-10 h-10 flex items-center justify-center bg-yellow-100 text-yellow-600 rounded mr-3"
-                                            >
+                                            <div class="w-10 h-10 flex items-center justify-center bg-yellow-100 text-yellow-600 rounded mr-3">
                                                 <i class="ri-image-line ri-lg"></i>
                                             </div>
                                             <div class="flex-1 min-w-0">
-                                                <p
-                                                        class="text-sm font-medium text-gray-900 truncate"
-                                                >
-                                                    작업환경_사진.jpg
-                                                </p>
+                                                <p class="text-sm font-medium text-gray-900 truncate">
+                                                    작업환경_사진.jpg </p>
                                                 <p class="text-xs text-gray-500">1.5MB</p>
                                             </div>
-                                            <button
-                                                    class="ml-2 text-gray-400 hover:text-gray-600"
-                                            >
+                                            <button class="ml-2 text-gray-400 hover:text-gray-600">
                                                 <i class="ri-download-line"></i>
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div
-                                    class="w-full md:w-64 border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6"
-                            >
+                            <div class="w-full md:w-64 border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6">
                                 <h4 class="text-sm font-medium text-gray-700 mb-3">
-                                    파일 통계
-                                </h4>
+                                    파일 통계 </h4>
                                 <div class="space-y-3">
                                     <div class="flex justify-between items-center text-sm">
                                         <span class="text-gray-600">총 제출 파일 수</span>
@@ -1016,71 +845,46 @@
                                     </div>
                                     <div class="mt-4">
                                         <h5 class="text-xs text-gray-500 mb-2">
-                                            파일 유형 분포
-                                        </h5>
+                                            파일 유형 분포 </h5>
                                         <div class="space-y-2">
                                             <div>
-                                                <div
-                                                        class="flex items-center justify-between text-xs"
-                                                >
+                                                <div class="flex items-center justify-between text-xs">
                                                     <span class="text-gray-600">PDF</span>
                                                     <span>38%</span>
                                                 </div>
-                                                <div
-                                                        class="w-full bg-gray-200 rounded-full h-1.5 mt-1"
-                                                >
-                                                    <div
-                                                            class="bg-blue-500 h-1.5 rounded-full"
-                                                            style="width: 38%"
-                                                    ></div>
+                                                <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                                                    <div class="bg-blue-500 h-1.5 rounded-full"
+                                                         style="width: 38%"></div>
                                                 </div>
                                             </div>
                                             <div>
-                                                <div
-                                                        class="flex items-center justify-between text-xs"
-                                                >
+                                                <div class="flex items-center justify-between text-xs">
                                                     <span class="text-gray-600">Excel</span>
                                                     <span>24%</span>
                                                 </div>
-                                                <div
-                                                        class="w-full bg-gray-200 rounded-full h-1.5 mt-1"
-                                                >
-                                                    <div
-                                                            class="bg-green-500 h-1.5 rounded-full"
-                                                            style="width: 24%"
-                                                    ></div>
+                                                <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                                                    <div class="bg-green-500 h-1.5 rounded-full"
+                                                         style="width: 24%"></div>
                                                 </div>
                                             </div>
                                             <div>
-                                                <div
-                                                        class="flex items-center justify-between text-xs"
-                                                >
+                                                <div class="flex items-center justify-between text-xs">
                                                     <span class="text-gray-600">Word</span>
                                                     <span>18%</span>
                                                 </div>
-                                                <div
-                                                        class="w-full bg-gray-200 rounded-full h-1.5 mt-1"
-                                                >
-                                                    <div
-                                                            class="bg-purple-500 h-1.5 rounded-full"
-                                                            style="width: 18%"
-                                                    ></div>
+                                                <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                                                    <div class="bg-purple-500 h-1.5 rounded-full"
+                                                         style="width: 18%"></div>
                                                 </div>
                                             </div>
                                             <div>
-                                                <div
-                                                        class="flex items-center justify-between text-xs"
-                                                >
+                                                <div class="flex items-center justify-between text-xs">
                                                     <span class="text-gray-600">기타</span>
                                                     <span>20%</span>
                                                 </div>
-                                                <div
-                                                        class="w-full bg-gray-200 rounded-full h-1.5 mt-1"
-                                                >
-                                                    <div
-                                                            class="bg-gray-500 h-1.5 rounded-full"
-                                                            style="width: 20%"
-                                                    ></div>
+                                                <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                                                    <div class="bg-gray-500 h-1.5 rounded-full"
+                                                         style="width: 20%"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -1100,8 +904,6 @@
     window.dispatchEvent(new Event("api-ready"));
 </script>
 
-
-<script src="/js/homepage/common/url.js"></script>
 <script id="checkbox-handler">
     document.addEventListener("DOMContentLoaded", function () {
         // 체크박스 기능 구현
@@ -1112,77 +914,77 @@
         const fileDownloadByStudentBtn = document.getElementById("fileDownload-student");
         const fileDownloadBySurveyBtn = document.getElementById("fileDownload-survey");
 
-        // 개별 체크박스 클릭 처리
-        checkboxes.forEach((checkbox) => {
-            checkbox.addEventListener("click", function (e) {
-                if (this.id !== "select-all" && this.id !== "checkbox-complete") {
-                    e.stopPropagation();
-                }
-                this.classList.toggle("checked");
-                // 전체 선택 체크박스 상태 업데이트
-                if (this.id !== "select-all" && this.id !== "checkbox-complete") {
-                    const totalCheckboxes = document.querySelectorAll(
-                        ".custom-checkbox[data-id]",
-                    ).length;
-                    const checkedCheckboxes = document.querySelectorAll(
-                        ".custom-checkbox[data-id].checked",
-                    ).length;
-                    selectAllCheckbox.classList.toggle(
-                        "checked",
-                        totalCheckboxes === checkedCheckboxes,
-                    );
+    // 개별 체크박스 클릭 처리
+    checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener("click", function (e) {
+            if (this.id !== "select-all" && this.id !== "checkbox-complete") {
+                e.stopPropagation();
+            }
+            this.classList.toggle("checked");
+            // 전체 선택 체크박스 상태 업데이트
+            if (this.id !== "select-all" && this.id !== "checkbox-complete") {
+                const totalCheckboxes = document.querySelectorAll(
+                    ".custom-checkbox[data-id]",
+                ).length;
+                const checkedCheckboxes = document.querySelectorAll(
+                    ".custom-checkbox[data-id].checked",
+                ).length;
+                selectAllCheckbox.classList.toggle(
+                    "checked",
+                    totalCheckboxes === checkedCheckboxes,
+                );
+            }
+        });
+    });
+    // 전체 선택 체크박스 클릭 처리
+    selectAllCheckbox.addEventListener("click", function () {
+
+        console.log("전테 선택 버튼 클릭");
+        this.classList.toggle("checked");
+
+        const isChecked = this.classList.toggle("checked");
+        console.log("ischecked:" + isChecked);
+        document
+            .querySelectorAll(".custom-checkbox[data-id]")
+            .forEach((checkbox) => {
+                console.log(checkbox);
+                checkbox.classList.remove("checked"); // 초기화 후
+                if (isChecked) {
+                    checkbox.classList.add("checked"); // 체크 추가
                 }
             });
-        });
-        // 전체 선택 체크박스 클릭 처리
-        selectAllCheckbox.addEventListener("click", function () {
-
-            console.log("전테 선택 버튼 클릭");
-            this.classList.toggle("checked");
-
-            const isChecked = this.classList.toggle("checked");
-            console.log("ischecked:"+isChecked);
-            document
-                .querySelectorAll(".custom-checkbox[data-id]")
-                .forEach((checkbox) => {
-                    console.log(checkbox);
-                    checkbox.classList.remove("checked"); // 초기화 후
-                    if (isChecked) {
-                        checkbox.classList.add("checked"); // 체크 추가
-                    }
-                });
-        });
-        // CSV 추출 버튼 클릭 처리
-        exportCsvButton.addEventListener("click", async () => {
-            const selectedRows = document.querySelectorAll(
-                ".custom-checkbox[data-id].checked",
-            );
-            if (selectedRows.length === 0) {
-                const notification = document.createElement("div");
-                notification.className =
-                    "fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded";
-                notification.innerHTML = `
+    });
+    // CSV 추출 버튼 클릭 처리
+    exportCsvButton.addEventListener("click", async () => {
+        const selectedRows = document.querySelectorAll(
+            ".custom-checkbox[data-id].checked",
+        );
+        if (selectedRows.length === 0) {
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded";
+            notification.innerHTML = `
       <div class="flex items-center">
       <i class="ri-error-warning-line mr-2"></i>
       <span>선택된 항목이 없습니다.</span>
       </div>
       `;
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-                return;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+            return;
+        }
+
+        const logIds = [];
+        selectedRows.forEach(box => {
+            const logId = box.getAttribute('data-log-id');
+            if (logId) {
+                logIds.push(logId);
             }
+        });
 
-            const logIds = [];
-            selectedRows.forEach(box => {
-                const logId = box.getAttribute('data-log-id');
-                if (logId) {
-                    logIds.push(logId);
-                }
-            });
-
-            const requestDto = {
-                logIds: logIds
-            };
+        const requestDto = {
+            logIds: logIds
+        };
 
             try {
 
@@ -1193,7 +995,7 @@
                 const month = String(today.getMonth() + 1).padStart(2, '0'); // 0-based → +1
                 const day = String(today.getDate()).padStart(2, '0');
 
-                const todayStr = `${year}-${month}-${day}`;
+            const todayStr = `${year}-${month}-${day}`;
 
                 const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8' });
                 const url = window.URL.createObjectURL(blob);
@@ -1213,37 +1015,37 @@
       <span>CSV 파일이 다운로드되었습니다.</span>
       </div>
       `;
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-            } catch (error) {
-                console.error(error);
-                alert('CSV 다운로드 중 오류가 발생했습니다.');
-            }
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        } catch (error) {
+            console.error(error);
+            alert('CSV 다운로드 중 오류가 발생했습니다.');
+        }
 
-        });
+    });
 
-        exportAllCsvButton.addEventListener("click", async () => {
-            const Rows = document.querySelectorAll(
-                ".custom-checkbox[data-id]",
-            );
+    exportAllCsvButton.addEventListener("click", async () => {
+        const Rows = document.querySelectorAll(
+            ".custom-checkbox[data-id]",
+        );
 
-            if (Rows.length === 0) {
-                const notification = document.createElement("div");
-                notification.className =
-                    "fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded";
-                notification.innerHTML = `
+        if (Rows.length === 0) {
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded";
+            notification.innerHTML = `
       <div class="flex items-center">
       <i class="ri-error-warning-line mr-2"></i>
       <span>설문에 대한 기록이 없습니다.</span>
       </div>
       `;
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-                return;
-            }
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+            return;
+        }
 
 
-            const surveyId = document.getElementById("survey-title").dataset.id;
+        const surveyId = document.getElementById("survey-title").dataset.id;
 
             try {
                 const csvData = await api._request("POST", `${surveyAdminUrl}/log/${surveyId}`, null, {});
@@ -1253,7 +1055,7 @@
                 const month = String(today.getMonth() + 1).padStart(2, '0'); // 0-based → +1
                 const day = String(today.getDate()).padStart(2, '0');
 
-                const todayStr = `${year}-${month}-${day}`;
+            const todayStr = `${year}-${month}-${day}`;
 
                 const blob = csvData instanceof Response
                     ? await csvData.blob()
@@ -1262,52 +1064,52 @@
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
 
-                a.href = url;
-                a.download = titleText+"_"+todayStr+'_all.csv';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                window.URL.revokeObjectURL(url);
-                const notification = document.createElement("div");
-                notification.className =
-                    "fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded";
-                notification.innerHTML = `
+            a.href = url;
+            a.download = titleText + "_" + todayStr + '_all.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded";
+            notification.innerHTML = `
       <div class="flex items-center">
       <i class="ri-checkbox-circle-line mr-2"></i>
       <span>CSV 파일이 다운로드되었습니다.</span>
       </div>
       `;
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-            } catch (error) {
-                console.error(error);
-                alert('CSV 다운로드 중 오류가 발생했습니다.');
-            }
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        } catch (error) {
+            console.error(error);
+            alert('CSV 다운로드 중 오류가 발생했습니다.');
+        }
 
-        });
+    });
 
-        fileDownloadByStudentBtn.addEventListener("click", async () => {
-            const Rows = document.querySelectorAll(
-                ".custom-checkbox[data-id]",
-            );
+    fileDownloadByStudentBtn.addEventListener("click", async () => {
+        const Rows = document.querySelectorAll(
+            ".custom-checkbox[data-id]",
+        );
 
-            if (Rows.length === 0) {
-                const notification = document.createElement("div");
-                notification.className =
-                    "fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded";
-                notification.innerHTML = `
+        if (Rows.length === 0) {
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded";
+            notification.innerHTML = `
       <div class="flex items-center">
       <i class="ri-error-warning-line mr-2"></i>
       <span>설문에 대한 기록이 없습니다.</span>
       </div>
       `;
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-                return;
-            }
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+            return;
+        }
 
 
-            const surveyId = document.getElementById("survey-title").dataset.id;
+        const surveyId = document.getElementById("survey-title").dataset.id;
 
             try {
                 const res = await api._request("POST", `${surveyAdminUrl}/log/file/student/${surveyId}`, null, {});
@@ -1318,58 +1120,58 @@
                 const month = String(today.getMonth() + 1).padStart(2, '0'); // 0-based → +1
                 const day = String(today.getDate()).padStart(2, '0');
 
-                const todayStr = `${year}-${month}-${day}`;
+            const todayStr = `${year}-${month}-${day}`;
 
                 const blob = await res.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
 
-                a.href = url;
-                a.download = titleText+"_"+todayStr+'_all.zip';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                window.URL.revokeObjectURL(url);
-                const notification = document.createElement("div");
-                notification.className =
-                    "fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded";
-                notification.innerHTML = `
+            a.href = url;
+            a.download = titleText + "_" + todayStr + '_all.zip';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded";
+            notification.innerHTML = `
       <div class="flex items-center">
       <i class="ri-checkbox-circle-line mr-2"></i>
       <span>파일이 다운로드 되었습니다.</span>
       </div>
       `;
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-            } catch (error) {
-                console.error(error);
-                alert('유저별 파일 다운로드에 실패했습니다.');
-            }
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        } catch (error) {
+            console.error(error);
+            alert('유저별 파일 다운로드에 실패했습니다.');
+        }
 
-        });
+    });
 
-        fileDownloadBySurveyBtn.addEventListener("click", async () => {
-            const Rows = document.querySelectorAll(
-                ".custom-checkbox[data-id]",
-            );
+    fileDownloadBySurveyBtn.addEventListener("click", async () => {
+        const Rows = document.querySelectorAll(
+            ".custom-checkbox[data-id]",
+        );
 
-            if (Rows.length === 0) {
-                const notification = document.createElement("div");
-                notification.className =
-                    "fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded";
-                notification.innerHTML = `
+        if (Rows.length === 0) {
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded";
+            notification.innerHTML = `
       <div class="flex items-center">
       <i class="ri-error-warning-line mr-2"></i>
       <span>설문에 대한 기록이 없습니다.</span>
       </div>
       `;
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-                return;
-            }
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+            return;
+        }
 
 
-            const surveyId = document.getElementById("survey-title").dataset.id;
+        const surveyId = document.getElementById("survey-title").dataset.id;
 
             try {
                 const res = await api._request("POST", `${surveyAdminUrl}/log/file/survey/${surveyId}`, null, {});
@@ -1379,244 +1181,238 @@
                 const month = String(today.getMonth() + 1).padStart(2, '0'); // 0-based → +1
                 const day = String(today.getDate()).padStart(2, '0');
 
-                const todayStr = `${year}-${month}-${day}`;
+            const todayStr = `${year}-${month}-${day}`;
 
                 const blob = await res.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
 
-                a.href = url;
-                a.download = titleText+"_"+todayStr+'_all.zip';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                window.URL.revokeObjectURL(url);
-                const notification = document.createElement("div");
-                notification.className =
-                    "fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded";
-                notification.innerHTML = `
+            a.href = url;
+            a.download = titleText + "_" + todayStr + '_all.zip';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded";
+            notification.innerHTML = `
       <div class="flex items-center">
       <i class="ri-checkbox-circle-line mr-2"></i>
       <span>파일이 다운로드 되었습니다.</span>
       </div>
       `;
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-            } catch (error) {
-                console.error(error);
-                alert('문항별 파일 다운로드에 실패했습니다.');
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        } catch (error) {
+            console.error(error);
+            alert('문항별 파일 다운로드에 실패했습니다.');
+        }
+
+    });
+
+
+    // 라디오 버튼 기능 구현
+    const radios = document.querySelectorAll(".custom-radio");
+    radios.forEach((radio) => {
+        radio.addEventListener("click", function () {
+            const name = this.getAttribute("name");
+            if (name) {
+                document
+                    .querySelectorAll(`.custom-radio[name="${name}"]`)
+                    .forEach((r) => {
+                        r.classList.remove("checked");
+                    });
             }
-
+            this.classList.add("checked");
         });
-
-
-
-        // 라디오 버튼 기능 구현
-        const radios = document.querySelectorAll(".custom-radio");
-        radios.forEach((radio) => {
-            radio.addEventListener("click", function () {
-                const name = this.getAttribute("name");
-                if (name) {
-                    document
-                        .querySelectorAll(`.custom-radio[name="${name}"]`)
-                        .forEach((r) => {
-                            r.classList.remove("checked");
-                        });
-                }
-                this.classList.add("checked");
-            });
-        });
-        // 스위치 기능 구현
-        const switches = document.querySelectorAll(".custom-switch");
-        switches.forEach((switchEl) => {
-            switchEl.addEventListener("click", function () {
-                this.classList.toggle("checked");
-            });
+    });
+    // 스위치 기능 구현
+    const switches = document.querySelectorAll(".custom-switch");
+    switches.forEach((switchEl) => {
+        switchEl.addEventListener("click", function () {
+            this.classList.toggle("checked");
         });
     });
 </script>
-<script id="tab-handler">
-    document.addEventListener("DOMContentLoaded", function () {
-        const tabResponses = document.getElementById("tab-responses");
-        const tabAnalysis = document.getElementById("tab-analysis");
-        const contentResponses = document.getElementById("content-responses");
-        const contentAnalysis = document.getElementById("content-analysis");
-        tabResponses.addEventListener("click", function () {
-            tabResponses.classList.add("tab-active");
-            tabAnalysis.classList.remove("tab-active");
-            tabAnalysis.classList.add("text-gray-500");
-            contentResponses.classList.remove("hidden");
-            contentResponses.classList.add("block");
-            contentAnalysis.classList.remove("block");
-            contentAnalysis.classList.add("hidden");
-        });
-        tabAnalysis.addEventListener("click", function () {
-            tabAnalysis.classList.add("tab-active");
-            tabAnalysis.classList.remove("text-gray-500");
-            tabResponses.classList.remove("tab-active");
-            contentAnalysis.classList.remove("hidden");
-            contentAnalysis.classList.add("block");
-            contentResponses.classList.remove("block");
-            contentResponses.classList.add("hidden");
-        });
+<script id="tab-handler" type="module">
+    const tabResponses = document.getElementById("tab-responses");
+    const tabAnalysis = document.getElementById("tab-analysis");
+    const contentResponses = document.getElementById("content-responses");
+    const contentAnalysis = document.getElementById("content-analysis");
+    tabResponses.addEventListener("click", function () {
+        tabResponses.classList.add("tab-active");
+        tabAnalysis.classList.remove("tab-active");
+        tabAnalysis.classList.add("text-gray-500");
+        contentResponses.classList.remove("hidden");
+        contentResponses.classList.add("block");
+        contentAnalysis.classList.remove("block");
+        contentAnalysis.classList.add("hidden");
+    });
+    tabAnalysis.addEventListener("click", function () {
+        tabAnalysis.classList.add("tab-active");
+        tabAnalysis.classList.remove("text-gray-500");
+        tabResponses.classList.remove("tab-active");
+        contentAnalysis.classList.remove("hidden");
+        contentAnalysis.classList.add("block");
+        contentResponses.classList.remove("block");
+        contentResponses.classList.add("hidden");
     });
 </script>
-<script id="chart-handler">
-    document.addEventListener("DOMContentLoaded", function () {
-        // 만족도 차트
-        const satisfactionChart = echarts.init(
-            document.getElementById("chart-satisfaction"),
-        );
-        const satisfactionOption = {
-            animation: false,
-            tooltip: {
-                trigger: "axis",
-                axisPointer: {
-                    type: "shadow",
-                },
-                backgroundColor: "rgba(255, 255, 255, 0.9)",
-                borderColor: "#e5e7eb",
-                borderWidth: 1,
-                textStyle: {
-                    color: "#1f2937",
+<script id="chart-handler" type="module">
+    // 만족도 차트
+    const satisfactionChart = echarts.init(
+        document.getElementById("chart-satisfaction"),
+    );
+    const satisfactionOption = {
+        animation: false,
+        tooltip: {
+            trigger: "axis",
+            axisPointer: {
+                type: "shadow",
+            },
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            borderColor: "#e5e7eb",
+            borderWidth: 1,
+            textStyle: {
+                color: "#1f2937",
+            },
+        },
+        grid: {
+            left: "3%",
+            right: "4%",
+            bottom: "3%",
+            top: "3%",
+            containLabel: true,
+        },
+        xAxis: {
+            type: "category",
+            data: ["매우 불만족", "불만족", "보통", "만족", "매우 만족"],
+            axisLine: {
+                lineStyle: {
+                    color: "#e5e7eb",
                 },
             },
-            grid: {
-                left: "3%",
-                right: "4%",
-                bottom: "3%",
-                top: "3%",
-                containLabel: true,
+            axisLabel: {
+                color: "#1f2937",
             },
-            xAxis: {
-                type: "category",
-                data: ["매우 불만족", "불만족", "보통", "만족", "매우 만족"],
-                axisLine: {
-                    lineStyle: {
-                        color: "#e5e7eb",
-                    },
-                },
-                axisLabel: {
-                    color: "#1f2937",
+        },
+        yAxis: {
+            type: "value",
+            axisLine: {
+                show: false,
+            },
+            axisTick: {
+                show: false,
+            },
+            splitLine: {
+                lineStyle: {
+                    color: "#f3f4f6",
                 },
             },
-            yAxis: {
-                type: "value",
-                axisLine: {
-                    show: false,
-                },
-                axisTick: {
-                    show: false,
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: "#f3f4f6",
-                    },
-                },
-                axisLabel: {
-                    color: "#1f2937",
+            axisLabel: {
+                color: "#1f2937",
+            },
+        },
+        series: [
+            {
+                name: "응답 수",
+                type: "bar",
+                barWidth: "60%",
+                data: [5, 15, 40, 120, 68],
+                itemStyle: {
+                    color: "rgba(87, 181, 231, 1)",
+                    borderRadius: 4,
                 },
             },
-            series: [
-                {
-                    name: "응답 수",
-                    type: "bar",
-                    barWidth: "60%",
-                    data: [5, 15, 40, 120, 68],
-                    itemStyle: {
-                        color: "rgba(87, 181, 231, 1)",
-                        borderRadius: 4,
-                    },
-                },
-            ],
-        };
-        satisfactionChart.setOption(satisfactionOption);
-        // 입사일 차트
-        const joinDateChart = echarts.init(
-            document.getElementById("chart-join-date"),
-        );
-        const joinDateOption = {
-            animation: false,
-            tooltip: {
-                trigger: "axis",
-                axisPointer: {
-                    type: "shadow",
-                },
-                backgroundColor: "rgba(255, 255, 255, 0.9)",
-                borderColor: "#e5e7eb",
-                borderWidth: 1,
-                textStyle: {
-                    color: "#1f2937",
+        ],
+    };
+    satisfactionChart.setOption(satisfactionOption);
+    // 입사일 차트
+    const joinDateChart = echarts.init(
+        document.getElementById("chart-join-date"),
+    );
+    const joinDateOption = {
+        animation: false,
+        tooltip: {
+            trigger: "axis",
+            axisPointer: {
+                type: "shadow",
+            },
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            borderColor: "#e5e7eb",
+            borderWidth: 1,
+            textStyle: {
+                color: "#1f2937",
+            },
+        },
+        grid: {
+            left: "3%",
+            right: "4%",
+            bottom: "3%",
+            top: "3%",
+            containLabel: true,
+        },
+        xAxis: {
+            type: "category",
+            data: ["2020", "2021", "2022", "2023", "2024", "2025"],
+            axisLine: {
+                lineStyle: {
+                    color: "#e5e7eb",
                 },
             },
-            grid: {
-                left: "3%",
-                right: "4%",
-                bottom: "3%",
-                top: "3%",
-                containLabel: true,
+            axisLabel: {
+                color: "#1f2937",
             },
-            xAxis: {
-                type: "category",
-                data: ["2020", "2021", "2022", "2023", "2024", "2025"],
-                axisLine: {
-                    lineStyle: {
-                        color: "#e5e7eb",
-                    },
-                },
-                axisLabel: {
-                    color: "#1f2937",
+        },
+        yAxis: {
+            type: "value",
+            axisLine: {
+                show: false,
+            },
+            axisTick: {
+                show: false,
+            },
+            splitLine: {
+                lineStyle: {
+                    color: "#f3f4f6",
                 },
             },
-            yAxis: {
-                type: "value",
-                axisLine: {
-                    show: false,
+            axisLabel: {
+                color: "#1f2937",
+            },
+        },
+        series: [
+            {
+                name: "입사자 수",
+                type: "line",
+                smooth: true,
+                symbol: "none",
+                data: [18, 25, 32, 65, 58, 50],
+                lineStyle: {
+                    color: "rgba(141, 211, 199, 1)",
+                    width: 3,
                 },
-                axisTick: {
-                    show: false,
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: "#f3f4f6",
-                    },
-                },
-                axisLabel: {
-                    color: "#1f2937",
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        {
+                            offset: 0,
+                            color: "rgba(141, 211, 199, 0.3)",
+                        },
+                        {
+                            offset: 1,
+                            color: "rgba(141, 211, 199, 0.1)",
+                        },
+                    ]),
                 },
             },
-            series: [
-                {
-                    name: "입사자 수",
-                    type: "line",
-                    smooth: true,
-                    symbol: "none",
-                    data: [18, 25, 32, 65, 58, 50],
-                    lineStyle: {
-                        color: "rgba(141, 211, 199, 1)",
-                        width: 3,
-                    },
-                    areaStyle: {
-                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                            {
-                                offset: 0,
-                                color: "rgba(141, 211, 199, 0.3)",
-                            },
-                            {
-                                offset: 1,
-                                color: "rgba(141, 211, 199, 0.1)",
-                            },
-                        ]),
-                    },
-                },
-            ],
-        };
-        joinDateChart.setOption(joinDateOption);
-        // 창 크기 변경 시 차트 크기 조정
-        window.addEventListener("resize", function () {
-            satisfactionChart.resize();
-            joinDateChart.resize();
-        });
+        ],
+    };
+    joinDateChart.setOption(joinDateOption);
+    // 창 크기 변경 시 차트 크기 조정
+    window.addEventListener("resize", function () {
+        satisfactionChart.resize();
+        joinDateChart.resize();
     });
 </script>
 </body>

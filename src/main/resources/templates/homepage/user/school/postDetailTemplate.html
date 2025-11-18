@@ -1,19 +1,13 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title th:text="${postDto.post.title}"></title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet"
-    />
-    <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-            rel="stylesheet"
-    />
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <script>
         tailwind.config = {
@@ -40,70 +34,80 @@
         };
     </script>
     <style>
-        :where([class^="ri-"])::before { content: "\f3c2"; }
+        :where([class^="ri-"])::before {
+            content: "\f3c2";
+        }
+
         body {
             font-family: 'Noto Sans KR', sans-serif;
         }
+
         .nav-item.active {
             border-left: 4px solid #3b82f6;
             background-color: rgba(59, 130, 246, 0.1);
         }
+
         .nav-item:hover:not(.active) {
             background-color: rgba(59, 130, 246, 0.05);
         }
+
         .content-area {
             line-height: 1.8;
         }
+
         .content-area h3 {
             font-size: 1.125rem;
             font-weight: 600;
             margin: 1.5rem 0 1rem 0;
             color: #1f2937;
         }
+
         .content-area p {
             margin-bottom: 1rem;
             color: #4b5563;
         }
+
         .content-area ul {
             margin: 1rem 0;
             padding-left: 1.5rem;
         }
+
         .content-area li {
             margin-bottom: 0.5rem;
             color: #4b5563;
         }
+
         .content-area table {
             width: 100%;
             border-collapse: collapse;
             margin: 1.5rem 0;
         }
+
         .content-area th,
         .content-area td {
             border: 1px solid #e5e7eb;
             padding: 0.75rem;
             text-align: left;
         }
+
         .content-area th {
             background-color: #f9fafb;
             font-weight: 600;
         }
     </style>
-    <style>:root{ --header-h: 72px; }</style>
+    <style>:root {
+        --header-h: 72px;
+    }</style>
 </head>
 <body class="bg-gray-50 min-h-screen">
 <nav th:replace="~{homepage/common/nav-user :: nav-user}"></nav>
 <div class="container mx-auto px-4 py-8 pt-16 flex flex-col md:flex-row gap-8">
-    <aside class="w-full md:w-64 md:shrink-0 md:self-start md:sticky md:top-[calc(var(--header-h)+16px)]">
-        <div th:replace="~{homepage/user/school/school-left-sidebar :: school-left}"></div>
-    </aside>
+    <div th:replace="~{homepage/user/school/school-left-sidebar :: school-left}"></div>
     <div class="min-w-0 flex-1 py-6 px-0 md:px-6">
         <div class="bg-white rounded shadow p-6">
             <div class="flex items-center gap-4 mb-6">
-                <a
-                        th:href="@{'/school/' + ${school} + '/board/' + ${boardId}}"
-                        data-readdy="true"
-                        class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 text-sm font-medium text-gray-700 whitespace-nowrap !rounded-button"
-                >
+                <a th:href="@{'/school/' + ${school} + '/board/' + ${boardId}}" data-readdy="true"
+                   class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 text-sm font-medium text-gray-700 whitespace-nowrap !rounded-button">
                     <div class="w-5 h-5 flex items-center justify-center">
                         <i class="ri-arrow-left-line"></i>
                     </div>
@@ -112,19 +116,14 @@
                 <div class="text-sm text-gray-500">
                     <span>공지사항</span>
                     <span class="mx-2">></span>
-                    <span class="text-gray-700" th:text="${postDto.post.title}"
-                    ></span
-                    >
+                    <span class="text-gray-700" th:text="${postDto.post.title}"></span>
                 </div>
             </div>
 
             <div class="border-b border-gray-200 pb-6 mb-6">
                 <h1 class="text-2xl font-bold text-gray-800 mb-4" th:text="${postDto.post.title}">
-                    title
-                </h1>
-                <div
-                        class="flex flex-wrap items-center gap-6 text-sm text-gray-600"
-                >
+                    title </h1>
+                <div class="flex flex-wrap items-center gap-6 text-sm text-gray-600">
                     <div class="flex items-center gap-2">
                         <div class="w-5 h-5 flex items-center justify-center">
                             <i class="ri-user-line"></i>
@@ -183,23 +182,18 @@
                     <div class="flex-1">
                         <div class="p-4 border rounded hover:bg-gray-50 cursor-pointer">
                             <div class="flex items-center gap-3">
-                                <div
-                                        class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded"
-                                >
-                                    <div
-                                            class="w-5 h-5 flex items-center justify-center text-gray-600"
-                                    >
+                                <div class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded">
+                                    <div class="w-5 h-5 flex items-center justify-center text-gray-600">
                                         <i class="ri-arrow-up-line"></i>
                                     </div>
                                 </div>
                                 <div class="flex-1" th:if="${postDto.beforePost != null}">
-                                    <p class="text-sm text-gray-500"
-                                       th:attr="data-id=${postDto.beforePost.id}">이전글</p>
+                                    <p class="text-sm text-gray-500" th:attr="data-id=${postDto.beforePost.id}">이전글</p>
                                     <p class="font-medium text-gray-800 hover:text-primary"
                                        th:text="${postDto.beforePost.title}"></p>
                                 </div>
                                 <div class="flex-1" th:if="${postDto.beforePost == null}">
-                                    <p class="text-sm text-gray-500" >이전글</p>
+                                    <p class="text-sm text-gray-500">이전글</p>
                                     <p class="font-medium text-gray-800 hover:text-primary"></p>
                                 </div>
                             </div>
@@ -208,23 +202,18 @@
                     <div class="flex-1">
                         <div class="p-4 border rounded hover:bg-gray-50 cursor-pointer">
                             <div class="flex items-center gap-3">
-                                <div
-                                        class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded"
-                                >
-                                    <div
-                                            class="w-5 h-5 flex items-center justify-center text-gray-600"
-                                    >
+                                <div class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded">
+                                    <div class="w-5 h-5 flex items-center justify-center text-gray-600">
                                         <i class="ri-arrow-down-line"></i>
                                     </div>
                                 </div>
                                 <div class="flex-1" th:if="${postDto.afterPost != null}">
-                                    <p class="text-sm text-gray-500"
-                                       th:attr="data-id=${postDto.afterPost.id}">다음글</p>
+                                    <p class="text-sm text-gray-500" th:attr="data-id=${postDto.afterPost.id}">다음글</p>
                                     <p class="font-medium text-gray-800 hover:text-primary"
                                        th:text="${postDto.afterPost.title}"></p>
                                 </div>
                                 <div class="flex-1" th:if="${postDto.afterPost == null}">
-                                    <p class="text-sm text-gray-500" >다음글</p>
+                                    <p class="text-sm text-gray-500">다음글</p>
                                     <p class="font-medium text-gray-800 hover:text-primary"></p>
                                 </div>
                             </div>
@@ -234,12 +223,9 @@
             </div>
 
             <div class="flex justify-center mt-6">
-                <a
-                        th:href="@{'/school/' + ${school} + '/board/' + ${boardId}}"
-                        data-readdy="true"
-                        class="px-6 py-3 bg-primary text-white rounded hover:bg-primary/90 font-medium whitespace-nowrap !rounded-button"
-                >목록으로 돌아가기</a
-                >
+                <a th:href="@{'/school/' + ${school} + '/board/' + ${boardId}}" data-readdy="true"
+                   class="px-6 py-3 bg-primary text-white rounded hover:bg-primary/90 font-medium whitespace-nowrap !rounded-button">목록으로
+                    돌아가기</a>
             </div>
         </div>
     </div>
@@ -252,8 +238,7 @@
                 <h3 class="text-lg font-bold mb-4">대학교 국제 프로그램</h3>
                 <p class="text-gray-300 text-sm">
                     글로벌 인재 양성을 위한 최고의 교육 환경을 제공합니다. 다양한 국제
-                    프로그램을 통해 세계 각국의 학생들과 함께 성장하세요.
-                </p>
+                    프로그램을 통해 세계 각국의 학생들과 함께 성장하세요. </p>
             </div>
             <div>
                 <h3 class="text-lg font-bold mb-4">연락처</h3>
@@ -291,62 +276,56 @@
                 </ul>
             </div>
         </div>
-        <div
-                class="border-t border-gray-700 mt-8 pt-6 text-center text-sm text-gray-400"
-        >
+        <div class="border-t border-gray-700 mt-8 pt-6 text-center text-sm text-gray-400">
             <p>© 2025 대학교 국제 프로그램. All rights reserved.</p>
         </div>
     </div>
 </footer>
 
-<script id="downloadScript">
-    document.addEventListener("DOMContentLoaded", function () {
-        const downloadButtons = Array.from(document.querySelectorAll("button"));
-        downloadButtons.forEach((button) => {
-            if (button.textContent.includes("다운로드")) {
-                button.addEventListener("click", function () {
-                    const fileName = this
-                        .closest(".flex")
-                        .querySelector(".font-medium").textContent;
-                    alert(`${fileName} 파일을 다운로드합니다.`);
-                });
-            }
-        });
+<script id="downloadScript" type="module">
+    const downloadButtons = Array.from(document.querySelectorAll("button"));
+    downloadButtons.forEach((button) => {
+        if (button.textContent.includes("다운로드")) {
+            button?.addEventListener("click", function () {
+                const fileName = this
+                    .closest(".flex")
+                    .querySelector(".font-medium").textContent;
+                alert(`${fileName} 파일을 다운로드합니다.`);
+            });
+        }
     });
 </script>
 
-<script id="navigationScript" >
-    document.addEventListener("DOMContentLoaded", function () {
-        const prevPost = document.querySelector(
-            ".cursor-pointer:has(.ri-arrow-up-line)",
-        );
-        const nextPost = document.querySelector(
-            ".cursor-pointer:has(.ri-arrow-down-line)",
-        );
+<script id="navigationScript" type="module">
+    const prevPost = document.querySelector(
+        ".cursor-pointer:has(.ri-arrow-up-line)",
+    );
+    const nextPost = document.querySelector(
+        ".cursor-pointer:has(.ri-arrow-down-line)",
+    );
 
-        const school = "[[${school}]]";
-        const boardId = [[${boardId}]];
+    const school = "[[${school}]]";
+    const boardId = [[${boardId}]];
 
-        if (prevPost) {
-            const pTag = prevPost.querySelector("p[data-id]");
-            if (pTag && pTag.hasAttribute("data-id")) {
-                const postId = pTag.dataset.id;
-                prevPost.addEventListener("click", function () {
-                    window.location.href = `/school/${school}/board/${boardId}/post/${postId}`;
-                });
-            }
+    if (prevPost) {
+        const pTag = prevPost.querySelector("p[data-id]");
+        if (pTag && pTag.hasAttribute("data-id")) {
+            const postId = pTag.dataset.id;
+            prevPost?.addEventListener("click", function () {
+                window.location.href = `/school/${school}/board/${boardId}/post/${postId}`;
+            });
         }
+    }
 
-        if (nextPost) {
-            const pTag = nextPost.querySelector("p[data-id]");
-            if (pTag && pTag.hasAttribute("data-id")) {
-                const postId = pTag.dataset.id;
-                nextPost.addEventListener("click", function () {
-                    window.location.href = `/school/${school}/board/${boardId}/post/${postId}`;
-                });
-            }
+    if (nextPost) {
+        const pTag = nextPost.querySelector("p[data-id]");
+        if (pTag && pTag.hasAttribute("data-id")) {
+            const postId = pTag.dataset.id;
+            nextPost?.addEventListener("click", function () {
+                window.location.href = `/school/${school}/board/${boardId}/post/${postId}`;
+            });
         }
-    });
+    }
 </script>
 </body>
 </html>

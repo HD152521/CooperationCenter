@@ -10,4 +10,4 @@ const profileUrl = "/api/v1/profile"
 const fileUrl="/api/v1/file"
 const fileAdminUrl="/api/v1/file"
 
-// <script src="/js/homepage/url.js"></script>
+export default {surveyUrl, surveyAdminUrl, memberUrl, memberAdminUrl, profileUrl, fileUrl, fileAdminUrl}

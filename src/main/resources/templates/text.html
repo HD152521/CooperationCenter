@@ -15,14 +15,15 @@
 <textarea id="intro-editor" name="content"></textarea>
 
 <button id="file-upload-btn" type="button" style="margin-top: 10px;">📎 파일 첨부</button>
-<input type="file" id="file-input" style="display:none" multiple />
+<input type="file" id="file-input" style="display:none" multiple/>
 
 <!-- 저장 버튼 -->
-<button id="save-button" style="margin-top: 20px; padding: 10px 20px; background-color: #3B82F6; color: white; border: none; border-radius: 4px;">
+<button id="save-button"
+        style="margin-top: 20px; padding: 10px 20px; background-color: #3B82F6; color: white; border: none; border-radius: 4px;">
     저장하기
 </button>
 
-<script>
+<script type="module">
     // SunEditor 초기화
     const editor = SUNEDITOR.create('intro-editor', {
         lang: SUNEDITOR_LANG['ko'],
@@ -36,20 +37,18 @@
     });
 
     // 1. 기존 학교 소개 내용 불러오기
-    window.addEventListener("DOMContentLoaded", function () {
-        fetch("/api/school/intro")
-            .then(response => response.text())
-            .then(data => {
-                editor.setContents(data); // 에디터에 내용 설정
-            })
-            .catch(err => {
-                alert("내용을 불러오는 중 오류가 발생했습니다.");
-                console.error(err);
-            });
-    });
+    fetch("/api/school/intro")
+        .then(response => response.text())
+        .then(data => {
+            editor.setContents(data); // 에디터에 내용 설정
+        })
+        .catch(err => {
+            alert("내용을 불러오는 중 오류가 발생했습니다.");
+            console.error(err);
+        });
 
     // 2. 저장 버튼 클릭 시 내용 전송
-    document.getElementById("save-button").addEventListener("click", function () {
+    document.getElementById("save-button")?.addEventListener("click", function () {
         const content = editor.getContents(); // 에디터에서 HTML 가져옴
 
         fetch("/api/school/intro", {
@@ -57,7 +56,7 @@
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ content: content })
+            body: JSON.stringify({content: content})
         })
             .then(response => {
                 if (response.ok) {
@@ -76,9 +75,9 @@
     const fileInput = document.getElementById("file-input");
     const fileBtn = document.getElementById("file-upload-btn");
     const uploadedFiles = []; // 여기에 { url, name } 형태로 저장
-    fileBtn.addEventListener("click", () => fileInput.click());
+    fileBtn?.addEventListener("click", () => fileInput.click());
 
-    fileInput.addEventListener("change", function () {
+    fileInput?.addEventListener("change", function () {
         const files = Array.from(this.files);
         if (files.length === 0) return;
 
