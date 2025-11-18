@@ -104,107 +104,99 @@
 
     </div>
 </main>
-
-<script type="module" id="api-bootstrap">
-    import { api } from "/js/homepage/lib/apiClient.js";
-    window.api = api;
-    window.dispatchEvent(new Event("api-ready"));
-</script>
-
-        <script id="region-dropdown-loader">
-            (function () {
-                let selectedRegion = "";
-
-                async function initRegionFilter() {
-                    const menu = document.getElementById("region-menu");
-                    const menuButton = document.getElementById("region-menu-button");
-                    const list = document.querySelector("#region-menu .region-menu-list");
-                    const searchButton = document.getElementById("searchButton");
-                    const keywordInput = document.getElementById("searchKeyword");
-
-                    if (!menu || !menuButton || !list) {
-                        console.warn("region filter 요소를 찾을 수 없습니다.");
-                        return;
-                    }
-
-                    // 1) 드롭다운 열기/닫기 토글
-                    menuButton.addEventListener("click", () => {
-                        menu.classList.toggle("hidden");
-                    });
-
-                    // 2) ESC / 바깥 클릭 시 닫기 (선택)
-                    document.addEventListener("click", (e) => {
-                        if (!menu.contains(e.target) && !menuButton.contains(e.target)) {
-                            menu.classList.add("hidden");
-                        }
-                    });
-
-                    // 3) 지역 목록 API 호출
-                    try {
-                        const res = await window.api.get("/api/v1/agency/region");
-                        console.log("region api result:", res);
-
-                        const regions =
-                            Array.isArray(res) ? res
-                                : Array.isArray(res.data) ? res.data
-                                    : Array.isArray(res.result) ? res.result
-                                        : [];
-
-                        list.innerHTML = ""; // 초기화
-                        const btn = document.createElement("button");
-                        btn.type = "button";
-                        btn.className = "block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100";
-                        btn.textContent = "전체";
-                        list.appendChild(btn);
-                        regions.forEach(region => {
-                            const btn = document.createElement("button");
-                            btn.type = "button";
-                            btn.className = "block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100";
-                            btn.textContent = region;
-                            list.appendChild(btn);
-                        });
-
-                    } catch (e) {
-                        console.error("지역 목록 불러오기 실패:", e);
-                        return;
-                    }
-
-
-
-                    // 5) 버튼 클릭 시 선택값 반영 (이벤트 위임)
-                    list.addEventListener("click", (e) => {
-                        const target = e.target;
-                        if (!target.matches("button")) return;
-
-                        selectedRegion = target.textContent.trim();
-                        const labelSpan = menuButton.querySelector("span");
-                        if (labelSpan) {
-                            labelSpan.textContent = selectedRegion;
-                        }
-                        menu.classList.add("hidden");
-                    });
-
-                    if (searchButton) {
-                        searchButton.addEventListener("click", (e) => {
-                            e.preventDefault();
-
-                            const keyword = keywordInput?.value.trim() || "";
-                            const params = new URLSearchParams();
-
-                            if (keyword) params.append("keyword", keyword);
-                            if (selectedRegion) params.append("region", selectedRegion);
-
-                            window.location.href = `/agency/list?${params.toString()}`;
-                        });
-                    }
-
-                }
-
-                document.addEventListener("DOMContentLoaded", () => {
-                    initRegionFilter();
-                });
-            })();
-        </script>
-
 </body>
+
+<th:block th:fragment="script">
+    <script id="region-dropdown-loader" type="module">
+        let selectedRegion = "";
+
+        async function initRegionFilter() {
+            const menu = document.getElementById("region-menu");
+            const menuButton = document.getElementById("region-menu-button");
+            const list = document.querySelector("#region-menu .region-menu-list");
+            const searchButton = document.getElementById("searchButton");
+            const keywordInput = document.getElementById("searchKeyword");
+
+            if (!menu || !menuButton || !list) {
+                console.warn("region filter 요소를 찾을 수 없습니다.");
+                return;
+            }
+
+            // 1) 드롭다운 열기/닫기 토글
+            menuButton.addEventListener("click", () => {
+                menu.classList.toggle("hidden");
+            });
+
+            // 2) ESC / 바깥 클릭 시 닫기 (선택)
+            document.addEventListener("click", (e) => {
+                if (!menu.contains(e.target) && !menuButton.contains(e.target)) {
+                    menu.classList.add("hidden");
+                }
+            });
+
+            // 3) 지역 목록 API 호출
+            try {
+                const res = await window.api.get("/agency/region");
+                console.log("region api result:", res);
+
+                const regions =
+                    Array.isArray(res) ? res
+                        : Array.isArray(res.data) ? res.data
+                            : Array.isArray(res.result) ? res.result
+                                : [];
+
+                list.innerHTML = ""; // 초기화
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100";
+                btn.textContent = "전체";
+                list.appendChild(btn);
+                regions.forEach(region => {
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100";
+                    btn.textContent = region;
+                    list.appendChild(btn);
+                });
+
+            } catch (e) {
+                console.error("지역 목록 불러오기 실패:", e);
+                return;
+            }
+
+
+
+            // 5) 버튼 클릭 시 선택값 반영 (이벤트 위임)
+            list.addEventListener("click", (e) => {
+                const target = e.target;
+                if (!target.matches("button")) return;
+
+                selectedRegion = target.textContent.trim();
+                const labelSpan = menuButton.querySelector("span");
+                if (labelSpan) {
+                    labelSpan.textContent = selectedRegion;
+                }
+                menu.classList.add("hidden");
+            });
+
+            if (searchButton) {
+                searchButton.addEventListener("click", (e) => {
+                    e.preventDefault();
+
+                    const keyword = keywordInput?.value.trim() || "";
+                    const params = new URLSearchParams();
+
+                    if (keyword) params.append("keyword", keyword);
+                    if (selectedRegion) params.append("region", selectedRegion);
+
+                    window.location.href = `/agency/list?${params.toString()}`;
+                });
+            }
+
+        }
+
+        initRegionFilter().then();
+    </script>
+</th:block>
+
 </html>

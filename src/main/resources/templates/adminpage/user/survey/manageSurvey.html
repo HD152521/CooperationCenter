@@ -1,38 +1,7 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html th:replace="~{fragments/layout/base :: base(~{::head}, ~{::body})}" xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>설문조사 관리 - 관리자 대시보드</title>
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"/>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#3498DB",
-                        secondary: "#2C3E50",
-                    },
-                    borderRadius: {
-                        none: "0px",
-                        sm: "4px",
-                        DEFAULT: "8px",
-                        md: "12px",
-                        lg: "16px",
-                        xl: "20px",
-                        "2xl": "24px",
-                        "3xl": "32px",
-                        full: "9999px",
-                        button: "8px",
-                    },
-                },
-            },
-        };
-    </script>
     <style>
         :where([class^="ri-"])::before {
             content: "\f3c2";
@@ -174,224 +143,225 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen text-gray-100">
-<div class="flex">
-    <aside th:replace="~{adminpage/common/leftSide :: leftSide}"></aside>
-    <main class="flex-1 p-8">
-        <header class="mb-8">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-3xl font-bold text-white">설문조사 관리</h1>
-                    <p class="text-gray-400 mt-2">
-                        설문조사 현황을 관리하고 모니터링하세요 </p>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <div class="text-right">
+<body>
+<div class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen text-gray-100">
+    <div class="flex">
+        <aside th:replace="~{adminpage/common/leftSide :: leftSide}"></aside>
+        <main class="flex-1 p-8">
+            <header class="mb-8">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-white">설문조사 관리</h1>
+                        <p class="text-gray-400 mt-2">
+                            설문조사 현황을 관리하고 모니터링하세요 </p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-right">
 
-                    </div>
-                </div>
-            </div>
-        </header>
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-            <div class="admin-card rounded-xl p-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-400 text-sm">전체 설문</p>
-                        <p class="text-3xl font-bold text-white mt-2" th:text="${stats.total}">0</p>
-                        <p class="text-green-400 text-sm mt-1"></p>
-                    </div>
-                    <div class="w-12 h-12 bg-primary bg-opacity-20 rounded-lg flex items-center justify-center">
-                        <i class="ri-file-list-line text-primary text-xl"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="admin-card rounded-xl p-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-400 text-sm">진행전</p>
-                        <p class="text-3xl font-bold text-white mt-2" th:text="${stats.before}">0</p>
-                    </div>
-                    <div class="w-12 h-12 bg-yellow-500 bg-opacity-20 rounded-lg flex items-center justify-center">
-                        <i class="ri-draft-line text-yellow-400 text-xl"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="admin-card rounded-xl p-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-400 text-sm">진행중</p>
-                        <p class="text-3xl font-bold text-white mt-2" th:text="${stats.active}">0</p>
-
-                    </div>
-                    <div class="w-12 h-12 bg-green-500 bg-opacity-20 rounded-lg flex items-center justify-center">
-                        <i class="ri-play-circle-line text-green-400 text-xl"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="admin-card rounded-xl p-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-400 text-sm">완료됨</p>
-                        <p class="text-3xl font-bold text-white mt-2" th:text="${stats.completed}">0</p>
-                    </div>
-                    <div class="w-12 h-12 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
-                        <i class="ri-check-circle-line text-blue-400 text-xl"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="admin-card rounded-xl p-6 mb-8">
-            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-                <div class="flex items-center space-x-4">
-                    <div class="relative">
-                        <input type="text" id="search-input" placeholder="설문 제목 또는 설명으로 검색"
-                               class="bg-gray-700 text-white pl-10 pr-4 py-2 rounded-lg text-sm border-none w-64"/>
-                        <div class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 flex items-center justify-center text-gray-400">
-                            <i class="ri-search-line"></i>
                         </div>
                     </div>
-                    <select id="status-filter"
-                            class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8">
-                        <option value="">전체 상태</option>
-                        <option value="active">진행중</option>
-                        <option value="completed">완료됨</option>
-                        <option value="draft">임시저장</option>
-                        <option value="inactive">비활성</option>
-                    </select>
-                    <select id="date-filter"
-                            class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8">
-                        <option value="">전체 기간</option>
-                        <option value="7days">최근 7일</option>
-                        <option value="30days">최근 30일</option>
-                        <option value="90days">최근 90일</option>
-                    </select>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <select id="sort-filter"
-                            class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8">
-                        <option value="latest">최신순</option>
-                        <option value="title">제목순</option>
-                        <option value="responses">응답수순</option>
-                        <option value="date">기간순</option>
-                    </select>
+            </header>
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+                <div class="admin-card rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">전체 설문</p>
+                            <p class="text-3xl font-bold text-white mt-2" th:text="${stats.total}">0</p>
+                            <p class="text-green-400 text-sm mt-1"></p>
+                        </div>
+                        <div class="w-12 h-12 bg-primary bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="ri-file-list-line text-primary text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="admin-card rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">진행전</p>
+                            <p class="text-3xl font-bold text-white mt-2" th:text="${stats.before}">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-yellow-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="ri-draft-line text-yellow-400 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="admin-card rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">진행중</p>
+                            <p class="text-3xl font-bold text-white mt-2" th:text="${stats.active}">0</p>
+
+                        </div>
+                        <div class="w-12 h-12 bg-green-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="ri-play-circle-line text-green-400 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="admin-card rounded-xl p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">완료됨</p>
+                            <p class="text-3xl font-bold text-white mt-2" th:text="${stats.completed}">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-500 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="ri-check-circle-line text-blue-400 text-xl"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead>
-                    <tr class="table-header text-left">
-                        <th class="p-3 text-sm font-medium text-gray-300">
-                            <label class="custom-checkbox">
-                                <input type="checkbox" id="select-all"/>
-                                <span class="checkmark"></span>
-                            </label>
-                        </th>
-                        <th class="p-3 text-sm font-medium text-gray-300">
-                            설문 제목
-                        </th>
-                        <th class="p-3 text-sm font-medium text-gray-300">생성일</th>
-                        <th class="p-3 text-sm font-medium text-gray-300">기간</th>
-                        <th class="p-3 text-sm font-medium text-gray-300">응답 수</th>
-                        <th class="p-3 text-sm font-medium text-gray-300">상태</th>
-                        <th class="p-3 text-sm font-medium text-gray-300">작업</th>
-                    </tr>
-                    </thead>
-                    <tbody id="survey-table-body">
-                    <tr class="table-row border-b border-gray-700" th:each="survey : ${surveys.content}"
-                        th:attr="data-survey-id=${survey.surveyId}">
-                        <td class="p-3">
-                            <label class="custom-checkbox">
-                                <input type="checkbox" class="survey-checkbox"/>
-                                <span class="checkmark"></span>
-                            </label>
-                        </td>
-                        <td class="p-3">
-                            <div>
-                                <p class="text-white font-medium" th:text="${survey.title}">설문 제목</p>
-                                <!--                                <p class="text-gray-400 text-sm" th:text="${survey.description}">설문 설명</p>-->
+            <div class="admin-card rounded-xl p-6 mb-8">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <input type="text" id="search-input" placeholder="설문 제목 또는 설명으로 검색"
+                                   class="bg-gray-700 text-white pl-10 pr-4 py-2 rounded-lg text-sm border-none w-64"/>
+                            <div class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 flex items-center justify-center text-gray-400">
+                                <i class="ri-search-line"></i>
                             </div>
-                        </td>
-                        <td class="p-3 text-gray-400" th:text="${#temporals.format(survey.createdAt, 'yyyy-MM-dd')}">
-                            생성일
-                        </td>
-                        <td class="p-3 text-gray-300">
-                            <div class="text-sm">
-                                <p th:text="${survey.startDate} + ' ~ ' + ${survey.endDate}">기간</p>
-                                <p class="text-gray-400"
-                                   th:text="${survey.lastDate >= 0} ? ${survey.lastDate} + '일간' : '종료일 지남'">일수</p>
-                            </div>
-                        </td>
-                        <td class="p-3">
-                            <div class="text-center">
-                                <p class="text-white font-bold text-lg" th:text="${survey.participant}">응답수</p>
-                                <!--                                <p class="text-gray-400 text-sm" th:text="'목표: ' + ${survey.targetCount}">목표 응답</p>-->
-                            </div>
-                        </td>
-                        <td class="p-3">
+                        </div>
+                        <select id="status-filter"
+                                class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8">
+                            <option value="">전체 상태</option>
+                            <option value="active">진행중</option>
+                            <option value="completed">완료됨</option>
+                            <option value="draft">임시저장</option>
+                            <option value="inactive">비활성</option>
+                        </select>
+                        <select id="date-filter"
+                                class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8">
+                            <option value="">전체 기간</option>
+                            <option value="7days">최근 7일</option>
+                            <option value="30days">최근 30일</option>
+                            <option value="90days">최근 90일</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <select id="sort-filter"
+                                class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8">
+                            <option value="latest">최신순</option>
+                            <option value="title">제목순</option>
+                            <option value="responses">응답수순</option>
+                            <option value="date">기간순</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                        <tr class="table-header text-left">
+                            <th class="p-3 text-sm font-medium text-gray-300">
+                                <label class="custom-checkbox">
+                                    <input type="checkbox" id="select-all"/>
+                                    <span class="checkmark"></span>
+                                </label>
+                            </th>
+                            <th class="p-3 text-sm font-medium text-gray-300">
+                                설문 제목
+                            </th>
+                            <th class="p-3 text-sm font-medium text-gray-300">생성일</th>
+                            <th class="p-3 text-sm font-medium text-gray-300">기간</th>
+                            <th class="p-3 text-sm font-medium text-gray-300">응답 수</th>
+                            <th class="p-3 text-sm font-medium text-gray-300">상태</th>
+                            <th class="p-3 text-sm font-medium text-gray-300">작업</th>
+                        </tr>
+                        </thead>
+                        <tbody id="survey-table-body">
+                        <tr class="table-row border-b border-gray-700" th:each="survey : ${surveys.content}"
+                            th:attr="data-survey-id=${survey.surveyId}">
+                            <td class="p-3">
+                                <label class="custom-checkbox">
+                                    <input type="checkbox" class="survey-checkbox"/>
+                                    <span class="checkmark"></span>
+                                </label>
+                            </td>
+                            <td class="p-3">
+                                <div>
+                                    <p class="text-white font-medium" th:text="${survey.title}">설문 제목</p>
+                                    <!--                                <p class="text-gray-400 text-sm" th:text="${survey.description}">설문 설명</p>-->
+                                </div>
+                            </td>
+                            <td class="p-3 text-gray-400" th:text="${#temporals.format(survey.createdAt, 'yyyy-MM-dd')}">
+                                생성일
+                            </td>
+                            <td class="p-3 text-gray-300">
+                                <div class="text-sm">
+                                    <p th:text="${survey.startDate} + ' ~ ' + ${survey.endDate}">기간</p>
+                                    <p class="text-gray-400"
+                                       th:text="${survey.lastDate >= 0} ? ${survey.lastDate} + '일간' : '종료일 지남'">일수</p>
+                                </div>
+                            </td>
+                            <td class="p-3">
+                                <div class="text-center">
+                                    <p class="text-white font-bold text-lg" th:text="${survey.participant}">응답수</p>
+                                    <!--                                <p class="text-gray-400 text-sm" th:text="'목표: ' + ${survey.targetCount}">목표 응답</p>-->
+                                </div>
+                            </td>
+                            <td class="p-3">
                             <span th:class="
                                 ${survey.isBefore} ? 'status-draft' :
                                 (${survey.lastDate >= 0} ? 'status-active' : 'status-completed')
                                 + ' px-3 py-1 rounded-full text-sm font-medium'">
                                 <span th:text="${survey.isBefore} ? '진행 전' : (${survey.lastDate >= 0} ? '진행중' : '완료됨')">상태</span>
                             </span>
-                        </td>
-                        <td class="p-3">
-                            <div class="flex space-x-2">
-                                <button class="px-3 py-1 bg-blue-600 text-white text-sm rounded-button hover:bg-blue-500 transition-colors whitespace-nowrap view-details-btn">
-                                    <div class="w-3 h-3 inline-flex items-center justify-center mr-1"><i
-                                            class="ri-eye-line"></i></div>
-                                    상세
-                                </button>
-                                <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap edit-btn">
-                                    <div class="w-3 h-3 inline-flex items-center justify-center mr-1"><i
-                                            class="ri-edit-line"></i></div>
-                                    편집
-                                </button>
-                                <button class="px-3 py-1 bg-red-600 text-white text-sm rounded-button hover:bg-red-500 transition-colors whitespace-nowrap delete-btn">
-                                    <div class="w-3 h-3 inline-flex items-center justify-center mr-1"><i
-                                            class="ri-delete-bin-line"></i></div>
-                                    삭제
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="flex items-center justify-between mt-6" th:if="${surveys != null}">
-                <div class="flex items-center space-x-4">
-                    <!-- per-page -->
-                    <select id="per-page" class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8"
-                            onchange="(function(sel){
+                            </td>
+                            <td class="p-3">
+                                <div class="flex space-x-2">
+                                    <button class="px-3 py-1 bg-blue-600 text-white text-sm rounded-button hover:bg-blue-500 transition-colors whitespace-nowrap view-details-btn">
+                                        <div class="w-3 h-3 inline-flex items-center justify-center mr-1"><i
+                                                class="ri-eye-line"></i></div>
+                                        상세
+                                    </button>
+                                    <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap edit-btn">
+                                        <div class="w-3 h-3 inline-flex items-center justify-center mr-1"><i
+                                                class="ri-edit-line"></i></div>
+                                        편집
+                                    </button>
+                                    <button class="px-3 py-1 bg-red-600 text-white text-sm rounded-button hover:bg-red-500 transition-colors whitespace-nowrap delete-btn">
+                                        <div class="w-3 h-3 inline-flex items-center justify-center mr-1"><i
+                                                class="ri-delete-bin-line"></i></div>
+                                        삭제
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="flex items-center justify-between mt-6" th:if="${surveys != null}">
+                    <div class="flex items-center space-x-4">
+                        <!-- per-page -->
+                        <select id="per-page" class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8"
+                                onchange="(function(sel){
               const url = new URL(window.location.href);
               url.searchParams.set('size', sel.value);
               url.searchParams.set('page', 0); // 사이즈 바꾸면 첫 페이지로
               window.location.href = url.toString();
             })(this)">
-                        <option th:value="10" th:selected="${surveys.size == 10}">10개씩 보기</option>
-                        <option th:value="25" th:selected="${surveys.size == 25}">25개씩 보기</option>
-                        <option th:value="50" th:selected="${surveys.size == 50}">50개씩 보기</option>
-                        <option th:value="100" th:selected="${surveys.size == 100}">100개씩 보기</option>
-                    </select>
+                            <option th:value="10" th:selected="${surveys.size == 10}">10개씩 보기</option>
+                            <option th:value="25" th:selected="${surveys.size == 25}">25개씩 보기</option>
+                            <option th:value="50" th:selected="${surveys.size == 50}">50개씩 보기</option>
+                            <option th:value="100" th:selected="${surveys.size == 100}">100개씩 보기</option>
+                        </select>
 
-                    <!-- "총 X개 중 A-B개 표시" -->
-                    <p class="text-gray-400 text-sm" th:with="
+                        <!-- "총 X개 중 A-B개 표시" -->
+                        <p class="text-gray-400 text-sm" th:with="
      start=${surveys.totalElements == 0 ? 0 : (surveys.number * surveys.size + 1)},
      end=${surveys.number * surveys.size + surveys.numberOfElements}
    " th:text="'총 ' + ${surveys.totalElements} + '개 중 ' + ${start} + '-' + ${end} + '개 표시'">
-                        총 0개 중 0-0개 표시 </p>
-                </div>
+                            총 0개 중 0-0개 표시 </p>
+                    </div>
 
-                <!-- 페이지 버튼들 -->
-                <div class="flex items-center space-x-2" th:with="
+                    <!-- 페이지 버튼들 -->
+                    <div class="flex items-center space-x-2" th:with="
          curr=${surveys.number},
          total=${surveys.totalPages},
          start=${T(java.lang.Math).max(0, curr - 2)},
          end=${T(java.lang.Math).min(total - 1, curr + 2)}
        ">
-                    <!-- 이전 -->
-                    <a class="px-3 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                       th:classappend="${surveys.first} ? ' opacity-50 pointer-events-none' : ''" th:href="@{/admin/surveys(
+                        <!-- 이전 -->
+                        <a class="px-3 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                           th:classappend="${surveys.first} ? ' opacity-50 pointer-events-none' : ''" th:href="@{/admin/surveys(
          page=${curr - 1},
          size=${surveys.size},
          sort=${param.sort},
@@ -399,14 +369,14 @@
          status=${param.status},
          date=${param.date}
        )}">
-                        <div class="w-4 h-4 flex items-center justify-center"><i class="ri-arrow-left-line"></i></div>
-                    </a>
+                            <div class="w-4 h-4 flex items-center justify-center"><i class="ri-arrow-left-line"></i></div>
+                        </a>
 
-                    <!-- 윈도우 페이지 번호 -->
-                    <a class="px-3 py-2 rounded-lg transition-colors" th:each="i : ${#numbers.sequence(start, end)}"
-                       th:text="${i + 1}"
-                       th:classappend="${i} == ${curr} ? ' bg-primary text-white' : ' bg-gray-700 text-white hover:bg-gray-600'"
-                       th:href="@{/admin/surveys(
+                        <!-- 윈도우 페이지 번호 -->
+                        <a class="px-3 py-2 rounded-lg transition-colors" th:each="i : ${#numbers.sequence(start, end)}"
+                           th:text="${i + 1}"
+                           th:classappend="${i} == ${curr} ? ' bg-primary text-white' : ' bg-gray-700 text-white hover:bg-gray-600'"
+                           th:href="@{/admin/surveys(
          page=${i},
          size=${surveys.size},
          sort=${param.sort},
@@ -415,10 +385,10 @@
          date=${param.date}
        )}">1</a>
 
-                    <!-- 말줄임 + 마지막 페이지(옵션) -->
-                    <span class="px-3 py-2 text-gray-400" th:if="${end < total - 1}">...</span>
-                    <a class="px-3 py-2 rounded-lg transition-colors bg-gray-700 text-white hover:bg-gray-600"
-                       th:if="${end < total - 1}" th:text="${total}" th:href="@{/admin/surveys(
+                        <!-- 말줄임 + 마지막 페이지(옵션) -->
+                        <span class="px-3 py-2 text-gray-400" th:if="${end < total - 1}">...</span>
+                        <a class="px-3 py-2 rounded-lg transition-colors bg-gray-700 text-white hover:bg-gray-600"
+                           th:if="${end < total - 1}" th:text="${total}" th:href="@{/admin/surveys(
          page=${total - 1},
          size=${surveys.size},
          sort=${param.sort},
@@ -427,9 +397,9 @@
          date=${param.date}
        )}">0</a>
 
-                    <!-- 다음 -->
-                    <a class="px-3 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                       th:classappend="${surveys.last} ? ' opacity-50 pointer-events-none' : ''" th:href="@{/admin/surveys(
+                        <!-- 다음 -->
+                        <a class="px-3 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                           th:classappend="${surveys.last} ? ' opacity-50 pointer-events-none' : ''" th:href="@{/admin/surveys(
          page=${curr + 1},
          size=${surveys.size},
          sort=${param.sort},
@@ -437,29 +407,30 @@
          status=${param.status},
          date=${param.date}
        )}">
-                        <div class="w-4 h-4 flex items-center justify-center"><i class="ri-arrow-right-line"></i></div>
-                    </a>
+                            <div class="w-4 h-4 flex items-center justify-center"><i class="ri-arrow-right-line"></i></div>
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </main>
-</div>
+        </main>
+    </div>
 
-<div id="delete-survey-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4">
-        <h3 class="text-xl font-bold text-white mb-4">설문조사 삭제</h3>
-        <p class="text-gray-300 mb-6">
-            선택한 설문조사를 삭제하시겠습니까? 모든 응답 데이터도 함께 삭제되며,
-            이 작업은 되돌릴 수 없습니다. </p>
-        <div class="flex space-x-4">
-            <button id="cancel-delete-survey"
-                    class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
-                취소
-            </button>
-            <button id="confirm-delete-survey"
-                    class="flex-1 px-4 py-2 bg-red-600 text-white rounded-button hover:bg-red-500 transition-colors whitespace-nowrap">
-                삭제
-            </button>
+    <div id="delete-survey-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-white mb-4">설문조사 삭제</h3>
+            <p class="text-gray-300 mb-6">
+                선택한 설문조사를 삭제하시겠습니까? 모든 응답 데이터도 함께 삭제되며,
+                이 작업은 되돌릴 수 없습니다. </p>
+            <div class="flex space-x-4">
+                <button id="cancel-delete-survey"
+                        class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
+                    취소
+                </button>
+                <button id="confirm-delete-survey"
+                        class="flex-1 px-4 py-2 bg-red-600 text-white rounded-button hover:bg-red-500 transition-colors whitespace-nowrap">
+                    삭제
+                </button>
+            </div>
         </div>
     </div>
 </div>

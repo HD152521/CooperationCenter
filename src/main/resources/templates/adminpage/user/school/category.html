@@ -1,38 +1,7 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html th:replace="~{fragments/layout/base :: base(~{::head}, ~{::body})}" xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>관리자 대시보드</title>
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"/>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#3498DB",
-                        secondary: "#2C3E50",
-                    },
-                    borderRadius: {
-                        none: "0px",
-                        sm: "4px",
-                        DEFAULT: "8px",
-                        md: "12px",
-                        lg: "16px",
-                        xl: "20px",
-                        "2xl": "24px",
-                        "3xl": "32px",
-                        full: "9999px",
-                        button: "8px",
-                    },
-                },
-            },
-        };
-    </script>
     <style>
         :where([class^="ri-"])::before {
             content: "\f3c2";
@@ -56,417 +25,414 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen text-gray-100">
-<div class="flex">
-    <aside class="w-64 bg-gray-800 shadow-2xl min-h-screen">
-        <div class="p-6 border-b border-gray-700">
-            <h1 class="font-['Pacifico'] text-2xl text-white">logo</h1>
-            <p class="text-sm text-gray-400 mt-2">관리자 패널</p>
-        </div>
-        <nav class="p-4">
-            <ul class="space-y-2">
-                <li>
-                    <a href="#" class="flex items-center p-3 rounded-lg bg-primary text-white">
-                        <div class="w-5 h-5 flex items-center justify-center mr-3">
-                            <i class="ri-dashboard-line"></i>
-                        </div>
-                        대시보드
-                    </a>
-                </li>
-                <li>
-                    <a href="#"
-                       class="flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition-colors">
-                        <div class="w-5 h-5 flex items-center justify-center mr-3">
-                            <i class="ri-user-line"></i>
-                        </div>
-                        사용자 관리
-                    </a>
-                </li>
-                <li>
-                    <a href="#"
-                       class="flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition-colors">
-                        <div class="w-5 h-5 flex items-center justify-center mr-3">
-                            <i class="ri-file-list-line"></i>
-                        </div>
-                        설문조사 관리
-                    </a>
-                </li>
-                <li>
-                    <a href="#"
-                       class="flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition-colors">
-                        <div class="w-5 h-5 flex items-center justify-center mr-3">
-                            <i class="ri-settings-line"></i>
-                        </div>
-                        시스템 설정
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </aside>
-    <main class="flex-1 p-8">
-        <header class="mb-8">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-3xl font-bold text-white">관리자 대시보드</h1>
-                    <p class="text-gray-400 mt-2">시스템 현황을 한눈에 확인하세요</p>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <div class="bg-red-500 text-white px-3 py-1 rounded-full text-sm">
-                        <div class="w-4 h-4 inline-flex items-center justify-center mr-1">
-                            <i class="ri-notification-line ri-sm"></i>
-                        </div>
-                        5개 대기
+<body>
+<div class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen text-gray-100">
+    <div class="flex">
+        <aside class="w-64 bg-gray-800 shadow-2xl min-h-screen">
+            <div class="p-6 border-b border-gray-700">
+                <h1 class="font-['Pacifico'] text-2xl text-white">logo</h1>
+                <p class="text-sm text-gray-400 mt-2">관리자 패널</p>
+            </div>
+            <nav class="p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" class="flex items-center p-3 rounded-lg bg-primary text-white">
+                            <div class="w-5 h-5 flex items-center justify-center mr-3">
+                                <i class="ri-dashboard-line"></i>
+                            </div>
+                            대시보드
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#"
+                           class="flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition-colors">
+                            <div class="w-5 h-5 flex items-center justify-center mr-3">
+                                <i class="ri-user-line"></i>
+                            </div>
+                            사용자 관리
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#"
+                           class="flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition-colors">
+                            <div class="w-5 h-5 flex items-center justify-center mr-3">
+                                <i class="ri-file-list-line"></i>
+                            </div>
+                            설문조사 관리
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#"
+                           class="flex items-center p-3 rounded-lg text-gray-300 hover:bg-gray-700 transition-colors">
+                            <div class="w-5 h-5 flex items-center justify-center mr-3">
+                                <i class="ri-settings-line"></i>
+                            </div>
+                            시스템 설정
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="flex-1 p-8">
+            <header class="mb-8">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-white">관리자 대시보드</h1>
+                        <p class="text-gray-400 mt-2">시스템 현황을 한눈에 확인하세요</p>
                     </div>
-                    <div class="text-right">
-                        <p class="text-white font-medium">김관리자</p>
-                        <p class="text-sm text-gray-400">최고 관리자</p>
+                    <div class="flex items-center space-x-4">
+                        <div class="bg-red-500 text-white px-3 py-1 rounded-full text-sm">
+                            <div class="w-4 h-4 inline-flex items-center justify-center mr-1">
+                                <i class="ri-notification-line ri-sm"></i>
+                            </div>
+                            5개 대기
+                        </div>
+                        <div class="text-right">
+                            <p class="text-white font-medium">김관리자</p>
+                            <p class="text-sm text-gray-400">최고 관리자</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
+                <div class="admin-card rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <div class="w-6 h-6 flex items-center justify-center mr-3 text-primary">
+                                <i class="ri-user-add-line"></i>
+                            </div>
+                            회원가입 승인 대기
+                        </h2>
+                        <button class="text-gray-400 hover:text-white transition-colors">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-refresh-line"></i>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                            <tr class="table-header text-left">
+                                <th class="p-3 text-sm font-medium text-gray-300">이름</th>
+                                <th class="p-3 text-sm font-medium text-gray-300">
+                                    이메일
+                                </th>
+                                <th class="p-3 text-sm font-medium text-gray-300">
+                                    신청일
+                                </th>
+                                <th class="p-3 text-sm font-medium text-gray-300">액션</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="table-row border-b border-gray-700">
+                                <td class="p-3 text-white">박지현</td>
+                                <td class="p-3 text-gray-300">jihyun.park@email.com</td>
+                                <td class="p-3 text-gray-400">2025-01-08 14:32</td>
+                                <td class="p-3">
+                                    <div class="flex space-x-2">
+                                        <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
+                                            상세보기
+                                        </button>
+                                        <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
+                                            승인하기
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="table-row border-b border-gray-700">
+                                <td class="p-3 text-white">이민수</td>
+                                <td class="p-3 text-gray-300">minsu.lee@email.com</td>
+                                <td class="p-3 text-gray-400">2025-01-08 13:15</td>
+                                <td class="p-3">
+                                    <div class="flex space-x-2">
+                                        <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
+                                            상세보기
+                                        </button>
+                                        <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
+                                            승인하기
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="table-row border-b border-gray-700">
+                                <td class="p-3 text-white">최영희</td>
+                                <td class="p-3 text-gray-300">younghee.choi@email.com</td>
+                                <td class="p-3 text-gray-400">2025-01-08 11:45</td>
+                                <td class="p-3">
+                                    <div class="flex space-x-2">
+                                        <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
+                                            상세보기
+                                        </button>
+                                        <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
+                                            승인하기
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-3 text-white">김태호</td>
+                                <td class="p-3 text-gray-300">taeho.kim@email.com</td>
+                                <td class="p-3 text-gray-400">2025-01-08 09:22</td>
+                                <td class="p-3">
+                                    <div class="flex space-x-2">
+                                        <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
+                                            상세보기
+                                        </button>
+                                        <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
+                                            승인하기
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="admin-card rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <div class="w-6 h-6 flex items-center justify-center mr-3 text-primary">
+                                <i class="ri-login-box-line"></i>
+                            </div>
+                            최근 로그인 기록
+                        </h2>
+                        <button class="text-gray-400 hover:text-white transition-colors">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-refresh-line"></i>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                            <tr class="table-header text-left">
+                                <th class="p-3 text-sm font-medium text-gray-300">
+                                    사용자
+                                </th>
+                                <th class="p-3 text-sm font-medium text-gray-300">
+                                    로그인 시간
+                                </th>
+                                <th class="p-3 text-sm font-medium text-gray-300">
+                                    IP 주소
+                                </th>
+                                <th class="p-3 text-sm font-medium text-gray-300">상태</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="table-row border-b border-gray-700">
+                                <td class="p-3 text-white">정수연</td>
+                                <td class="p-3 text-gray-300">2025-01-09 08:45</td>
+                                <td class="p-3 text-gray-400">192.168.1.105</td>
+                                <td class="p-3">
+                                    <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">정상</span>
+                                </td>
+                            </tr>
+                            <tr class="table-row border-b border-gray-700">
+                                <td class="p-3 text-white">한동민</td>
+                                <td class="p-3 text-gray-300">2025-01-09 08:32</td>
+                                <td class="p-3 text-gray-400">192.168.1.087</td>
+                                <td class="p-3">
+                                    <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">정상</span>
+                                </td>
+                            </tr>
+                            <tr class="table-row border-b border-gray-700">
+                                <td class="p-3 text-white">송미라</td>
+                                <td class="p-3 text-gray-300">2025-01-09 07:58</td>
+                                <td class="p-3 text-gray-400">192.168.1.142</td>
+                                <td class="p-3">
+                                    <span class="status-badge px-2 py-1 bg-red-500 bg-opacity-20 text-red-400 text-xs rounded-full">의심</span>
+                                </td>
+                            </tr>
+                            <tr class="table-row">
+                                <td class="p-3 text-white">오세진</td>
+                                <td class="p-3 text-gray-300">2025-01-09 07:23</td>
+                                <td class="p-3 text-gray-400">192.168.1.073</td>
+                                <td class="p-3">
+                                    <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">정상</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-        </header>
-        <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
             <div class="admin-card rounded-xl p-6">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-xl font-bold text-white flex items-center">
                         <div class="w-6 h-6 flex items-center justify-center mr-3 text-primary">
-                            <i class="ri-user-add-line"></i>
+                            <i class="ri-file-list-3-line"></i>
                         </div>
-                        회원가입 승인 대기
+                        설문조사 참여 현황
                     </h2>
-                    <button class="text-gray-400 hover:text-white transition-colors">
-                        <div class="w-5 h-5 flex items-center justify-center">
-                            <i class="ri-refresh-line"></i>
-                        </div>
-                    </button>
+                    <div class="flex items-center space-x-4">
+                        <select class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8">
+                            <option>전체 기간</option>
+                            <option>최근 7일</option>
+                            <option>최근 30일</option>
+                        </select>
+                        <button class="text-gray-400 hover:text-white transition-colors">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-refresh-line"></i>
+                            </div>
+                        </button>
+                    </div>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead>
                         <tr class="table-header text-left">
-                            <th class="p-3 text-sm font-medium text-gray-300">이름</th>
+                            <th class="p-3 text-sm font-medium text-gray-300">참여자</th>
                             <th class="p-3 text-sm font-medium text-gray-300">
-                                이메일
+                                설문조사
                             </th>
                             <th class="p-3 text-sm font-medium text-gray-300">
-                                신청일
-                            </th>
-                            <th class="p-3 text-sm font-medium text-gray-300">액션</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr class="table-row border-b border-gray-700">
-                            <td class="p-3 text-white">박지현</td>
-                            <td class="p-3 text-gray-300">jihyun.park@email.com</td>
-                            <td class="p-3 text-gray-400">2025-01-08 14:32</td>
-                            <td class="p-3">
-                                <div class="flex space-x-2">
-                                    <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
-                                        상세보기
-                                    </button>
-                                    <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
-                                        승인하기
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr class="table-row border-b border-gray-700">
-                            <td class="p-3 text-white">이민수</td>
-                            <td class="p-3 text-gray-300">minsu.lee@email.com</td>
-                            <td class="p-3 text-gray-400">2025-01-08 13:15</td>
-                            <td class="p-3">
-                                <div class="flex space-x-2">
-                                    <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
-                                        상세보기
-                                    </button>
-                                    <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
-                                        승인하기
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr class="table-row border-b border-gray-700">
-                            <td class="p-3 text-white">최영희</td>
-                            <td class="p-3 text-gray-300">younghee.choi@email.com</td>
-                            <td class="p-3 text-gray-400">2025-01-08 11:45</td>
-                            <td class="p-3">
-                                <div class="flex space-x-2">
-                                    <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
-                                        상세보기
-                                    </button>
-                                    <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
-                                        승인하기
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr class="table-row">
-                            <td class="p-3 text-white">김태호</td>
-                            <td class="p-3 text-gray-300">taeho.kim@email.com</td>
-                            <td class="p-3 text-gray-400">2025-01-08 09:22</td>
-                            <td class="p-3">
-                                <div class="flex space-x-2">
-                                    <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
-                                        상세보기
-                                    </button>
-                                    <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
-                                        승인하기
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="admin-card rounded-xl p-6">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-xl font-bold text-white flex items-center">
-                        <div class="w-6 h-6 flex items-center justify-center mr-3 text-primary">
-                            <i class="ri-login-box-line"></i>
-                        </div>
-                        최근 로그인 기록
-                    </h2>
-                    <button class="text-gray-400 hover:text-white transition-colors">
-                        <div class="w-5 h-5 flex items-center justify-center">
-                            <i class="ri-refresh-line"></i>
-                        </div>
-                    </button>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead>
-                        <tr class="table-header text-left">
-                            <th class="p-3 text-sm font-medium text-gray-300">
-                                사용자
+                                참여 시간
                             </th>
                             <th class="p-3 text-sm font-medium text-gray-300">
-                                로그인 시간
-                            </th>
-                            <th class="p-3 text-sm font-medium text-gray-300">
-                                IP 주소
+                                소요 시간
                             </th>
                             <th class="p-3 text-sm font-medium text-gray-300">상태</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr class="table-row border-b border-gray-700">
-                            <td class="p-3 text-white">정수연</td>
-                            <td class="p-3 text-gray-300">2025-01-09 08:45</td>
-                            <td class="p-3 text-gray-400">192.168.1.105</td>
+                            <td class="p-3 text-white">안지영</td>
+                            <td class="p-3 text-gray-300">고객 만족도 조사</td>
+                            <td class="p-3 text-gray-400">2025-01-09 08:15</td>
+                            <td class="p-3 text-gray-300">12분</td>
                             <td class="p-3">
-                      <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">정상</span>
+                                <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">완료</span>
                             </td>
                         </tr>
                         <tr class="table-row border-b border-gray-700">
-                            <td class="p-3 text-white">한동민</td>
-                            <td class="p-3 text-gray-300">2025-01-09 08:32</td>
-                            <td class="p-3 text-gray-400">192.168.1.087</td>
+                            <td class="p-3 text-white">류현우</td>
+                            <td class="p-3 text-gray-300">제품 개선 의견 수집</td>
+                            <td class="p-3 text-gray-400">2025-01-09 07:45</td>
+                            <td class="p-3 text-gray-300">8분</td>
                             <td class="p-3">
-                      <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">정상</span>
+                                <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">완료</span>
                             </td>
                         </tr>
                         <tr class="table-row border-b border-gray-700">
-                            <td class="p-3 text-white">송미라</td>
-                            <td class="p-3 text-gray-300">2025-01-09 07:58</td>
-                            <td class="p-3 text-gray-400">192.168.1.142</td>
+                            <td class="p-3 text-white">김서현</td>
+                            <td class="p-3 text-gray-300">브랜드 인지도 조사</td>
+                            <td class="p-3 text-gray-400">2025-01-09 07:30</td>
+                            <td class="p-3 text-gray-300">15분</td>
                             <td class="p-3">
-                      <span class="status-badge px-2 py-1 bg-red-500 bg-opacity-20 text-red-400 text-xs rounded-full">의심</span>
+                                <span class="status-badge px-2 py-1 bg-yellow-500 bg-opacity-20 text-yellow-400 text-xs rounded-full">진행중</span>
+                            </td>
+                        </tr>
+                        <tr class="table-row border-b border-gray-700">
+                            <td class="p-3 text-white">박준혁</td>
+                            <td class="p-3 text-gray-300">사용자 경험 평가</td>
+                            <td class="p-3 text-gray-400">2025-01-09 07:15</td>
+                            <td class="p-3 text-gray-300">20분</td>
+                            <td class="p-3">
+                                <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">완료</span>
+                            </td>
+                        </tr>
+                        <tr class="table-row border-b border-gray-700">
+                            <td class="p-3 text-white">이소영</td>
+                            <td class="p-3 text-gray-300">신기능 피드백</td>
+                            <td class="p-3 text-gray-400">2025-01-09 06:50</td>
+                            <td class="p-3 text-gray-300">5분</td>
+                            <td class="p-3">
+                                <span class="status-badge px-2 py-1 bg-red-500 bg-opacity-20 text-red-400 text-xs rounded-full">중단</span>
                             </td>
                         </tr>
                         <tr class="table-row">
-                            <td class="p-3 text-white">오세진</td>
-                            <td class="p-3 text-gray-300">2025-01-09 07:23</td>
-                            <td class="p-3 text-gray-400">192.168.1.073</td>
+                            <td class="p-3 text-white">정민석</td>
+                            <td class="p-3 text-gray-300">시장 동향 분석</td>
+                            <td class="p-3 text-gray-400">2025-01-09 06:30</td>
+                            <td class="p-3 text-gray-300">18분</td>
                             <td class="p-3">
-                      <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">정상</span>
+                                <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">완료</span>
                             </td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div>
-        <div class="admin-card rounded-xl p-6">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-bold text-white flex items-center">
-                    <div class="w-6 h-6 flex items-center justify-center mr-3 text-primary">
-                        <i class="ri-file-list-3-line"></i>
-                    </div>
-                    설문조사 참여 현황
-                </h2>
-                <div class="flex items-center space-x-4">
-                    <select class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8">
-                        <option>전체 기간</option>
-                        <option>최근 7일</option>
-                        <option>최근 30일</option>
-                    </select>
-                    <button class="text-gray-400 hover:text-white transition-colors">
-                        <div class="w-5 h-5 flex items-center justify-center">
-                            <i class="ri-refresh-line"></i>
-                        </div>
-                    </button>
-                </div>
+        </main>
+    </div>
+    <div id="approval-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-white mb-4">회원가입 승인</h3>
+            <p class="text-gray-300 mb-6">
+                선택한 사용자의 회원가입을 승인하시겠습니까? </p>
+            <div class="flex space-x-4">
+                <button id="cancel-approval"
+                        class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
+                    취소
+                </button>
+                <button id="confirm-approval"
+                        class="flex-1 px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
+                    승인하기
+                </button>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead>
-                    <tr class="table-header text-left">
-                        <th class="p-3 text-sm font-medium text-gray-300">참여자</th>
-                        <th class="p-3 text-sm font-medium text-gray-300">
-                            설문조사
-                        </th>
-                        <th class="p-3 text-sm font-medium text-gray-300">
-                            참여 시간
-                        </th>
-                        <th class="p-3 text-sm font-medium text-gray-300">
-                            소요 시간
-                        </th>
-                        <th class="p-3 text-sm font-medium text-gray-300">상태</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr class="table-row border-b border-gray-700">
-                        <td class="p-3 text-white">안지영</td>
-                        <td class="p-3 text-gray-300">고객 만족도 조사</td>
-                        <td class="p-3 text-gray-400">2025-01-09 08:15</td>
-                        <td class="p-3 text-gray-300">12분</td>
-                        <td class="p-3">
-                    <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">완료</span>
-                        </td>
-                    </tr>
-                    <tr class="table-row border-b border-gray-700">
-                        <td class="p-3 text-white">류현우</td>
-                        <td class="p-3 text-gray-300">제품 개선 의견 수집</td>
-                        <td class="p-3 text-gray-400">2025-01-09 07:45</td>
-                        <td class="p-3 text-gray-300">8분</td>
-                        <td class="p-3">
-                    <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">완료</span>
-                        </td>
-                    </tr>
-                    <tr class="table-row border-b border-gray-700">
-                        <td class="p-3 text-white">김서현</td>
-                        <td class="p-3 text-gray-300">브랜드 인지도 조사</td>
-                        <td class="p-3 text-gray-400">2025-01-09 07:30</td>
-                        <td class="p-3 text-gray-300">15분</td>
-                        <td class="p-3">
-                    <span class="status-badge px-2 py-1 bg-yellow-500 bg-opacity-20 text-yellow-400 text-xs rounded-full">진행중</span>
-                        </td>
-                    </tr>
-                    <tr class="table-row border-b border-gray-700">
-                        <td class="p-3 text-white">박준혁</td>
-                        <td class="p-3 text-gray-300">사용자 경험 평가</td>
-                        <td class="p-3 text-gray-400">2025-01-09 07:15</td>
-                        <td class="p-3 text-gray-300">20분</td>
-                        <td class="p-3">
-                    <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">완료</span>
-                        </td>
-                    </tr>
-                    <tr class="table-row border-b border-gray-700">
-                        <td class="p-3 text-white">이소영</td>
-                        <td class="p-3 text-gray-300">신기능 피드백</td>
-                        <td class="p-3 text-gray-400">2025-01-09 06:50</td>
-                        <td class="p-3 text-gray-300">5분</td>
-                        <td class="p-3">
-                    <span class="status-badge px-2 py-1 bg-red-500 bg-opacity-20 text-red-400 text-xs rounded-full">중단</span>
-                        </td>
-                    </tr>
-                    <tr class="table-row">
-                        <td class="p-3 text-white">정민석</td>
-                        <td class="p-3 text-gray-300">시장 동향 분석</td>
-                        <td class="p-3 text-gray-400">2025-01-09 06:30</td>
-                        <td class="p-3 text-gray-300">18분</td>
-                        <td class="p-3">
-                    <span class="status-badge px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs rounded-full">완료</span>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
-</div>
-<div id="approval-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4">
-        <h3 class="text-xl font-bold text-white mb-4">회원가입 승인</h3>
-        <p class="text-gray-300 mb-6">
-            선택한 사용자의 회원가입을 승인하시겠습니까? </p>
-        <div class="flex space-x-4">
-            <button id="cancel-approval"
-                    class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
-                취소
-            </button>
-            <button id="confirm-approval"
-                    class="flex-1 px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
-                승인하기
-            </button>
         </div>
     </div>
 </div>
-<script id="approval-system">
-    (function () {
-        const approvalButtons = document.querySelectorAll(
-            'button:contains("승인하기")',
-        );
-        const modal = document.getElementById("approval-modal");
-        const cancelBtn = document.getElementById("cancel-approval");
-        const confirmBtn = document.getElementById("confirm-approval");
 
-        function showModal() {
-            modal.classList.remove("hidden");
-            modal.classList.add("flex");
+<script id="approval-system" type="module">
+    const approvalButtons = document.querySelectorAll(
+        'button:contains("승인하기")',
+    );
+    const modal = document.getElementById("approval-modal");
+    const cancelBtn = document.getElementById("cancel-approval");
+    const confirmBtn = document.getElementById("confirm-approval");
+
+    function showModal() {
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+    }
+
+    function hideModal() {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+    }
+
+    document.querySelectorAll("td button").forEach((button) => {
+        if (button.textContent.includes("승인하기")) {
+            button.addEventListener("click", showModal);
         }
-
-        function hideModal() {
-            modal.classList.add("hidden");
-            modal.classList.remove("flex");
-        }
-
-        document.querySelectorAll("td button").forEach((button) => {
-            if (button.textContent.includes("승인하기")) {
-                button.addEventListener("click", showModal);
-            }
-        });
-        cancelBtn.addEventListener("click", hideModal);
-        confirmBtn.addEventListener("click", function () {
+    });
+    cancelBtn.addEventListener("click", hideModal);
+    confirmBtn.addEventListener("click", function () {
+        hideModal();
+        alert("회원가입이 승인되었습니다.");
+    });
+    modal.addEventListener("click", function (e) {
+        if (e.target === modal) {
             hideModal();
-            alert("회원가입이 승인되었습니다.");
-        });
-        modal.addEventListener("click", function (e) {
-            if (e.target === modal) {
-                hideModal();
-            }
-        });
-    })();
+        }
+    });
 </script>
-<script id="table-interactions">
-    (function () {
-        const detailButtons = document.querySelectorAll("button");
-        detailButtons.forEach((button) => {
-            if (button.textContent.includes("상세보기")) {
-                button.addEventListener("click", function () {
-                    const row = this.closest("tr");
-                    const name = row.cells[0].textContent;
-                    const email = row.cells[1].textContent;
-                    alert(`사용자 정보:\n이름: ${name}\n이메일: ${email}`);
-                });
-            }
-        });
-    })();
-</script>
-<script id="refresh-functionality">
-    (function () {
-        const refreshButtons = document.querySelectorAll("button i.ri-refresh-line");
-        refreshButtons.forEach((button) => {
-            button.parentElement.addEventListener("click", function () {
-                this.style.transform = "rotate(360deg)";
-                this.style.transition = "transform 0.5s ease";
-                setTimeout(() => {
-                    this.style.transform = "rotate(0deg)";
-                    alert("데이터가 새로고침되었습니다.");
-                }, 500);
+<script id="table-interactions" type="module">
+    const detailButtons = document.querySelectorAll("button");
+    detailButtons.forEach((button) => {
+        if (button.textContent.includes("상세보기")) {
+            button.addEventListener("click", function () {
+                const row = this.closest("tr");
+                const name = row.cells[0].textContent;
+                const email = row.cells[1].textContent;
+                alert(`사용자 정보:\n이름: ${name}\n이메일: ${email}`);
             });
+        }
+    });
+</script>
+<script id="refresh-functionality" type="module">
+    const refreshButtons = document.querySelectorAll("button i.ri-refresh-line");
+    refreshButtons.forEach((button) => {
+        button.parentElement.addEventListener("click", function () {
+            this.style.transform = "rotate(360deg)";
+            this.style.transition = "transform 0.5s ease";
+            setTimeout(() => {
+                this.style.transform = "rotate(0deg)";
+                alert("데이터가 새로고침되었습니다.");
+            }, 500);
         });
-    })();
+    });
 </script>
 </body>
 </html>

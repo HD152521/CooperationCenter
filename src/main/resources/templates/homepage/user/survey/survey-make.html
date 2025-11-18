@@ -1,43 +1,11 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html th:replace="~{fragments/layout/base :: base(~{::head}, ~{::body})}" xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>설문조사 관리</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {primary: "#4F46E5", secondary: "#6366F1"},
-                    borderRadius: {
-                        none: "0px",
-                        sm: "4px",
-                        DEFAULT: "8px",
-                        md: "12px",
-                        lg: "16px",
-                        xl: "20px",
-                        "2xl": "24px",
-                        "3xl": "32px",
-                        full: "9999px",
-                        button: "8px",
-                    },
-                },
-            },
-        };
-    </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"/>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet"/>
     <style>
         :where([class^="ri-"])::before {
             content: "\f3c2";
-        }
-
-        body {
-            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
         }
 
         .question-container {
@@ -157,504 +125,509 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-<!-- 상단 배너 -->
-<div id="toast" class="toast hidden max-w-sm bg-white shadow-lg rounded-lg pointer-events-auto">
-    <div class="p-4">
-        <div class="flex items-center">
-            <div class="flex-shrink-0">
-                <i id="toast-icon" class="text-xl"></i>
+<body>
+<div class="bg-gray-50 min-h-screen">
+    <!-- 상단 배너 -->
+    <div id="toast" class="toast hidden max-w-sm bg-white shadow-lg rounded-lg pointer-events-auto">
+        <div class="p-4">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i id="toast-icon" class="text-xl"></i>
+                </div>
+                <div class="ml-3 flex-1">
+                    <p id="toast-message" class="text-sm font-medium text-gray-900"></p>
+                </div>
+                <div class="ml-4 flex-shrink-0 flex">
+                    <button id="toast-close" class="inline-flex text-gray-400 hover:text-gray-500">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
             </div>
-            <div class="ml-3 flex-1">
-                <p id="toast-message" class="text-sm font-medium text-gray-900"></p>
+            <div id="toast-action" class="mt-3 hidden">
+                <button class="text-sm text-primary font-medium">다시 시도</button>
             </div>
-            <div class="ml-4 flex-shrink-0 flex">
-                <button id="toast-close" class="inline-flex text-gray-400 hover:text-gray-500">
-                    <i class="ri-close-line"></i>
+        </div>
+    </div>
+
+    <!--header자리-->
+    <header th:replace="~{fragments/common/survey-nav :: survey-nav}"></header>
+
+    <main class="px-4 py-6 flex">
+        <!-- 좌측 사이드바 - 문제 유형 선택 -->
+        <!-- fixme    <div class="w-64 shrink-0 mr-6 ">-->
+        <div id="left-sidebar"
+             class="w-64 shrink-0 mr-6 hidden fixed top-0 left-0 h-full z-40 sm:block sm:relative sm:h-auto sm:top-auto sm:left-auto">
+            <div class="bg-white rounded-lg shadow-sm p-4 sticky top-20">
+                <h2 class="text-lg font-semibold mb-4">문제 유형</h2>
+                <div class="space-y-2">
+                    <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200 bg-primary bg-opacity-5"
+                            data-question-type="short">
+                        <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-primary bg-opacity-10 text-primary">
+                            <i class="ri-text-line"></i>
+                        </div>
+                        <span>단답형</span>
+                    </button>
+                    <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
+                            data-question-type="essay">
+                        <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
+                            <i class="ri-file-text-line"></i>
+                        </div>
+                        <span>서술형</span>
+                    </button>
+                    <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
+                            data-question-type="multiple">
+                        <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
+                            <i class="ri-radio-button-line"></i>
+                        </div>
+                        <span>객관식 (단일 선택)</span>
+                    </button>
+                    <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
+                            data-question-type="multiple-checkbox">
+                        <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
+                            <i class="ri-checkbox-multiple-line"></i>
+                        </div>
+                        <span>객관식 (다중 선택)</span>
+                    </button>
+                    <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
+                            data-question-type="dropdown">
+                        <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
+                            <i class="ri-list-unordered"></i>
+                        </div>
+                        <span>드롭다운</span>
+                    </button>
+                    <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
+                            data-question-type="date">
+                        <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
+                            <i class="ri-calendar-line"></i>
+                        </div>
+                        <span>날짜 답변</span>
+                    </button>
+                    <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
+                            data-question-type="file">
+                        <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
+                            <i class="ri-file-upload-line"></i>
+                        </div>
+                        <span>파일 업로드</span>
+                    </button>
+                    <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
+                            data-question-type="image">
+                        <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
+                            <i class="ri-image-line"></i>
+                        </div>
+                        <span>이미지 업로드</span>
+                    </button>
+                    <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
+                            data-question-type="hierarchy">
+                        <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
+                            <i class="ri-node-tree"></i>
+                        </div>
+                        <span>계층형 선택</span>
+                    </button>
+
+                </div>
+            </div>
+        </div>
+        <!-- 중앙 컨텐츠 영역 - 문제 편집 -->
+        <div class="flex-1 min-w-0">
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-4">
+                <div class="flex items-center justify-between mb-4">
+                    <input id="survey-title" type="text" placeholder="설문조사 제목을 입력하세요"
+                           class="text-xl font-bold w-full focus:outline-none" value="새 설문조사"/>
+                    <button id="saveButton"
+                            class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap flex items-center">
+                        <i class="ri-save-line mr-2"></i>
+                        저장하기
+                    </button>
+                </div>
+                <div class="mb-4">
+                    <!--                <input-->
+                    <!--                        type="text"-->
+                    <!--                        placeholder="설문조사 제목을 입력하세요"-->
+                    <!--                        class="w-full text-xl font-semibold border-none focus:ring-0 focus:outline-none"-->
+                    <!--                />-->
+                    <textarea placeholder="설문조사에 대한 설명을 입력하세요"
+                              class="w-full mt-2 border-none focus:ring-0 focus:outline-none resize-none text-gray-600">
+                </textarea>
+                </div>
+            </div>
+            <div id="questions-container" class="space-y-4">
+                <!-- 초기 상태: 문제 만들기 버튼 -->
+                <div id="empty-state"
+                     class="bg-white rounded-lg shadow-sm p-8 flex flex-col items-center justify-center min-h-[300px]">
+                    <div class="w-16 h-16 flex items-center justify-center rounded-full bg-primary bg-opacity-10 text-primary mb-4">
+                        <i class="ri-add-line ri-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium mb-2">문제가 없습니다</h3>
+                    <p class="text-gray-500 mb-4 text-center">
+                        왼쪽 메뉴에서 문제 유형을 선택하거나<br/>아래 버튼을 클릭하여
+                        문제를 추가하세요 </p>
+                    <button id="add-question-btn"
+                            class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap">
+                        문제 만들기
+                    </button>
+                </div>
+                <!-- 문제 템플릿 (기본적으로 숨겨져 있음) -->
+                <div id="question-template" class="question-container bg-white rounded-lg shadow-sm p-6 hidden"
+                     data-question-id="1">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex-1 min-w-0">
+                            <input type="text" placeholder="문제 제목을 입력하세요"
+                                   class="w-full text-lg font-medium border-none focus:ring-0 focus:outline-none"/>
+                            <textarea placeholder="문제에 대한 설명을 입력하세요 (선택사항)"
+                                      class="w-full mt-2 text-sm border-none focus:ring-0 focus:outline-none resize-none text-gray-600"></textarea>
+                        </div>
+                        <div class="flex items-center space-x-2 ml-4">
+                            <button class="w-8 h-8 flex items-center justify-center rounded text-gray-500 hover:bg-gray-100">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded text-gray-500 hover:bg-gray-100">
+                                <i class="ri-file-copy-line"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- 단답형 답변 영역 -->
+                    <div class="answer-container" data-type="short">
+                        <div class="bg-gray-50 border border-gray-200 rounded p-3 text-gray-500">
+                            단답형 텍스트
+                        </div>
+                    </div>
+                    <!-- 서술형 답변 영역 -->
+                    <div class="answer-container hidden" data-type="essay">
+                        <div class="bg-gray-50 border border-gray-200 rounded p-3 text-gray-500 h-36">
+                            서술형 텍스트
+                        </div>
+                    </div>
+                    <!-- 객관식 답변 영역 (단일 선택) -->
+                    <div class="answer-container hidden" data-type="multiple">
+                        <div class="space-y-2">
+                            <div class="flex items-center">
+                                <div class="w-6 h-6 flex items-center justify-center mr-2">
+                                    <div class="w-4 h-4 rounded-full border border-gray-400"></div>
+                                </div>
+                                <input type="text" placeholder="옵션 1"
+                                       class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
+                                <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                                <div class="flex items-center space-x-2 ml-8 mt-1">
+                                    <select class="jump-target-select border border-gray-300 text-sm rounded p-1">
+                                        <option value="">선택 시 이동할 문항</option>
+                                        <!-- 여기에는 JS에서 동적으로 채워짐 -->
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center">
+                                <div class="w-6 h-6 flex items-center justify-center mr-2">
+                                    <div class="w-4 h-4 rounded-full border border-gray-400"></div>
+                                </div>
+                                <input type="text" placeholder="옵션 2"
+                                       class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
+                                <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                                <div class="flex items-center space-x-2 ml-8 mt-1">
+                                    <select class="jump-target-select border border-gray-300 text-sm rounded p-1">
+                                        <option value="">선택 시 이동할 문항</option>
+                                        <!-- 여기에는 JS에서 동적으로 채워짐 -->
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="flex items-center text-primary font-medium mt-2 add-option-button">
+                                <i class="ri-add-line mr-1"></i>
+                                옵션 추가
+                            </button>
+                        </div>
+                    </div>
+                    <!-- 객관식 답변 영역 (다중 선택) -->
+                    <div class="answer-container hidden" data-type="multiple-checkbox">
+                        <div class="space-y-2">
+                            <div class="flex items-center">
+                                <div class="w-6 h-6 flex items-center justify-center mr-2">
+                                    <div class="w-4 h-4 rounded border border-gray-400"></div>
+                                </div>
+                                <input type="text" placeholder="옵션 1"
+                                       class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
+                                <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-6 h-6 flex items-center justify-center mr-2">
+                                    <div class="w-4 h-4 rounded border border-gray-400"></div>
+                                </div>
+                                <input type="text" placeholder="옵션 2"
+                                       class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
+                                <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                            </div>
+                            <button class="flex items-center text-primary font-medium mt-2 add-option-button">
+                                <i class="ri-add-line mr-1"></i>
+                                옵션 추가
+                            </button>
+                        </div>
+                    </div>
+                    <!-- 드롭다운 답변 영역 -->
+                    <div class="answer-container hidden" data-type="dropdown">
+                        <div class="space-y-2">
+                            <div class="flex items-center">
+                                <input type="text" placeholder="옵션 1"
+                                       class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
+                                <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                                <div class="flex items-center space-x-2 ml-8 mt-1">
+                                    <select class="jump-target-select border border-gray-300 text-sm rounded p-1">
+                                        <option value="">선택 안 함</option>
+                                        <!-- 여기에는 JS에서 동적으로 채워짐 -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="text" placeholder="옵션 2"
+                                       class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
+                                <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                                <div class="flex items-center space-x-2 ml-8 mt-1">
+                                    <select class="jump-target-select border border-gray-300 text-sm rounded p-1">
+                                        <option value="">선택 안 함</option>
+                                        <!-- 여기에는 JS에서 동적으로 채워짐 -->
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="flex items-center text-primary font-medium mt-2 add-option-button">
+                                <i class="ri-add-line mr-1"></i>
+                                옵션 추가
+                            </button>
+                        </div>
+                        <div class="bg-gray-50 border border-gray-200 rounded p-3 mt-4 text-gray-500 flex items-center">
+                            <i class="ri-arrow-down-s-line mr-2"></i>
+                            <span>드롭다운 선택</span>
+                        </div>
+                    </div>
+                    <!-- 날짜 답변 영역 -->
+                    <div class="answer-container hidden" data-type="date">
+                        <div class="bg-gray-50 border border-gray-200 rounded p-3 text-gray-500 flex items-center">
+                            <i class="ri-calendar-line mr-2"></i>
+                            날짜 선택
+                        </div>
+                    </div>
+                    <!-- 파일 업로드 답변 영역 -->
+                    <div class="answer-container hidden" data-type="file">
+                        <div class="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-6 text-center">
+                            <div class="w-12 h-12 mx-auto flex items-center justify-center rounded-full bg-gray-100 text-gray-500 mb-2">
+                                <i class="ri-upload-cloud-line ri-lg"></i>
+                            </div>
+                            <p class="text-gray-500">
+                                파일을 여기에 끌어다 놓거나 클릭하여 업로드 </p>
+                            <p class="text-xs text-gray-400 mt-1">최대 파일 크기: 10MB</p>
+                        </div>
+                    </div>
+                    <!-- 이미지 업로드 답변 영역 -->
+                    <div class="answer-container hidden" data-type="image">
+                        <div class="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-6 text-center">
+                            <div class="w-12 h-12 mx-auto flex items-center justify-center rounded-full bg-gray-100 text-gray-500 mb-2">
+                                <i class="ri-upload-cloud-line ri-lg"></i>
+                            </div>
+                            <p class="text-gray-500">
+                                이미지를 여기에 끌어다 놓거나 클릭하여 업로드 </p>
+                            <p class="text-xs text-gray-400 mt-1">최대 파일 크기: 10MB</p>
+                        </div>
+                    </div>
+                    <!--                계층형 문제유형-->
+                    <div class="answer-container hidden" data-type="hierarchy">
+                        <!--                    <select class="w-full border border-gray-300 rounded p-2 text-sm" id="hierarchy-levels">-->
+                        <!--                        <option value="2">2단계</option>-->
+                        <!--                        <option value="3" selected>3단계</option>-->
+                        <!--                    </select>-->
+                        <div class="hierarchy-grid">
+                            <div class="hierarchy-column active" data-level="1">
+                                <div class="p-4 border-b border-gray-200 bg-white rounded-t-lg">
+                                    <h4 class="font-semibold text-gray-800 flex items-center justify-between">
+                                        1단계 - 대분류
+                                        <button class="text-sm text-primary font-medium flex items-center"
+                                                data-add-option="1">
+                                            <i class="ri-add-line mr-1"></i>
+                                            추가
+                                        </button>
+                                    </h4>
+                                </div>
+                                <div class="p-2 max-h-64 overflow-y-auto" data-options-container="1">
+
+                                </div>
+                            </div>
+
+                            <div class="hierarchy-column active" data-level="2">
+                                <div class="p-4 border-b border-gray-200 bg-white rounded-t-lg">
+                                    <h4 class="font-semibold text-gray-800 flex items-center justify-between">
+                                        2단계 - 세부전공
+                                        <button class="text-sm text-primary font-medium flex items-center"
+                                                data-add-option="2">
+                                            <i class="ri-add-line mr-1"></i>
+                                            추가
+                                        </button>
+                                    </h4>
+                                </div>
+                                <div class="p-2 max-h-64 overflow-y-auto" data-options-container="2">
+
+                                </div>
+                            </div>
+
+                            <div class="hierarchy-column active" data-level="3">
+                                <div class="p-4 border-b border-gray-200 bg-white rounded-t-lg">
+                                    <h4 class="font-semibold text-gray-800 flex items-center justify-between">
+                                        3단계 - 세부분야
+                                        <button class="text-sm text-primary font-medium flex items-center"
+                                                data-add-option="3">
+                                            <i class="ri-add-line mr-1"></i>
+                                            추가
+                                        </button>
+                                    </h4>
+                                </div>
+                                <div class="p-2 max-h-64 overflow-y-auto" data-options-container="3">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="flex items-center mt-4 pt-4 border-t border-gray-100">
+                        <div class="relative inline-block text-left">
+                            <button type="button"
+                                    class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
+                                    id="question-type-menu-button" aria-expanded="false" aria-haspopup="true">
+                                <span class="mr-1">문제 유형:</span>
+                                <span class="font-medium question-type-text">단답형</span>
+                                <i class="ri-arrow-down-s-line ml-1"></i>
+                            </button>
+                            <div class="hidden origin-top-left absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                                 role="menu" aria-orientation="vertical" aria-labelledby="question-type-menu-button"
+                                 tabindex="-1">
+                                <div class="py-1" role="none">
+                                    <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
+                                            role="menuitem" tabindex="-1" data-type="short">
+                                        단답형
+                                    </button>
+                                    <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
+                                            role="menuitem" tabindex="-1" data-type="essay">
+                                        서술형
+                                    </button>
+                                    <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
+                                            role="menuitem" tabindex="-1" data-type="multiple">
+                                        객관식 (단일 선택)
+                                    </button>
+                                    <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
+                                            role="menuitem" tabindex="-1" data-type="multiple-checkbox">
+                                        객관식 (다중 선택)
+                                    </button>
+                                    <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
+                                            role="menuitem" tabindex="-1" data-type="dropdown">
+                                        드롭다운
+                                    </button>
+                                    <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
+                                            role="menuitem" tabindex="-1" data-type="date">
+                                        날짜 답변
+                                    </button>
+                                    <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
+                                            role="menuitem" tabindex="-1" data-type="file">
+                                        파일 업로드
+                                    </button>
+                                    <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
+                                            role="menuitem" tabindex="-1" data-type="image">
+                                        이미지 업로드
+                                    </button>
+                                    <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
+                                            role="menuitem" tabindex="-1" data-type="hierarchy">
+                                        계층형 선택
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ml-auto flex items-center">
+                            <input type="checkbox" class="required-checkbox mr-2">
+                            <label class="text-sm text-gray-700">필수 여부</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="mt-4 flex justify-center">
+                <button id="add-question-btn-bottom"
+                        class="flex items-center text-primary font-medium px-4 py-2 rounded-button border border-primary bg-white whitespace-nowrap">
+                    <i class="ri-add-line mr-2"></i>
+                    문제 추가하기
                 </button>
             </div>
         </div>
-        <div id="toast-action" class="mt-3 hidden">
-            <button class="text-sm text-primary font-medium">다시 시도</button>
+
+        <!-- 우측 사이드바 - 설정 패널 -->
+        <!--fixme     <div class="w-72 shrink-0 ml-6">-->
+        <div id="right-sidebar"
+             class="w-72 shrink-0 ml-6 hidden fixed top-0 right-0 h-full z-40 sm:block sm:relative sm:h-auto sm:right-auto">
+            <div class="bg-white rounded-lg shadow-sm sticky top-20 p-4">
+                <h2 class="text-lg font-semibold mb-4">설정</h2>
+
+                <div class="border-t border-gray-100 my-4"></div>
+                <!-- 설문지 설정 -->
+                <div id="survey-settings">
+                    <h3 class="font-medium text-gray-700 mb-3">설문지 설정</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-sm text-gray-600 block mb-1">응답 기간</label>
+                            <div class="flex items-center space-x-2">
+                                <input id="start-date" type="date"
+                                       th:value="${survey != null ? survey.startDate : ''}"/>
+
+                                <span class="text-gray-400">~</span>
+
+                                <input id="end-date" type="date" th:value="${survey != null ? survey.endDate : ''}"/>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">공개 여부</span>
+                            <label class="custom-switch">
+                                <input id="isPublic" name="isShare" type="checkbox"
+                                       th:checked="${survey == null or survey.isShare}"/>
+
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">응답자 정보 수집</span>
+                            <label class="custom-switch">
+                                <input type="checkbox" checked/>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm text-gray-600">설문지 유형</label>
+                            <select id="survey-type" name="surveyType"
+                                    class="border border-gray-300 text-sm rounded px-2 py-1">
+                                <option value="normal"
+                                        th:selected="${survey != null and survey.surveyType == 'NORMAL'}">
+                                    일반
+                                </option>
+                                <option value="student"
+                                        th:selected="${survey != null and survey.surveyType == 'STUDENT'}">
+                                    학생
+                                </option>
+                                <option value="promotion"
+                                        th:selected="${survey != null and survey.surveyType == 'PROMOTION'}">홍보 수수료
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    </main>
 </div>
 
-<!--header자리-->
-<header th:replace="~{fragments/common/survey-nav :: survey-nav}"></header>
-
-<main class="px-4 py-6 flex">
-    <!-- 좌측 사이드바 - 문제 유형 선택 -->
-    <!-- fixme    <div class="w-64 shrink-0 mr-6 ">-->
-    <div id="left-sidebar"
-         class="w-64 shrink-0 mr-6 hidden fixed top-0 left-0 h-full z-40 sm:block sm:relative sm:h-auto sm:top-auto sm:left-auto">
-        <div class="bg-white rounded-lg shadow-sm p-4 sticky top-20">
-            <h2 class="text-lg font-semibold mb-4">문제 유형</h2>
-            <div class="space-y-2">
-                <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200 bg-primary bg-opacity-5"
-                        data-question-type="short">
-                    <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-primary bg-opacity-10 text-primary">
-                        <i class="ri-text-line"></i>
-                    </div>
-                    <span>단답형</span>
-                </button>
-                <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
-                        data-question-type="essay">
-                    <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
-                        <i class="ri-file-text-line"></i>
-                    </div>
-                    <span>서술형</span>
-                </button>
-                <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
-                        data-question-type="multiple">
-                    <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
-                        <i class="ri-radio-button-line"></i>
-                    </div>
-                    <span>객관식 (단일 선택)</span>
-                </button>
-                <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
-                        data-question-type="multiple-checkbox">
-                    <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
-                        <i class="ri-checkbox-multiple-line"></i>
-                    </div>
-                    <span>객관식 (다중 선택)</span>
-                </button>
-                <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
-                        data-question-type="dropdown">
-                    <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
-                        <i class="ri-list-unordered"></i>
-                    </div>
-                    <span>드롭다운</span>
-                </button>
-                <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
-                        data-question-type="date">
-                    <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
-                        <i class="ri-calendar-line"></i>
-                    </div>
-                    <span>날짜 답변</span>
-                </button>
-                <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
-                        data-question-type="file">
-                    <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
-                        <i class="ri-file-upload-line"></i>
-                    </div>
-                    <span>파일 업로드</span>
-                </button>
-                <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
-                        data-question-type="image">
-                    <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
-                        <i class="ri-image-line"></i>
-                    </div>
-                    <span>이미지 업로드</span>
-                </button>
-                <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
-                        data-question-type="hierarchy">
-                    <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
-                        <i class="ri-node-tree"></i>
-                    </div>
-                    <span>계층형 선택</span>
-                </button>
-
-            </div>
-        </div>
-    </div>
-    <!-- 중앙 컨텐츠 영역 - 문제 편집 -->
-    <div class="flex-1 min-w-0">
-        <div class="bg-white rounded-lg shadow-sm p-6 mb-4">
-            <div class="flex items-center justify-between mb-4">
-                <input id="survey-title" type="text" placeholder="설문조사 제목을 입력하세요"
-                       class="text-xl font-bold w-full focus:outline-none" value="새 설문조사"/>
-                <button id="saveButton"
-                        class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap flex items-center">
-                    <i class="ri-save-line mr-2"></i>
-                    저장하기
-                </button>
-            </div>
-            <div class="mb-4">
-                <!--                <input-->
-                <!--                        type="text"-->
-                <!--                        placeholder="설문조사 제목을 입력하세요"-->
-                <!--                        class="w-full text-xl font-semibold border-none focus:ring-0 focus:outline-none"-->
-                <!--                />-->
-                <textarea placeholder="설문조사에 대한 설명을 입력하세요"
-                          class="w-full mt-2 border-none focus:ring-0 focus:outline-none resize-none text-gray-600">
-                </textarea>
-            </div>
-        </div>
-        <div id="questions-container" class="space-y-4">
-            <!-- 초기 상태: 문제 만들기 버튼 -->
-            <div id="empty-state"
-                 class="bg-white rounded-lg shadow-sm p-8 flex flex-col items-center justify-center min-h-[300px]">
-                <div class="w-16 h-16 flex items-center justify-center rounded-full bg-primary bg-opacity-10 text-primary mb-4">
-                    <i class="ri-add-line ri-xl"></i>
-                </div>
-                <h3 class="text-lg font-medium mb-2">문제가 없습니다</h3>
-                <p class="text-gray-500 mb-4 text-center">
-                    왼쪽 메뉴에서 문제 유형을 선택하거나<br/>아래 버튼을 클릭하여
-                    문제를 추가하세요 </p>
-                <button id="add-question-btn" class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap">
-                    문제 만들기
-                </button>
-            </div>
-            <!-- 문제 템플릿 (기본적으로 숨겨져 있음) -->
-            <div id="question-template" class="question-container bg-white rounded-lg shadow-sm p-6 hidden"
-                 data-question-id="1">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="flex-1 min-w-0">
-                        <input type="text" placeholder="문제 제목을 입력하세요"
-                               class="w-full text-lg font-medium border-none focus:ring-0 focus:outline-none"/>
-                        <textarea placeholder="문제에 대한 설명을 입력하세요 (선택사항)"
-                                  class="w-full mt-2 text-sm border-none focus:ring-0 focus:outline-none resize-none text-gray-600"></textarea>
-                    </div>
-                    <div class="flex items-center space-x-2 ml-4">
-                        <button class="w-8 h-8 flex items-center justify-center rounded text-gray-500 hover:bg-gray-100">
-                            <i class="ri-delete-bin-line"></i>
-                        </button>
-                        <button class="w-8 h-8 flex items-center justify-center rounded text-gray-500 hover:bg-gray-100">
-                            <i class="ri-file-copy-line"></i>
-                        </button>
-                    </div>
-                </div>
-                <!-- 단답형 답변 영역 -->
-                <div class="answer-container" data-type="short">
-                    <div class="bg-gray-50 border border-gray-200 rounded p-3 text-gray-500">
-                        단답형 텍스트
-                    </div>
-                </div>
-                <!-- 서술형 답변 영역 -->
-                <div class="answer-container hidden" data-type="essay">
-                    <div class="bg-gray-50 border border-gray-200 rounded p-3 text-gray-500 h-36">
-                        서술형 텍스트
-                    </div>
-                </div>
-                <!-- 객관식 답변 영역 (단일 선택) -->
-                <div class="answer-container hidden" data-type="multiple">
-                    <div class="space-y-2">
-                        <div class="flex items-center">
-                            <div class="w-6 h-6 flex items-center justify-center mr-2">
-                                <div class="w-4 h-4 rounded-full border border-gray-400"></div>
-                            </div>
-                            <input type="text" placeholder="옵션 1"
-                                   class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
-                            <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
-                                <i class="ri-delete-bin-line"></i>
-                            </button>
-                            <div class="flex items-center space-x-2 ml-8 mt-1">
-                                <select class="jump-target-select border border-gray-300 text-sm rounded p-1">
-                                    <option value="">선택 시 이동할 문항</option>
-                                    <!-- 여기에는 JS에서 동적으로 채워짐 -->
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center">
-                            <div class="w-6 h-6 flex items-center justify-center mr-2">
-                                <div class="w-4 h-4 rounded-full border border-gray-400"></div>
-                            </div>
-                            <input type="text" placeholder="옵션 2"
-                                   class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
-                            <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
-                                <i class="ri-delete-bin-line"></i>
-                            </button>
-                            <div class="flex items-center space-x-2 ml-8 mt-1">
-                                <select class="jump-target-select border border-gray-300 text-sm rounded p-1">
-                                    <option value="">선택 시 이동할 문항</option>
-                                    <!-- 여기에는 JS에서 동적으로 채워짐 -->
-                                </select>
-                            </div>
-                        </div>
-                        <button class="flex items-center text-primary font-medium mt-2 add-option-button">
-                            <i class="ri-add-line mr-1"></i>
-                            옵션 추가
-                        </button>
-                    </div>
-                </div>
-                <!-- 객관식 답변 영역 (다중 선택) -->
-                <div class="answer-container hidden" data-type="multiple-checkbox">
-                    <div class="space-y-2">
-                        <div class="flex items-center">
-                            <div class="w-6 h-6 flex items-center justify-center mr-2">
-                                <div class="w-4 h-4 rounded border border-gray-400"></div>
-                            </div>
-                            <input type="text" placeholder="옵션 1"
-                                   class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
-                            <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
-                                <i class="ri-delete-bin-line"></i>
-                            </button>
-                        </div>
-                        <div class="flex items-center">
-                            <div class="w-6 h-6 flex items-center justify-center mr-2">
-                                <div class="w-4 h-4 rounded border border-gray-400"></div>
-                            </div>
-                            <input type="text" placeholder="옵션 2"
-                                   class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
-                            <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
-                                <i class="ri-delete-bin-line"></i>
-                            </button>
-                        </div>
-                        <button class="flex items-center text-primary font-medium mt-2 add-option-button">
-                            <i class="ri-add-line mr-1"></i>
-                            옵션 추가
-                        </button>
-                    </div>
-                </div>
-                <!-- 드롭다운 답변 영역 -->
-                <div class="answer-container hidden" data-type="dropdown">
-                    <div class="space-y-2">
-                        <div class="flex items-center">
-                            <input type="text" placeholder="옵션 1"
-                                   class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
-                            <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
-                                <i class="ri-delete-bin-line"></i>
-                            </button>
-                            <div class="flex items-center space-x-2 ml-8 mt-1">
-                                <select class="jump-target-select border border-gray-300 text-sm rounded p-1">
-                                    <option value="">선택 안 함</option>
-                                    <!-- 여기에는 JS에서 동적으로 채워짐 -->
-                                </select>
-                            </div>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="text" placeholder="옵션 2"
-                                   class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
-                            <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
-                                <i class="ri-delete-bin-line"></i>
-                            </button>
-                            <div class="flex items-center space-x-2 ml-8 mt-1">
-                                <select class="jump-target-select border border-gray-300 text-sm rounded p-1">
-                                    <option value="">선택 안 함</option>
-                                    <!-- 여기에는 JS에서 동적으로 채워짐 -->
-                                </select>
-                            </div>
-                        </div>
-                        <button class="flex items-center text-primary font-medium mt-2 add-option-button">
-                            <i class="ri-add-line mr-1"></i>
-                            옵션 추가
-                        </button>
-                    </div>
-                    <div class="bg-gray-50 border border-gray-200 rounded p-3 mt-4 text-gray-500 flex items-center">
-                        <i class="ri-arrow-down-s-line mr-2"></i>
-                        <span>드롭다운 선택</span>
-                    </div>
-                </div>
-                <!-- 날짜 답변 영역 -->
-                <div class="answer-container hidden" data-type="date">
-                    <div class="bg-gray-50 border border-gray-200 rounded p-3 text-gray-500 flex items-center">
-                        <i class="ri-calendar-line mr-2"></i>
-                        날짜 선택
-                    </div>
-                </div>
-                <!-- 파일 업로드 답변 영역 -->
-                <div class="answer-container hidden" data-type="file">
-                    <div class="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-6 text-center">
-                        <div class="w-12 h-12 mx-auto flex items-center justify-center rounded-full bg-gray-100 text-gray-500 mb-2">
-                            <i class="ri-upload-cloud-line ri-lg"></i>
-                        </div>
-                        <p class="text-gray-500">
-                            파일을 여기에 끌어다 놓거나 클릭하여 업로드 </p>
-                        <p class="text-xs text-gray-400 mt-1">최대 파일 크기: 10MB</p>
-                    </div>
-                </div>
-                <!-- 이미지 업로드 답변 영역 -->
-                <div class="answer-container hidden" data-type="image">
-                    <div class="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-6 text-center">
-                        <div class="w-12 h-12 mx-auto flex items-center justify-center rounded-full bg-gray-100 text-gray-500 mb-2">
-                            <i class="ri-upload-cloud-line ri-lg"></i>
-                        </div>
-                        <p class="text-gray-500">
-                            이미지를 여기에 끌어다 놓거나 클릭하여 업로드 </p>
-                        <p class="text-xs text-gray-400 mt-1">최대 파일 크기: 10MB</p>
-                    </div>
-                </div>
-                <!--                계층형 문제유형-->
-                <div class="answer-container hidden" data-type="hierarchy">
-                    <!--                    <select class="w-full border border-gray-300 rounded p-2 text-sm" id="hierarchy-levels">-->
-                    <!--                        <option value="2">2단계</option>-->
-                    <!--                        <option value="3" selected>3단계</option>-->
-                    <!--                    </select>-->
-                    <div class="hierarchy-grid">
-                        <div class="hierarchy-column active" data-level="1">
-                            <div class="p-4 border-b border-gray-200 bg-white rounded-t-lg">
-                                <h4 class="font-semibold text-gray-800 flex items-center justify-between">
-                                    1단계 - 대분류
-                                    <button class="text-sm text-primary font-medium flex items-center"
-                                            data-add-option="1">
-                                        <i class="ri-add-line mr-1"></i>
-                                        추가
-                                    </button>
-                                </h4>
-                            </div>
-                            <div class="p-2 max-h-64 overflow-y-auto" data-options-container="1">
-
-                            </div>
-                        </div>
-
-                        <div class="hierarchy-column active" data-level="2">
-                            <div class="p-4 border-b border-gray-200 bg-white rounded-t-lg">
-                                <h4 class="font-semibold text-gray-800 flex items-center justify-between">
-                                    2단계 - 세부전공
-                                    <button class="text-sm text-primary font-medium flex items-center"
-                                            data-add-option="2">
-                                        <i class="ri-add-line mr-1"></i>
-                                        추가
-                                    </button>
-                                </h4>
-                            </div>
-                            <div class="p-2 max-h-64 overflow-y-auto" data-options-container="2">
-
-                            </div>
-                        </div>
-
-                        <div class="hierarchy-column active" data-level="3">
-                            <div class="p-4 border-b border-gray-200 bg-white rounded-t-lg">
-                                <h4 class="font-semibold text-gray-800 flex items-center justify-between">
-                                    3단계 - 세부분야
-                                    <button class="text-sm text-primary font-medium flex items-center"
-                                            data-add-option="3">
-                                        <i class="ri-add-line mr-1"></i>
-                                        추가
-                                    </button>
-                                </h4>
-                            </div>
-                            <div class="p-2 max-h-64 overflow-y-auto" data-options-container="3">
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div class="flex items-center mt-4 pt-4 border-t border-gray-100">
-                    <div class="relative inline-block text-left">
-                        <button type="button" class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
-                                id="question-type-menu-button" aria-expanded="false" aria-haspopup="true">
-                            <span class="mr-1">문제 유형:</span>
-                            <span class="font-medium question-type-text">단답형</span>
-                            <i class="ri-arrow-down-s-line ml-1"></i>
-                        </button>
-                        <div class="hidden origin-top-left absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
-                             role="menu" aria-orientation="vertical" aria-labelledby="question-type-menu-button"
-                             tabindex="-1">
-                            <div class="py-1" role="none">
-                                <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
-                                        role="menuitem" tabindex="-1" data-type="short">
-                                    단답형
-                                </button>
-                                <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
-                                        role="menuitem" tabindex="-1" data-type="essay">
-                                    서술형
-                                </button>
-                                <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
-                                        role="menuitem" tabindex="-1" data-type="multiple">
-                                    객관식 (단일 선택)
-                                </button>
-                                <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
-                                        role="menuitem" tabindex="-1" data-type="multiple-checkbox">
-                                    객관식 (다중 선택)
-                                </button>
-                                <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
-                                        role="menuitem" tabindex="-1" data-type="dropdown">
-                                    드롭다운
-                                </button>
-                                <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
-                                        role="menuitem" tabindex="-1" data-type="date">
-                                    날짜 답변
-                                </button>
-                                <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
-                                        role="menuitem" tabindex="-1" data-type="file">
-                                    파일 업로드
-                                </button>
-                                <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
-                                        role="menuitem" tabindex="-1" data-type="image">
-                                    이미지 업로드
-                                </button>
-                                <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
-                                        role="menuitem" tabindex="-1" data-type="hierarchy">
-                                    계층형 선택
-                                </button>
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ml-auto flex items-center">
-                        <input type="checkbox" class="required-checkbox mr-2">
-                        <label class="text-sm text-gray-700">필수 여부</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="mt-4 flex justify-center">
-            <button id="add-question-btn-bottom"
-                    class="flex items-center text-primary font-medium px-4 py-2 rounded-button border border-primary bg-white whitespace-nowrap">
-                <i class="ri-add-line mr-2"></i>
-                문제 추가하기
-            </button>
-        </div>
-    </div>
-
-    <!-- 우측 사이드바 - 설정 패널 -->
-    <!--fixme     <div class="w-72 shrink-0 ml-6">-->
-    <div id="right-sidebar"
-         class="w-72 shrink-0 ml-6 hidden fixed top-0 right-0 h-full z-40 sm:block sm:relative sm:h-auto sm:right-auto">
-        <div class="bg-white rounded-lg shadow-sm sticky top-20 p-4">
-            <h2 class="text-lg font-semibold mb-4">설정</h2>
-
-            <div class="border-t border-gray-100 my-4"></div>
-            <!-- 설문지 설정 -->
-            <div id="survey-settings">
-                <h3 class="font-medium text-gray-700 mb-3">설문지 설정</h3>
-                <div class="space-y-4">
-                    <div>
-                        <label class="text-sm text-gray-600 block mb-1">응답 기간</label>
-                        <div class="flex items-center space-x-2">
-                            <input id="start-date" type="date" th:value="${survey != null ? survey.startDate : ''}"/>
-
-                            <span class="text-gray-400">~</span>
-
-                            <input id="end-date" type="date" th:value="${survey != null ? survey.endDate : ''}"/>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-600">공개 여부</span>
-                        <label class="custom-switch">
-                            <input id="isPublic"
-                                   name="isShare"
-                                   type="checkbox"
-                                   th:checked="${survey == null or survey.isShare}" />
-
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-600">응답자 정보 수집</span>
-                        <label class="custom-switch">
-                            <input type="checkbox" checked/>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <label class="text-sm text-gray-600">설문지 유형</label>
-                        <select id="survey-type" name="surveyType"
-                                class="border border-gray-300 text-sm rounded px-2 py-1">
-                            <option value="normal" th:selected="${survey != null and survey.surveyType == 'NORMAL'}">
-                                일반
-                            </option>
-                            <option value="student" th:selected="${survey != null and survey.surveyType == 'STUDENT'}">
-                                학생
-                            </option>
-                            <option value="promotion"
-                                    th:selected="${survey != null and survey.surveyType == 'PROMOTION'}">홍보 수수료
-                            </option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</main>
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 <!-- 계층형 관련 스크립트 -->
 <script id="toast-management" type="module">
@@ -683,16 +656,10 @@
             }, 300);
         }, 3000);
     }
-
-<script type="module" id="api-bootstrap">
-    import { api } from "/js/homepage/lib/apiClient.js";
-    window.api = api;
-    window.dispatchEvent(new Event("api-ready"));
 </script>
 
-<script id="hierarchy-management">
-    document.addEventListener("DOMContentLoaded", function(){
-        window.hierarchyStore = {};
+<script id="hierarchy-management" type="module">
+    window.hierarchyStore = {};
 
     function initHierarchy(questionId) {
         hierarchyStore[questionId] = {
@@ -951,6 +918,8 @@
     window.getStore = getStore;
     window.updateHierarchyColumn = updateHierarchyColumn;
 </script>
+
+
 <script th:inline="javascript" type="module">
     //note 설문 형태 저장하는 기능
     function collectQuestions() {
@@ -1587,14 +1556,13 @@
                 endDateInput.value = survey.endDate;
             }
 
-                renderExistingQuestions(survey);
-                updateJumpTargets();
-                restoreJumpTargetSelections();
-            }
-        } catch (e) {
-            console.warn("survey 데이터 없음");
+            renderExistingQuestions(survey);
+            updateJumpTargets();
+            restoreJumpTargetSelections();
         }
-    });
+    } catch (e) {
+        console.warn("survey 데이터 없음");
+    }
 </script>
 
 <script id="save-management">
@@ -1623,6 +1591,7 @@
             }, 300);
         }, 3000);
     }
+
     document.getElementById("toast-close").addEventListener("click", () => {
         const toast = document.getElementById("toast");
         toast.classList.remove("show");
@@ -1656,7 +1625,7 @@
             const description = el.querySelector('textarea')?.value.trim() || '';
             const questionId = el.dataset.id;
             console.log(title);
-            if(!title) collectionFailed = true;
+            if (!title) collectionFailed = true;
             //fixme 이거 수정한거 spring dto에 추가해야함.
             const isTemplate = el.dataset.template === "true";
             const domainField = el.dataset.domainField || null;
@@ -1665,9 +1634,9 @@
                 type,
                 question: title,
                 description,
-                ...(questionId && { questionId }),
-                ...(isTemplate && { isTemplate: true }),
-                ...(domainField && { domainField })
+                ...(questionId && {questionId}),
+                ...(isTemplate && {isTemplate: true}),
+                ...(domainField && {domainField})
             };
 
             // 객관식/드롭다운 질문에 옵션이 있다면 추가
@@ -1677,10 +1646,10 @@
                 );
                 const optionPairs = Array.from(optionInputs).map((input) => {
                     const text = input.value.trim();
-                        const select = input.parentElement.querySelector(".jump-target-select");
+                    const select = input.parentElement.querySelector(".jump-target-select");
                     const nextQuestion = select?.value || "";
                     const optionId = input.dataset.id;
-                    return { text, nextQuestion , ...(optionId && { optionId: optionId })};
+                    return {text, nextQuestion, ...(optionId && {optionId: optionId})};
                 }).filter(
                     opt => {
                         const isValid = opt.text.length > 0;
@@ -1688,7 +1657,7 @@
                         return isValid;
                     });
                 questionData.options = optionPairs;
-            }else if (type === "hierarchy") {
+            } else if (type === "hierarchy") {
                 const questionId = el.getAttribute("data-question-id");
                 const store = window.hierarchyStore?.[questionId];
                 if (!store) {
@@ -1705,7 +1674,7 @@
                         hierarchyId: first.id,
                         level: 1,
                         parentOptionId: null,
-                        ...(first.optionId && { optionId: first.optionId })
+                        ...(first.optionId && {optionId: first.optionId})
                     });
 
                     const secondLevel = store.hierarchyData[first.id] || [];
@@ -1715,7 +1684,7 @@
                             hierarchyId: second.id,
                             level: 2,
                             parentOptionId: first.id,
-                            ...(second.optionId && { optionId: second.optionId })
+                            ...(second.optionId && {optionId: second.optionId})
                         });
 
                         const thirdLevel = store.hierarchySubData[second.id] || [];
@@ -1725,7 +1694,7 @@
                                 hierarchyId: third.id,
                                 level: 3,
                                 parentOptionId: second.id,
-                                ...(third.optionId && { optionId: third.optionId })
+                                ...(third.optionId && {optionId: third.optionId})
                             });
                         });
                     });
@@ -1756,9 +1725,9 @@
         const questions = collectQuestions();
 
         //저장 가능 체크
-        if(questions==null){
+        if (questions == null) {
             console.log("questions is null");
-            showToast("error","설문조사 문항을 제대로 입력해주세요");
+            showToast("error", "설문조사 문항을 제대로 입력해주세요");
             return;
         }
 
@@ -1767,7 +1736,7 @@
             return;
         }
 
-        if(!validateDateRange()){
+        if (!validateDateRange()) {
             showToast("error", "날짜를 다시 확인해주세요");
             return;
         }
@@ -1784,14 +1753,14 @@
 
         try {
             const survey = /*[[${survey}]]*/ null;
-            if(survey) console.log("survey있음");
+            if (survey) console.log("survey있음");
             else console.log("survey없음");
             const folderId = /*[[${folderId}]]*/ null;
-            const url = (survey) ? surveyAdminUrl+"/edit" : surveyAdminUrl + "/make";
+            const url = (survey) ? surveyAdminUrl + "/edit" : surveyAdminUrl + "/make";
             const method = (survey) ? "PATCH" : "POST";
-            const surveyType=document.getElementById("survey-type")?.value || "normal";
+            const surveyType = document.getElementById("survey-type")?.value || "normal";
             const isShare = document.querySelector('#isPublic').checked;
-            console.log("surveyType:"+surveyType);
+            console.log("surveyType:" + surveyType);
             //fixme payload수정함 이거  dto에서 받아야함.
 
             const payload = {
@@ -1801,24 +1770,24 @@
                 startDate,
                 endDate,
                 surveyType: surveyType,
-                ...(survey && { surveyId: survey.surveyId }), // surveyId가 존재할 때만 id 추가
+                ...(survey && {surveyId: survey.surveyId}), // surveyId가 존재할 때만 id 추가
                 folderId,
                 isShare
             };
             if (method === "POST") {
-                   await api.postJson(url, payload);
-                 } else if (method === "PATCH") {
-                   await api.patchJson(url, payload);
-                 } else if (method === "PUT") {
-                   await api.putJson(url, payload);
-                 } else {
-                   await api._request(method, url, JSON.stringify(payload), {
-                         headers: { "Content-Type": "application/json" }
-                   });
-                 }
+                await api.postJson(url, payload);
+            } else if (method === "PATCH") {
+                await api.patchJson(url, payload);
+            } else if (method === "PUT") {
+                await api.putJson(url, payload);
+            } else {
+                await api._request(method, url, JSON.stringify(payload), {
+                    headers: {"Content-Type": "application/json"}
+                });
+            }
 
             showToast("success", "설문조사가 저장되었습니다");
-            window.location.href = "/survey/list?folderId="+folderId;
+            window.location.href = "/survey/list?folderId=" + folderId;
         } catch (error) {
             showToast("error", "저장 중 오류가 발생했습니다", true);
         } finally {
@@ -1845,12 +1814,12 @@
         // 일반 설문은 빈 상태로 끝냄
         if (selectedType === "normal") return;
 
-            try {
-                // 템플릿 API 호출
-                const templateQuestions = await api.get(
-                       `/api/v1/survey/admin/template?type=${encodeURIComponent(selectedType)}`
-                     );
-                console.log("templateQuestions:", templateQuestions);
+        try {
+            // 템플릿 API 호출
+            const templateQuestions = await api.get(
+                `/api/v1/survey/admin/template?type=${encodeURIComponent(selectedType)}`
+            );
+            console.log("templateQuestions:", templateQuestions);
 
             // 템플릿 문항 생성
             templateQuestions.forEach((q) => {
