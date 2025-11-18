@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -26,13 +27,14 @@ public class SchoolController {
 
     @RequestMapping("/{school}/board/{boardId}")
     public String schoolBoard(@PathVariable String school, @PathVariable Long boardId, Model model,
+                              @ModelAttribute String keyword,
                               @PageableDefault(size = 9, sort = "createdAt", direction = Sort.Direction.DESC)
                               Pageable pageable){
         model.addAttribute("school",school);
         model.addAttribute("boardId",boardId);
         SchoolBoard schoolBoard = schoolFindService.loadBoardById(boardId);
         model.addAttribute("schoolLogo",schoolBoard.getSchool().getLogoUrl());
-        return boardViewDispatcher.dispatch(schoolBoard, school, model, pageable);
+        return boardViewDispatcher.dispatch(schoolBoard, school, model, pageable,keyword);
     }
 
     @RequestMapping("/{school}/files/{boardId}")

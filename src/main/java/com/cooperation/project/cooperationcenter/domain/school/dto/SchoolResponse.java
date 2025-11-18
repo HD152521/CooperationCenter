@@ -3,10 +3,12 @@ package com.cooperation.project.cooperationcenter.domain.school.dto;
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.school.model.*;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -83,6 +85,11 @@ public class SchoolResponse {
             return boards.stream().map(b -> SchoolBoardDto.from(b, nowId)).toList();
         }
     }
+
+    public record PostResponseDTo(
+            Page<SchoolPostDto> notices,
+            Page<SchoolPostDto> normals
+    ){}
 
     public record SchoolPostDto(
             Long id,

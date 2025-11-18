@@ -23,7 +23,8 @@ public class ScheduleBoardViewHandler implements BoardViewHandler{
     public String handle(SchoolBoard board,
                          String school,
                          Model model,
-                         Pageable pageable) {
+                         Pageable pageable,
+                         String keyword) {
 
         var dto = schoolFindService.loadScheduleDtoByBoard(board);
         model.addAttribute("SchoolScheduleDto", dto);

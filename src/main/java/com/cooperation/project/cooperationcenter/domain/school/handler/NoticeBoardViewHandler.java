@@ -20,7 +20,7 @@ public class NoticeBoardViewHandler implements BoardViewHandler{
     }
 
     @Override
-    public String handle(SchoolBoard board, String school, Model model, Pageable pageable) {
+    public String handle(SchoolBoard board, String school, Model model, Pageable pageable,String keyword) {
         model.addAttribute("postDto", schoolFindService.loadPostByBoardByDto(board, pageable));
         return schoolPath  + "postTemplate";
     }

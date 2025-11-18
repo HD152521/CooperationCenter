@@ -23,7 +23,8 @@ public class IntroBoardViewHandler implements BoardViewHandler{
     public String handle(SchoolBoard board,
                          String school,
                          Model model,
-                         Pageable pageable) {
+                         Pageable pageable,
+                         String keyword) {
 
         String content = schoolFindService.loadIntroByBoard(board).getContent();
         model.addAttribute("content", content);

@@ -1,5 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.school.repository;
 
+import com.cooperation.project.cooperationcenter.domain.school.dto.PostStatus;
+import com.cooperation.project.cooperationcenter.domain.school.dto.PostType;
 import com.cooperation.project.cooperationcenter.domain.school.model.FilePost;
 import com.cooperation.project.cooperationcenter.domain.school.model.SchoolBoard;
 import com.cooperation.project.cooperationcenter.domain.school.model.SchoolPost;
@@ -11,7 +13,20 @@ import java.util.Optional;
 
 public interface FilePostRepository extends JpaRepository<FilePost,Long> {
     Optional<FilePost> findFilePostById(Long id);
-    Page<FilePost> findFilePostBySchoolBoard(SchoolBoard schoolBoard, Pageable pageable);
+    Page<FilePost> findFilePostBySchoolBoardAndStatus(SchoolBoard schoolBoard, Pageable pageable, PostStatus status);
+    Page<FilePost> findFilePostBySchoolBoardAndStatusAndPostTitleContainingIgnoreCase(
+            SchoolBoard schoolBoard,
+            PostStatus status,
+            String keyword,
+            Pageable pageable
+    );
+    Page<FilePost> findFilePostBySchoolBoardAndStatusAndPostTitleContainingIgnoreCaseAndType(
+            SchoolBoard schoolBoard,
+            PostStatus status,
+            String keyword,
+            Pageable pageable,
+            PostType type
+    );
 
     Optional<FilePost> findTopBySchoolBoardAndIdLessThanOrderByIdDesc(SchoolBoard schoolBoard, Long id); // 이전 글
     Optional<FilePost> findTopBySchoolBoardAndIdGreaterThanOrderByIdAsc(SchoolBoard schoolBoard, Long id); // 다음 글

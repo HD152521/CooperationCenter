@@ -2,9 +2,7 @@ package com.cooperation.project.cooperationcenter.domain.school.service;
 
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.file.repository.FileAttachmentRepository;
-import com.cooperation.project.cooperationcenter.domain.school.dto.ScheduleType;
-import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolRequest;
-import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolResponse;
+import com.cooperation.project.cooperationcenter.domain.school.dto.*;
 import com.cooperation.project.cooperationcenter.domain.school.model.*;
 import com.cooperation.project.cooperationcenter.domain.school.repository.*;
 import com.cooperation.project.cooperationcenter.global.exception.BaseException;
@@ -166,12 +164,41 @@ public class SchoolFindService {
 
     public Page<FilePost> loadFilePostByPage(SchoolBoard board, Pageable pageable){
         try{
-            return filePostRepository.findFilePostBySchoolBoard(board,pageable);
+            return filePostRepository.findFilePostBySchoolBoardAndStatus(board,pageable, PostStatus.PUBLISHED);
         }catch(Exception e){
             log.warn(e.getMessage());
             return null;
         }
     }
+
+    public Page<FilePost> loadFilePostByPageByKeyword(SchoolBoard board, Pageable pageable,String keyword){
+        try{
+            return filePostRepository.findFilePostBySchoolBoardAndStatusAndPostTitleContainingIgnoreCase(board, PostStatus.PUBLISHED,keyword,pageable);
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public Page<FilePost> loadNoticeFilePostByPageByKeyword(SchoolBoard board, Pageable pageable,String keyword){
+        try{
+            return filePostRepository.findFilePostBySchoolBoardAndStatusAndPostTitleContainingIgnoreCaseAndType(board, PostStatus.PUBLISHED,keyword,pageable, PostType.NOTICE);
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public Page<FilePost> loadNormalFilePostByPageByKeyword(SchoolBoard board, Pageable pageable,String keyword){
+        try{
+            return filePostRepository.findFilePostBySchoolBoardAndStatusAndPostTitleContainingIgnoreCaseAndType(board, PostStatus.PUBLISHED,keyword,pageable,PostType.NORMAL);
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+
 
 
     public List<SchoolResponse.SchoolPostDto> loadPostByBoardByDto(SchoolBoard board){
@@ -209,6 +236,22 @@ public class SchoolFindService {
         try{
             return loadFilePostByPage(board,pageable)
                     .map(SchoolResponse.SchoolPostDto::from);
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public SchoolResponse.PostResponseDTo loadFilePostPageByBoardByDtoByKeyword(SchoolBoard board, Pageable pageable, String keyword){
+        try{
+            return new SchoolResponse.PostResponseDTo(
+                    loadNoticeFilePostByPageByKeyword(board,pageable,keyword).map(
+                            SchoolResponse.SchoolPostDto::from)
+                    ,
+                    loadNormalFilePostByPageByKeyword(board,pageable,keyword).map(
+                            SchoolResponse.SchoolPostDto::from
+                    )
+            );
         }catch(Exception e){
             log.warn(e.getMessage());
             return null;

@@ -24,12 +24,19 @@ public class FilesBoardViewHandler implements BoardViewHandler{
     public String handle(SchoolBoard board,
                          String school,
                          Model model,
-                         Pageable pageable) {
+                         Pageable pageable,
+                         String keyword) {
 
         model.addAttribute(
                 "filePostDto",
                 schoolFindService.loadFilePostPageByBoardByDto(board, pageable)
         );
+
+        //fixme
+//        model.addAttribute(
+//                "filePostDto",
+//                schoolFindService.loadFilePostPageByBoardByDtoByKeyword(board, pageable,keyword)
+//        );
 
         return schoolPath + "school-board";
     }

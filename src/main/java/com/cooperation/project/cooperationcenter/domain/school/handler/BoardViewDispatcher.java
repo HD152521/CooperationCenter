@@ -16,13 +16,14 @@ public class BoardViewDispatcher{
     public String dispatch(SchoolBoard board,
                            String school,
                            Model model,
-                           Pageable pageable) {
+                           Pageable pageable,
+                           String keyword) {
 
         return strategies.stream()
                 .filter(strategy -> strategy.supports(board.getType()))
                 .findFirst()
                 .orElseThrow(() ->
                         new IllegalArgumentException("지원하지 않는 BoardType: " + board.getType()))
-                .handle(board, school, model, pageable);
+                .handle(board, school, model, pageable,keyword);
     }
 }
