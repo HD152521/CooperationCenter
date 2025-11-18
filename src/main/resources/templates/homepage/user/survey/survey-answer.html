@@ -1,40 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html th:replace="~{fragments/layout/base :: base(~{::head}, ~{::body})}" xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>설문조사 참여</title>
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <script>tailwind.config = {
-        theme: {
-            extend: {
-                colors: {primary: '#4F46E5', secondary: '#6366F1'},
-                borderRadius: {
-                    'none': '0px',
-                    'sm': '4px',
-                    DEFAULT: '8px',
-                    'md': '12px',
-                    'lg': '16px',
-                    'xl': '20px',
-                    '2xl': '24px',
-                    '3xl': '32px',
-                    'full': '9999px',
-                    'button': '8px'
-                }
-            }
-        }
-    }</script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
     <style>
         :where([class^="ri-"])::before {
             content: "\f3c2";
-        }
-
-        body {
-            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
         }
 
         input[type="number"]::-webkit-inner-spin-button,
@@ -71,49 +41,52 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-<header th:replace="~{homepage/common/survey-make-nav :: survey-make-nav}"></header>
-<div class="w-full bg-white shadow-sm progress-wrapper">
-    <div class="container mx-auto px-4 py-2">
-        <div class="relative h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div class="progress-bar absolute top-0 left-0 h-full bg-primary rounded-full" style="width: 20%"></div>
-        </div>
-        <div class="flex justify-between text-sm text-gray-500 mt-1">
-            <span id="progress-count">1/7 문항</span>
-            <span id="progress-text">14% 완료</span>
+<body>
+<div class="bg-gray-50 min-h-screen">
+    <header th:replace="~{homepage/common/survey-make-nav :: survey-make-nav}"></header>
+    <div class="w-full bg-white shadow-sm progress-wrapper">
+        <div class="container mx-auto px-4 py-2">
+            <div class="relative h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div class="progress-bar absolute top-0 left-0 h-full bg-primary rounded-full" style="width: 20%"></div>
+            </div>
+            <div class="flex justify-between text-sm text-gray-500 mt-1">
+                <span id="progress-count">1/7 문항</span>
+                <span id="progress-text">14% 완료</span>
+            </div>
         </div>
     </div>
+    <main class="container mx-auto px-4 py-6 max-w-3xl">
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">제목</h1>
+                <p class="text-gray-600 mb-4">설명</p>
+                <div class="flex items-center text-sm text-gray-500 space-x-6">
+                    <!--                <div class="flex items-center">-->
+                    <!--                    <i class="ri-time-line mr-2"></i>-->
+                    <!--                    <span data-time>예상 소요 시간: 약 5분</span>-->
+                    <!--                </div>-->
+                    <!--                <div class="flex items-center">-->
+                    <!--                    <i class="ri-question-line mr-2"></i>-->
+                    <!--                    <span data-count>총 0개 문항</span>-->
+                    <!--                </div>-->
+                </div>
+            </div>
+            <form id="survey-form" enctype="multipart/form-data">
+                <div id="questions-container">
+
+                </div>
+
+                <div class="flex flex-col items-center mt-8">
+                    <button type="submit"
+                            class="px-6 py-3 bg-primary text-white font-medium rounded-button whitespace-nowrap hover:bg-primary/90 transition-colors">
+                        제출하기
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
 </div>
-<main class="container mx-auto px-4 py-6 max-w-3xl">
-    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <div class="mb-6">
-            <h1 class="text-2xl font-bold text-gray-900 mb-2">제목</h1>
-            <p class="text-gray-600 mb-4">설명</p>
-            <div class="flex items-center text-sm text-gray-500 space-x-6">
-                <!--                <div class="flex items-center">-->
-                <!--                    <i class="ri-time-line mr-2"></i>-->
-                <!--                    <span data-time>예상 소요 시간: 약 5분</span>-->
-                <!--                </div>-->
-                <!--                <div class="flex items-center">-->
-                <!--                    <i class="ri-question-line mr-2"></i>-->
-                <!--                    <span data-count>총 0개 문항</span>-->
-                <!--                </div>-->
-            </div>
-        </div>
-        <form id="survey-form" enctype="multipart/form-data">
-            <div id="questions-container">
 
-            </div>
-
-            <div class="flex flex-col items-center mt-8">
-                <button type="submit"
-                        class="px-6 py-3 bg-primary text-white font-medium rounded-button whitespace-nowrap hover:bg-primary/90 transition-colors">
-                    제출하기
-                </button>
-            </div>
-        </form>
-    </div>
-</main>
 <!--TODO: 안쓰는 스크립트 제거-->
 <script id="survey-interaction" type="module">
     // 글자수 카운트 기능
@@ -279,15 +252,9 @@
     // window.initializeSurveyInteractions = initializeSurveyInteractions;
     // window.updateProgress = updateProgress;
 </script>
-<script type="module" id="api-bootstrap">
-    import { api } from "/js/homepage/lib/apiClient.js";
-    window.api = api;
-    window.dispatchEvent(new Event("api-ready"));
-</script>
-
-<script th:inline="javascript"  >
+<script th:inline="javascript" type="module">
     //note API받아오는 코드
-    document.addEventListener('DOMContentLoaded', loadSurvey);
+    loadSurvey().then();
     async function loadSurvey() {
         try {
             const surveyId = [[${surveyId}]];
@@ -638,7 +605,7 @@
 
 <script id="submitForm" th:inline="javascript" type="module">
     const form = document.getElementById('survey-form');
-    form.addEventListener('submit', async function (e) {
+    form?.addEventListener('submit', async function (e) {
         e.preventDefault();
         let status = true;
         let isValid = true;

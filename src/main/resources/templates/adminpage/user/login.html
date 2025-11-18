@@ -1,38 +1,7 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html th:replace="~{fragments/layout/base :: base(~{::head}, ~{::body})}" xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>관리자 로그인</title>
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"/>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#3498DB",
-                        secondary: "#2C3E50",
-                    },
-                    borderRadius: {
-                        none: "0px",
-                        sm: "4px",
-                        DEFAULT: "8px",
-                        md: "12px",
-                        lg: "16px",
-                        xl: "20px",
-                        "2xl": "24px",
-                        "3xl": "32px",
-                        full: "9999px",
-                        button: "8px",
-                    },
-                },
-            },
-        };
-    </script>
     <style>
         :where([class^="ri-"])::before {
             content: "\f3c2";
@@ -74,68 +43,71 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen flex items-center justify-center p-4">
-<div class="login-card rounded-xl p-8 w-full max-w-md">
-    <div class="text-center mb-8">
-        <h1 class="font-['Pacifico'] text-3xl text-white mb-2">logo</h1>
-        <h2 class="text-xl font-bold text-white mb-2">관리자 로그인</h2>
-        <p class="text-gray-400">시스템 관리를 위해 로그인하세요</p>
-    </div>
-    <form id="login-form" class="space-y-6">
-        <div>
-            <label for="admin-id" class="block text-sm font-medium text-gray-300 mb-2">관리자 ID</label>
-            <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <div class="w-5 h-5 flex items-center justify-center text-gray-400">
-                        <i class="ri-user-line"></i>
-                    </div>
-                </div>
-                <input type="text" id="admin-id" name="admin-id"
-                       class="input-field w-full pl-10 pr-4 py-3 rounded-lg text-white placeholder-gray-400 border-none focus:outline-none text-sm"
-                       placeholder="관리자 ID를 입력하세요" required/>
-            </div>
+<body>
+<div class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen flex items-center justify-center p-4">
+    <div class="login-card rounded-xl p-8 w-full max-w-md">
+        <div class="text-center mb-8">
+            <h1 class="font-['Pacifico'] text-3xl text-white mb-2">logo</h1>
+            <h2 class="text-xl font-bold text-white mb-2">관리자 로그인</h2>
+            <p class="text-gray-400">시스템 관리를 위해 로그인하세요</p>
         </div>
-        <div>
-            <label for="password" class="block text-sm font-medium text-gray-300 mb-2">비밀번호</label>
-            <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <div class="w-5 h-5 flex items-center justify-center text-gray-400">
-                        <i class="ri-lock-line"></i>
+        <form id="login-form" class="space-y-6">
+            <div>
+                <label for="admin-id" class="block text-sm font-medium text-gray-300 mb-2">관리자 ID</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <div class="w-5 h-5 flex items-center justify-center text-gray-400">
+                            <i class="ri-user-line"></i>
+                        </div>
                     </div>
+                    <input type="text" id="admin-id" name="admin-id"
+                           class="input-field w-full pl-10 pr-4 py-3 rounded-lg text-white placeholder-gray-400 border-none focus:outline-none text-sm"
+                           placeholder="관리자 ID를 입력하세요" required/>
                 </div>
-                <input type="password" id="password" name="password"
-                       class="input-field w-full pl-10 pr-12 py-3 rounded-lg text-white placeholder-gray-400 border-none focus:outline-none text-sm"
-                       placeholder="비밀번호를 입력하세요" required/>
-                <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                    <div class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-300 transition-colors">
-                        <i class="ri-eye-line" id="eye-icon"></i>
+            </div>
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-300 mb-2">비밀번호</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <div class="w-5 h-5 flex items-center justify-center text-gray-400">
+                            <i class="ri-lock-line"></i>
+                        </div>
                     </div>
-                </button>
-            </div>
-        </div>
-        <div id="error-message" class="error-message p-3 rounded-lg text-sm hidden">
-            <div class="flex items-center">
-                <div class="w-4 h-4 flex items-center justify-center mr-2">
-                    <i class="ri-error-warning-line"></i>
+                    <input type="password" id="password" name="password"
+                           class="input-field w-full pl-10 pr-12 py-3 rounded-lg text-white placeholder-gray-400 border-none focus:outline-none text-sm"
+                           placeholder="비밀번호를 입력하세요" required/>
+                    <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                        <div class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-300 transition-colors">
+                            <i class="ri-eye-line" id="eye-icon"></i>
+                        </div>
+                    </button>
                 </div>
-                <span id="error-text"></span>
             </div>
-        </div>
-        <button type="submit"
-                class="login-button w-full py-3 px-4 rounded-button text-white font-medium text-sm whitespace-nowrap">
-            <span id="login-text">로그인</span>
-            <div id="loading-spinner" class="hidden inline-flex items-center">
-                <div class="w-4 h-4 flex items-center justify-center mr-2">
-                    <i class="ri-loader-4-line animate-spin"></i>
+            <div id="error-message" class="error-message p-3 rounded-lg text-sm hidden">
+                <div class="flex items-center">
+                    <div class="w-4 h-4 flex items-center justify-center mr-2">
+                        <i class="ri-error-warning-line"></i>
+                    </div>
+                    <span id="error-text"></span>
                 </div>
-                로그인 중...
             </div>
-        </button>
-    </form>
-    <div class="mt-6 text-center">
-        <p class="text-xs text-gray-500">관리자 계정으로만 접근 가능합니다</p>
+            <button type="submit"
+                    class="login-button w-full py-3 px-4 rounded-button text-white font-medium text-sm whitespace-nowrap">
+                <span id="login-text">로그인</span>
+                <div id="loading-spinner" class="hidden inline-flex items-center">
+                    <div class="w-4 h-4 flex items-center justify-center mr-2">
+                        <i class="ri-loader-4-line animate-spin"></i>
+                    </div>
+                    로그인 중...
+                </div>
+            </button>
+        </form>
+        <div class="mt-6 text-center">
+            <p class="text-xs text-gray-500">관리자 계정으로만 접근 가능합니다</p>
+        </div>
     </div>
 </div>
+
 <script id="password-toggle" type="module">
     const toggleButton = document.getElementById("toggle-password");
     const passwordInput = document.getElementById("password");
@@ -233,12 +205,12 @@
                 const confirmButton = modal.querySelector("button");
                 confirmButton.addEventListener("click", () => {
                     modal.remove();
-                    window.location.href = "/admin/home"; // 원하는 페이지로 리다이렉트
+                    Turbo.visit("/admin/home"); // 원하는 페이지로 리다이렉트
                 });
                 modal.addEventListener("click", (e) => {
                     if (e.target === modal) {
                         modal.remove();
-                        window.location.href = "/admin/home"; // 원하는 페이지로 리다이렉트
+                        Turbo.visit("/admin/home"); // 원하는 페이지로 리다이렉트
                     }
                 });
 

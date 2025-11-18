@@ -111,9 +111,11 @@
 
         /* pink   */
     </style>
-    <style>:root {
-        --header-h: 72px;
-    }</style>
+    <style>
+        :root {
+            --header-h: 72px;
+        }
+    </style>
 </head>
 <main class="min-w-0 flex-1 py-6 px-0 md:px-6">
     <div class="bg-white rounded shadow p-6">
@@ -154,14 +156,11 @@
                             <!-- academic -->
                             <label class="flex items-center gap-2 cursor-pointer select-none">
                                 <input type="checkbox" class="sr-only peer" checked data-type="academic"/>
-                                <div class="w-5 h-5 border-2 rounded-sm flex items-center justify-center
-               border-gray-300 bg-white
-               peer-checked:bg-primary peer-checked:border-primary transition-colors">
+                                <div class="w-5 h-5 border-2 rounded-sm flex items-center justify-center border-gray-300 bg-white peer-checked:bg-primary peer-checked:border-primary transition-colors">
                                     <i class="ri-check-line text-white text-xs opacity-0 peer-checked:opacity-100 transition-opacity"></i>
                                 </div>
                                 <span class="text-sm flex items-center">
-        <span class="event-dot academic"></span>학사
-      </span>
+                                <span class="event-dot academic"></span>학사</span>
                             </label>
 
                             <!-- admission -->
@@ -171,8 +170,8 @@
                                     <i class="ri-check-line text-white text-xs opacity-0 peer-checked:opacity-100 transition-opacity"></i>
                                 </div>
                                 <span class="text-sm flex items-center">
-        <span class="event-dot admission"></span>입학
-      </span>
+                                    <span class="event-dot admission"></span>입학
+                                </span>
                             </label>
 
                             <!-- scholarship -->
@@ -182,8 +181,8 @@
                                     <i class="ri-check-line text-white text-xs opacity-0 peer-checked:opacity-100 transition-opacity"></i>
                                 </div>
                                 <span class="text-sm flex items-center">
-        <span class="event-dot scholarship"></span>장학
-      </span>
+                                    <span class="event-dot scholarship"></span>장학
+                                </span>
                             </label>
 
                             <!-- dormitory -->
@@ -193,8 +192,8 @@
                                     <i class="ri-check-line text-white text-xs opacity-0 peer-checked:opacity-100 transition-opacity"></i>
                                 </div>
                                 <span class="text-sm flex items-center">
-        <span class="event-dot dormitory"></span>기숙사
-      </span>
+                                    <span class="event-dot dormitory"></span>기숙사
+                                </span>
                             </label>
 
                             <!-- international -->
@@ -204,8 +203,8 @@
                                     <i class="ri-check-line text-white text-xs opacity-0 peer-checked:opacity-100 transition-opacity"></i>
                                 </div>
                                 <span class="text-sm flex items-center">
-        <span class="event-dot international"></span>국제 학생
-      </span>
+                                    <span class="event-dot international"></span>국제 학생
+                                </span>
                             </label>
                         </div>
 
@@ -298,8 +297,6 @@
             }
         });
     </script>
-
-
     <script id="calendarViewScript" th:inline="javascript" type="module">
         const monthViewBtn = document.getElementById("monthViewBtn");
         // const semesterViewBtn = document.getElementById("semesterViewBtn");

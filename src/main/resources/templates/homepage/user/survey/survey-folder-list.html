@@ -150,7 +150,7 @@
                 <div class="space-y-2 text-sm text-gray-600">
                     <div class="flex items-center">
                         <i class="ri-file-list-3-line mr-2 text-gray-500"></i>
-<!--                        <span th:text="'설문 ' + ${folder.surveyCount} + '개'">설문 0개</span>-->
+                        <!--                        <span th:text="'설문 ' + ${folder.surveyCount} + '개'">설문 0개</span>-->
                         <span th:text="'설문: ' + ${folder.surveyCnt} + '개'">설문 0개</span>
                     </div>
                     <div class="flex items-center">
@@ -178,20 +178,14 @@
     </div>
 </main>
 
-<script type="module" id="api-bootstrap">
-    import { api } from "/js/homepage/lib/apiClient.js";
-    api.setBaseURL("/api/v1");
-    window.api = api;
-    window.dispatchEvent(new Event("api-ready"));
-</script>
-
-<script>
-    // ===== 공통: API Base URL 및 인증 헤더 =====
-    const folderApiUrl = "/api/v1/survey/admin/folders";
-    const authHeaders = (() => {
-        const token = localStorage.getItem("accessToken");
-        return token ? { Authorization: `Bearer ${token}` } : {};
-    })();
+<th:block th:fragment="script">
+    <script type="module">
+        // ===== 공통: API Base URL 및 인증 헤더 =====
+        const folderApiUrl = "/api/v1/survey/admin/folders";
+        const authHeaders = (() => {
+            const token = localStorage.getItem("accessToken");
+            return token ? {Authorization: `Bearer ${token}`} : {};
+        })();
 
         // ===== 삭제 모달 =====
         (function () {

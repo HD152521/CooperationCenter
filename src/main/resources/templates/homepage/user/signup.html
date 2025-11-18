@@ -95,27 +95,16 @@
         <form id="signupForm" action="/api/v1/member/signup" method="POST" class="space-y-8">
             <!-- 대표자 정보 섹션 -->
             <div>
-                <h2
-                        class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200"
-                >
-                    사용자 정보
-                </h2>
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">
+                    사용자 정보 </h2>
                 <div class="space-y-5">
                     <!-- 대표자 이름 -->
                     <div>
-                        <label
-                                for="name"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >사용자 이름 <span class="text-red-500">*</span></label
-                        >
-                        <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="홍길동"
-                        />
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">사용자 이름 <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" id="name" name="name" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="홍길동"/>
                     </div>
                     <!-- 아이디(이메일) -->
                     <div>
@@ -177,47 +166,28 @@
                     </div>
 
                     <div>
-                        <label
-                                for="telNum"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >사용자 전화번호 <span class="text-red-500">*</span></label
-                        >
-                        <input
-                                type="tel"
-                                id="telNum"
-                                name="telNum"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="02-1234-5678"
-                        />
+                        <label for="telNum" class="block text-sm font-medium text-gray-700 mb-1">사용자 전화번호 <span
+                                class="text-red-500">*</span></label>
+                        <input type="tel" id="telNum" name="telNum" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="02-1234-5678"/>
                         <p class="mt-1 text-sm text-gray-500">
                             '-' 없이 숫자만 입력해주세요 </p>
                     </div>
                     <!-- 대표자 휴대폰 번호 -->
                     <div>
-                        <label
-                                for="mobile"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >사용자 휴대폰 번호 <span class="text-red-500">*</span></label
-                        >
-                        <input
-                                type="tel"
-                                id="mobile"
-                                name="mobile"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="010-1234-5678"
-                        />
+                        <label for="mobile" class="block text-sm font-medium text-gray-700 mb-1">사용자 휴대폰 번호 <span
+                                class="text-red-500">*</span></label>
+                        <input type="tel" id="mobile" name="mobile" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="010-1234-5678"/>
                         <p class="mt-1 text-sm text-gray-500">
                             '-' 없이 숫자만 입력해주세요 </p>
                     </div>
                     <!-- 대표자 주소 -->
                     <div>
-                        <label
-                                for="address"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >사용자 주소 <span class="text-red-500">*</span></label
-                        >
+                        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">사용자 주소 <span
+                                class="text-red-500">*</span></label>
                         <div class="flex gap-3 mb-2">
                             <input type="text" id="address" name="address" readonly required
                                    class="w-32 px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
@@ -479,7 +449,6 @@
 </div>
 
 
-
 <!--중국 주소 검색-->
 <div id="chinese-address-modal" class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2
             z-[9999] w-[400px] bg-white border border-gray-300 shadow-lg rounded-lg p-5">
@@ -498,11 +467,6 @@
 </body>
 
 <th:block th:fragment="script">
-    <script type="module" id="api-bootstrap">
-        import { api } from "/js/homepage/lib/apiClient.js";
-        window.api = api;
-        window.dispatchEvent(new Event("api-ready"));
-    </script>
     <script id="passwordToggleScript" type="module">
         const togglePassword = document.getElementById("togglePassword");
         const toggleConfirmPassword = document.getElementById(
@@ -874,29 +838,29 @@
                 // 여기서는 실제 API 호출 대신 시뮬레이션
                 setTimeout(() => {
                     (async () => {
-                            try {
-                                  const data = await api.get(
-                                        `${memberUrl}/check-id?username=${encodeURIComponent(username)}`
-                                      ); // BaseURL 이미 설정된 가정
-                                  // 서버가 {isSuccess:true,result:boolean} 또는 boolean 둘 다 대응
-                                      const isDuplicate =
-                                        data && typeof data === "object" && "result" in data ? data.result : !!data;
+                        try {
+                            const data = await api.get(
+                                `${memberUrl}/check-id?username=${encodeURIComponent(username)}`
+                            ); // BaseURL 이미 설정된 가정
+                            // 서버가 {isSuccess:true,result:boolean} 또는 boolean 둘 다 대응
+                            const isDuplicate =
+                                data && typeof data === "object" && "result" in data ? data.result : !!data;
 
-                                      console.log(isDuplicate);
-                                  if (isDuplicate) {
-                                        usernameStatus.textContent = "이미 사용 중인 아이디입니다.";
-                                        usernameStatus.className = "mt-1 text-sm text-red-600";
-                                      } else {
-                                        usernameStatus.textContent = "사용 가능한 아이디입니다.";
-                                        isUsernameChecked = true;
-                                        usernameStatus.className = "mt-1 text-sm text-green-600";
-                                      }
-                                } catch (error) {
-                                  console.error("중복 확인 중 오류:", error);
-                                  usernameStatus.textContent = "중복 확인에 실패했습니다.";
-                                  usernameStatus.className = "mt-1 text-sm text-gray-500";
-                                }
-                          })();
+                            console.log(isDuplicate);
+                            if (isDuplicate) {
+                                usernameStatus.textContent = "이미 사용 중인 아이디입니다.";
+                                usernameStatus.className = "mt-1 text-sm text-red-600";
+                            } else {
+                                usernameStatus.textContent = "사용 가능한 아이디입니다.";
+                                isUsernameChecked = true;
+                                usernameStatus.className = "mt-1 text-sm text-green-600";
+                            }
+                        } catch (error) {
+                            console.error("중복 확인 중 오류:", error);
+                            usernameStatus.textContent = "중복 확인에 실패했습니다.";
+                            usernameStatus.className = "mt-1 text-sm text-gray-500";
+                        }
+                    })();
                 }, 100);
             });
 
@@ -905,7 +869,7 @@
             if (
                 confirm("회원가입을 취소하시겠습니까? 입력한 정보는 저장되지 않습니다.")
             ) {
-                window.location.href = "/"; // 메인 페이지로 이동
+                Turbo.visit("/"); // 메인 페이지로 이동
             }
         });
         // 폼 제출
@@ -988,7 +952,7 @@
 
                     //데이터 수집
                     const formData = new FormData();
-                    formData.append('data',JSON.stringify(jsonData));
+                    formData.append('data', JSON.stringify(jsonData));
                     // 파일 업로드
                     const agencyImage = form.agencyImage.files[0];
                     if (agencyImage) formData.append('agencyPicture', agencyImage);
@@ -1012,7 +976,7 @@
 
                     const modal = document.createElement("div");
                     modal.className =
-                            "fixed inset-0 flex items-center justify-center z-50";
+                        "fixed inset-0 flex items-center justify-center z-50";
                     modal.innerHTML = `
       <div class="fixed inset-0 bg-black opacity-50"></div>
       <div class="bg-white rounded-lg p-6 relative z-10 max-w-sm w-full mx-4">
@@ -1024,11 +988,11 @@
       <button class="w-full !rounded-button bg-primary hover:bg-primary/90 text-white px-4 py-2 font-medium transition">확인</button>
       </div>
       `;
-                        document.body.appendChild(modal);
-                        modal.querySelector("button").onclick = () => {
-                            modal.remove();
-                            window.location.href = "/member/login";
-                        };
+                    document.body.appendChild(modal);
+                    modal.querySelector("button").onclick = () => {
+                        modal.remove();
+                        Turbo.visit("/member/login");
+                    };
                 } catch (error) {
                     const modal = document.createElement("div");
                     modal.className = "fixed inset-0 flex items-center justify-center z-50";
@@ -1060,7 +1024,7 @@
     </script>
     <script id="chinese-address-modal-script" type="module">
         const modal = document.getElementById("chinese-address-modal");
-        const closeBtn = document.getElementById("closeChineseModal"  );
+        const closeBtn = document.getElementById("closeChineseModal");
         const input = document.getElementById("chineseAddressInput");
         const list = document.getElementById("chineseAddressList");
 
@@ -1153,51 +1117,50 @@
             list.innerHTML = "";
             list.classList.add("hidden");
         }
-    });
-</script>
-<script id="agency-region-loader">
-    document.addEventListener("DOMContentLoaded", async () => {
-        const select = document.getElementById("agencyRegion");
-        if (!select || !window.api) {
-            console.warn("agencyRegion select 또는 window.api 없음");
-            return;
-        }
+    </script>
+    <script id="agency-region-loader" type="module">
+        (async () => {
+            const select = document.getElementById("agencyRegion");
+            if (!select || !window.api) {
+                console.warn("agencyRegion select 또는 window.api 없음");
+                return;
+            }
 
-        try {
-            // /agency/region 호출
-            const res = await window.api.get("/api/v1/agency/region");
-            console.log("region api result:", res);
+            try {
+                // /agency/region 호출
+                const res = await window.api.get("/api/v1/agency/region");
+                console.log("region api result:", res);
 
-            const regions =
-                Array.isArray(res) ? res
-                    : Array.isArray(res.data) ? res.data
-                        : Array.isArray(res.result) ? res.result
-                            : [];
+                const regions =
+                    Array.isArray(res) ? res
+                        : Array.isArray(res.data) ? res.data
+                            : Array.isArray(res.result) ? res.result
+                                : [];
 
-            regions.forEach(region => {
-                let value, label;
+                regions.forEach(region => {
+                    let value, label;
 
-                if (typeof region === "string") {
-                    value = region;
-                    label = region;
-                } else {
-                    // 객체일 경우 필드 이름 몇 가지 가정
-                    label = region.name || region.label || region.regionName || region.value;
-                    value = region.code || label;
-                }
+                    if (typeof region === "string") {
+                        value = region;
+                        label = region;
+                    } else {
+                        // 객체일 경우 필드 이름 몇 가지 가정
+                        label = region.name || region.label || region.regionName || region.value;
+                        value = region.code || label;
+                    }
 
-                if (!label) return; // 제대로된 이름이 없으면 패스
+                    if (!label) return; // 제대로된 이름이 없으면 패스
 
-                const option = document.createElement("option");
-                option.value = value;
-                option.textContent = label;
-                select.appendChild(option);
-            });
-        } catch (e) {
-            console.error("지역 목록 불러오기 실패:", e);
-            // 필요하면 여기서 토스트/알림 띄워도 됨
-        }
-    });
-</script>
+                    const option = document.createElement("option");
+                    option.value = value;
+                    option.textContent = label;
+                    select.appendChild(option);
+                });
+            } catch (e) {
+                console.error("지역 목록 불러오기 실패:", e);
+                // 필요하면 여기서 토스트/알림 띄워도 됨
+            }
+        })().then();
+    </script>
 </th:block>
 </html>
