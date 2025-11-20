@@ -1,7 +1,6 @@
 package com.cooperation.project.cooperationcenter.global.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.cooperation.project.cooperationcenter.domain.member.service.MemberDetailsService;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
 import com.cooperation.project.cooperationcenter.global.token.JwtProvider;
@@ -15,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -48,7 +46,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
         //note 무시하는 endpoint들
         final String[] IGNORE_PATHS = {
-                "/css", "/js", "/plugins","/member/logout","/member/signup","/api/v1/member","/api/v1/admin","/api/v1/file/img","/admin/login","/favicon.ico","/api/v1/tencent","/api/v1/agency"
+                "/css", "/js", "/plugins","/member/logout","/member/signup","/api/v1/member","/api/v1/admin","/api/v1/file/img","/admin/login", "/static/favicon.ico","/api/v1/tencent","/favicon.ico","/api/v1/agency"
 //                ,"/member/login"
         };
 

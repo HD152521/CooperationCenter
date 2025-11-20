@@ -1,41 +1,8 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html th:replace="~{fragments/layout/main-layout :: main-layout(~{::head}, ~{::body}, ~{::script})}"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>설문조사 목록</title>
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {primary: "#4F46E5", secondary: "#6366F1"},
-                    borderRadius: {
-                        none: "0px",
-                        sm: "4px",
-                        DEFAULT: "8px",
-                        md: "12px",
-                        lg: "16px",
-                        xl: "20px",
-                        "2xl": "24px",
-                        "3xl": "32px",
-                        full: "9999px",
-                        button: "8px",
-                    },
-                },
-            },
-        };
-    </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-    <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet"
-    />
-    <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-            rel="stylesheet"
-    />
     <style>
         :where([class^="ri-"])::before {
             content: "\f3c2";
@@ -78,7 +45,12 @@
             visibility: hidden;
             opacity: 0;
             transition: opacity 0.2s ease, visibility 0.2s;
+            white-space: nowrap;
             z-index: 50;
+        }
+
+        .tooltip-trigger {
+            position: relative;
         }
 
         .tooltip-trigger:hover .tooltip {
@@ -93,65 +65,45 @@
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-<div
-        id="delete-confirm-modal"
-        class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50"
->
+<div id="delete-confirm-modal"
+     class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50">
     <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 mx-4">
         <div class="text-center mb-5">
-            <div
-                    class="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-red-100 text-red-500 mb-4"
-            >
+            <div class="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-red-100 text-red-500 mb-4">
                 <i class="ri-delete-bin-line ri-xl"></i>
             </div>
             <h3 class="text-lg font-bold text-gray-900 mb-2">설문조사 삭제</h3>
             <p class="text-gray-500">
-                정말로 이 설문조사를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
-            </p>
+                정말로 이 설문조사를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다. </p>
         </div>
         <div class="flex space-x-3">
-            <button
-                    id="cancel-delete"
-                    class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-button whitespace-nowrap"
-            >
+            <button id="cancel-delete"
+                    class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-button whitespace-nowrap">
                 취소
             </button>
-            <button
-                    id="confirm-delete"
-                    class="flex-1 px-4 py-2 bg-red-500 text-white rounded-button whitespace-nowrap"
-            >
+            <button id="confirm-delete" class="flex-1 px-4 py-2 bg-red-500 text-white rounded-button whitespace-nowrap">
                 삭제
             </button>
         </div>
     </div>
 </div>
-<div
-        id="copy-confirm-modal"
-        class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50"
->
+<div id="copy-confirm-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50">
     <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 mx-4">
         <div class="text-center mb-5">
-            <div
-                    class="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-blue-100 text-blue-500 mb-4"
-            >
+            <div class="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-indigo-100 text-indigo-500 mb-4">
                 <i class="ri-file-copy-line"></i>
             </div>
             <h3 class="text-lg font-bold text-gray-900 mb-2">설문조사 복사</h3>
             <p class="text-gray-500">
-                설문조사를 복사 하시겠습니까?
-            </p>
+                설문조사를 복사 하시겠습니까? </p>
         </div>
         <div class="flex space-x-3">
-            <button
-                    id="cancel-copy"
-                    class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-button whitespace-nowrap"
-            >
+            <button id="cancel-copy"
+                    class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-button whitespace-nowrap">
                 취소
             </button>
-            <button
-                    id="confirm-copy"
-                    class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-button whitespace-nowrap"
-            >
+            <button id="confirm-copy"
+                    class="flex-1 px-4 py-2 bg-indigo-500 text-white rounded-button whitespace-nowrap">
                 복사
             </button>
         </div>
@@ -159,16 +111,11 @@
 </div>
 
 
-<nav th:replace="~{homepage/common/nav-user :: nav-user}"></nav>
-
 <main class="container mx-auto px-4 py-6 pt-16 md:pt-20" id="survey-main" th:fragment="surveyMain">
     <div class="flex items-center justify-between mb-6">
         <h1 class="text-2xl font-bold">설문조사 목록</h1>
-        <a
-                th:href="@{/survey/make(folderId=${folderId})}"
-                data-readdy="true"
-                class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap flex items-center"
-        >
+        <a th:href="@{/survey/make(folderId=${folderId})}" data-readdy="true"
+           class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap flex items-center">
             <i class="ri-add-line mr-2"></i>
             새 설문조사 만들기
         </a>
@@ -182,13 +129,8 @@
 
                 <!-- 검색 입력: 화면 남는 만큼 확장 -->
                 <div class="flex-1 min-w-0 relative"> <!-- flex-1 + min-w-0 -->
-                    <input
-                            type="text"
-                            name="text"
-                            th:value="${condition.text}"
-                            placeholder="설문조사 제목 검색"
-                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"
-                    />
+                    <input type="text" name="text" th:value="${condition.text}" placeholder="설문조사 제목 검색"
+                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"/>
                     <div class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center text-gray-400">
                         <i class="ri-search-line"></i>
                     </div>
@@ -197,8 +139,7 @@
                 <!-- 오른쪽 필터/버튼 묶음: 내용 폭만 차지 -->
                 <div class="flex flex-wrap items-center gap-3 shrink-0 md:justify-end"> <!-- shrink-0 -->
                     <div class="relative">
-                        <select
-                                class="appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"
+                        <select class="appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"
                                 name="status">
                             <option value="all" th:selected="${condition.status == 'all'}">모든 상태</option>
                             <option value="before" th:selected="${condition.status == 'before'}">진행 전</option>
@@ -211,16 +152,14 @@
                     </div>
 
                     <div class="relative">
-                        <input
-                                type="date"
-                                name="date"
-                                th:value="${condition.date != null ? #temporals.format(condition.date, 'yyyy-MM-dd') : ''}"
-                                class="custom-date-input appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"
-                        />
+                        <input type="date" name="date"
+                               th:value="${condition.date != null ? #temporals.format(condition.date, 'yyyy-MM-dd') : ''}"
+                               class="custom-date-input appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"/>
                     </div>
 
                     <button type="submit"
-                            class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap flex items-center" id="searchButton">
+                            class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap flex items-center"
+                            id="searchButton">
                         검색
                     </button>
 
@@ -234,14 +173,12 @@
         </div>
     </div>
     <div id="survey-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div th:each="survey : ${surveys.content}"
-             class="survey-card bg-white rounded-lg shadow-sm overflow-hidden"
+        <div th:each="survey : ${surveys.content}" class="survey-card bg-white rounded-lg shadow-sm overflow-hidden"
              th:data-survey-id="${survey.surveyId}">
             <div class="p-6">
                 <div class="flex items-start justify-between mb-3">
                     <h3 class="text-lg font-bold text-gray-900 line-clamp-2" th:text="${survey.title}">설문 제목</h3>
-                    <span class="px-2 py-1 text-xs font-medium rounded-full"
-                          th:classappend="(${survey.isBefore}) ? 'bg-blue-100 text-white-800'
+                    <span class="px-2 py-1 text-xs font-medium rounded-full" th:classappend="(${survey.isBefore}) ? 'bg-indigo-100 text-white-800'
                                                     : ((${survey.lastDate} >= 0) ? 'bg-green-100 text-green-800'
                                                    : 'bg-red-100 text-red-800')"
                           th:text="${survey.isBefore} ? '진행 전' : ((${survey.lastDate >= 0}) ? '진행 중' : '종료')">
@@ -297,7 +234,7 @@
                         </div>
                         <div class="tooltip-trigger">
                             <a th:href="@{/api/v1/survey/qr(url=${'/survey/answer/' + survey.surveyId})}"
-                               target="_blank"
+                               target="_blank" data-turbo-prefetch="false"
                                class="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 text-gray-600">
                                 <i class="ri-qr-code-line"></i>
                             </a>
@@ -307,16 +244,15 @@
                         </div>
                     </div>
                     <div class="flex gap-2">
-                        <form th:action="@{/survey/answer/{id}(id=${survey.surveyId})}" method="post">
-                            <button class="px-3 py-1 bg-white text-blue-600 border border-blue-600 text-sm rounded whitespace-nowrap hover:bg-blue-50 transition-colors">
-                                설문
-                            </button>
-                        </form>
-                        <form th:action="@{/survey/log/list/{id}(id=${survey.surveyId})}" method="post">
-                            <button class="px-3 py-1 bg-primary text-white text-sm rounded-button whitespace-nowrap">
-                                결과
-                            </button>
-                        </form>
+                        <!--TODO: 설문조사 경로가 POST 임. -> 임의로 GET으로 수정 -->
+                        <a th:href="@{/survey/answer/{id}(id=${survey.surveyId})}"
+                           class="px-3 py-1 bg-white text-indigo-600 border border-indigo-600 text-sm rounded whitespace-nowrap hover:bg-indigo-50 transition-colors">
+                            설문
+                        </a>
+                        <a th:href="@{/survey/log/list/{id}(id=${survey.surveyId})}"
+                           class="px-3 py-1 bg-primary text-white text-sm rounded-button whitespace-nowrap">
+                            결과
+                        </a>
                     </div>
                 </div>
             </div>
@@ -340,17 +276,16 @@
             </a>
 
             <!-- 페이지 숫자 -->
-<!--                <a th:each="pageNum : ${#numbers.sequence(1, surveys.totalPages)}"-->
-<!--               th:href="@{/survey/list(page=${pageNum - 1}, text=${condition.text}, status=${condition.status}, date=${condition.date})}"-->
-<!--               th:text="${pageNum}"-->
-<!--               th:class="'px-4 py-2 border-t border-b border-gray-300 ' +-->
-<!--             (${pageNum - 1} == ${surveys.number} ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50')"-->
-<!--            >1</a>-->
+            <!--                <a th:each="pageNum : ${#numbers.sequence(1, surveys.totalPages)}"-->
+            <!--               th:href="@{/survey/list(page=${pageNum - 1}, text=${condition.text}, status=${condition.status}, date=${condition.date})}"-->
+            <!--               th:text="${pageNum}"-->
+            <!--               th:class="'px-4 py-2 border-t border-b border-gray-300 ' +-->
+            <!--             (${pageNum - 1} == ${surveys.number} ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50')"-->
+            <!--            >1</a>-->
             <th:block th:if="${surveys.totalPages > 0}">
                 <a th:each="pageNum : ${#numbers.sequence(1, surveys.totalPages)}"
                    th:href="@{/survey/list(page=${pageNum - 1}, text=${condition.text},  status=${condition.status != null ? condition.status : 'all'}, date=${condition.date}, folderId=${folderId})}"
-                   th:text="${pageNum}"
-                   th:class="'px-4 py-2 border-t border-b border-gray-300 ' +
+                   th:text="${pageNum}" th:class="'px-4 py-2 border-t border-b border-gray-300 ' +
          (${pageNum - 1} == ${surveys.number} ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50')">
                 </a>
             </th:block>
@@ -369,16 +304,10 @@
         </nav>
     </div>
 </main>
-<script type="module" id="api-bootstrap">
-    import { api } from "/js/homepage/lib/apiClient.js";
-    api.setBaseURL("/api/v1");
-    window.api = api;
-    window.dispatchEvent(new Event("api-ready"));
-</script>
-<script src="/js/homepage/common/url.js"></script>
-<script id="delete-modal-management">
+</body>
 
-    document.addEventListener("DOMContentLoaded", function () {
+<th:block th:fragment="script">
+    <script id="delete-modal-management" type="module">
         const deleteModal = document.getElementById("delete-confirm-modal");
         const cancelDeleteBtn = document.getElementById("cancel-delete");
         const confirmDeleteBtn = document.getElementById("confirm-delete");
@@ -434,10 +363,8 @@
                 closeDeleteModal();
             }
         });
-    });
-</script>
-<script id="copy-modal-management">
-    document.addEventListener("DOMContentLoaded", function () {
+    </script>
+    <script id="copy-modal-management" type="module">
         const copyModal = document.getElementById("copy-confirm-modal");
         const cancelCopyBtn = document.getElementById("cancel-copy");
         const confirmCopyBtn = document.getElementById("confirm-copy");
@@ -494,17 +421,17 @@
                 closeCopyModal();
             }
         });
-    });
-</script>
-<script id="survey-filter-management" th:inline="javascript">
-    const resetButton = document.getElementById("resetButton");
-    resetButton.addEventListener("click", function (e){
-        // location.reload();
-        e.preventDefault(); // form 제출 방지
-        const url = new URL(/*[[@{/survey/list}]]*/ '/survey/list', window.location.origin);
-        url.searchParams.set('folderId', /*[[${folderId}]]*/ 0);
-        window.location.href = url.toString();
-    });
-</script>
-</body>
+    </script>
+    <script id="survey-filter-management" th:inline="javascript" type="module">
+        const resetButton = document.getElementById("resetButton");
+        resetButton.addEventListener("click", function (e) {
+            // location.reload();
+            e.preventDefault(); // form 제출 방지
+            const url = new URL(/*[[@{/survey/list}]]*/ '/survey/list', window.location.origin);
+            url.searchParams.set('folderId', /*[[${folderId}]]*/ 0);
+            Turbo.visit(url.toString());
+        });
+    </script>
+</th:block>
+
 </html>

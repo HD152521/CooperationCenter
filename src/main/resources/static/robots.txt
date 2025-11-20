@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /member/
+
+# 그 외의 모든 경로는 수집을 허용
+Allow: /
+
+# 사이트맵이 있다면 여기에 주소를 추가할 수 있습니다.
+# 예: Sitemap: https://your-domain.com/sitemap.xml

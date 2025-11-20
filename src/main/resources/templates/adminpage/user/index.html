@@ -1,66 +1,32 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html th:replace="~{fragments/layout/base :: base(~{::head}, ~{::body})}"
+      xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>관리자 대시보드</title>
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet"
-    />
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-    />
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#3498DB",
-                        secondary: "#2C3E50",
-                    },
-                    borderRadius: {
-                        none: "0px",
-                        sm: "4px",
-                        DEFAULT: "8px",
-                        md: "12px",
-                        lg: "16px",
-                        xl: "20px",
-                        "2xl": "24px",
-                        "3xl": "32px",
-                        full: "9999px",
-                        button: "8px",
-                    },
-                },
-            },
-        };
-    </script>
     <style>
         :where([class^="ri-"])::before {
             content: "\f3c2";
         }
+
         .admin-card {
             background: linear-gradient(145deg, #2C2C3A, #232331);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
+
         .table-header {
             background: linear-gradient(135deg, #343446, #2A2A3C);
         }
+
         .table-row:hover {
             background: rgba(52, 152, 219, 0.1);
         }
+
         .status-badge {
             backdrop-filter: blur(10px);
         }
     </style>
 </head>
-<body
-        class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen text-gray-100"
->
+<body class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen text-gray-100">
 <div class="flex">
     <aside th:replace="~{adminpage/common/leftSide :: leftSide}"></aside>
     <main class="flex-1 p-8">
@@ -85,9 +51,7 @@
             <div class="admin-card rounded-xl p-6">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-xl font-bold text-white flex items-center">
-                        <div
-                                class="w-6 h-6 flex items-center justify-center mr-3 text-primary"
-                        >
+                        <div class="w-6 h-6 flex items-center justify-center mr-3 text-primary">
                             <i class="ri-user-add-line"></i>
                         </div>
                         회원가입 승인 대기
@@ -116,16 +80,16 @@
                         <tr class="table-row border-b border-gray-700" th:each="pending : ${pendingDto}">
                             <td class="p-3 text-white" th:text="${pending.memberName}">이름</td>
                             <td class="p-3 text-gray-300" th:text="${pending.memberEmail}">이메일</td>
-                            <td class="p-3 text-gray-400" th:text="${#temporals.format(pending.createdAt, 'yyyy-MM-dd HH:mm')}">가입일</td>
+                            <td class="p-3 text-gray-400"
+                                th:text="${#temporals.format(pending.createdAt, 'yyyy-MM-dd HH:mm')}">가입일
+                            </td>
                             <td class="p-3">
                                 <div class="flex space-x-2">
-                                    <button
-                                            class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap view-details-btn"
+                                    <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap view-details-btn"
                                             th:attr="data-email=${pending.memberEmail}">
                                         상세보기
                                     </button>
-                                    <button
-                                            class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap approve-btn accept-btn"
+                                    <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap approve-btn accept-btn"
                                             th:attr="data-email=${pending.memberEmail}">
                                         승인하기
                                     </button>
@@ -140,9 +104,7 @@
             <div class="admin-card rounded-xl p-6">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-xl font-bold text-white flex items-center">
-                        <div
-                                class="w-6 h-6 flex items-center justify-center mr-3 text-primary"
-                        >
+                        <div class="w-6 h-6 flex items-center justify-center mr-3 text-primary">
                             <i class="ri-login-box-line"></i>
                         </div>
                         최근 로그인 기록
@@ -173,9 +135,7 @@
         <div class="admin-card rounded-xl p-6">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-bold text-white flex items-center">
-                    <div
-                            class="w-6 h-6 flex items-center justify-center mr-3 text-primary"
-                    >
+                    <div class="w-6 h-6 flex items-center justify-center mr-3 text-primary">
                         <i class="ri-file-list-3-line"></i>
                     </div>
                     설문조사 참여 현황-수정필요
@@ -220,14 +180,9 @@
         </div>
     </main>
 </div>
-<div
-        id="user-details-modal"
-        class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
->
-    <div
-            id="document-preview-modal"
-            class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
-    >
+<div id="user-details-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div id="document-preview-modal"
+         class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
         <div class="bg-gray-800 rounded-xl p-6 max-w-4xl w-full mx-4">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-xl font-bold text-white">사업자등록증</h3>
@@ -238,16 +193,11 @@
                 </button>
             </div>
             <div class="bg-gray-700 rounded-lg p-4">
-                <img
-                        src="https://readdy.ai/api/search-image?query=A%20high-quality%2C%20professional%20business%20registration%20certificate%20document%20with%20official%20stamps%20and%20seals%2C%20clean%20white%20background%2C%20crisp%20text%2C%20and%20formal%20layout.%20The%20document%20appears%20to%20be%20an%20official%20government-issued%20business%20registration%20certificate%20with%20detailed%20company%20information%20and%20registration%20numbers.&width=800&height=1000&seq=1&orientation=portrait"
-                        alt="사업자등록증"
-                        class="w-full h-auto rounded-lg"
-                />
+                <img src="https://readdy.ai/api/search-image?query=A%20high-quality%2C%20professional%20business%20registration%20certificate%20document%20with%20official%20stamps%20and%20seals%2C%20clean%20white%20background%2C%20crisp%20text%2C%20and%20formal%20layout.%20The%20document%20appears%20to%20be%20an%20official%20government-issued%20business%20registration%20certificate%20with%20detailed%20company%20information%20and%20registration%20numbers.&width=800&height=1000&seq=1&orientation=portrait"
+                     alt="사업자등록증" class="w-full h-auto rounded-lg"/>
             </div>
             <div class="mt-6 flex justify-end">
-                <button
-                        class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap close-preview"
-                >
+                <button class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap close-preview">
                     닫기
                 </button>
             </div>
@@ -274,14 +224,12 @@
                         <div class="mb-3">
                             <p class="text-gray-400 text-sm">이메일</p>
                             <p class="text-white" id="detail-email">
-                                suyeon.jung@email.com
-                            </p>
+                                suyeon.jung@email.com </p>
                         </div>
                         <div class="mb-3">
                             <p class="text-gray-400 text-sm">사업자등록번호</p>
                             <p class="text-white" id="detail-business-number">
-                                123-45-67890
-                            </p>
+                                123-45-67890 </p>
                         </div>
                         <div>
                             <p class="text-gray-400 text-sm">가입일</p>
@@ -299,14 +247,12 @@
                         <div class="mb-3">
                             <p class="text-gray-400 text-sm">담당자 연락처</p>
                             <p class="text-white" id="detail-contact-phone">
-                                010-1234-5678
-                            </p>
+                                010-1234-5678 </p>
                         </div>
                         <div>
                             <p class="text-gray-400 text-sm">사업장 주소</p>
                             <p class="text-white" id="detail-address">
-                                서울특별시 강남구 테헤란로 123
-                            </p>
+                                서울특별시 강남구 테헤란로 123 </p>
                         </div>
                     </div>
                 </div>
@@ -325,8 +271,7 @@
                         <div class="mb-3">
                             <p class="text-gray-400 text-sm">마지막 로그인</p>
                             <p class="text-white" id="detail-last-login">
-                                2025-01-09 08:45
-                            </p>
+                                2025-01-09 08:45 </p>
                         </div>
                         <div>
                             <p class="text-gray-400 text-sm">로그인 방식</p>
@@ -349,10 +294,8 @@
                             <p class="text-white">2024-12-15</p>
                         </div>
                         <div>
-                            <button
-                                    class="mt-2 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap flex items-center"
-                                    id="view-business-registration"
-                            >
+                            <button class="mt-2 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap flex items-center"
+                                    id="view-business-registration">
                                 <div class="w-4 h-4 flex items-center justify-center mr-2">
                                     <i class="ri-file-text-line"></i>
                                 </div>
@@ -364,211 +307,199 @@
             </div>
         </div>
         <div class="mt-6 flex justify-end">
-            <button
-                    id="close-details-btn"
-                    class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap"
-            >
+            <button id="close-details-btn"
+                    class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
                 닫기
             </button>
         </div>
     </div>
 </div>
-<div
-        id="approval-modal"
-        class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50"
->
+<div id="approval-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4">
         <h3 class="text-xl font-bold text-white mb-4">회원가입 승인</h3>
         <p class="text-gray-300 mb-6">
-            선택한 사용자의 회원가입을 승인하시겠습니까?
-        </p>
+            선택한 사용자의 회원가입을 승인하시겠습니까? </p>
         <div class="flex space-x-4">
-            <button
-                    id="cancel-approval"
-                    class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap"
-            >
+            <button id="cancel-approval"
+                    class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
                 취소
             </button>
-            <button
-                    id="confirm-approval"
-                    class="flex-1 px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-            >
+            <button id="confirm-approval"
+                    class="flex-1 px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
                 승인하기
             </button>
         </div>
     </div>
 </div>
-<script id="approval-system">
-    document.addEventListener("DOMContentLoaded", function () {
-        const modal = document.getElementById("approval-modal");
-        const cancelBtn = document.getElementById("cancel-approval");
-        const confirmBtn = document.getElementById("confirm-approval");
-        let selectedEmail = null;
 
-        function showModal() {
-            modal.classList.remove("hidden");
-            modal.classList.add("flex");
-        }
-        function hideModal() {
-            modal.classList.add("hidden");
-            modal.classList.remove("flex");
-        }
-        const acceptButtons = document.querySelectorAll(".accept-btn");
-        acceptButtons.forEach((button) => {
-                button.addEventListener("click", () => {
-                    selectedEmail = button.getAttribute("data-email");
-                    showModal();
-                });
+
+<script id="approval-system" type="module">
+    const modal = document.getElementById("approval-modal");
+    const cancelBtn = document.getElementById("cancel-approval");
+    const confirmBtn = document.getElementById("confirm-approval");
+    let selectedEmail = null;
+
+    function showModal() {
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+    }
+
+    function hideModal() {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+    }
+
+    const acceptButtons = document.querySelectorAll(".accept-btn");
+    acceptButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            selectedEmail = button.getAttribute("data-email");
+            showModal();
         });
+    });
 
-        cancelBtn.addEventListener("click", hideModal);
-        confirmBtn.addEventListener("click", async function () {
-            if (!selectedEmail) {
-                alert("승인할 이메일 정보가 없습니다.");
-                return;
+    cancelBtn.addEventListener("click", hideModal);
+    confirmBtn.addEventListener("click", async function () {
+        if (!selectedEmail) {
+            alert("승인할 이메일 정보가 없습니다.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/v1/admin/accept/${encodeURIComponent(selectedEmail)}`, {
+                method: "POST"
+            });
+
+            if (!response.ok) {
+                throw new Error("서버 오류");
             }
-
-            try {
-                const response = await fetch(`/api/v1/admin/accept/${encodeURIComponent(selectedEmail)}`, {
-                    method: "POST"
-                });
-
-                if (!response.ok) {
-                    throw new Error("서버 오류");
-                }
-                const result = await response.json();
-                if (result.isSuccess) {
-                    alert("승인 완료!");
-                    location.reload();
-                } else {
-                    alert("승인 실패: " + (result.message || "알 수 없는 오류"));
-                }
-            } catch (error) {
-                console.error("API 요청 실패:", error);
-                alert("승인 중 오류가 발생했습니다.");
-            } finally {
-                hideModal();
+            const result = await response.json();
+            if (result.isSuccess) {
+                alert("승인 완료!");
+                location.reload();
+            } else {
+                alert("승인 실패: " + (result.message || "알 수 없는 오류"));
             }
+        } catch (error) {
+            console.error("API 요청 실패:", error);
+            alert("승인 중 오류가 발생했습니다.");
+        } finally {
+            hideModal();
+        }
+    });
+    modal.addEventListener("click", function (e) {
+        if (e.target === modal) {
+            hideModal();
+        }
+    });
+</script>
+<script id="refresh-functionality" type="module">
+    const refreshButtons = document.querySelectorAll("button i.ri-refresh-line");
+    refreshButtons.forEach((button) => {
+        button.parentElement.addEventListener("click", function () {
+            this.style.transform = "rotate(360deg)";
+            this.style.transition = "transform 0.5s ease";
+            setTimeout(() => {
+                this.style.transform = "rotate(0deg)";
+                alert("데이터가 새로고침되었습니다.");
+            }, 500);
         });
+    });
+</script>
+
+<script id="view-details" type="module">
+    const userDetailsModal = document.getElementById("user-details-modal");
+
+    function showModal(modal) {
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+    }
+
+    function hideModal(modal) {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+    }
+
+    const viewDetailsButtons = document.querySelectorAll(".view-details-btn");
+
+    viewDetailsButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+            const row = this.closest("tr");
+            const name = row.cells[0]?.textContent?.trim() || "-";
+            const email = row.cells[1]?.textContent?.trim() || "-";
+            const joinDate = row.cells[2]?.textContent?.trim() || "-";
+            const lastLogin = "2025-07-11";
+            const isActive = true;
+
+            document.getElementById("detail-name").textContent = name;
+            document.getElementById("detail-email").textContent = email;
+            document.getElementById("detail-join-date").textContent = joinDate;
+            document.getElementById("detail-last-login").textContent = lastLogin;
+            document.getElementById("detail-status").textContent = isActive ? "활성" : "비활성";
+            document.getElementById("detail-status").previousElementSibling.className =
+                isActive ? "w-2 h-2 rounded-full bg-green-500 mr-2" : "w-2 h-2 rounded-full bg-red-500 mr-2";
+
+            showModal(userDetailsModal);
+        });
+    });
+
+    document.getElementById("close-details").addEventListener("click", () => hideModal(userDetailsModal));
+    document.getElementById("close-details-btn").addEventListener("click", () => hideModal(userDetailsModal));
+
+    const documentPreviewModal = document.getElementById("document-preview-modal");
+    const viewBusinessRegistrationBtn = document.getElementById("view-business-registration");
+    const closePreviewButtons = document.querySelectorAll(".close-preview");
+
+    viewBusinessRegistrationBtn.addEventListener("click", () => showModal(documentPreviewModal));
+    closePreviewButtons.forEach((button) => {
+        button.addEventListener("click", () => hideModal(documentPreviewModal));
+    });
+
+    [userDetailsModal, documentPreviewModal].forEach((modal) => {
         modal.addEventListener("click", function (e) {
-            if (e.target === modal) {
-                hideModal();
-            }
-        });
-    });
-</script>
-<script id="refresh-functionality">
-    document.addEventListener("DOMContentLoaded", function () {
-        const refreshButtons = document.querySelectorAll("button i.ri-refresh-line");
-        refreshButtons.forEach((button) => {
-            button.parentElement.addEventListener("click", function () {
-                this.style.transform = "rotate(360deg)";
-                this.style.transition = "transform 0.5s ease";
-                setTimeout(() => {
-                    this.style.transform = "rotate(0deg)";
-                    alert("데이터가 새로고침되었습니다.");
-                }, 500);
-            });
+            if (e.target === modal) hideModal(modal);
         });
     });
 </script>
 
-<script id="view-details">
-    document.addEventListener("DOMContentLoaded", function () {
-        const userDetailsModal = document.getElementById("user-details-modal");
+<script id="login-log-fetch" type="module">
+    const tableBody = document.getElementById("login-log-body");
+    const refreshButton = document.getElementById("refresh-login-log");
 
-        function showModal(modal) {
-            modal.classList.remove("hidden");
-            modal.classList.add("flex");
-        }
-        function hideModal(modal) {
-            modal.classList.add("hidden");
-            modal.classList.remove("flex");
-        }
+    // ✅ 로그인 기록 데이터 불러오기 함수
+    async function loadLoginLogs() {
+        try {
+            const res = await fetch("/api/v1/admin/login/log");
+            if (!res.ok) throw new Error("서버 오류");
 
-        const viewDetailsButtons = document.querySelectorAll(".view-details-btn");
+            const json = await res.json();
+            const data = json.result?.content || []; // Page<LoginLogDto> 형태일 경우
 
-        viewDetailsButtons.forEach((button) => {
-            button.addEventListener("click", function () {
-                const row = this.closest("tr");
-                const name = row.cells[0]?.textContent?.trim() || "-";
-                const email = row.cells[1]?.textContent?.trim() || "-";
-                const joinDate = row.cells[2]?.textContent?.trim() || "-";
-                const lastLogin = "2025-07-11";
-                const isActive = true;
+            console.log("data:" + data);
 
-                document.getElementById("detail-name").textContent = name;
-                document.getElementById("detail-email").textContent = email;
-                document.getElementById("detail-join-date").textContent = joinDate;
-                document.getElementById("detail-last-login").textContent = lastLogin;
-                document.getElementById("detail-status").textContent = isActive ? "활성" : "비활성";
-                document.getElementById("detail-status").previousElementSibling.className =
-                    isActive ? "w-2 h-2 rounded-full bg-green-500 mr-2" : "w-2 h-2 rounded-full bg-red-500 mr-2";
+            // 기존 데이터 제거
+            tableBody.innerHTML = "";
 
-                showModal(userDetailsModal);
-            });
-        });
-
-        document.getElementById("close-details").addEventListener("click", () => hideModal(userDetailsModal));
-        document.getElementById("close-details-btn").addEventListener("click", () => hideModal(userDetailsModal));
-
-        const documentPreviewModal = document.getElementById("document-preview-modal");
-        const viewBusinessRegistrationBtn = document.getElementById("view-business-registration");
-        const closePreviewButtons = document.querySelectorAll(".close-preview");
-
-        viewBusinessRegistrationBtn.addEventListener("click", () => showModal(documentPreviewModal));
-        closePreviewButtons.forEach((button) => {
-            button.addEventListener("click", () => hideModal(documentPreviewModal));
-        });
-
-        [userDetailsModal, documentPreviewModal].forEach((modal) => {
-            modal.addEventListener("click", function (e) {
-                if (e.target === modal) hideModal(modal);
-            });
-        });
-    });
-</script>
-
-<script id="login-log-fetch">
-    document.addEventListener("DOMContentLoaded", async () => {
-        const tableBody = document.getElementById("login-log-body");
-        const refreshButton = document.getElementById("refresh-login-log");
-
-        // ✅ 로그인 기록 데이터 불러오기 함수
-        async function loadLoginLogs() {
-            try {
-                const res = await fetch("/api/v1/admin/login/log");
-                if (!res.ok) throw new Error("서버 오류");
-
-                const json = await res.json();
-                const data = json.result?.content || []; // Page<LoginLogDto> 형태일 경우
-
-                console.log("data:"+data);
-
-                // 기존 데이터 제거
-                tableBody.innerHTML = "";
-
-                if (data.length === 0) {
-                    tableBody.innerHTML = `
+            if (data.length === 0) {
+                tableBody.innerHTML = `
                     <tr>
                         <td colspan="4" class="p-3 text-center text-gray-400">
                             로그인 기록이 없습니다.
                         </td>
                     </tr>`;
-                    return;
-                }
+                return;
+            }
 
-                // ✅ 데이터 렌더링
-                data.forEach(log => {
-                    const statusColor = log.success
-                        ? "bg-green-500 bg-opacity-20 text-green-400"
-                        : "bg-red-500 bg-opacity-20 text-red-400";
+            // ✅ 데이터 렌더링
+            data.forEach(log => {
+                const statusColor = log.success
+                    ? "bg-green-500 bg-opacity-20 text-green-400"
+                    : "bg-red-500 bg-opacity-20 text-red-400";
 
-                    const statusText = log.success ? "정상" : "실패";
+                const statusText = log.success ? "정상" : "실패";
 
-                    const row = document.createElement("tr");
-                    row.className = "table-row border-b border-gray-700";
-                    row.innerHTML = `
+                const row = document.createElement("tr");
+                row.className = "table-row border-b border-gray-700";
+                row.innerHTML = `
                     <td class="p-3 text-white">${log.memberName || "알 수 없음"}</td>
                     <td class="p-3 text-gray-300">${log.loginTime || "-"}</td>
                     <td class="p-3 text-gray-400">${log.ipAddress || "-"}</td>
@@ -578,122 +509,114 @@
                         </span>
                     </td>
                 `;
-                    tableBody.appendChild(row);
-                });
-            } catch (err) {
-                console.error("로그인 기록 로드 실패:", err);
-                tableBody.innerHTML = `
+                tableBody.appendChild(row);
+            });
+        } catch (err) {
+            console.error("로그인 기록 로드 실패:", err);
+            tableBody.innerHTML = `
                 <tr>
                     <td colspan="4" class="p-3 text-center text-red-400">
                         데이터를 불러오는 중 오류가 발생했습니다.
                     </td>
                 </tr>`;
-            }
         }
+    }
 
-        // 페이지 로드 시 자동 호출
-        loadLoginLogs();
+    // 페이지 로드 시 자동 호출
+    loadLoginLogs();
 
-        // 새로고침 버튼 기능 연결
-        refreshButton.addEventListener("click", () => {
-            refreshButton.classList.add("animate-spin");
-            loadLoginLogs().finally(() => {
-                setTimeout(() => refreshButton.classList.remove("animate-spin"), 600);
-            });
+    // 새로고침 버튼 기능 연결
+    refreshButton.addEventListener("click", () => {
+        refreshButton.classList.add("animate-spin");
+        loadLoginLogs().finally(() => {
+            setTimeout(() => refreshButton.classList.remove("animate-spin"), 600);
         });
     });
 </script>
 
-<script id="survey-answer-fetch">
-    document.addEventListener("DOMContentLoaded", () => {
-        const tbody = document.getElementById("survey-answer-body");
-        const refreshBtn = document.getElementById("refresh-survey-answer");
+<script id="survey-answer-fetch" type="module">
+    const tbody = document.getElementById("survey-answer-body");
+    const refreshBtn = document.getElementById("refresh-survey-answer");
 
-        const statusClass = (status) => {
-            // finishStatus 예시: "완료", "진행중", "중단"
-            if (!status) return "bg-gray-500 bg-opacity-20 text-gray-300";
-            if (status.includes("완료")) return "bg-green-500 bg-opacity-20 text-green-400";
-            if (status.includes("진행")) return "bg-yellow-500 bg-opacity-20 text-yellow-400";
-            if (status.includes("중단") || status.includes("실패")) return "bg-red-500 bg-opacity-20 text-red-400";
-            return "bg-gray-500 bg-opacity-20 text-gray-300";
-        };
+    const statusClass = (status) => {
+        // finishStatus 예시: "완료", "진행중", "중단"
+        if (!status) return "bg-gray-500 bg-opacity-20 text-gray-300";
+        if (status.includes("완료")) return "bg-green-500 bg-opacity-20 text-green-400";
+        if (status.includes("진행")) return "bg-yellow-500 bg-opacity-20 text-yellow-400";
+        if (status.includes("중단") || status.includes("실패")) return "bg-red-500 bg-opacity-20 text-red-400";
+        return "bg-gray-500 bg-opacity-20 text-gray-300";
+    };
 
-        const fmtTime = (s) => {
-            // submitTime이 이미 'yyyy-MM-dd HH:mm'로 내려오면 그대로 표기
-            return s || "-";
-        };
+    const fmtTime = (s) => {
+        // submitTime이 이미 'yyyy-MM-dd HH:mm'로 내려오면 그대로 표기
+        return s || "-";
+    };
 
-        const fmtSpend = (v) => {
-            // spendTime: 분 기준이라고 가정 (Long)
-            if (v == null) return "-";
-            const minutes = Number(v);
-            if (Number.isNaN(minutes)) return "-";
-            if (minutes >= 60) {
-                const h = Math.floor(minutes / 60);
-                const m = minutes % 60;
-                return m ? `${h}시간 ${m}분` : `${h}시간`;
-            }
-            return `${minutes}분`;
-        };
+    const fmtSpend = (v) => {
+        // spendTime: 분 기준이라고 가정 (Long)
+        if (v == null) return "-";
+        const minutes = Number(v);
+        if (Number.isNaN(minutes)) return "-";
+        if (minutes >= 60) {
+            const h = Math.floor(minutes / 60);
+            const m = minutes % 60;
+            return m ? `${h}시간 ${m}분` : `${h}시간`;
+        }
+        return `${minutes}분`;
+    };
 
-        async function loadSurveyAnswers() {
-            try {
-                const res = await fetch("/api/v1/survey/admin/answer");
-                if (!res.ok) throw new Error("서버 오류");
-                const json = await res.json();
+    async function loadSurveyAnswers() {
+        try {
+            const res = await fetch("/api/v1/survey/admin/answer");
+            if (!res.ok) throw new Error("서버 오류");
+            const json = await res.json();
 
-                const list = json.result || json.data || json || [];
-                tbody.innerHTML = "";
+            const list = json.result || json.data || json || [];
+            tbody.innerHTML = "";
 
-                if (!Array.isArray(list) || list.length === 0) {
-                    tbody.innerHTML = `
-            <tr>
-              <td colspan="5" class="p-3 text-center text-gray-400">참여 기록이 없습니다.</td>
-            </tr>`;
-                    return;
-                }
-
-                const frag = document.createDocumentFragment();
-                list.forEach((row) => {
-                    const tr = document.createElement("tr");
-                    tr.className = "table-row border-b border-gray-700";
-                    tr.innerHTML = `
-            <td class="p-3 text-white">${row.memberName ?? "알 수 없음"}</td>
-            <td class="p-3 text-gray-300">${row.surveyName ?? "-"}</td>
-            <td class="p-3 text-gray-400">${fmtTime(row.submitTime)}</td>
-            <td class="p-3 text-gray-300">${fmtSpend(row.spendTime)}</td>
-            <td class="p-3">
-              <span class="status-badge px-2 py-1 ${statusClass(row.finishStatus)} text-xs rounded-full">
-                ${row.finishStatus ?? "-"}
-              </span>
-            </td>
-          `;
-                    frag.appendChild(tr);
-                });
-                tbody.appendChild(frag);
-            } catch (e) {
-                console.error("설문 현황 로드 실패:", e);
+            if (!Array.isArray(list) || list.length === 0) {
                 tbody.innerHTML = `
-          <tr>
-            <td colspan="5" class="p-3 text-center text-red-400">데이터 로드 중 오류가 발생했습니다.</td>
-          </tr>`;
+        <tr>
+          <td colspan="5" class="p-3 text-center text-gray-400">참여 기록이 없습니다.</td>
+        </tr>`;
+                return;
             }
-        }
 
-        // 최초 로드 + 새로고침
-        loadSurveyAnswers();
-        if (refreshBtn) {
-            refreshBtn.addEventListener("click", () => {
-                refreshBtn.classList.add("animate-spin");
-                loadSurveyAnswers().finally(() => {
-                    setTimeout(() => refreshBtn.classList.remove("animate-spin"), 600);
-                });
+            const frag = document.createDocumentFragment();
+            list.forEach((row) => {
+                const tr = document.createElement("tr");
+                tr.className = "table-row border-b border-gray-700";
+                tr.innerHTML = `
+        <td class="p-3 text-white">${row.memberName ?? "알 수 없음"}</td>
+        <td class="p-3 text-gray-300">${row.surveyName ?? "-"}</td>
+        <td class="p-3 text-gray-400">${fmtTime(row.submitTime)}</td>
+        <td class="p-3 text-gray-300">${fmtSpend(row.spendTime)}</td>
+        <td class="p-3">
+          <span class="status-badge px-2 py-1 ${statusClass(row.finishStatus)} text-xs rounded-full">
+            ${row.finishStatus ?? "-"}
+          </span>
+        </td>
+      `;
+                frag.appendChild(tr);
             });
+            tbody.appendChild(frag);
+        } catch (e) {
+            console.error("설문 현황 로드 실패:", e);
+            tbody.innerHTML = `
+      <tr>
+        <td colspan="5" class="p-3 text-center text-red-400">데이터 로드 중 오류가 발생했습니다.</td>
+      </tr>`;
         }
+    }
+
+    // 최초 로드 + 새로고침
+    loadSurveyAnswers();
+    refreshBtn?.addEventListener("click", () => {
+        refreshBtn?.classList.add("animate-spin");
+        loadSurveyAnswers().finally(() => {
+            setTimeout(() => refreshBtn?.classList.remove("animate-spin"), 600);
+        });
     });
 </script>
-
-
-
 </body>
 </html>

@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.0'
 	id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.github.node-gradle.node' version '7.0.2'
 }
 
 group = 'com.cooperation.project'
@@ -65,6 +66,24 @@ dependencies {
 	//swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
 
+}
+
+node {
+    version = '20.17.0'
+    download = true
+    workDir = file("${project.buildDir}/nodejs")
+    npmWorkDir = file("${project.buildDir}/npm")
+    nodeProjectDir = file("${project.projectDir}")
+}
+
+tasks.register('bundlingJsCss', com.github.gradle.node.npm.task.NpmTask) {
+    group = 'build'
+    description = 'Bundling JavaScript and Tailwind CSS using npm/rollup'
+    args = ['run', 'build']
+}
+
+tasks.named('processResources') {
+    dependsOn(tasks.named('bundlingJsCss'))
 }
 
 tasks.named('test') {

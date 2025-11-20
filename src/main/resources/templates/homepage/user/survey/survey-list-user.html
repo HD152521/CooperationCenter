@@ -1,48 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html th:replace="~{fragments/layout/base :: base(~{::head}, ~{::body})}" xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>설문조사 목록</title>
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {primary: "#4F46E5", secondary: "#6366F1"},
-                    borderRadius: {
-                        none: "0px",
-                        sm: "4px",
-                        DEFAULT: "8px",
-                        md: "12px",
-                        lg: "16px",
-                        xl: "20px",
-                        "2xl": "24px",
-                        "3xl": "32px",
-                        full: "9999px",
-                        button: "8px",
-                    },
-                },
-            },
-        };
-    </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-    <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet"
-    />
-    <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-            rel="stylesheet"
-    />
     <style>
         :where([class^="ri-"])::before {
             content: "\f3c2";
-        }
-
-        body {
-            font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
         }
 
         .survey-card {
@@ -92,231 +54,199 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-<div
-        id="delete-confirm-modal"
-        class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50"
->
-    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 mx-4">
-        <div class="text-center mb-5">
-            <div
-                    class="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-red-100 text-red-500 mb-4"
-            >
-                <i class="ri-delete-bin-line ri-xl"></i>
-            </div>
-            <h3 class="text-lg font-bold text-gray-900 mb-2">설문조사 삭제</h3>
-            <p class="text-gray-500">
-                정말로 이 설문조사를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
-            </p>
-        </div>
-        <div class="flex space-x-3">
-            <button
-                    id="cancel-delete"
-                    class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-button whitespace-nowrap"
-            >
-                취소
-            </button>
-            <button
-                    id="confirm-delete"
-                    class="flex-1 px-4 py-2 bg-red-500 text-white rounded-button whitespace-nowrap"
-            >
-                삭제
-            </button>
-        </div>
-    </div>
-</div>
-<div
-        id="copy-confirm-modal"
-        class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50"
->
-    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 mx-4">
-        <div class="text-center mb-5">
-            <div
-                    class="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-blue-100 text-blue-500 mb-4"
-            >
-                <i class="ri-file-copy-line"></i>
-            </div>
-            <h3 class="text-lg font-bold text-gray-900 mb-2">설문조사 복사</h3>
-            <p class="text-gray-500">
-                설문조사를 복사 하시겠습니까?
-            </p>
-        </div>
-        <div class="flex space-x-3">
-            <button
-                    id="cancel-copy"
-                    class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-button whitespace-nowrap"
-            >
-                취소
-            </button>
-            <button
-                    id="confirm-copy"
-                    class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-button whitespace-nowrap"
-            >
-                복사
-            </button>
-        </div>
-    </div>
-</div>
-
-<!--<div th:replace="~{/homepage/common/survey-nav :: survey-nav}"></div>-->
-<nav th:replace="~{homepage/common/nav-user :: nav-user}"></nav>
-
-<main class="container mx-auto px-4 py-6" id="survey-main" th:fragment="surveyMain">
-
-    <div class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-bold">설문조사 목록</h1>
-    </div>
-
-    <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
-        <div
-                class="flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-4"
-        >
-            <form th:action="@{/survey/list(folderId=${folderId})}" method="get"
-                  class="flex w-full flex-col md:flex-row md:items-center gap-3 md:gap-4"> <!-- w-full + 가로배치 -->
-
-                <!-- 검색 입력: 화면 남는 만큼 확장 -->
-                <div class="flex-1 min-w-0 relative"> <!-- flex-1 + min-w-0 -->
-                    <input
-                            type="text"
-                            name="text"
-                            th:value="${condition.text}"
-                            placeholder="설문조사 제목 검색"
-                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"
-                    />
-                    <div class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center text-gray-400">
-                        <i class="ri-search-line"></i>
-                    </div>
+<body>
+<div class="bg-gray-50 min-h-screen">
+    <div id="delete-confirm-modal"
+         class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 mx-4">
+            <div class="text-center mb-5">
+                <div class="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-red-100 text-red-500 mb-4">
+                    <i class="ri-delete-bin-line ri-xl"></i>
                 </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">설문조사 삭제</h3>
+                <p class="text-gray-500">
+                    정말로 이 설문조사를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다. </p>
+            </div>
+            <div class="flex space-x-3">
+                <button id="cancel-delete"
+                        class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-button whitespace-nowrap">
+                    취소
+                </button>
+                <button id="confirm-delete" class="flex-1 px-4 py-2 bg-red-500 text-white rounded-button whitespace-nowrap">
+                    삭제
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="copy-confirm-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 mx-4">
+            <div class="text-center mb-5">
+                <div class="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-blue-100 text-blue-500 mb-4">
+                    <i class="ri-file-copy-line"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">설문조사 복사</h3>
+                <p class="text-gray-500">
+                    설문조사를 복사 하시겠습니까? </p>
+            </div>
+            <div class="flex space-x-3">
+                <button id="cancel-copy"
+                        class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-button whitespace-nowrap">
+                    취소
+                </button>
+                <button id="confirm-copy" class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-button whitespace-nowrap">
+                    복사
+                </button>
+            </div>
+        </div>
+    </div>
 
-                <!-- 오른쪽 필터/버튼 묶음: 내용 폭만 차지 -->
-                <div class="flex flex-wrap items-center gap-3 shrink-0 md:justify-end"> <!-- shrink-0 -->
-                    <div class="relative">
-                        <select
-                                class="appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"
-                                name="status">
-                            <option value="all" th:selected="${condition.status == 'all'}">모든 상태</option>
-                            <option value="before" th:selected="${condition.status == 'before'}">진행 전</option>
-                            <option value="active" th:selected="${condition.status == 'active'}">진행 중</option>
-                            <option value="ended" th:selected="${condition.status == 'ended'}">종료</option>
-                        </select>
-                        <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-                            <i class="ri-arrow-down-s-line"></i>
+    <!--<div th:replace="~{/fragments/common/survey-nav :: survey-nav}"></div>-->
+    <nav th:replace="~{fragments/common/nav-user :: nav-user}"></nav>
+
+    <main class="container mx-auto px-4 py-6" id="survey-main" th:fragment="surveyMain">
+
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-bold">설문조사 목록</h1>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+            <div class="flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-4">
+                <form th:action="@{/survey/list(folderId=${folderId})}" method="get"
+                      class="flex w-full flex-col md:flex-row md:items-center gap-3 md:gap-4"> <!-- w-full + 가로배치 -->
+
+                    <!-- 검색 입력: 화면 남는 만큼 확장 -->
+                    <div class="flex-1 min-w-0 relative"> <!-- flex-1 + min-w-0 -->
+                        <input type="text" name="text" th:value="${condition.text}" placeholder="설문조사 제목 검색"
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"/>
+                        <div class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center text-gray-400">
+                            <i class="ri-search-line"></i>
                         </div>
                     </div>
 
-                    <div class="relative">
-                        <input
-                                type="date"
-                                name="date"
-                                th:value="${condition.date != null ? #temporals.format(condition.date, 'yyyy-MM-dd') : ''}"
-                                class="custom-date-input appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"
-                        />
+                    <!-- 오른쪽 필터/버튼 묶음: 내용 폭만 차지 -->
+                    <div class="flex flex-wrap items-center gap-3 shrink-0 md:justify-end"> <!-- shrink-0 -->
+                        <div class="relative">
+                            <select class="appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"
+                                    name="status">
+                                <option value="all" th:selected="${condition.status == 'all'}">모든 상태</option>
+                                <option value="before" th:selected="${condition.status == 'before'}">진행 전</option>
+                                <option value="active" th:selected="${condition.status == 'active'}">진행 중</option>
+                                <option value="ended" th:selected="${condition.status == 'ended'}">종료</option>
+                            </select>
+                            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                                <i class="ri-arrow-down-s-line"></i>
+                            </div>
+                        </div>
+
+                        <div class="relative">
+                            <input type="date" name="date"
+                                   th:value="${condition.date != null ? #temporals.format(condition.date, 'yyyy-MM-dd') : ''}"
+                                   class="custom-date-input appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"/>
+                        </div>
+
+                        <button type="submit"
+                                class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap flex items-center"
+                                id="searchButton">
+                            검색
+                        </button>
+
+                        <button type="button"
+                                class="bg-white text-gray-700 border border-gray-300 px-4 py-2 !rounded-button whitespace-nowrap flex items-center"
+                                id="resetButton">
+                            초기화
+                        </button>
                     </div>
-
-                    <button type="submit"
-                            class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap flex items-center" id="searchButton">
-                        검색
-                    </button>
-
-                    <button type="button"
-                            class="bg-white text-gray-700 border border-gray-300 px-4 py-2 !rounded-button whitespace-nowrap flex items-center"
-                            id="resetButton">
-                        초기화
-                    </button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
-    </div>
-    <div id="survey-list-container" class="bg-white rounded-lg shadow-sm overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-            <tr>
-                <th class="w-32 px-4 py-3 text-left text-sm font-semibold text-gray-700">마감</th>
-                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">설문조사 제목</th>
-                <th class="w-32 px-4 py-3 text-right text-sm font-semibold text-gray-700">참여</th>
-            </tr>
-            </thead>
+        <div id="survey-list-container" class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                <tr>
+                    <th class="w-32 px-4 py-3 text-left text-sm font-semibold text-gray-700">마감</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">설문조사 제목</th>
+                    <th class="w-32 px-4 py-3 text-right text-sm font-semibold text-gray-700">참여</th>
+                </tr>
+                </thead>
 
-            <tbody class="divide-y divide-gray-100">
-            <tr th:each="survey : ${surveys.content}" class="hover:bg-gray-50">
-                <!-- D-Day -->
-                <td class="px-4 py-3">
-          <span
-                  class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full"
-                  th:classappend="${survey.isBefore} ? 'bg-gray-100 text-gray-700'
+                <tbody class="divide-y divide-gray-100">
+                <tr th:each="survey : ${surveys.content}" class="hover:bg-gray-50">
+                    <!-- D-Day -->
+                    <td class="px-4 py-3">
+          <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full" th:classappend="${survey.isBefore} ? 'bg-gray-100 text-gray-700'
                             : (${survey.lastDate >= 0} ? 'bg-green-100 text-green-800'
                             : 'bg-red-100 text-red-700')"
-                  th:text="${survey.isBefore} ? '진행 전' : (${survey.lastDate >= 0 } ? 'D-' + ${survey.lastDate} : '종료')">
+                th:text="${survey.isBefore} ? '진행 전' : (${survey.lastDate >= 0 } ? 'D-' + ${survey.lastDate} : '종료')">
             D-0
           </span>
-                </td>
+                    </td>
 
-                <!-- 제목 -->
-                <td class="px-4 py-3">
-                    <div class="text-gray-900 font-medium truncate max-w-[42ch]" th:text="${survey.title}">
-                        설문 제목
-                    </div>
-                </td>
+                    <!-- 제목 -->
+                    <td class="px-4 py-3">
+                        <div class="text-gray-900 font-medium truncate max-w-[42ch]" th:text="${survey.title}">
+                            설문 제목
+                        </div>
+                    </td>
 
-                <!-- 참여하기 버튼 -->
-                <td class="px-4 py-3 text-right">
-                    <form th:action="@{/survey/answer/{id}(id=${survey.surveyId})}" method="post">
-                        <button
-                                class="px-3 py-1 bg-white text-blue-600 border border-blue-600 text-sm rounded hover:bg-blue-50 transition-colors">
-                            참여하기
-                        </button>
-                    </form>
-                </td>
-            </tr>
+                    <!-- 참여하기 버튼 -->
+                    <td class="px-4 py-3 text-right">
+                        <form th:action="@{/survey/answer/{id}(id=${survey.surveyId})}" method="post">
+                            <button class="px-3 py-1 bg-white text-blue-600 border border-blue-600 text-sm rounded hover:bg-blue-50 transition-colors">
+                                참여하기
+                            </button>
+                        </form>
+                    </td>
+                </tr>
 
-            <!-- 비어있을 때 -->
-            <tr th:if="${#lists.isEmpty(surveys.content)}">
-                <td colspan="3" class="px-4 py-6 text-center text-gray-500">표시할 설문이 없습니다.</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="mt-8 flex justify-center">
-        <nav class="inline-flex rounded-md shadow mt-4">
+                <!-- 비어있을 때 -->
+                <tr th:if="${#lists.isEmpty(surveys.content)}">
+                    <td colspan="3" class="px-4 py-6 text-center text-gray-500">표시할 설문이 없습니다.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-8 flex justify-center">
+            <nav class="inline-flex rounded-md shadow mt-4">
 
-            <!-- 이전 페이지 -->
-            <a th:if="${!surveys.hasPrevious()}"
-               class="px-3 py-2 rounded-l-md border border-gray-300 bg-gray-100 text-gray-300 cursor-not-allowed pointer-events-none">
-                <i class="ri-arrow-left-s-line"></i>
-            </a>
-
-            <!-- 이전 페이지 (활성 상태) -->
-            <a th:if="${surveys.hasPrevious()}"
-               th:href="@{/survey/list(page=${surveys.number - 1}, text=${condition.text},   status=${condition.status != null ? condition.status : 'all'}, date=${condition.date})}"
-               class="px-3 py-2 rounded-l-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50">
-                <i class="ri-arrow-left-s-line"></i>
-            </a>
-
-            <th:block th:if="${surveys.totalPages > 0}">
-                <a th:each="pageNum : ${#numbers.sequence(1, surveys.totalPages)}"
-                   th:href="@{/survey/list(page=${pageNum - 1}, text=${condition.text},  status=${condition.status != null ? condition.status : 'all'}, date=${condition.date})}"
-                   th:text="${pageNum}"
-                   th:class="'px-4 py-2 border-t border-b border-gray-300 ' +
-         (${pageNum - 1} == ${surveys.number} ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50')">
+                <!-- 이전 페이지 -->
+                <a th:if="${!surveys.hasPrevious()}"
+                   class="px-3 py-2 rounded-l-md border border-gray-300 bg-gray-100 text-gray-300 cursor-not-allowed pointer-events-none">
+                    <i class="ri-arrow-left-s-line"></i>
                 </a>
-            </th:block>
 
-            <a th:if="${!surveys.hasNext()}"
-               class="px-3 py-2 rounded-r-md border border-gray-300 bg-gray-100 text-gray-300 cursor-not-allowed pointer-events-none">
-                <i class="ri-arrow-right-s-line"></i>
-            </a>
+                <!-- 이전 페이지 (활성 상태) -->
+                <a th:if="${surveys.hasPrevious()}"
+                   th:href="@{/survey/list(page=${surveys.number - 1}, text=${condition.text},   status=${condition.status != null ? condition.status : 'all'}, date=${condition.date})}"
+                   class="px-3 py-2 rounded-l-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50">
+                    <i class="ri-arrow-left-s-line"></i>
+                </a>
 
-            <a th:if="${surveys.hasNext()}"
-               th:href="@{/survey/list(page=${surveys.number + 1}, text=${condition.text},   status=${condition.status != null ? condition.status : 'all'}, date=${condition.date})}"
-               class="px-3 py-2 rounded-r-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50">
-                <i class="ri-arrow-right-s-line"></i>
-            </a>
-        </nav>
-    </div>
-</main>
+                <th:block th:if="${surveys.totalPages > 0}">
+                    <a th:each="pageNum : ${#numbers.sequence(1, surveys.totalPages)}"
+                       th:href="@{/survey/list(page=${pageNum - 1}, text=${condition.text},  status=${condition.status != null ? condition.status : 'all'}, date=${condition.date})}"
+                       th:text="${pageNum}" th:class="'px-4 py-2 border-t border-b border-gray-300 ' +
+         (${pageNum - 1} == ${surveys.number} ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50')">
+                    </a>
+                </th:block>
+
+                <a th:if="${!surveys.hasNext()}"
+                   class="px-3 py-2 rounded-r-md border border-gray-300 bg-gray-100 text-gray-300 cursor-not-allowed pointer-events-none">
+                    <i class="ri-arrow-right-s-line"></i>
+                </a>
+
+                <a th:if="${surveys.hasNext()}"
+                   th:href="@{/survey/list(page=${surveys.number + 1}, text=${condition.text},   status=${condition.status != null ? condition.status : 'all'}, date=${condition.date})}"
+                   class="px-3 py-2 rounded-r-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50">
+                    <i class="ri-arrow-right-s-line"></i>
+                </a>
+            </nav>
+        </div>
+    </main>
+</div>
+
 <script id="survey-filter-management" th:inline="javascript">
     const resetButton = document.getElementById("resetButton");
-    resetButton.addEventListener("click", function (e){
+    resetButton.addEventListener("click", function (e) {
         // location.reload();
         e.preventDefault(); // form 제출 방지
         window.location.href = window.location.origin + "/survey/list";

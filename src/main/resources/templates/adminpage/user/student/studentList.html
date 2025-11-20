@@ -1,252 +1,209 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html th:replace="~{fragments/layout/base :: base(~{::head}, ~{::body})}" xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>학생 데이터 관리</title>
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet"
-    />
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-    />
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#3498DB",
-                        secondary: "#2C3E50",
-                    },
-                    borderRadius: {
-                        none: "0px",
-                        sm: "4px",
-                        DEFAULT: "8px",
-                        md: "12px",
-                        lg: "16px",
-                        xl: "20px",
-                        "2xl": "24px",
-                        "3xl": "32px",
-                        full: "9999px",
-                        button: "8px",
-                    },
-                },
-            },
-        };
-    </script>
     <style>
         :where([class^="ri-"])::before {
             content: "\f3c2";
         }
+
         .admin-card {
             background: linear-gradient(145deg, #2C2C3A, #232331);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
+
         .table-header {
             background: linear-gradient(135deg, #343446, #2A2A3C);
         }
+
         .table-row:hover {
             background: rgba(52, 152, 219, 0.1);
         }
+
         .status-badge {
             backdrop-filter: blur(10px);
         }
+
         .filter-card {
             background: linear-gradient(145deg, #2C2C3A, #232331);
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
         }
+
         .student-table-row {
             transition: all 0.2s ease;
             border-bottom: 1px solid #374151;
         }
+
         .student-table-row:hover {
             background: rgba(52, 152, 219, 0.08);
             transform: translateY(-1px);
         }
+
         .pagination-button {
             transition: all 0.2s ease;
         }
+
         .pagination-button:hover {
             transform: translateY(-1px);
         }
+
         .search-input {
             background: #374151;
             border: 1px solid #4B5563;
             transition: all 0.2s ease;
         }
+
         .search-input:focus {
             border-color: #3498DB;
             box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
         }
+
         .filter-select {
             background: #374151;
             border: 1px solid #4B5563;
         }
+
         .filter-select:focus {
             border-color: #3498DB;
             box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
         }
     </style>
 </head>
-<body
-        class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen text-gray-100"
->
-<div class="flex">
-    <aside th:replace="~{adminpage/common/leftSide :: leftSide}"></aside>
-    <main class="flex-1 p-8">
-        <header class="mb-8">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-3xl font-bold text-white">학생 데이터 관리</h1>
-                    <p class="text-gray-400 mt-2">
-                        설문조사를 통해 등록된 학생 정보를 관리하고 조회하세요
-                    </p>
+<body>
+<div class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen text-gray-100">
+    <div class="flex">
+        <aside th:replace="~{adminpage/common/leftSide :: leftSide}"></aside>
+        <main class="flex-1 p-8">
+            <header class="mb-8">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-white">학생 데이터 관리</h1>
+                        <p class="text-gray-400 mt-2">
+                            설문조사를 통해 등록된 학생 정보를 관리하고 조회하세요 </p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button onclick="exportData()"
+                                class="px-4 py-2 bg-green-600 text-white rounded-button hover:bg-green-700 transition-colors whitespace-nowrap">
+                            <div class="w-4 h-4 inline-flex items-center justify-center mr-2">
+                                <i class="ri-download-line"></i>
+                            </div>
+                            데이터 다운로드
+                        </button>
+                    </div>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <button
-                            onclick="exportData()"
-                            class="px-4 py-2 bg-green-600 text-white rounded-button hover:bg-green-700 transition-colors whitespace-nowrap"
-                    >
-                        <div
-                                class="w-4 h-4 inline-flex items-center justify-center mr-2"
-                        >
-                            <i class="ri-download-line"></i>
+            </header>
+            <div class="filter-card rounded-xl p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-white">필터 및 검색</h2>
+                    <button onclick="resetFilters()" class="text-sm text-gray-400 hover:text-white transition-colors">
+                        <div class="w-4 h-4 inline-flex items-center justify-center mr-1">
+                            <i class="ri-refresh-line"></i>
                         </div>
-                        데이터 다운로드
+                        필터 초기화
                     </button>
                 </div>
-            </div>
-        </header>
-        <div class="filter-card rounded-xl p-6 mb-6">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-semibold text-white">필터 및 검색</h2>
-                <button
-                        onclick="resetFilters()"
-                        class="text-sm text-gray-400 hover:text-white transition-colors"
-                >
-                    <div class="w-4 h-4 inline-flex items-center justify-center mr-1">
-                        <i class="ri-refresh-line"></i>
-                    </div>
-                    필터 초기화
-                </button>
-            </div>
-            <form method="get" th:action="@{/admin/student}" th:object="${condition}">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">이름 검색</label>
-                        <div class="relative">
-                            <input type="text" id="name-search"
-                                   th:field="*{name}"
-                                   placeholder="중국어/영어 이름으로 검색"
-                                   class="w-full search-input text-white px-4 py-3 pr-10 rounded-lg text-sm border-none"/>
-                            <div class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center">
-                                <i class="ri-search-line text-gray-400"></i>
+                <form method="get" th:action="@{/admin/student}" th:object="${condition}">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">이름 검색</label>
+                            <div class="relative">
+                                <input type="text" id="name-search" th:field="*{name}" placeholder="중국어/영어 이름으로 검색"
+                                       class="w-full search-input text-white px-4 py-3 pr-10 rounded-lg text-sm border-none"/>
+                                <div class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center">
+                                    <i class="ri-search-line text-gray-400"></i>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">성별</label>
-                        <select id="gender-filter" th:field="*{gender}"
-                                class="w-full filter-select text-white px-4 py-3 rounded-lg text-sm border-none pr-8">
-                            <option value="">전체</option>
-                            <option value="MALE">남성</option>
-                            <option value="FEMALE">여성</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">생년월일 시작</label>
-                        <input type="date" id="birth-start" th:field="*{birthStart}"
-                               class="w-full filter-select text-white px-4 py-3 rounded-lg text-sm border-none"/>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">생년월일 종료</label>
-                        <input type="date" id="birth-end" th:field="*{birthEnd}"
-                               class="w-full filter-select text-white px-4 py-3 rounded-lg text-sm border-none"/>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">이메일 검색</label>
-                        <input type="text" id="email-search" th:field="*{email}"
-                               placeholder="이메일 주소로 검색"
-                               class="w-full search-input text-white px-4 py-3 rounded-lg text-sm border-none"/>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">여권번호 검색</label>
-                        <input type="text" id="passport-search" th:field="*{passport}"
-                               placeholder="여권번호로 검색"
-                               class="w-full search-input text-white px-4 py-3 rounded-lg text-sm border-none"/>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">시험번호 검색</label>
-                        <input type="text" id="exam-search" th:field="*{exam}"
-                               placeholder="시험번호로 검색"
-                               class="w-full search-input text-white px-4 py-3 rounded-lg text-sm border-none"/>
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2  gap-4 mb-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">
-                            설문조사로 검색
-                            <button id="open-survey-picker" type="button" class="ml-2 px-2 py-1 text-xs rounded bg-primary text-white">
-                                선택
-                            </button>
-                        </label>
-
-                        <!-- 표시만 하는 텍스트 인풋 (선택된 설문 제목 들어감) -->
-                        <input type="text" id="survey-log-search" placeholder="설문조사로 검색"
-                               th:field="*{surveyTitle}"
-                               class="w-full search-input text-white px-4 py-3 rounded-lg text-sm border-none"/>
-
-                        <!-- 실제 필터링에 쓸 설문 ID (서버로 보낼 값) -->
-                        <input type="hidden" id="selected-survey-id"
-                               th:field="*{surveyLogId}"
-                               name="surveyId"/>
-
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">유학원명으로 검색</label>
-                        <input type="text" id="member-search"
-                               th:field="*{agencyName}"
-                               placeholder="유학원명으로 검색"
-                               class="w-full search-input text-white px-4 py-3 rounded-lg text-sm border-none"/>
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-end space-x-3">
-                    <a th:href="@{/admin/student}"
-                       class="text-sm text-gray-400 hover:text-white transition-colors">필터 초기화</a>
-                    <button type="submit"
-                            class="px-6 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
-                        <div class="w-4 h-4 inline-flex items-center justify-center mr-2">
-                            <i class="ri-search-line"></i>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">성별</label>
+                            <select id="gender-filter" th:field="*{gender}"
+                                    class="w-full filter-select text-white px-4 py-3 rounded-lg text-sm border-none pr-8">
+                                <option value="">전체</option>
+                                <option value="MALE">남성</option>
+                                <option value="FEMALE">여성</option>
+                            </select>
                         </div>
-                        검색
-                    </button>
-                </div>
-            </form>
-        </div>
-        <div class="admin-card rounded-xl overflow-hidden">
-            <div class="p-6 border-b border-gray-700">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-xl font-bold text-white">학생 목록</h2>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">생년월일 시작</label>
+                            <input type="date" id="birth-start" th:field="*{birthStart}"
+                                   class="w-full filter-select text-white px-4 py-3 rounded-lg text-sm border-none"/>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">생년월일 종료</label>
+                            <input type="date" id="birth-end" th:field="*{birthEnd}"
+                                   class="w-full filter-select text-white px-4 py-3 rounded-lg text-sm border-none"/>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">이메일 검색</label>
+                            <input type="text" id="email-search" th:field="*{email}" placeholder="이메일 주소로 검색"
+                                   class="w-full search-input text-white px-4 py-3 rounded-lg text-sm border-none"/>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">여권번호 검색</label>
+                            <input type="text" id="passport-search" th:field="*{passport}" placeholder="여권번호로 검색"
+                                   class="w-full search-input text-white px-4 py-3 rounded-lg text-sm border-none"/>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">시험번호 검색</label>
+                            <input type="text" id="exam-search" th:field="*{exam}" placeholder="시험번호로 검색"
+                                   class="w-full search-input text-white px-4 py-3 rounded-lg text-sm border-none"/>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2  gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">
+                                설문조사로 검색
+                                <button id="open-survey-picker" type="button"
+                                        class="ml-2 px-2 py-1 text-xs rounded bg-primary text-white">
+                                    선택
+                                </button>
+                            </label>
+
+                            <!-- 표시만 하는 텍스트 인풋 (선택된 설문 제목 들어감) -->
+                            <input type="text" id="survey-log-search" placeholder="설문조사로 검색" th:field="*{surveyTitle}"
+                                   class="w-full search-input text-white px-4 py-3 rounded-lg text-sm border-none"/>
+
+                            <!-- 실제 필터링에 쓸 설문 ID (서버로 보낼 값) -->
+                            <input type="hidden" id="selected-survey-id" th:field="*{surveyLogId}" name="surveyId"/>
+
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">유학원명으로 검색</label>
+                            <input type="text" id="member-search" th:field="*{agencyName}" placeholder="유학원명으로 검색"
+                                   class="w-full search-input text-white px-4 py-3 rounded-lg text-sm border-none"/>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end space-x-3">
+                        <a th:href="@{/admin/student}" class="text-sm text-gray-400 hover:text-white transition-colors">필터
+                            초기화</a>
+                        <button type="submit"
+                                class="px-6 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
+                            <div class="w-4 h-4 inline-flex items-center justify-center mr-2">
+                                <i class="ri-search-line"></i>
+                            </div>
+                            검색
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="admin-card rounded-xl overflow-hidden">
+                <div class="p-6 border-b border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-bold text-white">학생 목록</h2>
 
 
-                    <div class="flex items-center space-x-4">
-                        <div class="text-sm text-gray-400"
-                             th:with="
+                        <div class="flex items-center space-x-4">
+                            <div class="text-sm text-gray-400" th:with="
                            pageIdx=${students.number},
                            size=${students.size},
                            countThis=${students.numberOfElements},
@@ -254,145 +211,143 @@
                            startRow=${total == 0 ? 0 : pageIdx * size + 1},
                            endRow=${pageIdx * size + countThis}
                         ">
-                            <span id="current-range" th:text="|${startRow}-${endRow}|">1-20</span> /
-                            <span id="total-students" th:text="${#numbers.formatInteger(total, 0, 'COMMA')}">1,247</span>
+                                <span id="current-range" th:text="|${startRow}-${endRow}|">1-20</span> /
+                                <span id="total-students"
+                                      th:text="${#numbers.formatInteger(total, 0, 'COMMA')}">1,247</span>
+                            </div>
+                            <button id="copy-emails-btn" type="button"
+                                    class="flex items-center px-3 py-1.5 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition">
+                                <i class="ri-file-copy-line mr-1"></i>
+                                이메일 복사하기
+                            </button>
                         </div>
-                        <button id="copy-emails-btn"
-                                type="button"
-                                class="flex items-center px-3 py-1.5 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition">
-                            <i class="ri-file-copy-line mr-1"></i>
-                            이메일 복사하기
-                        </button>
                     </div>
                 </div>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead>
-                    <tr class="table-header text-left">
-                        <th
-                                class="px-3 py-2 text-sm font-medium text-gray-300 cursor-pointer hover:text-white transition-colors"
-                        >
-                            <div class="flex items-center">
-                                ID
-                            </div>
-                        </th>
-                        <th
-                                class="p-4 text-sm font-medium text-gray-300 cursor-pointer hover:text-white transition-colors"
-                        >
-                            <div class="flex items-center">
-                                중국어 이름
-                            </div>
-                        </th>
-                        <th
-                                class="p-4 text-sm font-medium text-gray-300 cursor-pointer hover:text-white transition-colors"
-                        >
-                            <div class="flex items-center">
-                                영어 이름
-                            </div>
-                        </th>
-                        <th
-                                class="p-4 text-sm font-medium text-gray-300 cursor-pointer hover:text-white transition-colors"
-                        >
-                            <div class="flex items-center">
-                                생년월일
-                            </div>
-                        </th>
-                        <th class="p-4 text-sm font-medium text-gray-300">성별</th>
-                        <th class="p-4 text-sm font-medium text-gray-300">이메일</th>
-                        <th class="p-4 text-sm font-medium text-gray-300">
-                            여권번호
-                        </th>
-                        <th class="p-4 text-sm font-medium text-gray-300">
-                            시험번호
-                        </th>
-                        <th class="p-4 text-sm font-medium text-gray-300">
-                            회사 WeChat
-                        </th>
-                        <th class="p-4 text-sm font-medium text-gray-300">
-                            회사 이메일
-                        </th>
-                        <th class="p-4 text-sm font-medium text-gray-300">
-                            비상연락처
-                        </th>
-                        <th class="p-4 text-sm font-medium text-gray-300">
-                            등록 회원
-                        </th>
-                        <th class="p-4 text-sm font-medium text-gray-300">관리</th>
-                    </tr>
-                    </thead>
-                    <tbody id="student-table-body">
-                    <tr class="student-table-row"
-                        th:each="s, stat : ${students}"
-                        th:attr="
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                        <tr class="table-header text-left">
+                            <th
+                                    class="px-3 py-2 text-sm font-medium text-gray-300 cursor-pointer hover:text-white transition-colors"
+                            >
+                                <div class="flex items-center">
+                                    ID
+                                </div>
+                            </th>
+                            <th
+                                    class="p-4 text-sm font-medium text-gray-300 cursor-pointer hover:text-white transition-colors"
+                            >
+                                <div class="flex items-center">
+                                    중국어 이름
+                                </div>
+                            </th>
+                            <th
+                                    class="p-4 text-sm font-medium text-gray-300 cursor-pointer hover:text-white transition-colors"
+                            >
+                                <div class="flex items-center">
+                                    영어 이름
+                                </div>
+                            </th>
+                            <th
+                                    class="p-4 text-sm font-medium text-gray-300 cursor-pointer hover:text-white transition-colors"
+                            >
+                                <div class="flex items-center">
+                                    생년월일
+                                </div>
+                            </th>
+                            <th class="p-4 text-sm font-medium text-gray-300">성별</th>
+                            <th class="p-4 text-sm font-medium text-gray-300">이메일</th>
+                            <th class="p-4 text-sm font-medium text-gray-300">
+                                여권번호
+                            </th>
+                            <th class="p-4 text-sm font-medium text-gray-300">
+                                시험번호
+                            </th>
+                            <th class="p-4 text-sm font-medium text-gray-300">
+                                회사 WeChat
+                            </th>
+                            <th class="p-4 text-sm font-medium text-gray-300">
+                                회사 이메일
+                            </th>
+                            <th class="p-4 text-sm font-medium text-gray-300">
+                                비상연락처
+                            </th>
+                            <th class="p-4 text-sm font-medium text-gray-300">
+                                등록 회원
+                            </th>
+                            <th class="p-4 text-sm font-medium text-gray-300">관리</th>
+                        </tr>
+                        </thead>
+                        <tbody id="student-table-body">
+                        <tr class="student-table-row" th:each="s, stat : ${students}" th:attr="
                                 data-student-id=${s.studentId},
                                 data-chinese-name=${s.chineseName},
                                 data-english-name=${s.englishName},
                                 data-birth-date=${#temporals.format(s.birthDate,'yyyy-MM-dd')},
                                 data-gender=${s.gender != null ? s.gender.name() : ''}
       ">
-                        <td class="px-3 py-2 text-gray-300">
-                            #<span th:text="${students.number * students.size + stat.index + 1}">1</span>
-                        </td>
+                            <td class="px-3 py-2 text-gray-300">
+                                #<span th:text="${students.number * students.size + stat.index + 1}">1</span>
+                            </td>
 
-                        <td class="px-3 py-2 text-white font-medium"
-                            th:text="${s.chineseName ?: '-'}">-</td>
+                            <td class="px-3 py-2 text-white font-medium" th:text="${s.chineseName ?: '-'}">-</td>
 
-                        <td class="px-3 py-2 text-white"
-                            th:text="${s.englishName ?: '-'}">-</td>
+                            <td class="px-3 py-2 text-white" th:text="${s.englishName ?: '-'}">-</td>
 
-                        <td class="px-3 py-2 text-gray-300"
-                            th:text="${s.birthDate != null ? #temporals.format(s.birthDate,'yyyy-MM-dd') : '-'}">-</td>
+                            <td class="px-3 py-2 text-gray-300"
+                                th:text="${s.birthDate != null ? #temporals.format(s.birthDate,'yyyy-MM-dd') : '-'}">-
+                            </td>
 
-                        <td class="px-3 py-2">
-      <span class="status-badge px-1.5 py-0.5 bg-blue-500 bg-opacity-20 text-blue-400 text-xs rounded-full"
-            th:text="${s.gender == null ? '-' :
+                            <td class="px-3 py-2">
+      <span class="status-badge px-1.5 py-0.5 bg-blue-500 bg-opacity-20 text-blue-400 text-xs rounded-full" th:text="${s.gender == null ? '-' :
                      (s.gender.name() == 'MALE' ? '남성' :
                      (s.gender.name() == 'FEMALE' ? '여성' : s.gender.name()))}">-</span>
-                        </td>
+                            </td>
 
-                        <td class="px-3 py-2 text-gray-300" th:attr="title=${s.studentEmail}">
-                            <div class="truncate max-w-[140px]" th:text="${s.studentEmail ?: '-'}">-</div>
-                        </td>
+                            <td class="px-3 py-2 text-gray-300" th:attr="title=${s.studentEmail}">
+                                <div class="truncate max-w-[140px]" th:text="${s.studentEmail ?: '-'}">-</div>
+                            </td>
 
-                        <td class="px-3 py-2 text-gray-300" th:attr="title=${s.passportNumber}">
-                            <div class="truncate max-w-[90px]" th:text="${s.passportNumber ?: '-'}">-</div>
-                        </td>
+                            <td class="px-3 py-2 text-gray-300" th:attr="title=${s.passportNumber}">
+                                <div class="truncate max-w-[90px]" th:text="${s.passportNumber ?: '-'}">-</div>
+                            </td>
 
-                        <td class="px-3 py-2 text-gray-300" th:attr="title=${s.examNumber}">
-                            <div class="truncate max-w-[90px]" th:text="${s.examNumber ?: '-'}">-</div>
-                        </td>
+                            <td class="px-3 py-2 text-gray-300" th:attr="title=${s.examNumber}">
+                                <div class="truncate max-w-[90px]" th:text="${s.examNumber ?: '-'}">-</div>
+                            </td>
 
-                        <td class="px-3 py-2 text-gray-300" th:attr="title=${s.agentWechat}">
-                            <div class="truncate max-w-[120px]" th:text="${s.agentWechat ?: '-'}">-</div>
-                        </td>
+                            <td class="px-3 py-2 text-gray-300" th:attr="title=${s.agentWechat}">
+                                <div class="truncate max-w-[120px]" th:text="${s.agentWechat ?: '-'}">-</div>
+                            </td>
 
-                        <td class="px-3 py-2 text-gray-300" th:attr="title=${s.agentEmail}">
-                            <div class="truncate max-w-[140px]" th:text="${s.agentEmail ?: '-'}">-</div>
-                        </td>
+                            <td class="px-3 py-2 text-gray-300" th:attr="title=${s.agentEmail}">
+                                <div class="truncate max-w-[140px]" th:text="${s.agentEmail ?: '-'}">-</div>
+                            </td>
 
-                        <td class="px-3 py-2 text-gray-300" th:attr="title=${s.emergencyContactNum}">
-                            <div class="truncate max-w-[120px]" th:text="${s.emergencyContactNum ?: '-'}">-</div>
-                        </td>
+                            <td class="px-3 py-2 text-gray-300" th:attr="title=${s.emergencyContactNum}">
+                                <div class="truncate max-w-[120px]" th:text="${s.emergencyContactNum ?: '-'}">-</div>
+                            </td>
 
-                        <td class="px-3 py-2 text-gray-300" th:attr="title=${s.memberName}">
-                            <div class="truncate max-w-[120px]" th:text="${s.memberName ?: '-'}">-</div>
-                        </td>
+                            <td class="px-3 py-2 text-gray-300" th:attr="title=${s.memberName}">
+                                <div class="truncate max-w-[120px]" th:text="${s.memberName ?: '-'}">-</div>
+                            </td>
 
-                        <td class="px-3 py-2">
-                            <div class="flex space-x-1" th:inline="text">
-                                <button th:attr="data-id=${s.studentId}"
-                                        class="student-detail-btn px-2 py-0.5 bg-primary text-white text-xs rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">상세보기</button>
-                                <button class="px-2 py-0.5 bg-red-600 text-white text-xs rounded-button hover:bg-red-700 transition-colors whitespace-nowrap"
-                                        th:attr="onclick=|deleteStudent([[${s.studentId}]])|">삭제</button>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="p-6 border-t border-gray-700"
-                 th:with="
+                            <td class="px-3 py-2">
+                                <div class="flex space-x-1" th:inline="text">
+                                    <button th:attr="data-id=${s.studentId}"
+                                            class="student-detail-btn px-2 py-0.5 bg-primary text-white text-xs rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
+                                        상세보기
+                                    </button>
+                                    <button class="px-2 py-0.5 bg-red-600 text-white text-xs rounded-button hover:bg-red-700 transition-colors whitespace-nowrap"
+                                            th:attr="onclick=|deleteStudent([[${s.studentId}]])|">삭제
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-6 border-t border-gray-700" th:with="
                zeroIdx=${students.number},
                size=${students.size},
                total=${students.totalElements},
@@ -404,19 +359,19 @@
                pageStart=${T(java.lang.Math).max(1, current - 2)},
                pageEnd=${T(java.lang.Math).min(totalPages, current + 2)}
             ">
-                <div class="flex items-center justify-between">
-                    <!-- 좌측: 표시 범위 -->
-                    <div class="text-sm text-gray-400">
+                    <div class="flex items-center justify-between">
+                        <!-- 좌측: 표시 범위 -->
+                        <div class="text-sm text-gray-400">
                       <span id="showing-info"
                             th:text="|${startRow}-${endRow} / ${#numbers.formatInteger(total, 0, 'COMMA')}명 표시 중|">
                         0-0 / 0명 표시 중
                       </span>
-                    </div>
+                        </div>
 
-                    <!-- 우측: 페이지 버튼 -->
-                    <div class="flex items-center space-x-2" th:if="${totalPages > 0}">
-                        <!-- 처음으로 -->
-                        <a th:href="@{/admin/student(
+                        <!-- 우측: 페이지 버튼 -->
+                        <div class="flex items-center space-x-2" th:if="${totalPages > 0}">
+                            <!-- 처음으로 -->
+                            <a th:href="@{/admin/student(
                     page=${0},
                     size=${size},
                     name=${condition.name},
@@ -429,17 +384,16 @@
                     surveyLogId=${condition.surveyLogId},
                     surveyTitle=${condition.surveyTitle},
                     agencyName=${condition.agencyName}
-                  )}"
-                           th:classappend="${students.first} ? ' opacity-40 pointer-events-none' : ''"
-                           class="pagination-button px-3 py-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
-                           aria-label="처음">
-                            <div class="w-4 h-4 flex items-center justify-center">
-                                <i class="ri-arrow-left-double-line"></i>
-                            </div>
-                        </a>
+                  )}" th:classappend="${students.first} ? ' opacity-40 pointer-events-none' : ''"
+                               class="pagination-button px-3 py-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
+                               aria-label="처음">
+                                <div class="w-4 h-4 flex items-center justify-center">
+                                    <i class="ri-arrow-left-double-line"></i>
+                                </div>
+                            </a>
 
-                        <!-- 이전 -->
-                        <a th:href="@{/admin/student(
+                            <!-- 이전 -->
+                            <a th:href="@{/admin/student(
                     page=${zeroIdx - 1},
                     size=${size},
                     name=${condition.name},
@@ -452,21 +406,20 @@
                     surveyLogId=${condition.surveyLogId},
                     surveyTitle=${condition.surveyTitle},
                     agencyName=${condition.agencyName}
-                  )}"
-                           th:classappend="${students.first} ? ' opacity-40 pointer-events-none' : ''"
-                           class="pagination-button px-3 py-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
-                           aria-label="이전">
-                            <div class="w-4 h-4 flex items-center justify-center">
-                                <i class="ri-arrow-left-line"></i>
-                            </div>
-                        </a>
+                  )}" th:classappend="${students.first} ? ' opacity-40 pointer-events-none' : ''"
+                               class="pagination-button px-3 py-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
+                               aria-label="이전">
+                                <div class="w-4 h-4 flex items-center justify-center">
+                                    <i class="ri-arrow-left-line"></i>
+                                </div>
+                            </a>
 
-                        <!-- 왼쪽 생략 표시 -->
-                        <span class="px-2 text-gray-400" th:if="${pageStart > 1}">...</span>
+                            <!-- 왼쪽 생략 표시 -->
+                            <span class="px-2 text-gray-400" th:if="${pageStart > 1}">...</span>
 
-                        <!-- 번호들 -->
-                        <th:block th:each="i : ${#numbers.sequence(pageStart, pageEnd)}">
-                            <a th:href="@{/admin/student(
+                            <!-- 번호들 -->
+                            <th:block th:each="i : ${#numbers.sequence(pageStart, pageEnd)}">
+                                <a th:href="@{/admin/student(
                       page=${i - 1},
                       size=${size},
                       name=${condition.name},
@@ -479,19 +432,18 @@
                       surveyLogId=${condition.surveyLogId},
                     surveyTitle=${condition.surveyTitle},
                     agencyName=${condition.agencyName}
-                    )}"
-                               th:text="${i}"
-                               th:classappend="${i == current} ? ' bg-primary text-white' : ' text-gray-400 hover:text-white hover:bg-gray-700'"
-                               class="pagination-button px-3 py-2 rounded transition-colors">
-                                1
-                            </a>
-                        </th:block>
+                    )}" th:text="${i}"
+                                   th:classappend="${i == current} ? ' bg-primary text-white' : ' text-gray-400 hover:text-white hover:bg-gray-700'"
+                                   class="pagination-button px-3 py-2 rounded transition-colors">
+                                    1
+                                </a>
+                            </th:block>
 
-                        <!-- 오른쪽 생략 표시 -->
-                        <span class="px-2 text-gray-400" th:if="${pageEnd < totalPages}">...</span>
+                            <!-- 오른쪽 생략 표시 -->
+                            <span class="px-2 text-gray-400" th:if="${pageEnd < totalPages}">...</span>
 
-                        <!-- 다음 -->
-                        <a th:href="@{/admin/student(
+                            <!-- 다음 -->
+                            <a th:href="@{/admin/student(
                     page=${zeroIdx + 1},
                     size=${size},
                     name=${condition.name},
@@ -504,17 +456,16 @@
                     surveyLogId=${condition.surveyLogId},
                     surveyTitle=${condition.surveyTitle},
                     agencyName=${condition.agencyName}
-                  )}"
-                           th:classappend="${students.last} ? ' opacity-40 pointer-events-none' : ''"
-                           class="pagination-button px-3 py-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
-                           aria-label="다음">
-                            <div class="w-4 h-4 flex items-center justify-center">
-                                <i class="ri-arrow-right-line"></i>
-                            </div>
-                        </a>
+                  )}" th:classappend="${students.last} ? ' opacity-40 pointer-events-none' : ''"
+                               class="pagination-button px-3 py-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
+                               aria-label="다음">
+                                <div class="w-4 h-4 flex items-center justify-center">
+                                    <i class="ri-arrow-right-line"></i>
+                                </div>
+                            </a>
 
-                        <!-- 마지막으로 -->
-                        <a th:href="@{/admin/student(
+                            <!-- 마지막으로 -->
+                            <a th:href="@{/admin/student(
                     page=${totalPages - 1},
                     size=${size},
                     name=${condition.name},
@@ -527,223 +478,193 @@
                     surveyLogId=${condition.surveyLogId},
                     surveyTitle=${condition.surveyTitle},
                     agencyName=${condition.agencyName}
-                  )}"
-                           th:classappend="${students.last} ? ' opacity-40 pointer-events-none' : ''"
-                           class="pagination-button px-3 py-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
-                           aria-label="마지막">
-                            <div class="w-4 h-4 flex items-center justify-center">
-                                <i class="ri-arrow-right-double-line"></i>
-                            </div>
-                        </a>
+                  )}" th:classappend="${students.last} ? ' opacity-40 pointer-events-none' : ''"
+                               class="pagination-button px-3 py-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
+                               aria-label="마지막">
+                                <div class="w-4 h-4 flex items-center justify-center">
+                                    <i class="ri-arrow-right-double-line"></i>
+                                </div>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </main>
-</div>
-<div
-            id="studentDetailModal"
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50"
->
-    <div
-            class="bg-gray-800 rounded-xl p-6 w-[600px] max-h-[80vh] overflow-y-auto shadow-2xl"
-    >
-        <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold text-white">학생 상세 정보</h3>
-            <button
-                    onclick="closeStudentModal()"
-                    class="text-gray-400 hover:text-white transition-colors"
-            >
-                <div class="w-6 h-6 flex items-center justify-center">
-                    <i class="ri-close-line"></i>
-                </div>
-            </button>
-        </div>
-        <div class="space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1"
-                    >ID</label
-                    >
-                    <div class="text-white" id="modal-id">#1001</div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1"
-                    >등록 회원</label
-                    >
-                    <div class="text-white" id="modal-member">김민수 (user001)</div>
-                </div>
+        </main>
+    </div>
+    <div id="studentDetailModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-gray-800 rounded-xl p-6 w-[600px] max-h-[80vh] overflow-y-auto shadow-2xl">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-white">학생 상세 정보</h3>
+                <button onclick="closeStudentModal()" class="text-gray-400 hover:text-white transition-colors">
+                    <div class="w-6 h-6 flex items-center justify-center">
+                        <i class="ri-close-line"></i>
+                    </div>
+                </button>
             </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1"
-                    >중국어 이름</label
-                    >
-                    <div class="text-white" id="modal-chinese-name">张明华</div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1"
-                    >영어 이름</label
-                    >
-                    <div class="text-white" id="modal-english-name">
-                        Zhang Minghua
+            <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">ID</label>
+                        <div class="text-white" id="modal-id">#1001</div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">등록 회원</label>
+                        <div class="text-white" id="modal-member">김민수 (user001)</div>
                     </div>
                 </div>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1"
-                    >생년월일</label
-                    >
-                    <div class="text-white" id="modal-birthday">1998-03-15</div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1"
-                    >성별</label
-                    >
-                    <div class="text-white" id="modal-gender">남성</div>
-                </div>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1"
-                >이메일</label
-                >
-                <div class="text-white" id="modal-email">
-                    zhang.minghua@email.com
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1"
-                    >여권번호</label
-                    >
-                    <div class="text-white" id="modal-passport">G12345678</div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1"
-                    >수험번호</label
-                    >
-                    <div class="text-white" id="modal-exam">HSK240301</div>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1"
-                    >회사 WeChat</label
-                    >
-                    <div class="text-white" id="modal-wechat">company_zhang</div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1"
-                    >회사 이메일</label
-                    >
-                    <div class="text-white" id="modal-company-email">
-                        zhang@company.com
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">중국어 이름</label>
+                        <div class="text-white" id="modal-chinese-name">张明华</div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">영어 이름</label>
+                        <div class="text-white" id="modal-english-name">
+                            Zhang Minghua
+                        </div>
                     </div>
                 </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">생년월일</label>
+                        <div class="text-white" id="modal-birthday">1998-03-15</div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">성별</label>
+                        <div class="text-white" id="modal-gender">남성</div>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">이메일</label>
+                    <div class="text-white" id="modal-email">
+                        zhang.minghua@email.com
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">여권번호</label>
+                        <div class="text-white" id="modal-passport">G12345678</div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">수험번호</label>
+                        <div class="text-white" id="modal-exam">HSK240301</div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">회사 WeChat</label>
+                        <div class="text-white" id="modal-wechat">company_zhang</div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">회사 이메일</label>
+                        <div class="text-white" id="modal-company-email">
+                            zhang@company.com
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">비상연락처</label>
+                    <div class="text-white" id="modal-emergency">+86-138-0013-8888</div>
+                </div>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-300 mb-1"
-                >비상연락처</label
-                >
-                <div class="text-white" id="modal-emergency">+86-138-0013-8888</div>
+            <div class="flex justify-end space-x-3 mt-6">
+                <button onclick="closeStudentModal()"
+                        class="px-4 py-2 bg-gray-700 text-white rounded-button hover:bg-gray-600 transition-colors whitespace-nowrap">
+                    닫기
+                </button>
+                <!--            <button-->
+                <!--                    onclick="editStudent()"-->
+                <!--                    class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"-->
+                <!--            >-->
+                <!--                수정-->
+                <!--            </button>-->
             </div>
         </div>
-        <div class="flex justify-end space-x-3 mt-6">
-            <button
-                    onclick="closeStudentModal()"
-                    class="px-4 py-2 bg-gray-700 text-white rounded-button hover:bg-gray-600 transition-colors whitespace-nowrap"
-            >
-                닫기
-            </button>
-<!--            <button-->
-<!--                    onclick="editStudent()"-->
-<!--                    class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"-->
-<!--            >-->
-<!--                수정-->
-<!--            </button>-->
+    </div>
+
+    <div id="survey-picker-modal" class="fixed inset-0 hidden items-center justify-center z-50">
+        <!-- 배경 -->
+        <div class="absolute inset-0 bg-black/60" data-close="true"></div>
+
+        <!-- 카드 -->
+        <div class="relative w-full max-w-2xl mx-4 bg-gray-800 rounded-xl shadow-xl">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-gray-700">
+                <h3 class="text-white text-base font-semibold">설문 선택</h3>
+                <button type="button" class="text-gray-400 hover:text-white" id="close-survey-picker" aria-label="닫기">✕
+                </button>
+            </div>
+
+            <div class="p-5 space-y-4">
+                <!-- 모달 내부 검색 -->
+                <div>
+                    <input id="survey-picker-search" type="text" placeholder="설문 제목 검색"
+                           class="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600"/>
+                </div>
+
+                <!-- 목록 -->
+                <div id="survey-list" class="max-h-80 overflow-auto divide-y divide-gray-700">
+                    <!-- JS로 렌더링 -->
+                </div>
+
+                <!-- 페이지네이션(옵션) -->
+                <div class="flex items-center justify-between pt-2">
+                    <button id="survey-prev" class="px-3 py-1 rounded bg-gray-700 text-white disabled:opacity-40">이전
+                    </button>
+                    <span id="survey-page" class="text-gray-300 text-sm">1</span>
+                    <button id="survey-next" class="px-3 py-1 rounded bg-gray-700 text-white disabled:opacity-40">다음
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<div id="survey-picker-modal"
-     class="fixed inset-0 hidden items-center justify-center z-50">
-    <!-- 배경 -->
-    <div class="absolute inset-0 bg-black/60" data-close="true"></div>
 
-    <!-- 카드 -->
-    <div class="relative w-full max-w-2xl mx-4 bg-gray-800 rounded-xl shadow-xl">
-        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-700">
-            <h3 class="text-white text-base font-semibold">설문 선택</h3>
-            <button type="button" class="text-gray-400 hover:text-white" id="close-survey-picker" aria-label="닫기">✕</button>
-        </div>
+<script id="student-management" th:inline="javascript" type="module">
+    // fixme: loadStudentData() 존재하지 않음
+    let currentPage = 1;
+    let pageSize = 20;
+    let currentSort = {field: null, direction: "asc"};
+    let currentFilters = {};
 
-        <div class="p-5 space-y-4">
-            <!-- 모달 내부 검색 -->
-            <div>
-                <input id="survey-picker-search" type="text" placeholder="설문 제목 검색"
-                       class="w-full px-3 py-2 rounded bg-gray-700 text-white border border-gray-600"/>
-            </div>
+    window.resetFilters = function () {
+        document.getElementById("name-search").value = "";
+        document.getElementById("gender-filter").value = "";
+        document.getElementById("birth-start").value = "";
+        document.getElementById("birth-end").value = "";
+        document.getElementById("email-search").value = "";
+        document.getElementById("passport-search").value = "";
+        document.getElementById("exam-search").value = "";
+        document.getElementById("survey-log-search").value = "";
+        document.getElementById("selected-survey-id").value = "";
+        document.getElementById("member-search").value = "";
+        currentFilters = {};
+        currentPage = 1;
+        loadStudentData();
+        showNotification("필터가 초기화되었습니다");
+    };
 
-            <!-- 목록 -->
-            <div id="survey-list" class="max-h-80 overflow-auto divide-y divide-gray-700">
-                <!-- JS로 렌더링 -->
-            </div>
-
-            <!-- 페이지네이션(옵션) -->
-            <div class="flex items-center justify-between pt-2">
-                <button id="survey-prev" class="px-3 py-1 rounded bg-gray-700 text-white disabled:opacity-40">이전</button>
-                <span id="survey-page" class="text-gray-300 text-sm">1</span>
-                <button id="survey-next" class="px-3 py-1 rounded bg-gray-700 text-white disabled:opacity-40">다음</button>
-            </div>
-        </div>
-    </div>
-</div>
-<script id="student-management" th:inline="javascript"  >
-    document.addEventListener("DOMContentLoaded", function () {
-        let currentPage = 1;
-        let pageSize = 20;
-        let currentSort = { field: null, direction: "asc" };
-        let currentFilters = {};
-
-        window.resetFilters = function () {
-            document.getElementById("name-search").value = "";
-            document.getElementById("gender-filter").value = "";
-            document.getElementById("birth-start").value = "";
-            document.getElementById("birth-end").value = "";
-            document.getElementById("email-search").value = "";
-            document.getElementById("passport-search").value = "";
-            document.getElementById("exam-search").value = "";
-            document.getElementById("survey-log-search").value = "";
-            document.getElementById("selected-survey-id").value = "";
-            document.getElementById("member-search").value = "";
-            currentFilters = {};
-            currentPage = 1;
-            loadStudentData();
-            showNotification("필터가 초기화되었습니다");
-        };
-
-        window.getFilters = function () {
-            const name = document.getElementById('name-search').value.trim();
-            const gender = document.getElementById('gender-filter').value;
-            const birthStart = document.getElementById('birth-start').value; // yyyy-mm-dd
-            const birthEnd = document.getElementById('birth-end').value;
-            const email = document.getElementById('email-search').value.trim();
-            const passport = document.getElementById('passport-search').value.trim();
-            const exam = document.getElementById('exam-search').value.trim();
-            const surveyLogId = document.getElementById('selected-survey-id').value.trim();
-            const surveyTitle = document.getElementById('survey-log-search').value.trim();
-            const agencyName = document.getElementById('member-search').value.trim();
+    window.getFilters = function () {
+        const name = document.getElementById('name-search').value.trim();
+        const gender = document.getElementById('gender-filter').value;
+        const birthStart = document.getElementById('birth-start').value; // yyyy-mm-dd
+        const birthEnd = document.getElementById('birth-end').value;
+        const email = document.getElementById('email-search').value.trim();
+        const passport = document.getElementById('passport-search').value.trim();
+        const exam = document.getElementById('exam-search').value.trim();
+        const surveyLogId = document.getElementById('selected-survey-id').value.trim();
+        const surveyTitle = document.getElementById('survey-log-search').value.trim();
+        const agencyName = document.getElementById('member-search').value.trim();
 
 
-            // 간단 검증: 날짜 역전 방지
-            if (birthStart && birthEnd && birthStart > birthEnd) {
-                alert('생년월일 시작이 종료보다 늦을 수 없습니다.');
-                return null;
-            }
-
-            return { name, gender, birthStart, birthEnd, email, passport, exam, surveyLogId, surveyTitle,agencyName };
+        // 간단 검증: 날짜 역전 방지
+        if (birthStart && birthEnd && birthStart > birthEnd) {
+            alert('생년월일 시작이 종료보다 늦을 수 없습니다.');
+            return null;
         }
+
+        return {name, gender, birthStart, birthEnd, email, passport, exam, surveyLogId, surveyTitle, agencyName};
+    }
 
         window.closeStudentModal = function () {
             document.getElementById("studentDetailModal").classList.add("hidden");
@@ -758,41 +679,40 @@
             }
         };
 
-        function showNotification(message, type = "info") {
-            const notification = document.createElement("div");
-            const bgColor =
-                type === "success"
-                    ? "bg-green-500"
-                    : type === "error"
-                        ? "bg-red-500"
-                        : "bg-blue-500";
-            notification.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50`;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            setTimeout(() => notification.remove(), 3000);
+    function showNotification(message, type = "info") {
+        const notification = document.createElement("div");
+        const bgColor =
+            type === "success"
+                ? "bg-green-500"
+                : type === "error"
+                    ? "bg-red-500"
+                    : "bg-blue-500";
+        notification.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+    }
+
+    const studentEmails = /*[[${students.content.?[studentEmail != null].![studentEmail]}]]*/ [];
+
+    document.getElementById('copy-emails-btn')?.addEventListener('click', async () => {
+        if (!studentEmails || studentEmails.length === 0) {
+            showNotification('복사할 이메일이 없습니다.', 'error');
+            return;
         }
-        const studentEmails = /*[[${students.content.?[studentEmail != null].![studentEmail]}]]*/ [];
 
-        document.getElementById('copy-emails-btn')?.addEventListener('click', async () => {
-            if (!studentEmails || studentEmails.length === 0) {
-                showNotification('복사할 이메일이 없습니다.', 'error');
-                return;
-            }
-
-            const emailString = studentEmails.join(', ');
-            try {
-                await navigator.clipboard.writeText(emailString);
-                showNotification(`${studentEmails.length}개의 이메일이 복사되었습니다!`, 'success');
-            } catch (err) {
-                console.error(err);
-                showNotification('이메일 복사 중 오류가 발생했습니다.', 'error');
-            }
-        });
+        const emailString = studentEmails.join(', ');
+        try {
+            await navigator.clipboard.writeText(emailString);
+            showNotification(`${studentEmails.length}개의 이메일이 복사되었습니다!`, 'success');
+        } catch (err) {
+            console.error(err);
+            showNotification('이메일 복사 중 오류가 발생했습니다.', 'error');
+        }
     });
 </script>
-<script>
-    window.viewStudent = async function viewStudent(id) {
-
+<script type="module">
+    async function viewStudent(id) {
         console.log("enter viewStudent / id=", id);
 
         try {
@@ -856,8 +776,7 @@
     }
 
     function closeStudentModal() {
-        const m = document.getElementById('studentDetailModal');
-        m.classList.add('hidden');
+        document.getElementById("studentDetailModal").classList.add("hidden");
         document.body.style.overflow = '';
     }
 
@@ -872,43 +791,55 @@
         console.log("button클릭(3)");
     });
 
-
+    // export module functions
+    window.closeStudentModal = closeStudentModal;
 </script>
-<script>
+<script type="module">
     // ====== 모달 열고 닫기 ======
     const openBtn = document.getElementById('open-survey-picker');
-    const modal   = document.getElementById('survey-picker-modal');
-    const closeBtn= document.getElementById('close-survey-picker');
+    const modal = document.getElementById('survey-picker-modal');
+    const closeBtn = document.getElementById('close-survey-picker');
 
-    function openModal()  { modal.classList.remove('hidden'); modal.classList.add('flex'); document.getElementById('survey-picker-search').focus(); }
-    function closeModal() { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+    function openModal() {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.getElementById('survey-picker-search').focus();
+    }
+
+    function closeModal() {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
 
     openBtn.addEventListener('click', openModal);
     closeBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => { if (e.target.dataset.close) closeModal(); });
-    document.addEventListener('keydown', (e) => { if (!modal.classList.contains('hidden') && e.key === 'Escape') closeModal(); });
+    modal.addEventListener('click', (e) => {
+        if (e.target.dataset.close) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (!modal.classList.contains('hidden') && e.key === 'Escape') closeModal();
+    });
 
     // ====== 목록/검색/페이지 상태 ======
-    const listEl   = document.getElementById('survey-list');
+    const listEl = document.getElementById('survey-list');
     const searchEl = document.getElementById('survey-picker-search');
-    const prevBtn  = document.getElementById('survey-prev');
-    const nextBtn  = document.getElementById('survey-next');
-    const pageEl   = document.getElementById('survey-page');
+    const prevBtn = document.getElementById('survey-prev');
+    const nextBtn = document.getElementById('survey-next');
+    const pageEl = document.getElementById('survey-page');
 
     let page = 1;
-    const pageSize = 9; // 서버 페이지 크기와 맞추세요.
+    const pageSize = 9; // fixme: 서버 페이지 크기와 맞추세요.
     let lastQuery = '';
 
-    async function fetchSurveys({ q = '', pageNum = 1 } = {}) {
-
+    async function fetchSurveys({q = '', pageNum = 1} = {}) {
         const url = new URL('/api/v1/survey/list', window.location.origin);
 
         if (q) url.searchParams.set('title', q);
-        url.searchParams.set('page', page-1);
+        url.searchParams.set('page', page - 1);
         url.searchParams.set('size', pageSize);
         url.searchParams.set('surveyType', "STUDENT");
 
-        const res = await fetch(url, { headers: { 'Accept': 'application/json' }});
+        const res = await fetch(url, {headers: {'Accept': 'application/json'}});
 
         if (!res.ok) {
             const text = await res.text().catch(() => '');
@@ -938,26 +869,39 @@
     }
 
     // 디바운스
-    function debounce(fn, delay=300) {
-        let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
+    function debounce(fn, delay = 300) {
+        let t;
+        return (...args) => {
+            clearTimeout(t);
+            t = setTimeout(() => fn(...args), delay);
+        };
     }
 
     const load = async () => {
         try {
-            const data = await fetchSurveys({ q: lastQuery, pageNum: page });
+            const data = await fetchSurveys({q: lastQuery, pageNum: page});
             renderList(data.content);
             pageEl.textContent = (data.number + 1);
             prevBtn.disabled = data.first === true;
-            nextBtn.disabled = data.last  === true;
+            nextBtn.disabled = data.last === true;
         } catch (e) {
             listEl.innerHTML = `<div class="py-6 text-center text-red-400">${e.message}</div>`;
-            prevBtn.disabled = true; nextBtn.disabled = true;
+            prevBtn.disabled = true;
+            nextBtn.disabled = true;
         }
     };
 
     // 초기/페이지 이동
-    prevBtn.addEventListener('click', () => { if (page > 1) { page--; load(); } });
-    nextBtn.addEventListener('click', () => { page++; load(); });
+    prevBtn.addEventListener('click', () => {
+        if (page > 1) {
+            page--;
+            load();
+        }
+    });
+    nextBtn.addEventListener('click', () => {
+        page++;
+        load();
+    });
 
     // 검색 입력
     searchEl.addEventListener('input', debounce((e) => {
@@ -976,16 +920,15 @@
 
     // ====== 설문 선택 시: 값 세팅 + 필터 적용 ======
     const surveyTextInput = document.getElementById('survey-log-search');
-    const surveyIdInput   = document.getElementById('selected-survey-id');
+    const surveyIdInput = document.getElementById('selected-survey-id');
 
     listEl.addEventListener('click', (e) => {
         const btn = e.target.closest('button[data-id]');
         if (!btn) return;
-        const id    = btn.dataset.id;
-        const title = btn.dataset.title;
 
+        const {id, title} = btn.dataset;
         surveyTextInput.value = title;
-        surveyIdInput.value   = id;
+        surveyIdInput.value = id;
 
         closeModal();
     });
@@ -1006,8 +949,7 @@
         // document.getElementById('filter-form').submit();
     }
 </script>
-<script>
-    // 빈값/기본값 제외하고 쿼리로 붙여서 이동
+<script type="module">
     function exportData() {
         const filters = window.getFilters();
         if (!filters) return;
@@ -1029,6 +971,9 @@
         window.location.assign(url);
         // 새 탭으로 열고 싶으면: window.open(url, '_blank');
     }
+
+    // export module functions
+    window.exportData = exportData;
 </script>
 
 </body>

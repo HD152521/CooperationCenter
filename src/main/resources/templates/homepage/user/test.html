@@ -1,29 +1,54 @@
 <!doctype html>
-<html lang="ko">
+<html th:replace="~{fragments/layout/base :: base(~{::head}, ~{::body})}" xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <meta charset="utf-8" />
     <title>주소 자동완성 (Daum 우편번호)</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- 키 필요 없음 -->
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <style>
-        label{display:block;margin:8px 0 4px} input{width:100%;padding:8px}
-        #postcode-layer{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
-            z-index:9999;width:360px;height:480px;border:1px solid #ccc;background:#fff}
-        #close{position:absolute;right:8px;top:8px;cursor:pointer}
+        label {
+            display: block;
+            margin: 8px 0 4px
+        }
+
+        input {
+            width: 100%;
+            padding: 8px
+        }
+
+        #postcode-layer {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            width: 360px;
+            height: 480px;
+            border: 1px solid #ccc;
+            background: #fff
+        }
+
+        #close {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            cursor: pointer
+        }
     </style>
 </head>
 <body>
 <h1>주소 입력</h1>
 
 <label>우편번호</label>
-<input id="zonecode" placeholder="예) 06236" readonly />
+<input id="zonecode" placeholder="예) 06236" readonly/>
 <label>주소</label>
-<input id="address" placeholder="도로명 또는 지번 주소" readonly />
+<input id="address" placeholder="도로명 또는 지번 주소" readonly/>
 <label>상세주소</label>
-<input id="detail" placeholder="동/호 등 상세 정보를 입력하세요" />
+<input id="detail" placeholder="동/호 등 상세 정보를 입력하세요"/>
 
-<p><button type="button" onclick="openPostcode()">주소 검색하기</button></p>
+<p>
+    <button type="button" onclick="openPostcode()">주소 검색하기</button>
+</p>
 
 <!-- 레이어 임베드 영역 (팝업 대신 페이지 안에 띄우기) -->
 <div id="postcode-layer">
@@ -31,16 +56,16 @@
     <div id="postcode-wrap" style="width:100%;height:100%"></div>
 </div>
 
-<script>
+<script type="module">
     const zoneEl = document.getElementById('zonecode');
     const addrEl = document.getElementById('address');
-    const layer  = document.getElementById('postcode-layer');
-    const wrap   = document.getElementById('postcode-wrap');
+    const layer = document.getElementById('postcode-layer');
+    const wrap = document.getElementById('postcode-wrap');
 
     function openPostcode() {
         layer.style.display = 'block';
         new daum.Postcode({
-            oncomplete: function(data) {
+            oncomplete: function (data) {
                 // 도로명(data.roadAddress) / 지번(data.jibunAddress)
                 const addr = data.roadAddress || data.jibunAddress;
                 zoneEl.value = data.zonecode;
@@ -52,7 +77,14 @@
             height: '100%'
         }).embed(wrap);
     }
-    function closePostcode() { layer.style.display = 'none'; }
+
+    function closePostcode() {
+        layer.style.display = 'none';
+    }
+
+    // export module functions
+    window.openPostcode = openPostcode;
+    window.closePostcode = closePostcode;
 </script>
 </body>
 </html>

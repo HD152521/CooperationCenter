@@ -1,55 +1,22 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html th:replace="~{fragments/layout/main-layout :: main-layout(~{::head}, ~{::body}, ~{::script})}"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>유학원 회원가입</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet"
-    />
-    <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-            rel="stylesheet"
-    />
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-
-    <!--   한국 주소검색-->
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-<!--    중국 주소 검색-->
+    <!--    중국 주소 검색-->
     <script src="https://map.qq.com/api/js?v=2.exp&key=DC7BZ-EPNWL-3R6PE-MFU2I-VCHAO-FUB4R"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { primary: "#4F46E5", secondary: "#6366F1" },
-                    borderRadius: {
-                        none: "0px",
-                        sm: "4px",
-                        DEFAULT: "8px",
-                        md: "12px",
-                        lg: "16px",
-                        xl: "20px",
-                        "2xl": "24px",
-                        "3xl": "32px",
-                        full: "9999px",
-                        button: "8px",
-                    },
-                },
-            },
-        };
-    </script>
     <style>
-        :where([class^="ri-"])::before { content: "\f3c2"; }
+        :where([class^="ri-"])::before {
+            content: "\f3c2";
+        }
+
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
+
         .password-strength-meter {
             height: 4px;
             width: 100%;
@@ -57,11 +24,13 @@
             border-radius: 2px;
             margin-top: 4px;
         }
+
         .password-strength-meter div {
             height: 100%;
             border-radius: 2px;
             transition: width 0.3s ease;
         }
+
         .file-drop-area {
             border: 2px dashed #e5e7eb;
             border-radius: 8px;
@@ -69,10 +38,12 @@
             text-align: center;
             transition: all 0.3s ease;
         }
+
         .file-drop-area.drag-over {
             border-color: #4F46E5;
             background-color: rgba(79, 70, 229, 0.05);
         }
+
         .preview-image {
             max-height: 150px;
             max-width: 100%;
@@ -80,12 +51,37 @@
             margin-top: 1rem;
         }
     </style>
-<!--    주소 검색 스타일-->
+    <!--    주소 검색 스타일-->
     <style>
-        label{display:block;margin:8px 0 4px} input{width:100%;padding:8px}
-        #postcode-layer{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
-            z-index:9999;width:360px;height:480px;border:1px solid #ccc;background:#fff}
-        #close{position:absolute;right:8px;top:8px;cursor:pointer}
+        label {
+            display: block;
+            margin: 8px 0 4px
+        }
+
+        input {
+            width: 100%;
+            padding: 8px
+        }
+
+        #postcode-layer {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            width: 360px;
+            height: 480px;
+            border: 1px solid #ccc;
+            background: #fff
+        }
+
+        #close {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            cursor: pointer
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -94,123 +90,67 @@
         <div class="text-center mb-8">
             <h1 class="text-3xl font-bold text-gray-800">유학원 회원가입</h1>
             <p class="text-gray-600 mt-2">
-                유학원 서비스 이용을 위한 회원가입 양식입니다.
-            </p>
+                유학원 서비스 이용을 위한 회원가입 양식입니다. </p>
         </div>
-        <form
-                id="signupForm"
-                action="/api/v1/member/signup"
-                method="POST"
-                class="space-y-8"
-        >
+        <form id="signupForm" action="/api/v1/member/signup" method="POST" class="space-y-8">
             <!-- 대표자 정보 섹션 -->
             <div>
-                <h2
-                        class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200"
-                >
-                    사용자 정보
-                </h2>
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">
+                    사용자 정보 </h2>
                 <div class="space-y-5">
                     <!-- 대표자 이름 -->
                     <div>
-                        <label
-                                for="name"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >사용자 이름 <span class="text-red-500">*</span></label
-                        >
-                        <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="홍길동"
-                        />
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">사용자 이름 <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" id="name" name="name" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="홍길동"/>
                     </div>
                     <!-- 아이디(이메일) -->
                     <div>
-                        <label
-                                for="email"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >아이디(이메일) <span class="text-red-500">*</span></label
-                        >
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">아이디(이메일) <span
+                                class="text-red-500">*</span></label>
                         <div class="flex gap-3">
-                            <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    required
-                                    class="flex-1 px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                    placeholder="example@domain.com"
-                            />
-                            <button
-                                    type="button"
-                                    id="checkUsername"
-                                    class="whitespace-nowrap !rounded-button bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 font-medium transition"
-                            >
+                            <input type="email" id="email" name="email" required
+                                   class="flex-1 px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                                   placeholder="example@domain.com"/>
+                            <button type="button" id="checkUsername"
+                                    class="whitespace-nowrap !rounded-button bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 font-medium transition">
                                 중복확인
                             </button>
                         </div>
                         <p id="usernameStatus" class="mt-1 text-sm text-gray-500">
-                            이메일 형식으로 입력해주세요.
-                        </p>
+                            이메일 형식으로 입력해주세요. </p>
                     </div>
                     <!-- 비밀번호 -->
                     <div>
-                        <label
-                                for="password"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >비밀번호 <span class="text-red-500">*</span></label
-                        >
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">비밀번호 <span
+                                class="text-red-500">*</span></label>
                         <div class="relative">
-                            <input
-                                    type="password"
-                                    id="password"
-                                    name="password"
-                                    required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                    placeholder="비밀번호를 입력해주세요"
-                            />
-                            <button
-                                    type="button"
-                                    id="togglePassword"
-                                    class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-500"
-                            >
+                            <input type="password" id="password" name="password" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                                   placeholder="비밀번호를 입력해주세요"/>
+                            <button type="button" id="togglePassword"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-500">
                                 <i class="ri-eye-line"></i>
                             </button>
                         </div>
                         <div class="password-strength-meter mt-2">
-                            <div
-                                    id="passwordStrength"
-                                    class="bg-gray-300"
-                                    style="width: 0%"
-                            ></div>
+                            <div id="passwordStrength" class="bg-gray-300" style="width: 0%"></div>
                         </div>
                         <p id="passwordStrengthText" class="mt-1 text-sm text-gray-500">
-                            영문, 숫자, 특수문자 조합 8자리 이상
-                        </p>
+                            영문, 숫자, 특수문자 조합 8자리 이상 </p>
                     </div>
                     <!-- 비밀번호 확인 -->
                     <div>
-                        <label
-                                for="confirmPassword"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >비밀번호 확인 <span class="text-red-500">*</span></label
-                        >
+                        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">비밀번호 확인 <span
+                                class="text-red-500">*</span></label>
                         <div class="relative">
-                            <input
-                                    type="password"
-                                    id="confirmPassword"
-                                    name="confirmPassword"
-                                    required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                    placeholder="비밀번호를 다시 입력해주세요"
-                            />
-                            <button
-                                    type="button"
-                                    id="toggleConfirmPassword"
-                                    class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-500"
-                            >
+                            <input type="password" id="confirmPassword" name="confirmPassword" required
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                                   placeholder="비밀번호를 다시 입력해주세요"/>
+                            <button type="button" id="toggleConfirmPassword"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-500">
                                 <i class="ri-eye-line"></i>
                             </button>
                         </div>
@@ -218,315 +158,171 @@
                     </div>
 
                     <div>
-                        <label
-                                for="birthDate"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >생년월일 <span class="text-red-500">*</span></label>
-                        <input
-                                type="date"
-                                id="birthDate"
-                                name="birthdate"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                max="2025-12-31"
-                                placeholder="YYYY-MM-DD"
-                        />
+                        <label for="birthDate" class="block text-sm font-medium text-gray-700 mb-1">생년월일 <span
+                                class="text-red-500">*</span></label>
+                        <input type="date" id="birthDate" name="birthdate" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               max="2025-12-31" placeholder="YYYY-MM-DD"/>
                     </div>
 
                     <div>
-                        <label
-                                for="telNum"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >사용자 전화번호 <span class="text-red-500">*</span></label
-                        >
-                        <input
-                                type="tel"
-                                id="telNum"
-                                name="telNum"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="02-1234-5678"
-                        />
+                        <label for="telNum" class="block text-sm font-medium text-gray-700 mb-1">사용자 전화번호 <span
+                                class="text-red-500">*</span></label>
+                        <input type="tel" id="telNum" name="telNum" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="02-1234-5678"/>
                         <p class="mt-1 text-sm text-gray-500">
-                            '-' 없이 숫자만 입력해주세요
-                        </p>
+                            '-' 없이 숫자만 입력해주세요 </p>
                     </div>
                     <!-- 대표자 휴대폰 번호 -->
                     <div>
-                        <label
-                                for="mobile"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >사용자 휴대폰 번호 <span class="text-red-500">*</span></label
-                        >
-                        <input
-                                type="tel"
-                                id="mobile"
-                                name="mobile"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="010-1234-5678"
-                        />
+                        <label for="mobile" class="block text-sm font-medium text-gray-700 mb-1">사용자 휴대폰 번호 <span
+                                class="text-red-500">*</span></label>
+                        <input type="tel" id="mobile" name="mobile" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="010-1234-5678"/>
                         <p class="mt-1 text-sm text-gray-500">
-                            '-' 없이 숫자만 입력해주세요
-                        </p>
+                            '-' 없이 숫자만 입력해주세요 </p>
                     </div>
                     <!-- 대표자 주소 -->
                     <div>
-                        <label
-                                for="address"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >사용자 주소 <span class="text-red-500">*</span></label
-                        >
+                        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">사용자 주소 <span
+                                class="text-red-500">*</span></label>
                         <div class="flex gap-3 mb-2">
-                            <input
-                                    type="text"
-                                    id="address"
-                                    name="address"
-                                    readonly
-                                    required
-                                    class="w-32 px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                    placeholder="우편번호"
-                            />
-                            <button
-                                    type="button"
-                                    id="searchAddress"
+                            <input type="text" id="address" name="address" readonly required
+                                   class="w-32 px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                                   placeholder="우편번호"/>
+                            <button type="button" id="searchAddress"
                                     class="whitespace-nowrap !rounded-button bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 font-medium transition"
-                                    onclick="openPostcode('member')"
-                            >
+                                    onclick="openPostcode('member')">
                                 한국 주소 검색
                             </button>
-                            <button
-                                    type="button"
-                                    id="openChineseModal"
+                            <button type="button" id="openChineseModal"
                                     class="whitespace-nowrap !rounded-button bg-blue-100 hover:bg-gray-200 text-gray-700 px-4 py-3 font-medium transition openChineseModal"
-                                    data-target="address"
-                            >
-                                    중국 주소 검색
+                                    data-target="address">
+                                중국 주소 검색
                             </button>
                         </div>
-                        <input
-                                type="text"
-                                id="address1"
-                                name="address1"
-                                readonly
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition mb-2"
-                                placeholder="기본 주소"
-                        />
-                        <input
-                                type="text"
-                                id="address2"
-                                name="address2"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="상세 주소"
-                        />
+                        <input type="text" id="address1" name="address1" readonly required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition mb-2"
+                               placeholder="기본 주소"/>
+                        <input type="text" id="address2" name="address2" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="상세 주소"/>
                     </div>
                 </div>
             </div>
             <!-- 유학원 정보 섹션 -->
             <div>
-                <h2
-                        class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200"
-                >
-                    유학원 정보
-                </h2>
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">
+                    유학원 정보 </h2>
                 <div class="space-y-5">
                     <!-- 유학원 이름 -->
                     <div>
-                        <label
-                                for="agencyName"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >유학원 이름 <span class="text-red-500">*</span></label
-                        >
-                        <input
-                                type="text"
-                                id="agencyName"
-                                name="agencyName"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="글로벌 유학원"
-                        />
+                        <label for="agencyName" class="block text-sm font-medium text-gray-700 mb-1">유학원 이름 <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" id="agencyName" name="agencyName" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="글로벌 유학원"/>
                     </div>
                     <!-- 대표자 전화번호 -->
                     <div>
-                        <label
-                                for="owner"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >대표자 성함 <span class="text-red-500">*</span></label
-                        >
-                        <input
-                                type="text"
-                                id="owner"
-                                name="owner"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="김**"
-                        />
+                        <label for="owner" class="block text-sm font-medium text-gray-700 mb-1">대표자 성함 <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" id="owner" name="owner" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="김**"/>
                         <p class="mt-1 text-sm text-gray-500">
-                            대표자 성함을 입력해주세요.
-                        </p>
+                            대표자 성함을 입력해주세요. </p>
                     </div>
                     <div>
-                        <label
-                                for="owner"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >대표자 이메일 <span class="text-red-500">*</span></label
-                        >
-                        <input
-                                type="email"
-                                id="agencyEmail"
-                                name="agencyEmail"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="adf@asdf.com"
-                        />
+                        <label for="owner" class="block text-sm font-medium text-gray-700 mb-1">대표자 이메일 <span
+                                class="text-red-500">*</span></label>
+                        <input type="email" id="agencyEmail" name="agencyEmail" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="adf@asdf.com"/>
                         <p class="mt-1 text-sm text-gray-500">
-                            대표자 이메일을 입력해주세요
-                        </p>
+                            대표자 이메일을 입력해주세요 </p>
                     </div>
                     <div>
-                        <label
-                                for="agencyPhone"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >유학원 전화번호 <span class="text-red-500">*</span></label
-                        >
-                        <input
-                                type="tel"
-                                id="agencyPhone"
-                                name="agencyPhone"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="010-1234-5678"
-                        />
+                        <label for="agencyPhone" class="block text-sm font-medium text-gray-700 mb-1">유학원 전화번호 <span
+                                class="text-red-500">*</span></label>
+                        <input type="tel" id="agencyPhone" name="agencyPhone" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="010-1234-5678"/>
                         <p class="mt-1 text-sm text-gray-500">
-                            '-' 없이 숫자만 입력해주세요
-                        </p>
+                            '-' 없이 숫자만 입력해주세요 </p>
                     </div>
 
                     <!-- 유학원 위치 -->
                     <div>
-                        <label
-                                for="agencyAddress"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >유학원 위치 <span class="text-red-500">*</span></label
-                        >
+                        <label for="agencyAddress" class="block text-sm font-medium text-gray-700 mb-1">유학원 위치 <span
+                                class="text-red-500">*</span></label>
                         <div class="flex gap-3 mb-2">
-                            <input
-                                    type="text"
-                                    id="agencyAddress"
-                                    name="agencyAddress"
-                                    readonly
-                                    required
-                                    class="w-32 px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                    placeholder="우편번호"
-                            />
-                            <button
-                                    type="button"
-                                    id="searchAgencyAddress"
+                            <input type="text" id="agencyAddress" name="agencyAddress" readonly required
+                                   class="w-32 px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                                   placeholder="우편번호"/>
+                            <button type="button" id="searchAgencyAddress"
                                     class="whitespace-nowrap !rounded-button bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 font-medium transition"
-                                    onclick="openPostcode('agency')"
-                            >
-                               한국 주소 검색
+                                    onclick="openPostcode('agency')">
+                                한국 주소 검색
                             </button>
-                            <button
-                                    type="button"
+                            <button type="button"
                                     class="whitespace-nowrap !rounded-button bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-3 font-medium transition openChineseModal"
-                                    data-target="agency"
-                            >
+                                    data-target="agency">
                                 중국 주소 검색
                             </button>
                         </div>
-                        <input
-                                type="text"
-                                id="agencyAddress1"
-                                name="agencyAddress1"
-                                readonly
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition mb-2"
-                                placeholder="기본 주소"
-                        />
-                        <input
-                                type="text"
-                                id="agencyAddress2"
-                                name="agencyAddress2"
-                                required
-                                class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                                placeholder="상세 주소"
-                        />
+                        <input type="text" id="agencyAddress1" name="agencyAddress1" readonly required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition mb-2"
+                               placeholder="기본 주소"/>
+                        <input type="text" id="agencyAddress2" name="agencyAddress2" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                               placeholder="상세 주소"/>
                     </div>
 
                     <!-- 유학원 지역 선택 -->
                     <div>
-                        <label
-                                for="agencyRegion"
-                                class="block text-sm font-medium text-gray-700 mb-1"
-                        >유학원 지역 <span class="text-red-500">*</span></label
-                        >
+                        <label for="agencyRegion" class="block text-sm font-medium text-gray-700 mb-1">
+                            유학원 지역 <span class="text-red-500">*</span></label>
                         <div class="relative">
-                            <select
-                                    id="agencyRegion"
-                                    name="agencyRegion"
-                                    required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition appearance-none pr-8"
-                            >
+                            <select id="agencyRegion" name="agencyRegion" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition appearance-none pr-8">
                                 <option value="" disabled selected>
                                     지역을 선택해주세요
                                 </option>
 
                             </select>
-                            <div
-                                    class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-500 pointer-events-none"
-                            >
+                            <div class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-500 pointer-events-none">
                                 <i class="ri-arrow-down-s-line"></i>
                             </div>
                         </div>
                     </div>
                     <!-- 유학원 대표 이미지 업로드 -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1"
-                        >유학원 대표 이미지 <span class="text-red-500">*</span></label
-                        >
+                        <label class="block text-sm font-medium text-gray-700 mb-1">유학원 대표 이미지 <span
+                                class="text-red-500">*</span></label>
                         <div id="imageDropArea" class="file-drop-area">
                             <div class="flex flex-col items-center">
-                                <div
-                                        class="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full mb-2"
-                                >
+                                <div class="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full mb-2">
                                     <i class="ri-image-add-line text-gray-500 ri-xl"></i>
                                 </div>
                                 <p class="text-sm text-gray-700 font-medium">
-                                    이미지를 여기에 끌어다 놓거나
-                                </p>
+                                    이미지를 여기에 끌어다 놓거나 </p>
                                 <p class="text-sm text-gray-500 mb-3">
-                                    JPG, PNG, GIF 파일 (최대 5MB)
-                                </p>
-                                <label
-                                        for="agencyImage"
-                                        class="whitespace-nowrap !rounded-button bg-primary hover:bg-primary/90 text-white px-4 py-2 font-medium transition cursor-pointer"
-                                >
+                                    JPG, PNG, GIF 파일 (최대 5MB) </p>
+                                <label for="agencyImage"
+                                       class="whitespace-nowrap !rounded-button bg-primary hover:bg-primary/90 text-white px-4 py-2 font-medium transition cursor-pointer">
                                     파일 선택
                                 </label>
-                                <input
-                                        type="file"
-                                        id="agencyImage"
-                                        name="agencyImage"
-                                        accept="image/jpeg, image/png, image/gif"
-                                        class="hidden"
-                                />
+                                <input type="file" id="agencyImage" name="agencyImage"
+                                       accept="image/jpeg, image/png, image/gif" class="hidden"/>
                             </div>
                             <div id="imagePreviewContainer" class="hidden mt-4">
-                                <img
-                                        id="imagePreview"
-                                        src="#"
-                                        alt="미리보기"
-                                        class="preview-image mx-auto"
-                                />
+                                <img id="imagePreview" src="#" alt="미리보기" class="preview-image mx-auto"/>
                                 <div class="flex justify-center mt-2">
-                                    <button
-                                            type="button"
-                                            id="removeImage"
-                                            class="text-sm text-red-500 hover:text-red-700"
-                                    >
+                                    <button type="button" id="removeImage"
+                                            class="text-sm text-red-500 hover:text-red-700">
                                         삭제
                                     </button>
                                 </div>
@@ -535,61 +331,35 @@
                     </div>
                     <!-- 사업자 등록증 업로드 -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1"
-                        >사업자 등록증 <span class="text-red-500">*</span></label
-                        >
+                        <label class="block text-sm font-medium text-gray-700 mb-1">사업자 등록증 <span
+                                class="text-red-500">*</span></label>
                         <div id="licenseDropArea" class="file-drop-area">
                             <div class="flex flex-col items-center">
-                                <div
-                                        class="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full mb-2"
-                                >
+                                <div class="w-12 h-12 flex items-center justify-center bg-gray-100 rounded-full mb-2">
                                     <i class="ri-file-upload-line text-gray-500 ri-xl"></i>
                                 </div>
                                 <p class="text-sm text-gray-700 font-medium">
-                                    파일을 여기에 끌어다 놓거나
-                                </p>
+                                    파일을 여기에 끌어다 놓거나 </p>
                                 <p class="text-sm text-gray-500 mb-3">
-                                    PDF, JPG, PNG 파일 (최대 10MB)
-                                </p>
-                                <label
-                                        for="businessLicense"
-                                        class="whitespace-nowrap !rounded-button bg-primary hover:bg-primary/90 text-white px-4 py-2 font-medium transition cursor-pointer"
-                                >
+                                    PDF, JPG, PNG 파일 (최대 10MB) </p>
+                                <label for="businessLicense"
+                                       class="whitespace-nowrap !rounded-button bg-primary hover:bg-primary/90 text-white px-4 py-2 font-medium transition cursor-pointer">
                                     파일 선택
                                 </label>
-                                <input
-                                        type="file"
-                                        id="businessLicense"
-                                        name="businessLicense"
-                                        accept="application/pdf, image/jpeg, image/png"
-                                        class="hidden"
-                                        required
-                                />
+                                <input type="file" id="businessLicense" name="businessLicense"
+                                       accept="application/pdf, image/jpeg, image/png" class="hidden" required/>
                             </div>
                             <div id="licenseFileInfo" class="hidden mt-4">
-                                <div
-                                        class="flex items-center justify-center p-3 bg-gray-50 rounded-lg"
-                                >
-                                    <div
-                                            class="w-8 h-8 flex items-center justify-center mr-2"
-                                    >
+                                <div class="flex items-center justify-center p-3 bg-gray-50 rounded-lg">
+                                    <div class="w-8 h-8 flex items-center justify-center mr-2">
                                         <i class="ri-file-line text-gray-500 ri-lg"></i>
                                     </div>
                                     <div class="flex-1">
-                                        <p
-                                                id="licenseFileName"
-                                                class="text-sm font-medium text-gray-700 truncate"
-                                        ></p>
-                                        <p
-                                                id="licenseFileSize"
-                                                class="text-xs text-gray-500"
-                                        ></p>
+                                        <p id="licenseFileName" class="text-sm font-medium text-gray-700 truncate"></p>
+                                        <p id="licenseFileSize" class="text-xs text-gray-500"></p>
                                     </div>
-                                    <button
-                                            type="button"
-                                            id="removeLicense"
-                                            class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-red-500"
-                                    >
+                                    <button type="button" id="removeLicense"
+                                            class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-red-500">
                                         <i class="ri-delete-bin-line"></i>
                                     </button>
                                 </div>
@@ -602,116 +372,64 @@
             <div class="space-y-3">
                 <div class="flex items-center">
                     <div class="relative w-5 h-5 mr-2">
-                        <input type="checkbox" id="agreeAll" class="sr-only" />
-                        <div
-                                class="w-5 h-5 border border-gray-300 rounded cursor-pointer flex items-center justify-center"
-                                id="agreeAllBox"
-                        >
+                        <input type="checkbox" id="agreeAll" class="sr-only"/>
+                        <div class="w-5 h-5 border border-gray-300 rounded cursor-pointer flex items-center justify-center"
+                             id="agreeAllBox">
                             <i class="ri-check-line text-white hidden"></i>
                         </div>
                     </div>
-                    <label
-                            for="agreeAll"
-                            class="text-sm font-medium text-gray-800 cursor-pointer"
-                    >전체 동의</label
-                    >
+                    <label for="agreeAll" class="text-sm font-medium text-gray-800 cursor-pointer">전체 동의</label>
                 </div>
                 <div class="ml-7 space-y-2">
                     <div class="flex items-center">
                         <div class="relative w-5 h-5 mr-2">
-                            <input
-                                    type="checkbox"
-                                    id="agreeTerms"
-                                    name="agreeTerms"
-                                    required
-                                    class="sr-only"
-                            />
-                            <div
-                                    class="w-5 h-5 border border-gray-300 rounded cursor-pointer flex items-center justify-center"
-                                    id="agreeTermsBox"
-                            >
+                            <input type="checkbox" id="agreeTerms" name="agreeTerms" required class="sr-only"/>
+                            <div class="w-5 h-5 border border-gray-300 rounded cursor-pointer flex items-center justify-center"
+                                 id="agreeTermsBox">
                                 <i class="ri-check-line text-white hidden"></i>
                             </div>
                         </div>
-                        <label
-                                for="agreeTerms"
-                                class="text-sm text-gray-700 cursor-pointer"
-                        >서비스 이용약관 동의
-                            <span class="text-red-500">*</span></label
-                        >
-                        <button
-                                type="button"
-                                class="ml-auto text-xs text-gray-500 underline"
-                        >
+                        <label for="agreeTerms" class="text-sm text-gray-700 cursor-pointer">서비스 이용약관 동의
+                            <span class="text-red-500">*</span></label>
+                        <button type="button" class="ml-auto text-xs text-gray-500 underline">
                             보기
                         </button>
                     </div>
                     <div class="flex items-center">
                         <div class="relative w-5 h-5 mr-2">
-                            <input
-                                    type="checkbox"
-                                    id="agreePrivacy"
-                                    name="agreePrivacy"
-                                    required
-                                    class="sr-only"
-                            />
-                            <div
-                                    class="w-5 h-5 border border-gray-300 rounded cursor-pointer flex items-center justify-center"
-                                    id="agreePrivacyBox"
-                            >
+                            <input type="checkbox" id="agreePrivacy" name="agreePrivacy" required class="sr-only"/>
+                            <div class="w-5 h-5 border border-gray-300 rounded cursor-pointer flex items-center justify-center"
+                                 id="agreePrivacyBox">
                                 <i class="ri-check-line text-white hidden"></i>
                             </div>
                         </div>
-                        <label
-                                for="agreePrivacy"
-                                class="text-sm text-gray-700 cursor-pointer"
-                        >개인정보 수집 및 이용 동의
-                            <span class="text-red-500">*</span></label
-                        >
-                        <button
-                                type="button"
-                                class="ml-auto text-xs text-gray-500 underline"
-                        >
+                        <label for="agreePrivacy" class="text-sm text-gray-700 cursor-pointer">개인정보 수집 및 이용 동의
+                            <span class="text-red-500">*</span></label>
+                        <button type="button" class="ml-auto text-xs text-gray-500 underline">
                             보기
                         </button>
                     </div>
                     <div class="flex items-center">
                         <div class="relative w-5 h-5 mr-2">
-                            <input
-                                    type="checkbox"
-                                    id="agreeMarketing"
-                                    name="agreeMarketing"
-                                    class="sr-only"
-                            />
-                            <div
-                                    class="w-5 h-5 border border-gray-300 rounded cursor-pointer flex items-center justify-center"
-                                    id="agreeMarketingBox"
-                            >
+                            <input type="checkbox" id="agreeMarketing" name="agreeMarketing" class="sr-only"/>
+                            <div class="w-5 h-5 border border-gray-300 rounded cursor-pointer flex items-center justify-center"
+                                 id="agreeMarketingBox">
                                 <i class="ri-check-line text-white hidden"></i>
                             </div>
                         </div>
-                        <label
-                                for="agreeMarketing"
-                                class="text-sm text-gray-700 cursor-pointer"
-                        >마케팅 정보 수신 동의 (선택)</label
-                        >
+                        <label for="agreeMarketing" class="text-sm text-gray-700 cursor-pointer">마케팅 정보 수신 동의
+                            (선택)</label>
                     </div>
                 </div>
             </div>
             <!-- 버튼 영역 -->
             <div class="flex justify-center gap-4 pt-4">
-                <button
-                        type="button"
-                        id="cancelButton"
-                        class="whitespace-nowrap !rounded-button bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 font-medium transition min-w-[120px]"
-                >
+                <button type="button" id="cancelButton"
+                        class="whitespace-nowrap !rounded-button bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 font-medium transition min-w-[120px]">
                     취소
                 </button>
-                <button
-                        type="submit"
-                        id="submitButton"
-                        class="whitespace-nowrap !rounded-button bg-primary hover:bg-primary/90 text-white px-6 py-3 font-medium transition min-w-[120px]"
-                >
+                <button type="submit" id="submitButton"
+                        class="whitespace-nowrap !rounded-button bg-primary hover:bg-primary/90 text-white px-6 py-3 font-medium transition min-w-[120px]">
                     회원가입
                 </button>
             </div>
@@ -719,7 +437,8 @@
     </div>
 </div>
 
-<div id="postcode-layer" class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] w-[360px] h-[480px] border border-gray-300 bg-white shadow-lg rounded-lg">
+<div id="postcode-layer"
+     class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] w-[360px] h-[480px] border border-gray-300 bg-white shadow-lg rounded-lg">
     <div class="flex justify-between items-center px-4 py-2 border-b border-gray-200">
         <h4 class="font-semibold text-gray-700">주소 검색</h4>
         <button id="closePostcode" onclick="closePostcode()" class="text-gray-500 hover:text-gray-700">
@@ -729,21 +448,33 @@
     <div id="postcode-wrap" class="w-full h-[400px]"></div>
 </div>
 
-<script type="module" id="api-bootstrap">
-    import { api } from "/js/homepage/lib/apiClient.js";
-    window.api = api;
-    window.dispatchEvent(new Event("api-ready"));
-</script>
 
-<script id="passwordToggleScript">
-    document.addEventListener("DOMContentLoaded", function () {
+<!--중국 주소 검색-->
+<div id="chinese-address-modal" class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2
+            z-[9999] w-[400px] bg-white border border-gray-300 shadow-lg rounded-lg p-5">
+    <div class="flex justify-between items-center mb-4 border-b pb-2">
+        <h4 class="text-lg font-semibold text-gray-700">중국 주소 검색</h4>
+        <button id="closeChineseModal" class="text-gray-500 hover:text-gray-700">
+            <i class="ri-close-line ri-lg"></i>
+        </button>
+    </div>
+
+    <input type="text" id="chineseAddressInput" placeholder="예: 上海市徐汇区漕溪北路333号"
+           class="w-full border border-gray-300 rounded-button px-4 py-2 mb-3 focus:ring-2 focus:ring-primary outline-none"/>
+
+    <ul id="chineseAddressList" class="border border-gray-200 rounded-lg max-h-60 overflow-y-auto hidden"></ul>
+</div>
+</body>
+
+<th:block th:fragment="script">
+    <script id="passwordToggleScript" type="module">
         const togglePassword = document.getElementById("togglePassword");
         const toggleConfirmPassword = document.getElementById(
             "toggleConfirmPassword",
         );
         const passwordInput = document.getElementById("password");
         const confirmPasswordInput = document.getElementById("confirmPassword");
-        togglePassword.addEventListener("click", function () {
+        togglePassword?.addEventListener("click", function () {
             const type =
                 passwordInput.getAttribute("type") === "password" ? "text" : "password";
             passwordInput.setAttribute("type", type);
@@ -752,7 +483,7 @@
                     ? '<i class="ri-eye-line"></i>'
                     : '<i class="ri-eye-off-line"></i>';
         });
-        toggleConfirmPassword.addEventListener("click", function () {
+        toggleConfirmPassword?.addEventListener("click", function () {
             const type =
                 confirmPasswordInput.getAttribute("type") === "password"
                     ? "text"
@@ -763,16 +494,14 @@
                     ? '<i class="ri-eye-line"></i>'
                     : '<i class="ri-eye-off-line"></i>';
         });
-    });
-</script>
-<script id="passwordStrengthScript">
-    document.addEventListener("DOMContentLoaded", function () {
+    </script>
+    <script id="passwordStrengthScript" type="module">
         const passwordInput = document.getElementById("password");
         const confirmPasswordInput = document.getElementById("confirmPassword");
         const passwordStrength = document.getElementById("passwordStrength");
         const passwordStrengthText = document.getElementById("passwordStrengthText");
         const passwordMatch = document.getElementById("passwordMatch");
-        passwordInput.addEventListener("input", function () {
+        passwordInput?.addEventListener("input", function () {
             const password = passwordInput.value;
             let strength = 0;
             let message = "";
@@ -799,7 +528,8 @@
             // 비밀번호 일치 여부 확인
             checkPasswordMatch();
         });
-        confirmPasswordInput.addEventListener("input", checkPasswordMatch);
+        confirmPasswordInput?.addEventListener("input", checkPasswordMatch);
+
         function checkPasswordMatch() {
             const password = passwordInput.value;
             const confirmPassword = confirmPasswordInput.value;
@@ -814,10 +544,8 @@
                 passwordMatch.className = "mt-1 text-sm text-red-600";
             }
         }
-    });
-</script>
-<script id="fileUploadScript">
-    document.addEventListener("DOMContentLoaded", function () {
+    </script>
+    <script id="fileUploadScript" type="module">
         // 이미지 업로드 처리
         const imageDropArea = document.getElementById("imageDropArea");
         const agencyImage = document.getElementById("agencyImage");
@@ -833,6 +561,7 @@
         const licenseFileName = document.getElementById("licenseFileName");
         const licenseFileSize = document.getElementById("licenseFileSize");
         const removeLicense = document.getElementById("removeLicense");
+
         // 이미지 파일 처리 함수
         function handleImageFile(file) {
             if (file) {
@@ -856,6 +585,7 @@
                 reader.readAsDataURL(file);
             }
         }
+
         // 사업자 등록증 파일 처리 함수
         function handleLicenseFile(file) {
             if (file) {
@@ -876,26 +606,30 @@
                 licenseFileInfo.classList.remove("hidden");
             }
         }
+
         // 파일 크기 포맷팅
         function formatFileSize(bytes) {
             if (bytes < 1024) return bytes + " B";
             else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
             else return (bytes / 1048576).toFixed(1) + " MB";
         }
+
         // 이미지 업로드 이벤트
-        agencyImage.addEventListener("change", function (e) {
+        agencyImage?.addEventListener("change", function (e) {
             handleImageFile(this.files[0]);
         });
         // 이미지 드래그 앤 드롭
         ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
-            imageDropArea.addEventListener(eventName, preventDefaults, false);
+            imageDropArea?.addEventListener(eventName, preventDefaults, false);
         });
+
         function preventDefaults(e) {
             e.preventDefault();
             e.stopPropagation();
         }
+
         ["dragenter", "dragover"].forEach((eventName) => {
-            imageDropArea.addEventListener(
+            imageDropArea?.addEventListener(
                 eventName,
                 function () {
                     imageDropArea.classList.add("drag-over");
@@ -904,7 +638,7 @@
             );
         });
         ["dragleave", "drop"].forEach((eventName) => {
-            imageDropArea.addEventListener(
+            imageDropArea?.addEventListener(
                 eventName,
                 function () {
                     imageDropArea.classList.remove("drag-over");
@@ -912,7 +646,7 @@
                 false,
             );
         });
-        imageDropArea.addEventListener(
+        imageDropArea?.addEventListener(
             "drop",
             function (e) {
                 const file = e.dataTransfer.files[0];
@@ -922,18 +656,18 @@
             false,
         );
         // 이미지 제거
-        removeImage.addEventListener("click", function () {
+        removeImage?.addEventListener("click", function () {
             agencyImage.value = "";
             imagePreview.src = "#";
             imagePreviewContainer.classList.add("hidden");
         });
         // 사업자 등록증 업로드 이벤트
-        businessLicense.addEventListener("change", function (e) {
+        businessLicense?.addEventListener("change", function (e) {
             handleLicenseFile(this.files[0]);
         });
         // 사업자 등록증 드래그 앤 드롭
         ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
-            licenseDropArea.addEventListener(eventName, preventDefaults, false);
+            licenseDropArea?.addEventListener(eventName, preventDefaults, false);
         });
         ["dragenter", "dragover"].forEach((eventName) => {
             licenseDropArea.addEventListener(
@@ -967,10 +701,8 @@
             businessLicense.value = "";
             licenseFileInfo.classList.add("hidden");
         });
-    });
-</script>
-<script id="checkboxScript">
-    document.addEventListener("DOMContentLoaded", function () {
+    </script>
+    <script id="checkboxScript" type="module">
         const agreeAll = document.getElementById("agreeAll");
         const agreeAllBox = document.getElementById("agreeAllBox");
         const agreeTerms = document.getElementById("agreeTerms");
@@ -979,11 +711,13 @@
         const agreePrivacyBox = document.getElementById("agreePrivacyBox");
         const agreeMarketing = document.getElementById("agreeMarketing");
         const agreeMarketingBox = document.getElementById("agreeMarketingBox");
+
         // 체크박스 토글 함수
         function toggleCheckbox(checkbox, box) {
             checkbox.checked = !checkbox.checked;
             updateCheckboxStyle(checkbox, box);
         }
+
         // 체크박스 스타일 업데이트
         function updateCheckboxStyle(checkbox, box) {
             if (checkbox.checked) {
@@ -994,6 +728,7 @@
                 box.querySelector("i").classList.add("hidden");
             }
         }
+
         // 전체 동의 업데이트
         function updateAgreeAll() {
             const allChecked =
@@ -1001,6 +736,7 @@
             agreeAll.checked = allChecked;
             updateCheckboxStyle(agreeAll, agreeAllBox);
         }
+
         // 개별 체크박스 업데이트
         function updateIndividualCheckboxes() {
             agreeTerms.checked = agreeAll.checked;
@@ -1010,6 +746,7 @@
             updateCheckboxStyle(agreePrivacy, agreePrivacyBox);
             updateCheckboxStyle(agreeMarketing, agreeMarketingBox);
         }
+
         // 전체 동의 클릭 이벤트
         agreeAllBox.addEventListener("click", function () {
             toggleCheckbox(agreeAll, agreeAllBox);
@@ -1028,48 +765,50 @@
             toggleCheckbox(agreeMarketing, agreeMarketingBox);
             updateAgreeAll();
         });
-    });
-</script>
-<script id="search-address">
-    // 주소 검색 (대표자)
-    const zoneEl = document.getElementById('address');
-    const addrEl = document.getElementById('address1');
+    </script>
+    <script id="search-address" type="module">
+        // 주소 검색 (대표자)
+        const zoneEl = document.getElementById('address');
+        const addrEl = document.getElementById('address1');
 
-    const agencyZoneEl = document.getElementById('agencyAddress');
-    const agencyAddrEl = document.getElementById('agencyAddress1');
+        const agencyZoneEl = document.getElementById('agencyAddress');
+        const agencyAddrEl = document.getElementById('agencyAddress1');
 
-    const layer  = document.getElementById('postcode-layer');
-    const wrap   = document.getElementById('postcode-wrap');
+        const layer = document.getElementById('postcode-layer');
+        const wrap = document.getElementById('postcode-wrap');
 
-    function openPostcode(type) {
-        layer.style.display = 'block';
-        new daum.Postcode({
-            oncomplete: function(data) {
-                // 도로명(data.roadAddress) / 지번(data.jibunAddress)
-                const addr = data.roadAddress || data.jibunAddress;
-                if ('member' === type) {
-                    zoneEl.value = data.zonecode;
-                    addrEl.value = addr;
-                    document.getElementById('address2').focus();
-                }else if ('agency' === type) {
-                    agencyZoneEl.value = data.zonecode;
-                    agencyAddrEl.value = addr;
-                    document.getElementById('agencyAddress2').focus();
-                }
+        function openPostcode(type) {
+            layer.style.display = 'block';
+            new daum.Postcode({
+                oncomplete: function (data) {
+                    // 도로명(data.roadAddress) / 지번(data.jibunAddress)
+                    const addr = data.roadAddress || data.jibunAddress;
+                    if ('member' === type) {
+                        zoneEl.value = data.zonecode;
+                        addrEl.value = addr;
+                        document.getElementById('address2').focus();
+                    } else if ('agency' === type) {
+                        agencyZoneEl.value = data.zonecode;
+                        agencyAddrEl.value = addr;
+                        document.getElementById('agencyAddress2').focus();
+                    }
 
-                closePostcode();
-            },
-            width: '100%',
-            height: '100%'
-        }).embed(wrap);
-    }
-    function closePostcode() { layer.style.display = 'none'; }
-</script>
+                    closePostcode();
+                },
+                width: '100%',
+                height: '100%'
+            }).embed(wrap);
+        }
 
-<script id="formSubmitScript">
+        function closePostcode() {
+            layer.style.display = 'none';
+        }
 
-
-    document.addEventListener("DOMContentLoaded", function () {
+        // export module functions
+        window.openPostcode = openPostcode;
+        window.closePostcode = closePostcode;
+    </script>
+    <script id="formSubmitScript" type="module">
         const form = document.getElementById("signupForm");
         const submitButton = document.getElementById("submitButton");
         const cancelButton = document.getElementById("cancelButton");
@@ -1099,29 +838,29 @@
                 // 여기서는 실제 API 호출 대신 시뮬레이션
                 setTimeout(() => {
                     (async () => {
-                            try {
-                                  const data = await api.get(
-                                        `${memberUrl}/check-id?username=${encodeURIComponent(username)}`
-                                      ); // BaseURL 이미 설정된 가정
-                                  // 서버가 {isSuccess:true,result:boolean} 또는 boolean 둘 다 대응
-                                      const isDuplicate =
-                                        data && typeof data === "object" && "result" in data ? data.result : !!data;
+                        try {
+                            const data = await api.get(
+                                `${memberUrl}/check-id?username=${encodeURIComponent(username)}`
+                            ); // BaseURL 이미 설정된 가정
+                            // 서버가 {isSuccess:true,result:boolean} 또는 boolean 둘 다 대응
+                            const isDuplicate =
+                                data && typeof data === "object" && "result" in data ? data.result : !!data;
 
-                                      console.log(isDuplicate);
-                                  if (isDuplicate) {
-                                        usernameStatus.textContent = "이미 사용 중인 아이디입니다.";
-                                        usernameStatus.className = "mt-1 text-sm text-red-600";
-                                      } else {
-                                        usernameStatus.textContent = "사용 가능한 아이디입니다.";
-                                        isUsernameChecked = true;
-                                        usernameStatus.className = "mt-1 text-sm text-green-600";
-                                      }
-                                } catch (error) {
-                                  console.error("중복 확인 중 오류:", error);
-                                  usernameStatus.textContent = "중복 확인에 실패했습니다.";
-                                  usernameStatus.className = "mt-1 text-sm text-gray-500";
-                                }
-                          })();
+                            console.log(isDuplicate);
+                            if (isDuplicate) {
+                                usernameStatus.textContent = "이미 사용 중인 아이디입니다.";
+                                usernameStatus.className = "mt-1 text-sm text-red-600";
+                            } else {
+                                usernameStatus.textContent = "사용 가능한 아이디입니다.";
+                                isUsernameChecked = true;
+                                usernameStatus.className = "mt-1 text-sm text-green-600";
+                            }
+                        } catch (error) {
+                            console.error("중복 확인 중 오류:", error);
+                            usernameStatus.textContent = "중복 확인에 실패했습니다.";
+                            usernameStatus.className = "mt-1 text-sm text-gray-500";
+                        }
+                    })();
                 }, 100);
             });
 
@@ -1130,7 +869,7 @@
             if (
                 confirm("회원가입을 취소하시겠습니까? 입력한 정보는 저장되지 않습니다.")
             ) {
-                window.location.href = "/"; // 메인 페이지로 이동
+                Turbo.visit("/"); // 메인 페이지로 이동
             }
         });
         // 폼 제출
@@ -1204,16 +943,16 @@
                         agencyName: form.agencyName.value,
                         agencyAddress1: form.agencyAddress1.value,
                         agencyAddress2: form.agencyAddress2.value,
-                        agencyPhone : form.agencyPhone.value,
-                        birth : form.birthDate.value,
-                        agencyOwner : form.owner.value,
+                        agencyPhone: form.agencyPhone.value,
+                        birth: form.birthDate.value,
+                        agencyOwner: form.owner.value,
                         agencyRegion: form.agencyRegion.value,
-                        agencyEmail : form.agencyEmail.value
+                        agencyEmail: form.agencyEmail.value
                     };
 
                     //데이터 수집
                     const formData = new FormData();
-                    formData.append('data',JSON.stringify(jsonData));
+                    formData.append('data', JSON.stringify(jsonData));
                     // 파일 업로드
                     const agencyImage = form.agencyImage.files[0];
                     if (agencyImage) formData.append('agencyPicture', agencyImage);
@@ -1237,7 +976,7 @@
 
                     const modal = document.createElement("div");
                     modal.className =
-                            "fixed inset-0 flex items-center justify-center z-50";
+                        "fixed inset-0 flex items-center justify-center z-50";
                     modal.innerHTML = `
       <div class="fixed inset-0 bg-black opacity-50"></div>
       <div class="bg-white rounded-lg p-6 relative z-10 max-w-sm w-full mx-4">
@@ -1249,11 +988,11 @@
       <button class="w-full !rounded-button bg-primary hover:bg-primary/90 text-white px-4 py-2 font-medium transition">확인</button>
       </div>
       `;
-                        document.body.appendChild(modal);
-                        modal.querySelector("button").onclick = () => {
-                            modal.remove();
-                            window.location.href = "/member/login";
-                        };
+                    document.body.appendChild(modal);
+                    modal.querySelector("button").onclick = () => {
+                        modal.remove();
+                        Turbo.visit("/member/login");
+                    };
                 } catch (error) {
                     const modal = document.createElement("div");
                     modal.className = "fixed inset-0 flex items-center justify-center z-50";
@@ -1277,42 +1016,15 @@
             } else {
                 const firstErrorField = form.querySelector(".border-red-500");
                 if (firstErrorField) {
-                    firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
+                    firstErrorField.scrollIntoView({behavior: "smooth", block: "center"});
                     firstErrorField.focus();
                 }
             }
         });
-    });
-</script>
-
-<!--중국 주소 검색-->
-<div id="chinese-address-modal"
-     class="hidden fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2
-            z-[9999] w-[400px] bg-white border border-gray-300 shadow-lg rounded-lg p-5">
-    <div class="flex justify-between items-center mb-4 border-b pb-2">
-        <h4 class="text-lg font-semibold text-gray-700">중국 주소 검색</h4>
-        <button id="closeChineseModal" class="text-gray-500 hover:text-gray-700">
-            <i class="ri-close-line ri-lg"></i>
-        </button>
-    </div>
-
-    <input
-            type="text"
-            id="chineseAddressInput"
-            placeholder="예: 上海市徐汇区漕溪北路333号"
-            class="w-full border border-gray-300 rounded-button px-4 py-2 mb-3 focus:ring-2 focus:ring-primary outline-none"
-    />
-
-    <ul id="chineseAddressList"
-        class="border border-gray-200 rounded-lg max-h-60 overflow-y-auto hidden">
-    </ul>
-</div>
-
-
-<script id="chinese-address-modal-script">
-    document.addEventListener("DOMContentLoaded", () => {
+    </script>
+    <script id="chinese-address-modal-script" type="module">
         const modal = document.getElementById("chinese-address-modal");
-        const closeBtn = document.getElementById("closeChineseModal"  );
+        const closeBtn = document.getElementById("closeChineseModal");
         const input = document.getElementById("chineseAddressInput");
         const list = document.getElementById("chineseAddressList");
 
@@ -1405,53 +1117,50 @@
             list.innerHTML = "";
             list.classList.add("hidden");
         }
-    });
-</script>
-<script id="agency-region-loader">
-    document.addEventListener("DOMContentLoaded", async () => {
-        const select = document.getElementById("agencyRegion");
-        if (!select || !window.api) {
-            console.warn("agencyRegion select 또는 window.api 없음");
-            return;
-        }
+    </script>
+    <script id="agency-region-loader" type="module">
+        (async () => {
+            const select = document.getElementById("agencyRegion");
+            if (!select || !window.api) {
+                console.warn("agencyRegion select 또는 window.api 없음");
+                return;
+            }
 
-        try {
-            // /agency/region 호출
-            const res = await window.api.get("/api/v1/agency/region");
-            console.log("region api result:", res);
+            try {
+                // /agency/region 호출
+                const res = await window.api.get("/api/v1/agency/region");
+                console.log("region api result:", res);
 
-            const regions =
-                Array.isArray(res) ? res
-                    : Array.isArray(res.data) ? res.data
-                        : Array.isArray(res.result) ? res.result
-                            : [];
+                const regions =
+                    Array.isArray(res) ? res
+                        : Array.isArray(res.data) ? res.data
+                            : Array.isArray(res.result) ? res.result
+                                : [];
 
-            regions.forEach(region => {
-                let value, label;
+                regions.forEach(region => {
+                    let value, label;
 
-                if (typeof region === "string") {
-                    value = region;
-                    label = region;
-                } else {
-                    // 객체일 경우 필드 이름 몇 가지 가정
-                    label = region.name || region.label || region.regionName || region.value;
-                    value = region.code || label;
-                }
+                    if (typeof region === "string") {
+                        value = region;
+                        label = region;
+                    } else {
+                        // 객체일 경우 필드 이름 몇 가지 가정
+                        label = region.name || region.label || region.regionName || region.value;
+                        value = region.code || label;
+                    }
 
-                if (!label) return; // 제대로된 이름이 없으면 패스
+                    if (!label) return; // 제대로된 이름이 없으면 패스
 
-                const option = document.createElement("option");
-                option.value = value;
-                option.textContent = label;
-                select.appendChild(option);
-            });
-        } catch (e) {
-            console.error("지역 목록 불러오기 실패:", e);
-            // 필요하면 여기서 토스트/알림 띄워도 됨
-        }
-    });
-</script>
-
-<script src="/js/homepage/common/url.js"></script>
-</body>
+                    const option = document.createElement("option");
+                    option.value = value;
+                    option.textContent = label;
+                    select.appendChild(option);
+                });
+            } catch (e) {
+                console.error("지역 목록 불러오기 실패:", e);
+                // 필요하면 여기서 토스트/알림 띄워도 됨
+            }
+        })().then();
+    </script>
+</th:block>
 </html>
