@@ -1601,11 +1601,11 @@
     });
 
 
-    document.addEventListener("DOMContentLoaded", function () {
-
-        const saveButton = document.getElementById("saveButton")
-        saveButton.addEventListener("click", saveForm);
-    });
+    // document.addEventListener("DOMContentLoaded", function () {
+    //
+    //     const saveButton = document.getElementById("saveButton")
+    //     saveButton.addEventListener("click", saveForm);
+    // });
 
 </script>
 
@@ -1709,92 +1709,92 @@
         return collectionFailed ? null : questions;
     }
 
-    async function saveForm() {
-        console.log("save button click");
-        const titleInput = document.querySelector(
-            'input[placeholder="설문조사 제목을 입력하세요"]'
-        );
-
-        if (!titleInput.value.trim()) {
-            showToast("error", "설문조사 제목을 입력해주세요");
-            titleInput.focus();
-            return;
-        }
-
-        const description = document.querySelector("textarea").value.trim();
-        const questions = collectQuestions();
-
-        //저장 가능 체크
-        if (questions == null) {
-            console.log("questions is null");
-            showToast("error", "설문조사 문항을 제대로 입력해주세요");
-            return;
-        }
-
-        if (questions.length === 0) {
-            showToast("error", "문제를 하나 이상 추가해주세요");
-            return;
-        }
-
-        if (!validateDateRange()) {
-            showToast("error", "날짜를 다시 확인해주세요");
-            return;
-        }
-
-        const originalContent = saveButton.innerHTML;
-        saveButton.innerHTML = `
-        <i class="ri-loader-4-line loading-spinner mr-2"></i>
-        저장 중...
-    `;
-        saveButton.disabled = true;
-
-        const startDate = document.getElementById("start-date").value;
-        const endDate = document.getElementById("end-date").value;
-
-        try {
-            const survey = /*[[${survey}]]*/ null;
-            if (survey) console.log("survey있음");
-            else console.log("survey없음");
-            const folderId = /*[[${folderId}]]*/ null;
-            const url = (survey) ? surveyAdminUrl + "/edit" : surveyAdminUrl + "/make";
-            const method = (survey) ? "PATCH" : "POST";
-            const surveyType = document.getElementById("survey-type")?.value || "normal";
-            const isShare = document.querySelector('#isPublic').checked;
-            console.log("surveyType:" + surveyType);
-            //fixme payload수정함 이거  dto에서 받아야함.
-
-            const payload = {
-                title: titleInput.value,
-                description,
-                questions,
-                startDate,
-                endDate,
-                surveyType: surveyType,
-                ...(survey && {surveyId: survey.surveyId}), // surveyId가 존재할 때만 id 추가
-                folderId,
-                isShare
-            };
-            if (method === "POST") {
-                await api.postJson(url, payload);
-            } else if (method === "PATCH") {
-                await api.patchJson(url, payload);
-            } else if (method === "PUT") {
-                await api.putJson(url, payload);
-            } else {
-                await api._request(method, url, JSON.stringify(payload), {
-                    headers: {"Content-Type": "application/json"}
-                });
-            }
-
-            showToast("success", "설문조사가 저장되었습니다");
-            window.location.href = "/survey/list?folderId=" + folderId;
-        } catch (error) {
-            showToast("error", "저장 중 오류가 발생했습니다", true);
-        } finally {
-            saveButton.innerHTML = originalContent;
-            saveButton.disabled = false;
-        }
-    }
+    // async function saveForm() {
+    //     console.log("save button click");
+    //     const titleInput = document.querySelector(
+    //         'input[placeholder="설문조사 제목을 입력하세요"]'
+    //     );
+    //
+    //     if (!titleInput.value.trim()) {
+    //         showToast("error", "설문조사 제목을 입력해주세요");
+    //         titleInput.focus();
+    //         return;
+    //     }
+    //
+    //     const description = document.querySelector("textarea").value.trim();
+    //     const questions = collectQuestions();
+    //
+    //     //저장 가능 체크
+    //     if (questions == null) {
+    //         console.log("questions is null");
+    //         showToast("error", "설문조사 문항을 제대로 입력해주세요");
+    //         return;
+    //     }
+    //
+    //     if (questions.length === 0) {
+    //         showToast("error", "문제를 하나 이상 추가해주세요");
+    //         return;
+    //     }
+    //
+    //     if (!validateDateRange()) {
+    //         showToast("error", "날짜를 다시 확인해주세요");
+    //         return;
+    //     }
+    //
+    //     const originalContent = saveButton.innerHTML;
+    //     saveButton.innerHTML = `
+    //     <i class="ri-loader-4-line loading-spinner mr-2"></i>
+    //     저장 중...
+    // `;
+    //     saveButton.disabled = true;
+    //
+    //     const startDate = document.getElementById("start-date").value;
+    //     const endDate = document.getElementById("end-date").value;
+    //
+    //     try {
+    //         const survey = /*[[${survey}]]*/ null;
+    //         if (survey) console.log("survey있음");
+    //         else console.log("survey없음");
+    //         const folderId = /*[[${folderId}]]*/ null;
+    //         const url = (survey) ? surveyAdminUrl + "/edit" : surveyAdminUrl + "/make";
+    //         const method = (survey) ? "PATCH" : "POST";
+    //         const surveyType = document.getElementById("survey-type")?.value || "normal";
+    //         const isShare = document.querySelector('#isPublic').checked;
+    //         console.log("surveyType:" + surveyType);
+    //         //fixme payload수정함 이거  dto에서 받아야함.
+    //
+    //         const payload = {
+    //             title: titleInput.value,
+    //             description,
+    //             questions,
+    //             startDate,
+    //             endDate,
+    //             surveyType: surveyType,
+    //             ...(survey && {surveyId: survey.surveyId}), // surveyId가 존재할 때만 id 추가
+    //             folderId,
+    //             isShare
+    //         };
+    //         if (method === "POST") {
+    //             await api.postJson(url, payload);
+    //         } else if (method === "PATCH") {
+    //             await api.patchJson(url, payload);
+    //         } else if (method === "PUT") {
+    //             await api.putJson(url, payload);
+    //         } else {
+    //             await api._request(method, url, JSON.stringify(payload), {
+    //                 headers: {"Content-Type": "application/json"}
+    //             });
+    //         }
+    //
+    //         showToast("success", "설문조사가 저장되었습니다");
+    //         window.location.href = "/survey/list?folderId=" + folderId;
+    //     } catch (error) {
+    //         showToast("error", "저장 중 오류가 발생했습니다", true);
+    //     } finally {
+    //         saveButton.innerHTML = originalContent;
+    //         saveButton.disabled = false;
+    //     }
+    // }
 
 </script>
 <script id="change_template" type="module">

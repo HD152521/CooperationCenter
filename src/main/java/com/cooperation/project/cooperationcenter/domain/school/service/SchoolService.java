@@ -134,7 +134,7 @@ public class SchoolService {
         SchoolBoard board = schoolFindService.loadBoardById(request.boardId());
         SchoolBoard.BoardType type = board.getType();
         if(type == SchoolBoard.BoardType.NOTICE) return schoolFindService.loadPostPageByBoardByDto(board,pageable);
-        else return schoolFindService.loadFilePostPageByBoardByDto(board,pageable);
+        else return schoolFindService.getFilePostPageByBoardByDto(board,pageable);
     }
 
     @Transactional

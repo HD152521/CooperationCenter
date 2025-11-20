@@ -86,7 +86,7 @@ public class SchoolResponse {
         }
     }
 
-    public record PostResponseDTo(
+    public record PostResponseDto(
             Page<SchoolPostDto> notices,
             Page<SchoolPostDto> normals
     ){}
@@ -127,8 +127,13 @@ public class SchoolResponse {
                         .collect(Collectors.toList());
             }
 
+
             public static Page<SchoolPostDto> fromPostPage(Page<SchoolPost> posts){
                 return posts.map(SchoolPostDto::from);
+            }
+
+            public static List<SchoolPostDto> fromFilePost(List<FilePost> filePosts){
+                return filePosts.stream().map(SchoolPostDto::from).toList();
             }
 
             public static SchoolPostDto from(FilePost post){

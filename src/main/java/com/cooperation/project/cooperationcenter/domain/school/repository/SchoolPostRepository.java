@@ -1,5 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.school.repository;
 
+import com.cooperation.project.cooperationcenter.domain.school.dto.PostStatus;
+import com.cooperation.project.cooperationcenter.domain.school.dto.PostType;
 import com.cooperation.project.cooperationcenter.domain.school.model.SchoolBoard;
 import com.cooperation.project.cooperationcenter.domain.school.model.SchoolPost;
 import org.springframework.data.domain.Page;
@@ -34,6 +36,26 @@ public interface SchoolPostRepository extends JpaRepository<SchoolPost,Long> {
 """)
     Page<SchoolPost> findPostsByBoardOrderByNoticeFirst(
             @Param("boardId") Long boardId,
+            Pageable pageable,
+            String keyword
+    );
+
+    @Query("""
+    select p
+    from SchoolPost p
+    where p.schoolBoard = :board
+      and p.type = :type
+      and p.status = :status
+      and (
+            (p.postTitle) like (concat('%', :keyword, '%'))
+         or (p.content)   like (concat('%', :keyword, '%'))
+      )
+""")
+    List<SchoolPost> searchPosts(
+            @Param("board") SchoolBoard board,
+            @Param("type") PostType type,
+            @Param("status") PostStatus status,
+            @Param("keyword") String keyword,
             Pageable pageable
     );
 

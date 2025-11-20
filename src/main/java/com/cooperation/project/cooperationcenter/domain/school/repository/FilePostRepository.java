@@ -9,22 +9,23 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface FilePostRepository extends JpaRepository<FilePost,Long> {
     Optional<FilePost> findFilePostById(Long id);
     Page<FilePost> findFilePostBySchoolBoardAndStatus(SchoolBoard schoolBoard, Pageable pageable, PostStatus status);
+
     Page<FilePost> findFilePostBySchoolBoardAndStatusAndPostTitleContainingIgnoreCase(
             SchoolBoard schoolBoard,
             PostStatus status,
             String keyword,
             Pageable pageable
     );
-    Page<FilePost> findFilePostBySchoolBoardAndStatusAndPostTitleContainingIgnoreCaseAndType(
+    List<FilePost> findFilePostBySchoolBoardAndStatusAndPostTitleContainingIgnoreCaseAndType(
             SchoolBoard schoolBoard,
             PostStatus status,
             String keyword,
-            Pageable pageable,
             PostType type
     );
 

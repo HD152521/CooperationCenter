@@ -1,14 +1,17 @@
 package com.cooperation.project.cooperationcenter.domain.school.handler;
 
+import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolResponse;
 import com.cooperation.project.cooperationcenter.domain.school.model.SchoolBoard;
 import com.cooperation.project.cooperationcenter.domain.school.service.SchoolFindService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class FilesBoardViewHandler implements BoardViewHandler{
 
 
@@ -29,15 +32,12 @@ public class FilesBoardViewHandler implements BoardViewHandler{
 
         model.addAttribute(
                 "filePostDto",
-                schoolFindService.loadFilePostPageByBoardByDto(board, pageable)
+                schoolFindService.getFilePostPageByBoardByDto(board,pageable,keyword)
         );
 
-        //fixme
-//        model.addAttribute(
-//                "filePostDto",
-//                schoolFindService.loadFilePostPageByBoardByDtoByKeyword(board, pageable,keyword)
-//        );
-
+//        //fixme
+//        log.info("BoardResponse : {}",dto.toString());
+//        model.addAttribute("filePostDto",dto);
         return schoolPath + "school-board";
     }
 
