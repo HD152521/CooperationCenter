@@ -92,7 +92,7 @@
             <p class="text-gray-600 mt-2">
                 유학원 서비스 이용을 위한 회원가입 양식입니다. </p>
         </div>
-        <form id="signupForm" action="/api/v1/member/signup" method="POST" class="space-y-8">
+        <form id="signupForm" method="POST" class="space-y-8">
 
             <!-- 대표자 정보 섹션 -->
             <h2 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">사용자 정보 </h2>
@@ -575,40 +575,61 @@
     </script>
 
     <script id="checkAgencySignup">
-        document.addEventListener("DOMContentLoaded", function () {
+            document.addEventListener("DOMContentLoaded", function () {
             const buttons = document.querySelectorAll("[data-agency-mode]");
             const existingSection = document.getElementById("agency-existing-section");
             const newSection = document.getElementById("agency-new-section");
 
-            function setActive(mode) {
-                buttons.forEach(btn => {
-                    const isActive = btn.dataset.agencyMode === mode;
-                    if (isActive) {
-                        btn.classList.remove("text-gray-500", "bg-gray-50");
-                        btn.classList.add("text-blue-600", "bg-white");
-                    } else {
-                        btn.classList.remove("text-blue-600", "bg-white");
-                        btn.classList.add("text-gray-500", "bg-gray-50");
-                    }
-                });
+            let currentMode = "existing";
+            window.currentMode = currentMode;
 
-                if (mode === "existing") {
-                    existingSection.classList.remove("hidden");
-                    newSection.classList.add("hidden");
-                } else {
-                    existingSection.classList.add("hidden");
-                    newSection.classList.remove("hidden");
-                }
-            }
+            // 섹션 안의 input/select/textarea를 활성/비활성
+            function setSectionEnabled(section, enabled) {
+            if (!section) return;
+            const fields = section.querySelectorAll("input, select, textarea");
+            fields.forEach(el => {
+            el.disabled = !enabled; // disabled면 required 검사에서 빠짐
+        });
+        }
+
+            function setActive(mode) {
+            currentMode = mode;
+            window.currentMode = mode; // 모드 바뀔 때 전역도 같이 업데이트
+
+            buttons.forEach(btn => {
+            const isActive = btn.dataset.agencyMode === mode;
+            if (isActive) {
+            btn.classList.remove("text-gray-500", "bg-gray-50");
+            btn.classList.add("text-blue-600", "bg-white");
+        } else {
+            btn.classList.remove("text-blue-600", "bg-white");
+            btn.classList.add("text-gray-500", "bg-gray-50");
+        }
+        });
+
+            if (mode === "existing") {
+            existingSection.classList.remove("hidden");
+            newSection.classList.add("hidden");
+
+            setSectionEnabled(existingSection, true);
+            setSectionEnabled(newSection, false);
+        } else {
+            existingSection.classList.add("hidden");
+            newSection.classList.remove("hidden");
+
+            setSectionEnabled(existingSection, false);
+            setSectionEnabled(newSection, true);
+        }
+        }
 
             // 기본값: 기존 유학원 가입
             setActive("existing");
 
             buttons.forEach(btn => {
-                btn.addEventListener("click", () => {
-                    setActive(btn.dataset.agencyMode);
-                });
-            });
+            btn.addEventListener("click", () => {
+            setActive(btn.dataset.agencyMode);
+        });
+        });
         });
     </script>
 
@@ -618,6 +639,8 @@
         const cancelButton = document.getElementById("cancelButton");
         // 아이디 중복 확인
         let isUsernameChecked = false;
+        let isExistingAgency = window.currentMode === "existing";
+        const signupUrl = "/member/signup";
 
         document
             .getElementById("checkUsername")
@@ -685,16 +708,20 @@
             }
 
             // 필수 입력 필드 검사
-            const requiredFields = form.querySelectorAll("[required]");
+            const requiredFields = form.querySelectorAll("[required]:not(:disabled)");
             let isValid = true;
             requiredFields.forEach((field) => {
                 if (!field.value) {
                     isValid = false;
                     field.classList.add("border-red-500");
+                    console.log(field);
                 } else {
                     field.classList.remove("border-red-500");
                 }
             });
+
+            console.log("필수 필드 검색:"+isValid);
+
             // 비밀번호 일치 확인
             const password = document.getElementById("password").value;
             const confirmPassword = document.getElementById("confirmPassword").value;
@@ -727,7 +754,7 @@
                 modal.querySelector("button").onclick = () => modal.remove();
                 return;
             }
-            console.log(isValid);
+            console.log("valid:"+ isValid);
 
             if (isValid) {
                 try {
@@ -736,8 +763,7 @@
                         '<i class="ri-loader-4-line animate-spin mr-2"></i> 처리 중...';
                     console.log("Submit버튼 변환");
 
-
-                    const jsonData = {
+                    const memberData = {
                         memberName: form.name.value,
                         email: form.email.value,
                         password: form.password.value,
@@ -745,41 +771,46 @@
                         phoneNumber: form.mobile.value,
                         address1: form.address1.value,
                         address2: form.address2.value,
-                        agencyName: form.agencyName.value,
-                        agencyAddress1: form.agencyAddress1.value,
-                        agencyAddress2: form.agencyAddress2.value,
-                        agencyPhone: form.agencyPhone.value,
                         birth: form.birthDate.value,
-                        agencyOwner: form.owner.value,
-                        agencyRegion: form.agencyRegion.value,
-                        agencyEmail: form.agencyEmail.value
+                        isExistingAgency: isExistingAgency
                     };
+
+                    let agencyData = {};
+                    if(isExistingAgency){
+                        //이미 있던 유학원일 경우
+                        agencyData = {
+                            agencyName :form.checkAgencyName.value,
+                            agencyEmail : form.checkOwnerEmail.value
+                        };
+                    }else{
+                        agencyData = {
+                            agencyName: form.agencyName.value,
+                            agencyAddress1: form.agencyAddress1.value,
+                            agencyAddress2: form.agencyAddress2.value,
+                            agencyPhone: form.agencyPhone.value,
+                            agencyOwner: form.owner.value,
+                            agencyRegion: form.agencyRegion.value,
+                            agencyEmail: form.agencyEmail.value
+                        };
+                    }
 
                     //데이터 수집
                     const formData = new FormData();
-                    formData.append('data', JSON.stringify(jsonData));
-                    // 파일 업로드
-                    const agencyImage = form.agencyImage.files[0];
-                    if (agencyImage) formData.append('agencyPicture', agencyImage);
+                    formData.append('memberData', JSON.stringify(memberData));
+                    formData.append('agencyData', JSON.stringify(agencyData));
 
-                    const businessLicense = form.businessLicense.files[0];
-                    if (businessLicense) formData.append('businessCertificate', businessLicense);
+                    if(!isExistingAgency){
+                        const agencyImage = form.agencyImage.files[0];
+                        if (agencyImage) formData.append('agencyPicture', agencyImage);
 
-                    //data check
-                    for (let [key, value] of formData.entries()) {
-                        console.log(key, value);
+                        const businessLicense = form.businessLicense.files[0];
+                        if (businessLicense) formData.append('businessCertificate', businessLicense);
                     }
-                    console.log("input element:", form.agencyImage); // <input> 태그 존재 여부
-                    console.log("파일 선택 여부:", form.agencyImage.files[0]);
-                    console.log("input element:", form.businessLicense); // <input> 태그 존재 여부
-                    console.log("파일 선택 여부:", form.businessLicense.files[0]);
 
-
-                    console.log("🔍 요청 시작: POST", form.action);
-                    await api.postMultipart(form.action, formData);
-                    console.log("✅ 가입 요청 성공");
+                    await api.postMultipart(signupUrl, formData);
 
                     const modal = document.createElement("div");
+
                     modal.className =
                         "fixed inset-0 flex items-center justify-center z-50";
                     modal.innerHTML = `
@@ -933,7 +964,7 @@
 
             try {
                 // /agency/region 호출
-                const res = await window.api.get("/api/v1/agency/region");
+                const res = await window.api.get("/agency/region");
                 console.log("region api result:", res);
 
                 const regions =

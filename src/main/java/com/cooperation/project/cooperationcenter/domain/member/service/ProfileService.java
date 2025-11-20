@@ -46,16 +46,17 @@ public class ProfileService {
 
     public Profile.ProfileDto getProfileDto(MemberDetails memberDetails, Pageable pageable){
         Member member = getMember(memberDetails.getUsername());
+        Agency agency = member.getAgency();
         log.info("memberName:{}",memberDetails.getUsername());
-        log.info("member File:{}",member.getBusinessCertificate().toString());
+        log.info("member File:{}",agency.getBusinessPicture().toString());
 
         Page<SurveyLog> logs = surveyFindService.getSurveyLogs(member,pageable);
 
         return new Profile.ProfileDto(
                 Profile.MemberDto.from(member),
                 Profile.SurveyDto.from(logs),
-                Profile.MemberFileDto.from(member.getBusinessCertificate()),
-                Profile.MemberFileDto.from(member.getAgencyPicture()));
+                Profile.MemberFileDto.from(agency.getBusinessPicture()),
+                Profile.MemberFileDto.from(agency.getAgencyPicture()));
     }
 
 
@@ -72,30 +73,27 @@ public class ProfileService {
         Member member = getMember(memberDetails.getUsername());
         Agency agency = member.getAgency();
 
-        member.updateAgency(request);
         agency.updateAgency(request);
-
-        memberRepository.save(member);
         agencyRepository.save(agency);
     }
 
     @Transactional
     public void updateBussinessCert(MultipartFile file,MemberDetails memberDetails){
         Member member = getMember(memberDetails.getUsername());
+        Agency agency = member.getAgency();
 
         // 옛 엔티티를 건드리지 않음 (프록시 초기화 금지)
         String uuid = UUID.randomUUID().toString();
         FileAttachment fresh = fileService.saveFile(new FileAttachmentDto(file, "member", null, uuid, null));
 
-        FileAttachment old = member.getBusinessCertificate();
+        FileAttachment old = agency.getBusinessPicture();
         String oldFileId = old.getFileId();
         FileTargetType oldType = old.getFiletype();
 
-        member.updateBusinessCert(fresh);
-        memberRepository.saveAndFlush(member);  // FK 교체 먼저 확정
+        agency.updateBusinessCertificate(fresh);
+        agencyRepository.saveAndFlush(agency);  // FK 교체 먼저 확정
 
         fileService.deleteFileById(oldFileId,oldType);
-
     }
 
     @Transactional
@@ -103,26 +101,16 @@ public class ProfileService {
         Member member = getMember(memberDetails.getUsername());
         Agency agency = member.getAgency();
 
-        FileAttachment old = member.getAgencyPicture();
+        FileAttachment old = agency.getAgencyPicture();
         String oldFileId = old.getFileId();
         FileTargetType oldType = old.getFiletype();
 
         String uuid = UUID.randomUUID().toString();
         FileAttachment newMemberFile = fileService.saveFile(new FileAttachmentDto(file,"member",null,uuid,null));
-        member.updateAgencyPicture(newMemberFile);
         agency.updateAgencyPicture(newMemberFile);
-
-        memberRepository.saveAndFlush(member);
         agencyRepository.saveAndFlush(agency);
 
         fileService.deleteFileById(oldFileId,oldType);
-    }
-
-    private boolean isAttachmentStillUsed(FileAttachment file) {
-        long cnt = memberRepository.countByBusinessCertificate(file)
-                + memberRepository.countByAgencyPicture(file)
-                + agencyRepository.countByAgencyPicture(file);
-        return cnt > 0;
     }
 
     private void requireFile(MultipartFile file) {

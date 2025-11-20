@@ -1,5 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.member.dto;
 
+import com.cooperation.project.cooperationcenter.domain.agency.model.Agency;
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.global.token.vo.TokenResponse;
@@ -99,7 +100,8 @@ public class MemberResponse {
             String businessCertificationType
     ){
         public static DetailDto from(Member member){
-            FileAttachment file = member.getBusinessCertificate();
+            Agency agency = member.getAgency();
+            FileAttachment file = agency.getBusinessPicture();
             String type=null;
             String url = "/api/v1/file/";
             String viewUrl = "/api/v1/file/";
@@ -108,10 +110,10 @@ public class MemberResponse {
                 if(type.equals(FileAttachment.ContentType.IMG.getType())) viewUrl+="img/";
                 else if(type.equals(FileAttachment.ContentType.FILE.getType())) viewUrl+="pdf/";
             }
-            url+="member/"+member.getBusinessCertificate().getFileId();
-            viewUrl+="member/"+member.getBusinessCertificate().getFileId();
+            url+="member/"+agency.getBusinessPicture().getFileId();
+            viewUrl+="member/"+agency.getBusinessPicture().getFileId();
             return new DetailDto(
-                    member.getAgencyName(),
+                    agency.getAgencyName(),
                     member.getEmail(),
                     null,
                     member.getCreatedAt(),
@@ -120,8 +122,8 @@ public class MemberResponse {
                     member.getAddress1(),
                     viewUrl,
                     url,
-                    member.getAgencyPhone(),
-                    member.getAgencyAddress1(),
+                    agency.getAgencyPhone(),
+                    agency.getAgencyAddress1(),
                     type
             );
         }

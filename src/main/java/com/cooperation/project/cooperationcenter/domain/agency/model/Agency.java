@@ -2,15 +2,20 @@ package com.cooperation.project.cooperationcenter.domain.agency.model;
 
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.member.dto.AgencyRegion;
+import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
 import com.cooperation.project.cooperationcenter.domain.member.dto.Profile;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
+import com.cooperation.project.cooperationcenter.domain.student.model.Student;
 import com.cooperation.project.cooperationcenter.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,33 +39,49 @@ public class Agency extends BaseEntity {
     @NotNull private String agencyOwner;
     @NotNull private AgencyRegion agencyRegion;
     @NotNull private String agencyEmail;
+    @NotNull boolean share;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "agency_picture_id")
     private FileAttachment agencyPicture;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "business_picture_id")
+    private FileAttachment businessPicture;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @OneToMany(mappedBy = "agency")
+    private List<Student> students = new ArrayList<>();
 
     public void updateAgencyPicture(FileAttachment file){
         this.agencyPicture = file;
     }
+    public void updateBusinessCertificate(FileAttachment file) {this.businessPicture = file;}
+    public void updateFiles(FileAttachment agencyPicture,FileAttachment businessCertificate){
+        this.agencyPicture = agencyPicture;
+        this.businessPicture = businessCertificate;
+    }
 
-    public static Agency fromMember(
-            Member member
+    public void setShare(){
+        this.share = !this.share;
+    }
+
+    public static Agency fromDto(
+            MemberRequest.SignupNewAgencyDto dto
     ) {
-        FileAttachment file = (member.getAgencyPicture()!=null)?member.getAgencyPicture():null;
+        AgencyRegion region = AgencyRegion.fromLabel(dto.agencyRegion());
         return Agency.builder()
-                .agencyName(member.getAgencyName())
-                .agencyAddress1(member.getAgencyAddress1())
-                .agencyAddress2(member.getAgencyAddress2())
-                .agencyPicture(file)
-                .agencyPhone(member.getAgencyPhone())
-                .agencyOwner(member.getAgencyOwner())
-                .member(member)
-                .agencyRegion(member.getAgencyRegion())
-                .agencyEmail(member.getAgencyEmail())
+                .agencyName(dto.agencyName())
+                .agencyAddress1(dto.agencyAddress1())
+                .agencyAddress2(dto.agencyAddress2())
+                .agencyPhone(dto.agencyPhone())
+                .agencyOwner(dto.agencyOwner())
+                .agencyRegion(region)
+                .agencyEmail(dto.agencyEmail())
+                .share(false)
                 .build();
     }
 

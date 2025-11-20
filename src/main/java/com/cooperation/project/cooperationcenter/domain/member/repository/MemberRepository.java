@@ -22,8 +22,6 @@ public interface MemberRepository extends JpaRepository<Member,Long>,MemberRepos
     long count();
     long countByStatus(UserStatus status);
     long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
-    long countByBusinessCertificate(FileAttachment file);
-    long countByAgencyPicture(FileAttachment file);
 
     long countByApprovedDateGreaterThanEqualAndApprovedDateLessThan(LocalDate start,LocalDate end);
 

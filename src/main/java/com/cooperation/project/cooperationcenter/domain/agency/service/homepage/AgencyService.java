@@ -44,7 +44,7 @@ public class AgencyService {
     }
 
     public List<AgencyResponse.ListDto> getAgencyListForHome(){
-        List<Agency> agencies = getAgencyAll();
+        List<Agency> agencies = getAgencyShare();
         if(agencies==null){
             log.info("null임");
         }
@@ -66,9 +66,18 @@ public class AgencyService {
         }
     }
 
+    public List<Agency> getAgencyShare() {
+        try {
+            return agencyRepository.findAgenciesByShare(true);
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
     public Page<Agency> getAgencyAllByPage(Pageable pageable) {
         try {
-            Page<Agency> originalPage = agencyRepository.findAll(pageable);
+            Page<Agency> originalPage = agencyRepository.findAgenciesByShare(true,pageable);
 
             // 조건에 맞는 항목만 필터링
             List<Agency> filtered = originalPage

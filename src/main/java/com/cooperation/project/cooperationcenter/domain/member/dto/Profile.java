@@ -1,5 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.member.dto;
 
+import com.cooperation.project.cooperationcenter.domain.agency.model.Agency;
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.survey.model.Survey;
@@ -35,6 +36,7 @@ public class Profile{
             String agencyAddress2
     ){
         public static MemberDto from(Member member){
+            Agency agency = member.getAgency();
             return new MemberDto(
                     member.getMemberName(),
                     member.getBirth(),
@@ -43,13 +45,13 @@ public class Profile{
                     member.getPhoneNumber(),
                     member.getAddress1(),
                     member.getAddress2(),
-                    member.getAgencyOwner(),
-                    member.getAgencyName(),
-                    member.getAgencyPhone(),
-                    member.getAgencyRegion().getLabel(),
-                    member.getAgencyEmail(),
-                    member.getAgencyAddress1(),
-                    member.getAgencyAddress2()
+                    agency.getAgencyOwner(),
+                    agency.getAgencyName(),
+                    agency.getAgencyPhone(),
+                    agency.getAgencyRegion().getLabel(),
+                    agency.getAgencyEmail(),
+                    agency.getAgencyAddress1(),
+                    agency.getAgencyAddress2()
             );
         }
     }

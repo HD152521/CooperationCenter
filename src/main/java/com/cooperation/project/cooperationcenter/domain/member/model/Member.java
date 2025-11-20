@@ -44,23 +44,7 @@ public class Member extends BaseEntity {
     @NotNull private String address1;
     @NotNull private String address2;
     @NotNull private LocalDate birth;
-//    @Column(nullable = true) private LocalDate birth;
-
-    @NotNull private String agencyOwner;
-    @NotNull private String agencyName;
-    @NotNull private String agencyAddress1;
-    @NotNull private String agencyAddress2;
-    @NotNull private String agencyPhone;
-    @NotNull private AgencyRegion agencyRegion;
-    @NotNull private String agencyEmail;
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "agency_picture_id")
-    private FileAttachment agencyPicture;
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "business_certificate_id")
-    private FileAttachment businessCertificate;
+    @NotNull private boolean existingAgency;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "agency_id")
@@ -98,14 +82,6 @@ public class Member extends BaseEntity {
         return (this.status.equals(UserStatus.APPROVED))||isApprovalSignup();
     }
 
-    public void updateBusinessCert(FileAttachment file){
-        this.businessCertificate = file;
-    }
-
-    public void updateAgencyPicture(FileAttachment file){
-        this.agencyPicture = file;
-    }
-
     public void updatePassword(String password){
         this.password = password;
     }
@@ -130,9 +106,8 @@ public class Member extends BaseEntity {
     }
 
     public static Member fromDto(
-            MemberRequest.SignupDto dto,
-            FileAttachment agencyPicture,
-            FileAttachment businessCertificate,
+            MemberRequest.SignupMemberDto dto,
+            Agency agency,
             String uuid
     ) {
         return Member.builder()
@@ -143,20 +118,12 @@ public class Member extends BaseEntity {
                 .phoneNumber(dto.phoneNumber())
                 .address1(dto.address1())
                 .address2(dto.address2())
-                .agencyName(dto.agencyName())
-                .agencyAddress1(dto.agencyAddress1())
-                .agencyAddress2(dto.agencyAddress2())
-                .agencyPicture(agencyPicture)
-                .businessCertificate(businessCertificate)
-                .agencyPhone(dto.agencyPhone())
                 .birth(LocalDate.parse(dto.birth()))
-                .agencyOwner(dto.agencyOwner())
-                .agencyEmail(dto.agencyEmail())
+                .agency(agency)
                 .memberId(uuid)
                 .role(Role.USER) // 기본값
                 .approvalSignup(false) // 가입 승인 대기 상태
                 .status(UserStatus.PENDING)
-                .agencyRegion(AgencyRegion.fromLabel(dto.agencyRegion()))
                 .build();
     }
 
@@ -169,16 +136,5 @@ public class Member extends BaseEntity {
         this.address1 = dto.address1();
         this.address2 = dto.address2();
     }
-
-    public void updateAgency(Profile.MemberDto dto){
-        this.agencyName = dto.agencyName();
-        this.agencyAddress1 = dto.agencyAddress1();
-        this.agencyAddress2 = dto.agencyAddress2();
-        this.agencyPhone = dto.agencyPhone();
-        this.agencyOwner = dto.agencyOwner();
-        this.agencyRegion = AgencyRegion.fromLabel(dto.agencyRegion());
-        this.agencyEmail = dto.agencyEmail();
-    }
-
 
 }

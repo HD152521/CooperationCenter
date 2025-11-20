@@ -97,6 +97,8 @@ public enum ErrorCode implements BaseCode {
     SURVEY_DATE_NOT_VALID(HttpStatus.BAD_REQUEST,"SURVEY-0000","지금 설문조사 입력 기간이 아닙니다."),
     SURVEY_NOT_SHARE(HttpStatus.BAD_REQUEST,"SURVEY-0001","해당 설문조사는 공개 전입니다."),
 
+    AGENCY_NOT_FOUND(HttpStatus.BAD_REQUEST,"AGENCY-0001","해당 유학원은 가입 되지 않은 상태입니다. 확인 후에 다시 가입해주세요"),
+    
     // 5xx : server error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SERVER-0000", "서버 에러");
 

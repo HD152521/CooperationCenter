@@ -1,8 +1,8 @@
 const surveyUrl = "/survey"
-const surveyAdminUrl = "/survey/admin"
+const surveyAdminUrl = "/admin/survey"
 
 const memberUrl = "/member"
-const memberAdminUrl = "/member/admin"
+const memberAdminUrl = "/admin/member"
 
 const profileUrl = "/profile"
 
