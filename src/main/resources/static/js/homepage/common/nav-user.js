@@ -26,7 +26,7 @@ document.addEventListener("turbo:load", () => {
 
     async function logoutListener() {
         try {
-            const response = await fetch("/member/logout", {
+            const response = await fetch("/api/v1/member/logout", {
                 method: "POST",
                 credentials: "include"
             });

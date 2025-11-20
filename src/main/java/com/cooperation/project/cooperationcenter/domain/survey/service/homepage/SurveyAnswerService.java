@@ -61,10 +61,17 @@ public class SurveyAnswerService {
         }
 
         Survey survey = surveyFindService.getSurveyFromId(requestDto.surveyId());
-        if(checkDate(survey)) throw new BaseException(ErrorCode.SURVEY_DATE_NOT_VALID);
+        if(!checkDate(survey)) throw new BaseException(ErrorCode.SURVEY_DATE_NOT_VALID);
         survey.setParticipantCount();
+        log.info("check survey date correct");
 
-        Member member = memberRepository.findMemberByEmail(memberDetails.getUsername()).get();
+
+        Member member = memberRepository.findMemberByEmail(memberDetails.getUsername()).orElseThrow(
+                () -> new BaseException(ErrorCode.MEMBER_NOT_FOUND)
+        );
+
+        log.info("find Member");
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime dateTime = LocalDateTime.parse(requestDto.startTime(), formatter);
 
