@@ -307,10 +307,13 @@
             const school = parts[1];
             const boardId = parts[3];
 
+            let url = `/school/${school}/board/${boardId}`;
+
             if (searchTerm) {
                 console.log("검색어:", searchTerm);
-                window.location.href = `/school/${school}/board/${boardId}?keyword=${encodeURIComponent(searchTerm)}`;
+                url += `?keyword=${encodeURIComponent(searchTerm)}`;
             }
+            window.location.href = url;
         }
     });
 </script>
