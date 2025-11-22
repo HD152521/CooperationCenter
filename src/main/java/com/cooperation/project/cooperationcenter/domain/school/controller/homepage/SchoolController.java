@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -27,11 +28,12 @@ public class SchoolController {
 
     @RequestMapping("/{school}/board/{boardId}")
     public String schoolBoard(@PathVariable String school, @PathVariable Long boardId, Model model,
-                              @ModelAttribute String keyword,
+                              @RequestParam(required = false) String keyword,
                               @PageableDefault(size = 9, sort = "createdAt", direction = Sort.Direction.DESC)
                               Pageable pageable){
         model.addAttribute("school",school);
         model.addAttribute("boardId",boardId);
+        log.info("keyword:{}",keyword);
         SchoolBoard schoolBoard = schoolFindService.loadBoardById(boardId);
         model.addAttribute("schoolLogo",schoolBoard.getSchool().getLogoUrl());
         return boardViewDispatcher.dispatch(schoolBoard, school, model, pageable,keyword);

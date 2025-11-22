@@ -8,6 +8,7 @@ import com.cooperation.project.cooperationcenter.domain.school.model.SchoolPost;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +23,14 @@ public interface FilePostRepository extends JpaRepository<FilePost,Long> {
             String keyword,
             Pageable pageable
     );
+
+    @Query("""
+    select f from FilePost f
+    where f.schoolBoard = :schoolBoard
+      and f.status = :status
+      and f.type = :type
+      and (:keyword is null or lower(f.postTitle) like lower(concat('%', :keyword, '%')))
+""")
     List<FilePost> findFilePostBySchoolBoardAndStatusAndPostTitleContainingIgnoreCaseAndType(
             SchoolBoard schoolBoard,
             PostStatus status,

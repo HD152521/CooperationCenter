@@ -99,7 +99,7 @@
             <div th:replace="~{fragments/member/userSignup :: userSignup}"></div>
 
             <!-- 유학원 정보 섹션 -->
-<!--            <h2 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">유학원 정보 </h2>-->
+            <!--            <h2 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">유학원 정보 </h2>-->
             <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-200">
                 <h2 class="text-xl font-semibold text-gray-800">
                     유학원 정보
@@ -130,8 +130,6 @@
             <div id="agency-new-section" class="hidden">
                 <div th:replace="~{fragments/member/agencySignup :: agencySignup}"></div>
             </div>
-
-
 
 
             <div class="space-y-3">
@@ -575,7 +573,7 @@
     </script>
 
     <script id="checkAgencySignup">
-            document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function () {
             const buttons = document.querySelectorAll("[data-agency-mode]");
             const existingSection = document.getElementById("agency-existing-section");
             const newSection = document.getElementById("agency-new-section");
@@ -585,51 +583,52 @@
 
             // 섹션 안의 input/select/textarea를 활성/비활성
             function setSectionEnabled(section, enabled) {
-            if (!section) return;
-            const fields = section.querySelectorAll("input, select, textarea");
-            fields.forEach(el => {
-            el.disabled = !enabled; // disabled면 required 검사에서 빠짐
-        });
-        }
+                console.log("section"+section);
+                if (!section) return;
+                const fields = section.querySelectorAll("input, select, textarea");
+                fields.forEach(el => {
+                    el.disabled = !enabled; // disabled면 required 검사에서 빠짐
+                });
+            }
 
             function setActive(mode) {
-            currentMode = mode;
-            window.currentMode = mode; // 모드 바뀔 때 전역도 같이 업데이트
+                currentMode = mode;
+                window.currentMode = mode; // 모드 바뀔 때 전역도 같이 업데이트
 
-            buttons.forEach(btn => {
-            const isActive = btn.dataset.agencyMode === mode;
-            if (isActive) {
-            btn.classList.remove("text-gray-500", "bg-gray-50");
-            btn.classList.add("text-blue-600", "bg-white");
-        } else {
-            btn.classList.remove("text-blue-600", "bg-white");
-            btn.classList.add("text-gray-500", "bg-gray-50");
-        }
-        });
+                buttons.forEach(btn => {
+                    const isActive = btn.dataset.agencyMode === mode;
+                    if (isActive) {
+                        btn.classList.remove("text-gray-500", "bg-gray-50");
+                        btn.classList.add("text-blue-600", "bg-white");
+                    } else {
+                        btn.classList.remove("text-blue-600", "bg-white");
+                        btn.classList.add("text-gray-500", "bg-gray-50");
+                    }
+                });
 
-            if (mode === "existing") {
-            existingSection.classList.remove("hidden");
-            newSection.classList.add("hidden");
+                if (mode === "existing") {
+                    existingSection.classList.remove("hidden");
+                    newSection.classList.add("hidden");
 
-            setSectionEnabled(existingSection, true);
-            setSectionEnabled(newSection, false);
-        } else {
-            existingSection.classList.add("hidden");
-            newSection.classList.remove("hidden");
+                    setSectionEnabled(existingSection, true);
+                    setSectionEnabled(newSection, false);
+                } else {
+                    existingSection.classList.add("hidden");
+                    newSection.classList.remove("hidden");
 
-            setSectionEnabled(existingSection, false);
-            setSectionEnabled(newSection, true);
-        }
-        }
+                    setSectionEnabled(existingSection, false);
+                    setSectionEnabled(newSection, true);
+                }
+            }
 
             // 기본값: 기존 유학원 가입
             setActive("existing");
 
             buttons.forEach(btn => {
-            btn.addEventListener("click", () => {
-            setActive(btn.dataset.agencyMode);
-        });
-        });
+                btn.addEventListener("click", () => {
+                    setActive(btn.dataset.agencyMode);
+                });
+            });
         });
     </script>
 
@@ -638,9 +637,8 @@
         const submitButton = document.getElementById("submitButton");
         const cancelButton = document.getElementById("cancelButton");
         // 아이디 중복 확인
-        let isUsernameChecked = false;
-        let isExistingAgency = window.currentMode === "existing";
         const signupUrl = "/member/signup";
+        let isUsernameChecked = false;
 
         document
             .getElementById("checkUsername")
@@ -701,6 +699,10 @@
         });
         // 폼 제출
         form.addEventListener("submit", async function (e) {
+
+            console.log("제출전:"+window.currentMode);
+            let isExistingAgency = window.currentMode === "existing";
+
             e.preventDefault();
             if (!isUsernameChecked) {
                 alert("아이디 중복 확인을 먼저 해주세요.");
@@ -720,7 +722,7 @@
                 }
             });
 
-            console.log("필수 필드 검색:"+isValid);
+            console.log("필수 필드 검색:" + isValid);
 
             // 비밀번호 일치 확인
             const password = document.getElementById("password").value;
@@ -754,7 +756,7 @@
                 modal.querySelector("button").onclick = () => modal.remove();
                 return;
             }
-            console.log("valid:"+ isValid);
+            console.log("valid:" + isValid);
 
             if (isValid) {
                 try {
@@ -776,13 +778,13 @@
                     };
 
                     let agencyData = {};
-                    if(isExistingAgency){
+                    if (isExistingAgency) {
                         //이미 있던 유학원일 경우
                         agencyData = {
-                            agencyName :form.checkAgencyName.value,
-                            agencyEmail : form.checkOwnerEmail.value
+                            agencyName: form.checkAgencyName.value,
+                            agencyEmail: form.checkOwnerEmail.value
                         };
-                    }else{
+                    } else {
                         agencyData = {
                             agencyName: form.agencyName.value,
                             agencyAddress1: form.agencyAddress1.value,
@@ -799,7 +801,7 @@
                     formData.append('memberData', JSON.stringify(memberData));
                     formData.append('agencyData', JSON.stringify(agencyData));
 
-                    if(!isExistingAgency){
+                    if (!isExistingAgency) {
                         const agencyImage = form.agencyImage.files[0];
                         if (agencyImage) formData.append('agencyPicture', agencyImage);
 

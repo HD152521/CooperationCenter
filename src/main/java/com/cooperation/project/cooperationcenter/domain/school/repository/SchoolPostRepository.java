@@ -47,16 +47,17 @@ public interface SchoolPostRepository extends JpaRepository<SchoolPost,Long> {
       and p.type = :type
       and p.status = :status
       and (
-            (p.postTitle) like (concat('%', :keyword, '%'))
-         or (p.content)   like (concat('%', :keyword, '%'))
+            :keyword is null
+         or :keyword = ''
+         or p.postTitle like concat('%', :keyword, '%')
+         or p.content   like concat('%', :keyword, '%')
       )
 """)
     List<SchoolPost> searchPosts(
             @Param("board") SchoolBoard board,
             @Param("type") PostType type,
             @Param("status") PostStatus status,
-            @Param("keyword") String keyword,
-            Pageable pageable
+            @Param("keyword") String keyword
     );
 
 

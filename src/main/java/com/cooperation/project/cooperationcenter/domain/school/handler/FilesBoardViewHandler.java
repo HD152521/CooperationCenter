@@ -30,14 +30,12 @@ public class FilesBoardViewHandler implements BoardViewHandler{
                          Pageable pageable,
                          String keyword) {
 
+        log.info("파일 양식 게시판 입장");
         model.addAttribute(
                 "filePostDto",
                 schoolFindService.getFilePostPageByBoardByDto(board,pageable,keyword)
         );
 
-//        //fixme
-//        log.info("BoardResponse : {}",dto.toString());
-//        model.addAttribute("filePostDto",dto);
         return schoolPath + "school-board";
     }
 

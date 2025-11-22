@@ -81,7 +81,6 @@ public class MemberService {
         if(request.isExistingAgency()){
             MemberRequest.SignupExistingAgencyDto agencyDto = MemberRequest.SignupExistingAgencyDto.from(agencyData);
             agency = checkAgency(agencyDto);
-
         }else{
             MemberRequest.SignupNewAgencyDto agencyDto = MemberRequest.SignupNewAgencyDto.from(agencyData);
             agency = makeAgency(agencyDto);
@@ -94,6 +93,7 @@ public class MemberService {
 
         Member member = Member.fromDto(request.withEncodedPassword(encodedPassword),agency,uuid);
         memberRepository.save(member);
+        agency.addMember(member);
     }
 
     private Agency checkAgency(MemberRequest.SignupExistingAgencyDto agencyDto){
@@ -162,7 +162,7 @@ public class MemberService {
         Cookie[] cookies = request.getCookies();
         String accessToken = jwtProvider.resolvAccesseToken(request);
         String refreshToken = jwtProvider.resolveRefreshToken(request);
-        memberCookieService.deleteCookie(response,TokenResponse.of(AccessToken.of(accessToken),RefreshToken.of(refreshToken)));
+        memberCookieService.deleteCookie(response);
         SecurityContextHolder.clearContext();
     }
 
@@ -280,7 +280,7 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
         member.accept();
         Agency agency = member.getAgency();
-        if(!member.isExistingAgency() && !agency.isShare()) {
+        if(!agency.isShare()) {
             agency.setShare();
             agencyRepository.save(agency);
             member.setAgency(agency);
@@ -294,10 +294,10 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
         member.pending();
         Agency agency = member.getAgency();
-        if(!member.isExistingAgency() && agency.isShare()){
+        agency.removeMember(member);
+        if(agency.getMember().isEmpty() && agency.isShare()){
             agency.setShare();
             agencyRepository.save(agency);
-            member.setAgency(agency);
         }
         memberRepository.save(member);
     }

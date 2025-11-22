@@ -187,7 +187,7 @@ public class SchoolFindService {
             return filePostRepository.findFilePostBySchoolBoardAndStatusAndPostTitleContainingIgnoreCaseAndType(board, PostStatus.PUBLISHED,keyword, PostType.NOTICE);
         }catch(Exception e){
             log.warn(e.getMessage());
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -196,7 +196,7 @@ public class SchoolFindService {
             return filePostRepository.findFilePostBySchoolBoardAndStatusAndPostTitleContainingIgnoreCaseAndType(board, PostStatus.PUBLISHED,keyword,PostType.NORMAL);
         }catch(Exception e){
             log.warn(e.getMessage());
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -218,7 +218,7 @@ public class SchoolFindService {
         PostType type = PostType.NOTICE;
         PostStatus status = PostStatus.PUBLISHED;
         try{
-            return schoolPostRepository.searchPosts(board,type,status,keyword,pageable);
+            return schoolPostRepository.searchPosts(board,type,status,keyword);
         }catch (Exception e){
             log.warn(e.getMessage());
             return Collections.emptyList();
@@ -229,7 +229,7 @@ public class SchoolFindService {
         PostType type = PostType.NORMAL;
         PostStatus status = PostStatus.PUBLISHED;
         try{
-            return schoolPostRepository.searchPosts(board,type,status,keyword,pageable);
+            return schoolPostRepository.searchPosts(board,type,status,keyword);
         }catch (Exception e){
             log.warn(e.getMessage());
             return Collections.emptyList();
@@ -284,6 +284,7 @@ public class SchoolFindService {
             merged.addAll(normalFilePost);
 
             int total = merged.size();
+            log.info("find file post size : {}",total);
             return new PageImpl<>(merged,pageable,total);
 
         }catch(Exception e){

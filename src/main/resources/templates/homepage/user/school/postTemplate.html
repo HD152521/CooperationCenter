@@ -166,23 +166,6 @@
         </div>
     </div>
 </main>
-<!--<script id="filterDropdownScript" type="module">-->
-<!--    document.addEventListener("DOMContentLoaded", function () {-->
-<!--        const filterButton = document.getElementById("filterButton");-->
-<!--        const filterDropdown = document.getElementById("filterDropdown");-->
-<!--        filterButton.addEventListener("click", function () {-->
-<!--            filterDropdown.classList.toggle("hidden");-->
-<!--        });-->
-<!--        document.addEventListener("click", function (event) {-->
-<!--            if (-->
-<!--                !filterButton.contains(event.target) &&-->
-<!--                !filterDropdown.contains(event.target)-->
-<!--            ) {-->
-<!--                filterDropdown.classList.add("hidden");-->
-<!--            }-->
-<!--        });-->
-<!--    });-->
-<!--</script>-->
 <script id="postClickScript" type="module">
     const postRows = document.querySelectorAll(".post-row");
     postRows.forEach((row) => {
@@ -199,8 +182,15 @@
     searchInput?.addEventListener("keypress", function (e) {
         if (e.key === "Enter") {
             const searchTerm = this.value.trim();
+
+            const path = window.location.pathname;
+            const parts = path.split("/").filter(Boolean);
+            const school = parts[1];
+            const boardId = parts[3];
+
             if (searchTerm) {
                 console.log("검색어:", searchTerm);
+                window.location.href = `/school/${school}/board/${boardId}?keyword=${encodeURIComponent(searchTerm)}`;
             }
         }
     });

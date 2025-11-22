@@ -46,7 +46,7 @@ public class Member extends BaseEntity {
     @NotNull private LocalDate birth;
     @NotNull private boolean existingAgency;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agency_id")
     private Agency agency;
 
@@ -78,6 +78,8 @@ public class Member extends BaseEntity {
         this.approvedDate = null;
     }
 
+    public void setAgency(Agency agency){this.agency =agency;}
+
     public boolean isAccept(){
         return (this.status.equals(UserStatus.APPROVED))||isApprovalSignup();
     }
@@ -86,7 +88,7 @@ public class Member extends BaseEntity {
         this.password = password;
     }
 
-    public void setAgency(Agency agency){
+    public void addAgency(Agency agency){
         this.agency = agency;
     }
 

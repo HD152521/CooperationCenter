@@ -49,9 +49,8 @@ public class Agency extends BaseEntity {
     @JoinColumn(name = "business_picture_id")
     private FileAttachment businessPicture;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @OneToMany(mappedBy = "agency")
+    private List<Member> member = new ArrayList<>();
 
     @OneToMany(mappedBy = "agency")
     private List<Student> students = new ArrayList<>();
@@ -63,6 +62,14 @@ public class Agency extends BaseEntity {
     public void updateFiles(FileAttachment agencyPicture,FileAttachment businessCertificate){
         this.agencyPicture = agencyPicture;
         this.businessPicture = businessCertificate;
+    }
+
+    public void addMember(Member member){
+        this.member.add(member);
+    }
+
+    public void removeMember(Member member){
+        this.member.remove(member);
     }
 
     public void setShare(){

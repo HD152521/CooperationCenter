@@ -1,5 +1,6 @@
 package com.cooperation.project.cooperationcenter.global.filter;
 
+import com.cooperation.project.cooperationcenter.domain.member.service.MemberCookieService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
@@ -25,6 +26,7 @@ import java.io.IOException;
 public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
+    private final MemberCookieService memberCookieService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -46,7 +48,8 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
         //note 무시하는 endpoint들
         final String[] IGNORE_PATHS = {
-                "/css", "/js", "/plugins","/member/logout","/member/signup","/api/v1/member","/api/v1/admin","/api/v1/file/img","/admin/login", "/static/favicon.ico","/api/v1/tencent","/favicon.ico","/api/v1/agency"
+                "/css", "/js", "/plugins","/member/logout","/member/signup","/api/v1/member","api/v1/school",
+                "/api/v1/admin","/api/v1/file/img","/admin/login", "/static/favicon.ico","/api/v1/tencent","/favicon.ico","/api/v1/agency"
 //                ,"/member/login"
         };
 
@@ -67,12 +70,13 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        log.info(request.getRequestURI());
-        log.info("멤버 인증 시작!!");
+
         String token = jwtProvider.resolvAccesseToken(request);
         log.info("최종 token:{}",token);
+
         if(token!=null) {
             try {
+                log.info("token 검사");
                 jwtProvider.validateTokenOrThrow(token);
 
                 Authentication authentication = jwtProvider.getAuthentication(token);
@@ -82,6 +86,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
             } catch (ExpiredJwtException e) {
                 log.warn(e.getMessage());
                 log.warn("authentication에서 오류발생");
+                memberCookieService.deleteCookie(response);
                 response.sendRedirect("/member/login");
                 request.setAttribute("tokenExpired", true); // 포워드 시 전달용
             }

@@ -59,6 +59,8 @@ public class SecurityConfig {
                                 .requestMatchers("/school/**","/api/v1/file/school/**").permitAll()
                                 .requestMatchers("/check/**","/member/password/**","/api/v1/member/reset/**").permitAll()
                                 .requestMatchers("/api/v1/tencent/**","/api/v1/agency/region").permitAll()
+                                .requestMatchers("/api/v1/admin/login").permitAll()
+
 
 
                                 //note 로그인한 사용자
