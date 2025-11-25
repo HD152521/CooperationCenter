@@ -299,6 +299,7 @@
 <script id="searchScript" type="module">
     const searchInput = document.querySelector('input[type="search"]');
     searchInput?.addEventListener("keypress", function (e) {
+        console.log(e);
         if (e.key === "Enter") {
             const searchTerm = this.value.trim();
 

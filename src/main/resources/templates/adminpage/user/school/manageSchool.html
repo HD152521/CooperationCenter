@@ -64,6 +64,7 @@
     </style>
 </head>
 <body>
+<div th:replace="~{fragments/school/admin/modals.html :: modals}"></div>
 <div class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen text-gray-100">
     <div class="flex">
 
@@ -253,6 +254,15 @@
                                 </span>
                                 </div>
                                 <div class="flex items-center space-x-2">
+                                    <button class="px-3 py-1 bg-red-500 text-white text-sm rounded-button hover:bg-red-600 transition-colors whitespace-nowrap"
+                                            th:attr="data-school-id=${schoolPage.schoolDto.schoolId}, data-english-name=${schoolPage.schoolDto.englishName}">
+
+                                        <div class="w-4 h-4 inline-flex items-center justify-center mr-1">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </div>
+                                        삭제
+                                    </button>
+
                                     <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
                                             th:attr="data-school-id=${schoolPage.schoolDto.schoolId}, data-english-name=${schoolPage.schoolDto.englishName}"
                                             onclick="openAddCategoryModal(this)">

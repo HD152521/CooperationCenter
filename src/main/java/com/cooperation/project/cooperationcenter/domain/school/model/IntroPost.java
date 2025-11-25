@@ -25,16 +25,18 @@ public class IntroPost extends BaseEntity {
     private Long id;
 
     private String title;
-    @Lob
-    @Column(columnDefinition = "LONGTEXT") // 또는 "TEXT"
-    private String content;
-
 
     @OneToOne(mappedBy = "introPost") // 주인 아님
     private SchoolBoard schoolBoard;
 
     @OneToMany(mappedBy = "introPost")
-    private List<FileAttachment> files = new ArrayList<>();
+    private List<College> college;
+
+    @Lob
+    @Column(columnDefinition = "LONGTEXT") // 또는 "TEXT"
+    private String content;
+
+
 
     public void setBoard(SchoolBoard board){
         this.schoolBoard = board;
@@ -48,7 +50,6 @@ public class IntroPost extends BaseEntity {
         return IntroPost.builder()
                 .title(dto.title())
                 .content(dto.content())
-                .files(new ArrayList<>())
                 .build();
     }
 }
