@@ -61,6 +61,55 @@
             border-radius: 0.375rem;
             font-weight: 500;
         }
+
+        .dark-input {
+            width: 100%;
+            padding: 0.6rem 0.9rem;
+            border-radius: 9999px;
+            background-color: #111827;
+            border: 1px solid #374151;
+            color: #e5e7eb;
+            font-size: 0.875rem;
+            outline: none;
+            transition: all 0.15s ease-in-out;
+        }
+
+        .dark-input::placeholder {
+            color: #6b7280;
+        }
+
+        .dark-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59,130,246,0.35);
+            background-color: #020617;
+        }
+
+        .field-help {
+            margin-top: 0.25rem;
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.25rem;
+        }
+
+        .section-header-line {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #374151;
+        }
+
+        .section-helper {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
     </style>
 </head>
 <body>
@@ -73,792 +122,18 @@
         <aside th:replace="~{adminpage/common/leftSide :: leftSide}"></aside>
 
         <main class="flex-1 p-8">
-            <div id="board-list-view">
-                <header class="mb-8">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h1 class="text-3xl font-bold text-white">게시판 관리</h1>
-                            <p class="text-gray-400 mt-2">
-                                학교별 게시판을 관리하고 수정하세요 </p>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <select class="bg-gray-700 text-white px-4 py-2 rounded-lg border-none pr-8">
-                                <option>전체 학교</option>
-                                <option th:each="school : ${schoolDto}" th:value="${school.schoolDto.englishName}"
-                                        th:text="${school.schoolDto.englishName}">
-                                    학교 이름
-                                </option>
-                            </select>
-                            <button onclick="openAddBoardModal()"
-                                    class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
-                                <div class="w-4 h-4 inline-flex items-center justify-center mr-2">
-                                    <i class="ri-add-line"></i>
-                                </div>
-                                새 게시판 추가
-                            </button>
-                        </div>
+            <div th:replace="~{fragments/school/admin/board-list.html :: boardList(schoolDto=${schoolDto})}"></div>
 
-                        <div id="addCategoryModal"
-                             class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-                            <div class="bg-gray-800 rounded-xl p-6 w-[480px] shadow-2xl">
-                                <div class="flex items-center justify-between mb-6">
-                                    <h3 class="text-xl font-bold text-white">
-                                        새 카테고리 추가 </h3>
-                                    <button onclick="closeAddCategoryModal()"
-                                            class="text-gray-400 hover:text-white transition-colors">
-                                        <div class="w-6 h-6 flex items-center justify-center">
-                                            <i class="ri-close-line"></i>
-                                        </div>
-                                    </button>
-                                </div>
-                                <div class="space-y-4">
-                                    <div>
-                                        <label for="boardTitle" class="block text-sm font-medium text-gray-300 mb-2">카테고리
-                                            이름</label>
-                                        <input id="boardTitle" type="text"
-                                               class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
-                                               placeholder="카테고리 이름을 입력하세요"/>
-                                    </div>
-                                    <div>
-                                        <label for="boardDesc" class="block text-sm font-medium text-gray-300 mb-2">카테고리
-                                            설명</label>
-                                        <input id="boardDesc" type="text"
-                                               class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
-                                               placeholder="카테고리 이름을 입력하세요"/>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-300 mb-2">게시판 유형</label>
-                                        <div class="grid grid-cols-2 gap-4">
-                                            <label class="relative flex items-center justify-center p-4 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
-                                                <input type="radio" name="boardType" value="intro" class="sr-only" checked/>
-                                                <div class="flex flex-col items-center">
-                                                    <div class="w-8 h-8 flex items-center justify-center mb-2 text-primary">
-                                                        <i class="ri-file-text-line"></i>
-                                                    </div>
-                                                    <span class="text-white font-medium">소개형</span>
-                                                    <span class="text-xs text-gray-400 mt-1">단일 페이지 형태</span>
-                                                </div>
-                                                <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none"></div>
-                                            </label>
-                                            <label class="relative flex items-center justify-center p-4 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
-                                                <input type="radio" name="boardType" value="board" class="sr-only"/>
-                                                <div class="flex flex-col items-center">
-                                                    <div class="w-8 h-8 flex items-center justify-center mb-2 text-primary">
-                                                        <i class="ri-list-check"></i>
-                                                    </div>
-                                                    <span class="text-white font-medium">게시글형</span>
-                                                    <span class="text-xs text-gray-400 mt-1">다중 게시글 형태</span>
-                                                </div>
-                                                <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none"></div>
-                                            </label>
-                                            <label class="relative flex items-center justify-center p-4 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
-                                                <input type="radio" name="boardType" value="files" class="sr-only" checked/>
-                                                <div class="flex flex-col items-center">
-                                                    <div class="w-8 h-8 flex items-center justify-center mb-2 text-primary">
-                                                        <i class="ri-file-text-line"></i>
-                                                    </div>
-                                                    <span class="text-white font-medium">파일 목록형</span>
-                                                    <span class="text-xs text-gray-400 mt-1">파일 목록 형태</span>
-                                                </div>
-                                                <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none"></div>
-                                            </label>
-                                            <label class="relative flex items-center justify-center p-4 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
-                                                <input type="radio" name="boardType" value="schedule" class="sr-only"/>
-                                                <div class="flex flex-col items-center">
-                                                    <div class="w-8 h-8 flex items-center justify-center mb-2 text-primary">
-                                                        <i class="ri-calendar-check-line"></i>
-                                                    </div>
-                                                    <span class="text-white font-medium">스캐줄 게시판</span>
-                                                    <span class="text-xs text-gray-400 mt-1">일정 추가 형태</span>
-                                                </div>
-                                                <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none"></div>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex justify-end space-x-3 mt-6">
-                                    <button onclick="closeAddCategoryModal()"
-                                            class="px-4 py-2 bg-gray-700 text-white rounded-button hover:bg-gray-600 transition-colors whitespace-nowrap">
-                                        취소
-                                    </button>
-                                    <button onclick="submitAddCategory()"
-                                            class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
-                                        추가하기
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+            <div th:replace="~{fragments/school/admin/intro-editor :: introEditor()}"></div>
 
-                        <div id="addBoardModal"
-                             class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-                            <div class="bg-gray-800 rounded-xl p-6 w-[480px] shadow-2xl">
-                                <div class="flex items-center justify-between mb-6">
-                                    <h3 class="text-xl font-bold text-white">새 게시판 추가</h3>
-                                    <button onclick="closeAddBoardModal()"
-                                            class="text-gray-400 hover:text-white transition-colors">
-                                        <div class="w-6 h-6 flex items-center justify-center">
-                                            <i class="ri-close-line"></i>
-                                        </div>
-                                    </button>
-                                </div>
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-300 mb-2">학교 이름(한국어)</label>
-                                        <input type="text"
-                                               class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
-                                               placeholder="학교 이름을 입력하세요"/>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-300 mb-2">학교 이름(영어)</label>
-                                        <input type="text"
-                                               class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
-                                               placeholder="학교 이름을 입력하세요"/>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-300 mb-2">학교 로고 URL</label>
-                                        <input type="url"
-                                               class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
-                                               placeholder="로고 이미지 URL을 입력하세요"/>
-                                    </div>
-                                </div>
-                                <div class="flex justify-end space-x-3 mt-6">
-                                    <button onclick="closeAddBoardModal()"
-                                            class="px-4 py-2 bg-gray-700 text-white rounded-button hover:bg-gray-600 transition-colors whitespace-nowrap">
-                                        취소
-                                    </button>
-                                    <button onclick="saveNewBoard()"
-                                            class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
-                                        추가하기
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </header>
-                <div class="admin-card rounded-xl p-6">
-                    <div class="space-y-4">
-                        <div th:each="schoolPage : ${schoolDto}" class="tree-node">
-                            <div class="flex items-center justify-between p-4 bg-gray-700 rounded-lg cursor-pointer"
-                                 th:attr="data-english-name=${schoolPage.schoolDto.englishName}"
-                                 onclick="toggleSchool(this.dataset.englishName)">
-                                <div class="flex items-center">
-                                    <div class="w-5 h-5 flex items-center justify-center mr-3 text-primary">
-                                        <i class="ri-arrow-right-s-line tree-arrow"
-                                           th:id="${schoolPage.schoolDto.englishName + '-arrow'}"></i>
-                                    </div>
-                                    <h3 class="text-lg font-semibold text-white"
-                                        th:text="${schoolPage.schoolDto.koreanName}">학교 이름</h3>
-                                    <span class="ml-3 text-sm text-gray-400"
-                                          th:text="'(' + ${#lists.size(schoolPage.boardDtos)} + '개 게시판)'">
-                                    (0개 게시판)
-                                </span>
-                                </div>
-                                <div class="flex items-center space-x-2">
-                                    <button class="px-3 py-1 bg-red-500 text-white text-sm rounded-button hover:bg-red-600 transition-colors whitespace-nowrap"
-                                            th:attr="data-school-id=${schoolPage.schoolDto.schoolId}, data-english-name=${schoolPage.schoolDto.englishName}">
+            <div th:replace="~{fragments/school/admin/board-list-editor.html :: board-list-editor}"></div>
 
-                                        <div class="w-4 h-4 inline-flex items-center justify-center mr-1">
-                                            <i class="ri-delete-bin-line"></i>
-                                        </div>
-                                        삭제
-                                    </button>
+            <div th:replace="~{fragments/school/admin/schedule-list-editor.html :: schedule-list-editor}"></div>
 
-                                    <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                                            th:attr="data-school-id=${schoolPage.schoolDto.schoolId}, data-english-name=${schoolPage.schoolDto.englishName}"
-                                            onclick="openAddCategoryModal(this)">
-                                        <div class="w-4 h-4 inline-flex items-center justify-center mr-1">
-                                            <i class="ri-add-line"></i>
-                                        </div>
-                                        새 카테고리 추가
-                                    </button>
-                                </div>
-                            </div>
+            <div th:replace="~{fragments/school/admin/post-editor.html :: postEditor}"></div>
 
-                            <div class="tree-children ml-8" th:id="${schoolPage.schoolDto.englishName + '-children'}">
-                                <div class="space-y-3 mt-4">
-                                    <div class="bg-gray-800 rounded-lg p-4">
-                                        <div class="space-y-2">
-                                            <div class="flex items-center justify-between p-3 bg-gray-700 rounded-lg"
-                                                 th:each="board : ${schoolPage.boardDtos}"
-                                                 th:attr="data-board-id=${board.id}">
-                                                <div class="flex items-center">
-                                                    <div class="w-4 h-4 flex items-center justify-center mr-3">
-                                                        <i th:classappend="${board.boardType == 'INTRO'} ? 'ri-file-text-line' : 'ri-file-list-line'"
-                                                           class="text-gray-400"></i>
-                                                    </div>
-                                                    <span class="text-white" th:text="${board.boardTitle}">게시판 제목</span>
-                                                    <span class="board-type-tag ml-3" th:with="
-                                                        typeName=${board.boardType != null} ? ${board.boardType} : 'UNKNOWN',
-                                                        typeClass=${typeName == 'INTRO'}  ? ' bg-blue-500 bg-opacity-20 text-blue-400' :
-                                                                    (${typeName == 'NOTICE'} ? ' bg-green-500 bg-opacity-20 text-green-400' :
-                                                                    (${typeName == 'FILES'}  ? ' bg-yellow-500 bg-opacity-20 text-yellow-400' :
-                                                                    (${typeName == 'SCHEDULE'} ? ' bg-purple-500 bg-opacity-20 text-purple-400' :
-                                                                                                 ' bg-gray-500 bg-opacity-20 text-gray-400'))),
-                                                        typeText=${typeName == 'INTRO'}  ? '소개페이지' :
-                                                                   (${typeName == 'NOTICE'} ? '게시판형' :
-                                                                   (${typeName == 'FILES'}  ? '파일형' :
-                                                                   (${typeName == 'SCHEDULE'} ? '스케줄형' : '알 수 없음')))"
-                                                          th:classappend="${typeClass}" th:text="${typeText}">
-                                                  게시판 유형
-                                                </span>
-                                                </div>
-                                                <div class="flex space-x-2">
-                                                    <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                                                            th:if="${board.boardType == 'INTRO'}"
-                                                            th:attr="data-board-title=${board.boardTitle}"
-                                                            onclick="editIntroBoard(this.dataset.boardTitle)">
-                                                        수정
-                                                    </button>
+            <div th:replace="~{fragments/school/admin/file-post-editor.html :: filePostEditor}"></div>
 
-                                                    <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                                                            th:if="${board.boardType == 'NOTICE'}"
-                                                            th:attr="data-board-title=${board.boardTitle}, data-board-id=${board.id}, data-board-type=${board.boardType}"
-                                                            onclick="editBoardList(this.dataset.boardTitle, this.dataset.boardId, this.dataset.boardType)">
-                                                        수정
-                                                    </button>
-
-                                                    <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                                                            th:if="${board.boardType == 'FILES'}"
-                                                            th:attr="data-board-title=${board.boardTitle}, data-board-id=${board.id}, data-board-type=${board.boardType}"
-                                                            onclick="editBoardList(this.dataset.boardTitle, this.dataset.boardId, this.dataset.boardType)">
-                                                        수정
-                                                    </button>
-                                                    <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                                                            th:if="${board.boardType == 'SCHEDULE'}"
-                                                            th:attr="data-board-title=${board.boardTitle}, data-board-id=${board.id}, data-board-type=${board.boardType}"
-                                                            onclick="editScheduleList(this.dataset.boardTitle, this.dataset.boardId, this.dataset.boardType)">
-                                                        수정
-                                                    </button>
-                                                    <button class="px-3 py-1 bg-red-600 text-white text-sm rounded-button hover:bg-red-700 transition-colors whitespace-nowrap"
-                                                            th:attr="data-board-title=${board.boardTitle},data-board-id=${board.id()}"
-                                                            onclick="deleteBoard(this.dataset.boardTitle,this.dataset.boardId)">
-                                                        삭제
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="intro-board-editor" class="hidden">
-                <header class="mb-8">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <button onclick="showBoardList()"
-                                    class="mr-4 p-2 text-gray-400 hover:text-white transition-colors">
-                                <div class="w-5 h-5 flex items-center justify-center">
-                                    <i class="ri-arrow-left-line"></i>
-                                </div>
-                            </button>
-                            <div>
-                                <h1 class="text-3xl font-bold text-white" id="intro-board-title">
-                                    소개페이지 수정 </h1>
-                                <p class="text-gray-400 mt-2">
-                                    페이지 내용을 수정하고 저장하세요 </p>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <button onclick="showBoardList()"
-                                    class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
-                                취소
-                            </button>
-                            <button onclick="saveIntroBoard()"
-                                    class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
-                                저장하기
-                            </button>
-                        </div>
-                    </div>
-                </header>
-                <div id="editor-wrapper" class="admin-card rounded-xl overflow-hidden h-auto">
-                    <textarea id="school-intro-editor" name="content"></textarea>
-                </div>
-            </div>
-            <div id="board-list-editor" class="hidden">
-                <!--            게시글 목록 보여주기-->
-                <header class="mb-8">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <button onclick="showBoardList()"
-                                    class="mr-4 p-2 text-gray-400 hover:text-white transition-colors">
-                                <div class="w-5 h-5 flex items-center justify-center">
-                                    <i class="ri-arrow-left-line"></i>
-                                </div>
-                            </button>
-                            <div>
-                                <h1 class="text-3xl font-bold text-white" id="board-list-title"
-
-                                >
-                                    게시판 관리 </h1>
-                                <p class="text-gray-400 mt-2">게시글을 관리하고 수정하세요</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <button onclick="createNewPost()"
-                                    class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
-                                <div class="w-4 h-4 inline-flex items-center justify-center mr-2">
-                                    <i class="ri-add-line"></i>
-                                </div>
-                                새 게시글 작성
-                            </button>
-                        </div>
-                    </div>
-                </header>
-                <div class="admin-card rounded-xl p-6">
-                    <div class="mb-6">
-                        <div class="flex items-center justify-between">
-                            <h2 class="text-xl font-bold text-white">게시글 목록</h2>
-                            <div class="flex items-center space-x-4">
-                                <select class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8">
-                                    <option>전체</option>
-                                    <option>공지</option>
-                                    <option>일반</option>
-                                </select>
-                                <div class="relative">
-                                    <input type="text" placeholder="제목 검색..."
-                                           class="bg-gray-700 text-white px-4 py-2 pr-10 rounded-lg text-sm border-none"/>
-                                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 flex items-center justify-center">
-                                        <i class="ri-search-line text-gray-400"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                            <tr class="table-header text-left">
-                                <th class="p-3 text-sm font-medium text-gray-300">제목</th>
-                                <th class="p-3 text-sm font-medium text-gray-300">
-                                    작성자
-                                </th>
-                                <th class="p-3 text-sm font-medium text-gray-300">
-                                    작성일
-                                </th>
-                                <th class="p-3 text-sm font-medium text-gray-300">
-                                    조회수
-                                </th>
-                                <th class="p-3 text-sm font-medium text-gray-300">상태</th>
-                                <th class="p-3 text-sm font-medium text-gray-300">관리</th>
-                            </tr>
-                            </thead>
-                            <tbody id="post-table-body">
-
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="flex items-center justify-center mt-6">
-                        <div id="pagination" class="flex items-center space-x-2">
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- 스케줄 리스트 전용 뷰 -->
-            <div id="schedule-list-editor" class="hidden">
-                <!-- 헤더 -->
-                <header class="mb-8">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <button onclick="showBoardList()"
-                                    class="mr-4 p-2 text-gray-400 hover:text-white transition-colors">
-                                <div class="w-5 h-5 flex items-center justify-center">
-                                    <i class="ri-arrow-left-line"></i>
-                                </div>
-                            </button>
-                            <div>
-                                <h1 class="text-3xl font-bold text-white" id="schedule-list-title">
-                                    일정 관리 </h1>
-                                <p class="text-gray-400 mt-2">일정을 관리하고 수정하세요</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <button onclick="openAddScheduleModal()"
-                                    class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
-                                <div class="w-4 h-4 inline-flex items-center justify-center mr-2">
-                                    <i class="ri-add-line"></i>
-                                </div>
-                                새 일정 추가
-                            </button>
-                        </div>
-                    </div>
-                </header>
-
-                <div class="admin-card rounded-xl p-6">
-                    <!-- 필터 -->
-                    <div class="mb-6">
-                        <div class="flex items-center justify-between flex-col sm:flex-row gap-4">
-                            <h2 class="text-xl font-bold text-white">일정 목록</h2>
-
-                            <div class="flex items-center gap-3 flex-wrap">
-                                <!-- 타입 필터 -->
-                                <select id="schedule-type-filter"
-                                        class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8">
-                                    <option value="">전체 타입</option>
-                                    <option value="ACADEMIC">ACADEMIC</option>
-                                    <option value="ADMISSION">ADMISSION</option>
-                                    <option value="SCHOLARSHIP">SCHOLARSHIP</option>
-                                    <option value="DORMITORY">DORMITORY</option>
-                                    <option value="INTERNATIONAL">INTERNATIONAL</option>
-                                </select>
-
-                                <!-- 날짜 범위 -->
-                                <div class="flex items-center gap-2">
-                                    <input id="schedule-date-from" type="date"
-                                           class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none"/>
-                                    <span class="text-gray-400 text-sm">~</span>
-                                    <input id="schedule-date-to" type="date"
-                                           class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none"/>
-                                </div>
-
-                                <!-- 키워드 검색 -->
-                                <div class="relative">
-                                    <input id="schedule-search" type="text" placeholder="제목 검색..."
-                                           class="bg-gray-700 text-white px-4 py-2 pr-10 rounded-lg text-sm border-none"/>
-                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center">
-                                        <i class="ri-search-line text-gray-400"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                            <tr class="table-header text-left">
-                                <th class="p-3 text-sm font-medium text-gray-300">제목</th>
-                                <th class="p-3 text-sm font-medium text-gray-300">시작일</th>
-                                <th class="p-3 text-sm font-medium text-gray-300">종료일</th>
-                                <th class="p-3 text-sm font-medium text-gray-300">타입</th>
-                                <th class="p-3 text-sm font-medium text-gray-300">상태</th>
-                                <th class="p-3 text-sm font-medium text-gray-300">관리</th>
-                            </tr>
-                            </thead>
-                            <tbody id="schedule-table-body"></tbody>
-                        </table>
-                    </div>
-
-                    <!-- 페이지네이션 -->
-                    <div class="flex items-center justify-center mt-6">
-                        <div id="schedule-pagination" class="flex items-center space-x-2"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="post-editor" class="hidden">
-                <header class="mb-8">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <button onclick="showBoardListEditor()"
-                                    class="mr-4 p-2 text-gray-400 hover:text-white transition-colors">
-                                <div class="w-5 h-5 flex items-center justify-center">
-                                    <i class="ri-arrow-left-line"></i>
-                                </div>
-                            </button>
-                            <div>
-                                <h1 class="text-3xl font-bold text-white" id="post-editor-title">
-                                    게시글 수정 </h1>
-                                <p class="text-gray-400 mt-2">
-                                    게시글 내용을 수정하고 저장하세요 </p>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <button onclick="showBoardListEditor()"
-                                    class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
-                                취소
-                            </button>
-                            <button onclick="savePost('TEMPORARY')"
-                                    class="px-4 py-2 bg-gray-700 text-white rounded-button hover:bg-gray-600 transition-colors whitespace-nowrap">
-                                임시저장
-                            </button>
-                            <button onclick="savePost('PUBLISHED')"
-                                    class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
-                                게시하기
-                            </button>
-                        </div>
-                    </div>
-                </header>
-                <div class="admin-card rounded-xl p-6">
-                    <div class="space-y-6">
-                        <div class="grid grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-2">제목</label>
-                                <input type="text" value="2025학년도 1학기 학사일정 안내"
-                                       class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"/>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-2"
-                                >카테고리</label
-                                >
-                                <select
-                                        class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none pr-8"
-                                >
-                                    <option>일반</option>
-                                    <option>공지사항</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="grid gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-2">포스트 설명</label>
-                                <input type="text" value=""
-                                       class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"/>
-                            </div>
-
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2">내용</label>
-                            <textarea id="intro-editor" name="content"></textarea>
-                            <!--                        텍스트 내용 들어가야함-->
-                        </div>
-                        <div>
-                            <div class="space-y-3">
-                                <input type="file" name="q2" data-index="1" id="file-input-1" data-type="file"
-                                       accept=".pdf,.doc,.docx,.xls,.xlsx" class="file-input sr-only">
-                                <label for="file-input-1"
-                                       class="flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer hover:border-primary transition-colors bg-gray-700 text-gray-300">
-                                    <i class="ri-upload-2-line mr-2"></i>
-                                    <span class="">파일 선택 또는 드래그하여 업로드</span>
-                                </label>
-                                <div class="flex items-center gap-2 mt-2">
-                                    <div id="file-name-1" data-index="1"
-                                         class=" file-name mt-2 text-sm text-gray-500"></div>
-                                    <button type="button" id="clear-file-1"
-                                            class="text-red-500 hover:text-red-700 text-sm clear-btn hidden" data-index="1">
-                                        ✕
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="space-y-3">
-                                <input type="file" name="q2" id="file-input-2" data-index="2" data-type="file"
-                                       accept=".pdf,.doc,.docx,.xls,.xlsx" class="file-input sr-only">
-                                <label for="file-input-2"
-                                       class="flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer hover:border-primary transition-colors bg-gray-700 text-gray-300">
-                                    <i class="ri-upload-2-line mr-2"></i>
-                                    <span class="">파일 선택 또는 드래그하여 업로드</span>
-                                </label>
-                                <div class="flex items-center gap-2 mt-2">
-                                    <div id="file-name-2" data-index="2"
-                                         class=" file-name mt-2 text-sm text-gray-500"></div>
-                                    <button type="button" id="clear-file-2"
-                                            class="text-red-500 hover:text-red-700 text-sm clear-btn hidden" data-index="2">
-                                        ✕
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="space-y-3">
-                                <input type="file" name="q2" id="file-input-3" data-index="3" data-type="file"
-                                       accept=".pdf,.doc,.docx,.xls,.xlsx" class="file-input sr-only">
-                                <label for="file-input-3"
-                                       class="flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer hover:border-primary transition-colors bg-gray-700 text-gray-300">
-                                    <i class="ri-upload-2-line mr-2"></i>
-                                    <span class="">파일 선택 또는 드래그하여 업로드</span>
-                                </label>
-                                <div class="flex items-center gap-2 mt-2">
-                                    <div id="file-name-3" data-index="3"
-                                         class=" file-name mt-2 text-sm text-gray-500"></div>
-                                    <button type="button" id="clear-file-3"
-                                            class="text-red-500 hover:text-red-700 text-sm clear-btn hidden" data-index="3">
-                                        ✕
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="filePost-editor" class="hidden">
-                <header class="mb-8">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <button onclick="showBoardListEditor()"
-                                    class="mr-4 p-2 text-gray-400 hover:text-white transition-colors">
-                                <div class="w-5 h-5 flex items-center justify-center">
-                                    <i class="ri-arrow-left-line"></i>
-                                </div>
-                            </button>
-                            <div>
-                                <h1 class="text-3xl font-bold text-white" id="filePost-editor-title">
-                                    게시글 수정 </h1>
-                                <p class="text-gray-400 mt-2">
-                                    게시글 내용을 수정하고 저장하세요 </p>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-4">
-                            <button onclick="showBoardListEditor()"
-                                    class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
-                                취소
-                            </button>
-                            <button onclick="saveFilePost('TEMPORARY')"
-                                    class="px-4 py-2 bg-gray-700 text-white rounded-button hover:bg-gray-600 transition-colors whitespace-nowrap">
-                                임시저장
-                            </button>
-                            <button onclick="saveFilePost('PUBLISHED')"
-                                    class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
-                                게시하기
-                            </button>
-                        </div>
-                    </div>
-                </header>
-                <div class="admin-card rounded-xl p-6">
-                    <div class="space-y-6">
-                        <div class="grid grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-2">제목</label>
-                                <input type="text" value=""
-                                       class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"/>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-2"
-                                >카테고리</label
-                                >
-                                <select
-                                        class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none pr-8"
-                                >
-                                    <option>일반</option>
-                                    <option>공지사항</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="space-y-3">
-                                <input type="file" id="postFile-input" data-type="file" accept=".pdf,.doc,.docx,.xls,.xlsx"
-                                       class="file-input sr-only">
-                                <label for="postFile-input" id="postFile-label"
-                                       class="flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer hover:border-primary transition-colors bg-gray-700 text-gray-300">
-                                    <i class="ri-upload-2-line mr-2"></i>
-                                    <span class="">파일 선택 또는 드래그하여 업로드</span>
-                                </label>
-                                <div class="flex items-center gap-2 mt-2">
-                                    <div id="postFile-name" class=" file-name mt-2 text-sm text-gray-500"></div>
-                                    <button type="button" id="clear-postFile"
-                                            class="text-red-500 hover:text-red-700 text-sm hidden">✕
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="addScheduleModal"
-                 class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50"
-                 data-schedule-id="">
-                <div class="bg-gray-800 rounded-xl p-6 w-[560px] shadow-2xl">
-                    <!-- 헤더 -->
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-xl font-bold text-white">새 일정 추가</h3>
-                        <button class="text-gray-400 hover:text-white transition-colors" id="closeAddScheduleModalBtn"
-                                aria-label="닫기">
-                            <div class="w-6 h-6 flex items-center justify-center">
-                                <i class="ri-close-line"></i>
-                            </div>
-                        </button>
-                    </div>
-
-                    <!-- 폼 필드 -->
-                    <div class="space-y-4">
-                        <!-- 제목 -->
-                        <div>
-                            <label for="scheduleTitle" class="block text-sm font-medium text-gray-300 mb-2">
-                                제목
-                            </label>
-                            <input id="scheduleTitle" type="text"
-                                   class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
-                                   placeholder="일정 제목을 입력하세요"/>
-                        </div>
-
-                        <!-- 날짜 -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label for="scheduleStartDate" class="block text-sm font-medium text-gray-300 mb-2">
-                                    시작 날짜
-                                </label>
-                                <input id="scheduleStartDate" type="date"
-                                       class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"/>
-                            </div>
-                            <div>
-                                <label for="scheduleEndDate" class="block text-sm font-medium text-gray-300 mb-2">
-                                    끝 날짜
-                                </label>
-                                <input id="scheduleEndDate" type="date"
-                                       class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"/>
-                            </div>
-                        </div>
-
-                        <!-- 게시판 타입 (라디오) -->
-                        <div>
-                            <span class="block text-sm font-medium text-gray-300 mb-2">게시판 타입</span>
-                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                <!-- ACADEMIC -->
-                                <label class="relative flex items-center justify-center p-3 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
-                                    <input type="radio" name="scheduleType" value="ACADEMIC" class="sr-only peer" checked/>
-                                    <div class="flex items-center gap-2 text-white">
-                                        <i class="ri-graduation-cap-fill text-primary"></i>
-                                        <span class="text-sm">ACADEMIC</span>
-                                    </div>
-                                    <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 peer-checked:opacity-100"></div>
-                                </label>
-
-                                <!-- ADMISSION -->
-                                <label class="relative flex items-center justify-center p-3 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
-                                    <input type="radio" name="scheduleType" value="ADMISSION" class="sr-only peer"/>
-                                    <div class="flex items-center gap-2 text-white">
-                                        <i class="ri-door-open-line text-primary"></i>
-                                        <span class="text-sm">ADMISSION</span>
-                                    </div>
-                                    <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 peer-checked:opacity-100"></div>
-                                </label>
-
-                                <!-- SCHOLARSHIP -->
-                                <label class="relative flex items-center justify-center p-3 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
-                                    <input type="radio" name="scheduleType" value="SCHOLARSHIP" class="sr-only peer"/>
-                                    <div class="flex items-center gap-2 text-white">
-                                        <i class="ri-award-line text-primary"></i>
-                                        <span class="text-sm">SCHOLARSHIP</span>
-                                    </div>
-                                    <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 peer-checked:opacity-100"></div>
-                                </label>
-
-                                <!-- DORMITORY -->
-                                <label class="relative flex items-center justify-center p-3 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
-                                    <input type="radio" name="scheduleType" value="DORMITORY" class="sr-only peer"/>
-                                    <div class="flex items-center gap-2 text-white">
-                                        <i class="ri-home-4-line text-primary"></i>
-                                        <span class="text-sm">DORMITORY</span>
-                                    </div>
-                                    <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 peer-checked:opacity-100"></div>
-                                </label>
-
-                                <!-- INTERNATIONAL -->
-                                <label class="relative flex items-center justify-center p-3 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
-                                    <input type="radio" name="scheduleType" value="INTERNATIONAL" class="sr-only peer"/>
-                                    <div class="flex items-center gap-2 text-white">
-                                        <i class="ri-plane-line text-primary"></i>
-                                        <span class="text-sm">INTERNATIONAL</span>
-                                    </div>
-                                    <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 peer-checked:opacity-100"></div>
-                                </label>
-                            </div>
-                            <p class="text-xs text-gray-400 mt-2">※ 위 값은 서버로 그대로 전달될 enum 문자열입니다.</p>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end space-x-3 mt-6">
-                        <button class="px-4 py-2 bg-gray-700 text-white rounded-button hover:bg-gray-600 transition-colors whitespace-nowrap"
-                                id="scheduleCancelBtn">
-                            취소
-                        </button>
-                        <button class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                                id="scheduleSubmitBtn">
-                            추가하기
-                        </button>
-                    </div>
-                </div>
-            </div>
         </main>
     </div>
 </div>
@@ -876,6 +151,7 @@
     window.closeCategoryModal = function () {
         document.getElementById("categoryModal").classList.add("hidden");
     };
+
     window.openAddCategoryModal = function (buttonElement) {
         const modal = document.getElementById("addCategoryModal");
         const schoolId = buttonElement.dataset.schoolId;
@@ -899,6 +175,7 @@
             setTimeout(() => notification.remove(), 3000);
         }
     };
+
     window.saveNewBoard = async function () {
         const koreanNameInput = document.querySelectorAll(
             '#addBoardModal input[type="text"]'
@@ -1213,29 +490,6 @@
         }
     }
 
-    // 수정 버튼 눌렀을 때: 모달 열고 값 세팅 (엔드포인트에 맞춰 구현)
-    // async function editSchedule(scheduleId) {
-    //     try {
-    //         const res = await fetch(`/api/v1/admin/school/schedule?postId=${scheduleId}`);
-    //         const json = await res.json();
-    //         if (!json.isSuccess) throw new Error(json.message || "조회 실패");
-    //
-    //         const s = json.result;
-    //         document.getElementById("scheduleFrom").dataset.id = s.id;
-    //         document.getElementById("scheduleTitle").value = s.title || "";
-    //         document.getElementById("scheduleStartDate").value = (s.startDate || "").slice(0,10);
-    //         document.getElementById("scheduleEndDate").value   = (s.endDate || "").slice(0,10);
-    //         const r = document.querySelector(`input[name="scheduleType"][value="${s.type}"]`);
-    //         if (r) r.checked = true;
-    //
-    //         window.currentScheduleId = s.id;
-    //         openAddScheduleModal();
-    //     } catch (e) {
-    //         console.error(e);
-    //         alert("서버 오류: " + e.message);
-    //     }
-    // }
-
     // ✅ 필터 이벤트 바인딩 (변경 시 자동 조회)
     (function () {
         const root = document.getElementById("schedule-list-editor");
@@ -1316,6 +570,171 @@
         if (e.target.closest("#scheduleSubmitBtn")) submitSchedule();
     });
 </script>
+
+<script id="loadIntroPage" type="module">
+
+</script>
+
+<script id="saveIntroPage" type="module">
+    function collectIntro() {
+        const titleInput = document.getElementById("intro-title");
+        const descInput = document.getElementById("intro-description");
+
+        const title = titleInput ? titleInput.value.trim() : "";
+        const description = descInput ? descInput.value.trim() : "";
+
+        const advantageInputs = document.querySelectorAll("#advantages-list input");
+        const advantages = Array.from(advantageInputs)
+            .map(i => i.value.trim())
+            .filter(v => v.length > 0);
+
+        return {
+            title,
+            description,
+            advantages
+        };
+    }
+
+    // ===== BasicInfo (기본 정보) 수집 =====
+    function collectBasicInfo() {
+        const schoolName = document.getElementById("basic-schoolName")?.value.trim() || "";
+        const builtAt     = document.getElementById("basic-builtAt")?.value.trim() || "";
+        const location    = document.getElementById("basic-location")?.value.trim() || "";
+        const feature     = document.getElementById("basic-feature")?.value.trim() || "";
+
+        return {
+            schoolName,
+            builtAt,
+            location,
+            feature
+        };
+    }
+
+    // ===== 링크 목록 (추가 링크) 수집 =====
+    function collectUrls() {
+        const urlNames = [];
+        const url = [];
+
+        const urlCards = document.querySelectorAll("#url-list > div, #url-list [data-url-card]");
+        urlCards.forEach(card => {
+            const inputs = card.querySelectorAll("input");
+            if (inputs.length >= 2) {
+                const nameValue = inputs[0].value.trim();
+                const urlValue  = inputs[1].value.trim();
+
+                if (nameValue || urlValue) {
+                    urlNames.push(nameValue);
+                    url.push(urlValue);
+                }
+            }
+        });
+
+        return {
+            urlNames,
+            url
+        };
+    }
+
+    // ===== 단과대(College) 수집 =====
+    // 지금 DTO는 단과대 1개만 받으므로, 첫 번째 카드만 사용
+    function collectCollegeDto() {
+        const firstCard = document.querySelector("#college-list .college-card");
+        if (!firstCard) {
+            // 단과대 입력이 없을 경우, null 반환 (백엔드에서 nullable 허용이면)
+            return null;
+        }
+
+        const nameInput = firstCard.querySelector('[data-role="college-name"]');
+        const typeSelect = firstCard.querySelector('[data-role="college-type"]');
+        const descTextarea = firstCard.querySelector('[data-role="college-description"]');
+
+        const name = nameInput?.value.trim() || "";
+        const description = descTextarea?.value.trim() || "";
+        const type = typeSelect?.value || "UNDERGRADUATE";
+
+        // 학과 태그들 수집 → "컴공과_전기과_..." 형태
+        const deptChips = firstCard.querySelectorAll("[data-dept-name]");
+        const deptList = Array.from(deptChips)
+            .map(chip => chip.dataset.deptName || chip.textContent.trim())
+            .filter(v => v.length > 0);
+
+        const departments = deptList.join("_"); // DTO 요구사항대로 '_'로 join
+
+        return {
+            name,
+            description,
+            type,
+            departments
+        };
+    }
+
+    // ===== 메인: 저장 버튼 클릭 시 호출 =====
+    async function saveIntroBoard() {
+        // 1. 각 부분 데이터 수집
+        const intro = collectIntro();
+        const basicInfo = collectBasicInfo();
+
+        const rankRaw = document.getElementById("college-rank")?.value.trim() || "";
+        const collegeRank = rankRaw === "" ? 0 : parseInt(rankRaw, 10) || 0;
+
+        const urlsDto = collectUrls();
+        const collegeDto = collectCollegeDto();
+
+        const homepageUrl   = document.getElementById("homepage-url")?.value.trim() || "";
+        const englishPageUrl = document.getElementById("english-url")?.value.trim() || "";
+
+        // 2. DTO 구조에 맞는 payload 생성
+        const payload = {
+            intro,          // IntroSaveDto
+            basicInfo,      // BasicInfoSaveDto
+            collegeRank,    // int
+            urlsDto,        // HomepageUrlSaveDto
+            collegeDto,     // CollegeSaveDto (또는 null)
+            homepageUrl,
+            englishPageUrl
+        };
+
+        console.log("보내는 TotalIntroSaveDto:", payload);
+
+        const requestUrl = "/api/v1/school/intro"; // TODO: 실제 엔드포인트로 변경
+        // try {
+        //     // window.api가 있으면:
+        //     if (window.api && typeof window.api.post === "function") {
+        //         const res = await window.api.post(requestUrl, payload);
+        //         // 서버 응답 구조에 따라 수정
+        //         alert("소개 페이지가 저장되었습니다.");
+        //         // 필요하면 목록 화면으로 이동
+        //         // showBoardList();
+        //         return;
+        //     }
+        //
+        //     // api 헬퍼가 없다면 fetch 사용
+        //     const res = await fetch(requestUrl, {
+        //         method: "POST",
+        //         headers: {
+        //             "Content-Type": "application/json"
+        //         },
+        //         body: JSON.stringify(payload)
+        //     });
+        //
+        //     if (!res.ok) {
+        //         throw new Error("HTTP " + res.status);
+        //     }
+        //
+        //     const data = await res.json().catch(() => null);
+        //     console.log("서버 응답:", data);
+        //     alert("소개 페이지가 저장되었습니다.");
+        //     // showBoardList();
+        // } catch (e) {
+        //     console.error("소개 저장 중 오류:", e);
+        //     alert("소개 페이지 저장 중 오류가 발생했습니다.");
+        // }
+    }
+
+    window.saveIntroBoard = saveIntroBoard;
+
+</script>
+
 <script id="board-management" type="module">
     // fixme: 라이브러리를 위한 전역변수 인지 확인 필요, 지역 변수로 변경해도 되는지 파악 필요
     window.currentView = "board-list";
@@ -1415,10 +834,223 @@
         window.currentView = "intro-editor";
     }
 
-    function saveIntroBoard() {
-        alert("소개페이지가 저장되었습니다.");
-        showBoardList();
+    //intro editor 관련 javascript
+
+    function addAdvantage() {
+        const container = document.getElementById("advantages-list");
+        if (!container) return;
+
+        const div = document.createElement("div");
+        // 한 줄에 input + 삭제버튼, 반응형으로는 세로 쌓이게
+        div.className = "flex flex-col md:flex-row gap-2 items-stretch";
+
+        const input = document.createElement("input");
+        input.className = "dark-input flex-1";
+        input.placeholder = "강점 입력 (예: 높은 취업률, 다양한 교환학생 프로그램 등)";
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.innerText = "삭제";
+        btn.className =
+            "px-3 py-2 rounded-button bg-gray-800 text-gray-300 text-xs md:text-sm " +
+            "hover:bg-gray-700 border border-gray-700 whitespace-nowrap";
+        btn.onclick = () => div.remove();
+
+        div.appendChild(input);
+        div.appendChild(btn);
+
+        container.appendChild(div);
     }
+
+
+    function addUrlField() {
+        const container = document.getElementById("url-list");
+        if (!container) return;
+
+        const div = document.createElement("div");
+        // 카드형으로: 어두운 배경 + border
+        div.className =
+            "rounded-2xl border border-gray-800 bg-gray-900/70 p-3 md:p-4 space-y-3";
+
+        div.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+                <label class="block text-xs font-medium text-gray-200 mb-1">
+                    링크 이름
+                </label>
+                <input
+                    class="dark-input"
+                    placeholder="예: 입학 안내, 장학 제도"
+                />
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-200 mb-1">
+                    URL
+                </label>
+                <input
+                    class="dark-input"
+                    placeholder="예: https://www.example.ac.kr/admission"
+                />
+            </div>
+        </div>
+        <div class="flex justify-end">
+            <button
+                type="button"
+                class="mt-1 inline-flex items-center px-3 py-1.5 rounded-button bg-gray-800 text-gray-300 text-xs hover:bg-gray-700 border border-gray-700"
+                onclick="this.closest('[data-url-card]')?.remove()">
+                <i class="ri-delete-bin-line mr-1 text-sm"></i>
+                링크 삭제
+            </button>
+        </div>
+    `;
+
+        // 삭제 버튼에서 closest로 찾을 수 있게 data 속성 부여
+        div.setAttribute("data-url-card", "true");
+
+        container.appendChild(div);
+    }
+
+    let collegeCounter = 0;
+
+    function addCollege() {
+        const list = document.getElementById("college-list");
+        const index = collegeCounter++;
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "college-card border border-gray-800 rounded-2xl bg-gray-900/70 p-4 md:p-5 space-y-4";
+        wrapper.dataset.collegeIndex = String(index);
+
+        // 단과대 카드 내부 구조
+        wrapper.innerHTML = `
+            <div class="flex items-start justify-between gap-3">
+                <div class="flex-1 space-y-3">
+
+                    <!-- 단과대 이름 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-200 mb-1">
+                            단과대 이름
+                        </label>
+                        <input
+                            type="text"
+                            class="dark-input"
+                            data-role="college-name"
+                            placeholder="예: 공과대학"
+                        />
+                    </div>
+
+                    <!-- 학위 구분 + 설명 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-200 mb-1">
+                            학위 구분
+                        </label>
+                        <select class="dark-input" data-role="college-type">
+                            <option value="UNDERGRADUATE">학사 과정</option>
+                            <option value="GRADUATE">석/박사 과정</option>
+                        </select>
+                        <p class="field-help">해당 단과대의 주 교육 과정을 선택해 주세요.</p>
+                    </div>
+
+                    <!-- 단과대 설명 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-200 mb-1">
+                            단과대 설명 (선택)
+                        </label>
+                        <textarea
+                            class="dark-input !rounded-2xl !h-20 !py-2.5 resize-none"
+                            data-role="college-description"
+                            placeholder="단과대의 주요 전공 및 특징을 간단히 소개해 주세요."></textarea>
+                    </div>
+
+                    <!-- 학과(과) 태그 영역 -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-sm font-medium text-gray-200">
+                                소속 학과
+                            </label>
+                            <span class="text-xs text-gray-500">
+                                학과명을 입력 후 Enter를 누르면 추가됩니다.
+                            </span>
+                        </div>
+
+                        <!-- 태그들이 쌓이는 곳 -->
+                        <div class="flex flex-wrap gap-2 mb-2" data-role="department-chips"></div>
+
+                        <!-- 학과 입력 -->
+                        <input
+                            type="text"
+                            class="dark-input"
+                            data-role="department-input"
+                            placeholder="예: 컴퓨터공학과, 전기공학과 등 입력 후 Enter"
+                        />
+                    </div>
+                </div>
+
+                <!-- 단과대 삭제 버튼 -->
+                <button
+                    type="button"
+                    class="ml-2 text-gray-500 hover:text-red-500 text-sm flex-shrink-0"
+                    onclick="removeCollege(this)">
+                    <i class="ri-close-line mr-0.5"></i> 삭제
+                </button>
+            </div>
+        `;
+
+        list.appendChild(wrapper);
+        setupDepartmentInput(wrapper);
+    }
+
+    function removeCollege(button) {
+        const card = button.closest(".college-card");
+        if (card) {
+            card.remove();
+        }
+    }
+
+    function setupDepartmentInput(collegeElement) {
+        const input = collegeElement.querySelector('[data-role="department-input"]');
+        const chipsContainer = collegeElement.querySelector('[data-role="department-chips"]');
+
+        if (!input || !chipsContainer) return;
+
+        // Enter 키로 태그 추가
+        input.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                const value = input.value.trim();
+                if (!value) return;
+
+                addDepartmentChip(chipsContainer, value);
+                input.value = "";
+            }
+        });
+    }
+
+    function addDepartmentChip(container, name) {
+        // 같은 이름 중복 방지 (원하면 제거)
+        const exists = Array.from(container.querySelectorAll("[data-dept-name]"))
+            .some(span => span.dataset.deptName === name);
+        if (exists) return;
+
+        const chip = document.createElement("span");
+        chip.className = "inline-flex items-center px-2.5 py-1 rounded-full bg-gray-800 text-gray-100 text-xs border border-gray-600";
+        chip.dataset.deptName = name;
+
+        chip.innerHTML = `
+            <span class="mr-1">${name}</span>
+            <button type="button" class="text-gray-400 hover:text-red-400 text-xs"
+                    onclick="this.parentElement.remove()">
+                <i class="ri-close-line"></i>
+            </button>
+        `;
+
+        container.appendChild(chip);
+    }
+
+    window.addCollege = addCollege;
+    window.removeCollege = removeCollege;
+    window.addAdvantage = addAdvantage;
+    window.addUrlField = addUrlField;
+
 
     async function deleteBoard(boardName, boardId) {
         if (confirm(`"${boardName}" 게시판을 삭제하시겠습니까?`)) {
@@ -1452,7 +1084,7 @@
                 alert("오류가 발생했습니다.");
             }
         }
-    };
+    }
 
     function createNewPost() {
         document.getElementById("post-editor-title").textContent = "새 게시글 작성";
@@ -1742,7 +1374,6 @@
     window.showBoardListEditor = showBoardListEditor;
     window.editScheduleList = editScheduleList;
     window.editIntroBoard = editIntroBoard;
-    window.saveIntroBoard = saveIntroBoard;
     window.deleteBoard = deleteBoard;
     window.createNewPost = createNewPost;
     window.editPost = editPost;
@@ -2009,35 +1640,7 @@
     // export module functions
     window.editor = editor;
 </script>
-<script type="module">
-    const introEditor = SUNEDITOR.create('school-intro-editor', {
-        lang: SUNEDITOR_LANG['ko'],
-        height: '300px', // 기본 높이 고정
-        width: '100%',
-        autoHeight: false, // 자동 증가 비활성화
-        iframe: false,
-        placeholder: '학교 소개 내용을 입력하세요...',
-        buttonList: [
-            ['undo', 'redo', 'formatBlock', 'fontSize', 'bold', 'underline', 'italic', 'strike',
-                'fontColor', 'hiliteColor', 'align', 'list', 'table', 'link', 'image', 'codeView']
-        ],
-        imageUploadUrl: '/api/v1/file/school',
-        withCredentials: true,
-        imageUploadName: 'file',
-        imageMultipleFile: false
-    });
 
-    function resizeEditorHeight() {
-        const height = window.innerWidth < 640 ? 250 : 400; // 모바일 250px, 데스크탑 400px 등
-        introEditor.setOptions({height: `${height}px`});
-    }
-
-    window.addEventListener('load', resizeEditorHeight);
-    window.addEventListener('resize', resizeEditorHeight);
-
-    // export module functions
-    window.introEditor = introEditor;
-</script>
 <script type="module">
     // 파일 입력
     document.querySelectorAll('input[type="file"]').forEach((fileInput) => {

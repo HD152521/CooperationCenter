@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Intro Editor Fragment</title>
+</head>
+
+<body>
+
+<th:block th:fragment="filePostEditor">
+    <div id="filePost-editor" class="hidden">
+        <header class="mb-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <button onclick="showBoardListEditor()"
+                            class="mr-4 p-2 text-gray-400 hover:text-white transition-colors">
+                        <div class="w-5 h-5 flex items-center justify-center">
+                            <i class="ri-arrow-left-line"></i>
+                        </div>
+                    </button>
+                    <div>
+                        <h1 class="text-3xl font-bold text-white" id="filePost-editor-title">
+                            게시글 수정 </h1>
+                        <p class="text-gray-400 mt-2">
+                            게시글 내용을 수정하고 저장하세요 </p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="showBoardListEditor()"
+                            class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
+                        취소
+                    </button>
+                    <button onclick="saveFilePost('TEMPORARY')"
+                            class="px-4 py-2 bg-gray-700 text-white rounded-button hover:bg-gray-600 transition-colors whitespace-nowrap">
+                        임시저장
+                    </button>
+                    <button onclick="saveFilePost('PUBLISHED')"
+                            class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
+                        게시하기
+                    </button>
+                </div>
+            </div>
+        </header>
+        <div class="admin-card rounded-xl p-6">
+            <div class="space-y-6">
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">제목</label>
+                        <input type="text" value=""
+                               class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"/>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2"
+                        >카테고리</label
+                        >
+                        <select
+                                class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none pr-8"
+                        >
+                            <option>일반</option>
+                            <option>공지사항</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <div class="space-y-3">
+                        <input type="file" id="postFile-input" data-type="file" accept=".pdf,.doc,.docx,.xls,.xlsx"
+                               class="file-input sr-only">
+                        <label for="postFile-input" id="postFile-label"
+                               class="flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer hover:border-primary transition-colors bg-gray-700 text-gray-300">
+                            <i class="ri-upload-2-line mr-2"></i>
+                            <span class="">파일 선택 또는 드래그하여 업로드</span>
+                        </label>
+                        <div class="flex items-center gap-2 mt-2">
+                            <div id="postFile-name" class=" file-name mt-2 text-sm text-gray-500"></div>
+                            <button type="button" id="clear-postFile"
+                                    class="text-red-500 hover:text-red-700 text-sm hidden">✕
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>

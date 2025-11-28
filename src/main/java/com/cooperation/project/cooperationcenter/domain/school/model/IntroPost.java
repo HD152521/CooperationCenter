@@ -24,10 +24,23 @@ public class IntroPost extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
-
     @OneToOne(mappedBy = "introPost") // 주인 아님
     private SchoolBoard schoolBoard;
+
+    //note intro
+    private String title;
+    private String description;
+    private String advantages;  //_로 구분
+
+    //note BasicInfo
+    private String schoolName;
+    private String builtAt;
+    private String location;
+    private String feature;  //,로 구분
+
+    //note homepageUrl
+    private String urlNames;
+    private String urls;
 
     @OneToMany(mappedBy = "introPost")
     private List<College> college;
@@ -46,10 +59,4 @@ public class IntroPost extends BaseEntity {
         this.schoolBoard.deleteIntroPost(this);
     }
 
-    public static IntroPost fromDto(SchoolRequest.IntroDto dto){
-        return IntroPost.builder()
-                .title(dto.title())
-                .content(dto.content())
-                .build();
-    }
 }

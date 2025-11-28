@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.Arrays;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -25,13 +26,14 @@ public class College {
     @JoinColumn(name = "intro_post_id", nullable = false)
     private IntroPost introPost;
 
-    @OneToMany(mappedBy = "college")
-    private List<Department> departments;
+    private String departments;
 
     private String collegeName;
 
     @Enumerated(EnumType.STRING)
     private CollegeDegreeType type;
 
-
+    public List<String> getDepartments(){
+        return Arrays.stream(departments.split("_")).toList();
+    }
 }

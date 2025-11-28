@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Board List Fragment</title>
+</head>
+
+<body>
+
+<th:block th:fragment="boardList(schoolDto)">
+
+    <div id="board-list-view">
+        <header class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-white">게시판 관리</h1>
+                    <p class="text-gray-400 mt-2">
+                        학교별 게시판을 관리하고 수정하세요 </p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <select class="bg-gray-700 text-white px-4 py-2 rounded-lg border-none pr-8">
+                        <option>전체 학교</option>
+                        <option th:each="school : ${schoolDto}" th:value="${school.schoolDto.englishName}"
+                                th:text="${school.schoolDto.englishName}">
+                            학교 이름
+                        </option>
+                    </select>
+                    <button onclick="openAddBoardModal()"
+                            class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
+                        <div class="w-4 h-4 inline-flex items-center justify-center mr-2">
+                            <i class="ri-add-line"></i>
+                        </div>
+                        새 게시판 추가
+                    </button>
+                </div>
+            </div>
+        </header>
+        <div class="admin-card rounded-xl p-6">
+            <div class="space-y-4">
+                <div th:each="schoolPage : ${schoolDto}" class="tree-node">
+                    <div class="flex items-center justify-between p-4 bg-gray-700 rounded-lg cursor-pointer"
+                         th:attr="data-english-name=${schoolPage.schoolDto.englishName}"
+                         onclick="toggleSchool(this.dataset.englishName)">
+                        <div class="flex items-center">
+                            <div class="w-5 h-5 flex items-center justify-center mr-3 text-primary">
+                                <i class="ri-arrow-right-s-line tree-arrow"
+                                   th:id="${schoolPage.schoolDto.englishName + '-arrow'}"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-white"
+                                th:text="${schoolPage.schoolDto.koreanName}">학교 이름</h3>
+                            <span class="ml-3 text-sm text-gray-400"
+                                  th:text="'(' + ${#lists.size(schoolPage.boardDtos)} + '개 게시판)'">
+                                    (0개 게시판)
+                                </span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="px-3 py-1 bg-red-500 text-white text-sm rounded-button hover:bg-red-600 transition-colors whitespace-nowrap"
+                                    th:attr="data-school-id=${schoolPage.schoolDto.schoolId}, data-english-name=${schoolPage.schoolDto.englishName}">
+
+                                <div class="w-4 h-4 inline-flex items-center justify-center mr-1">
+                                    <i class="ri-delete-bin-line"></i>
+                                </div>
+                                삭제
+                            </button>
+
+                            <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
+                                    th:attr="data-school-id=${schoolPage.schoolDto.schoolId}, data-english-name=${schoolPage.schoolDto.englishName}"
+                                    onclick="openAddCategoryModal(this)">
+                                <div class="w-4 h-4 inline-flex items-center justify-center mr-1">
+                                    <i class="ri-add-line"></i>
+                                </div>
+                                새 카테고리 추가
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="tree-children ml-8" th:id="${schoolPage.schoolDto.englishName + '-children'}">
+                        <div class="space-y-3 mt-4">
+                            <div class="bg-gray-800 rounded-lg p-4">
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between p-3 bg-gray-700 rounded-lg"
+                                         th:each="board : ${schoolPage.boardDtos}"
+                                         th:attr="data-board-id=${board.id}">
+                                        <div class="flex items-center">
+                                            <div class="w-4 h-4 flex items-center justify-center mr-3">
+                                                <i th:classappend="${board.boardType == 'INTRO'} ? 'ri-file-text-line' : 'ri-file-list-line'"
+                                                   class="text-gray-400"></i>
+                                            </div>
+                                            <span class="text-white" th:text="${board.boardTitle}">게시판 제목</span>
+                                            <span class="board-type-tag ml-3" th:with="
+                                                        typeName=${board.boardType != null} ? ${board.boardType} : 'UNKNOWN',
+                                                        typeClass=${typeName == 'INTRO'}  ? ' bg-blue-500 bg-opacity-20 text-blue-400' :
+                                                                    (${typeName == 'NOTICE'} ? ' bg-green-500 bg-opacity-20 text-green-400' :
+                                                                    (${typeName == 'FILES'}  ? ' bg-yellow-500 bg-opacity-20 text-yellow-400' :
+                                                                    (${typeName == 'SCHEDULE'} ? ' bg-purple-500 bg-opacity-20 text-purple-400' :
+                                                                                                 ' bg-gray-500 bg-opacity-20 text-gray-400'))),
+                                                        typeText=${typeName == 'INTRO'}  ? '소개페이지' :
+                                                                   (${typeName == 'NOTICE'} ? '게시판형' :
+                                                                   (${typeName == 'FILES'}  ? '파일형' :
+                                                                   (${typeName == 'SCHEDULE'} ? '스케줄형' : '알 수 없음')))"
+                                                  th:classappend="${typeClass}" th:text="${typeText}">
+                                                  게시판 유형
+                                                </span>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
+                                                    th:if="${board.boardType == 'INTRO'}"
+                                                    th:attr="data-board-title=${board.boardTitle}"
+                                                    onclick="editIntroBoard(this.dataset.boardTitle)">
+                                                수정
+                                            </button>
+
+                                            <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
+                                                    th:if="${board.boardType == 'NOTICE'}"
+                                                    th:attr="data-board-title=${board.boardTitle}, data-board-id=${board.id}, data-board-type=${board.boardType}"
+                                                    onclick="editBoardList(this.dataset.boardTitle, this.dataset.boardId, this.dataset.boardType)">
+                                                수정
+                                            </button>
+
+                                            <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
+                                                    th:if="${board.boardType == 'FILES'}"
+                                                    th:attr="data-board-title=${board.boardTitle}, data-board-id=${board.id}, data-board-type=${board.boardType}"
+                                                    onclick="editBoardList(this.dataset.boardTitle, this.dataset.boardId, this.dataset.boardType)">
+                                                수정
+                                            </button>
+                                            <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
+                                                    th:if="${board.boardType == 'SCHEDULE'}"
+                                                    th:attr="data-board-title=${board.boardTitle}, data-board-id=${board.id}, data-board-type=${board.boardType}"
+                                                    onclick="editScheduleList(this.dataset.boardTitle, this.dataset.boardId, this.dataset.boardType)">
+                                                수정
+                                            </button>
+                                            <button class="px-3 py-1 bg-red-600 text-white text-sm rounded-button hover:bg-red-700 transition-colors whitespace-nowrap"
+                                                    th:attr="data-board-title=${board.boardTitle},data-board-id=${board.id()}"
+                                                    onclick="deleteBoard(this.dataset.boardTitle,this.dataset.boardId)">
+                                                삭제
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+</body>
+</html>

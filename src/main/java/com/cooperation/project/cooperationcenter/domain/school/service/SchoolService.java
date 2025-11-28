@@ -49,7 +49,6 @@ public class SchoolService {
 
         if(schoolBoard.getType().equals(SchoolBoard.BoardType.INTRO)){
             IntroPost introPost = IntroPost.builder()
-                    .title(schoolBoard.getBoardTitle())
                     .content("introductionTemplate")
                     .schoolBoard(schoolBoard)
                     .build();
@@ -86,7 +85,7 @@ public class SchoolService {
     }
 
     @Transactional
-    public void saveIntro(SchoolRequest.IntroDto request){
+    public void saveIntro(){
         SchoolBoard board = schoolFindService.loadBoardById(request.boardId());
         IntroPost introPost = IntroPost.fromDto(request);
 

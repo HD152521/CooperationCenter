@@ -38,11 +38,6 @@ public class IntroRequest {
             String name,
             String description,
             String type,
-            List<DepartmentSaveDto> departments
-    ) {}
-
-    public record DepartmentSaveDto(
-            String name,
-            String description
+            String departments //과 사이를 _로 구분해서 받기
     ) {}
 }
