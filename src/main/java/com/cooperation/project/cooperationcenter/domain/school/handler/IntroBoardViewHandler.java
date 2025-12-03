@@ -32,7 +32,7 @@ public class IntroBoardViewHandler implements BoardViewHandler{
         IntroResponse.IntroPostResponseDto content = schoolFindService.loadIntroByBoard(board).toResponse();
         log.info("content:{}",content.colleges().toString());
         model.addAttribute("content", content);
-        String url = schoolPath + school + "/" +"introductionTemplate";
+        String url = schoolPath + "introductionTemplate";
         return url;
     }
 }

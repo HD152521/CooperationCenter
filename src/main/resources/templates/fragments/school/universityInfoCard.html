@@ -33,11 +33,11 @@
 
         <ul class="space-y-2">
             <li th:each="name, iter : ${urlNames}">
-                <span class="font-medium">바로가기</span>
+                <span class="font-medium" th:text="${name}"></span>
                 :
                 <a class="text-primary hover:underline"
                    th:href="${urls[iter.index]}"
-                   th:text="${urls[iter.index]}"></a>
+                   > 바로가기 </a>
             </li>
         </ul>
     </div>
