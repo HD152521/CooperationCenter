@@ -94,6 +94,8 @@ public enum ErrorCode implements BaseCode {
     MEMBER_NOT_ACCEPTED(HttpStatus.BAD_REQUEST,"MEMBER-0003","아직 계정이 활성화되지 않았습니다."),
     MEMBER_NOT_ADMIN(HttpStatus.BAD_REQUEST,"MEMBER-0004","Meber is not ADMIN"),
 
+    COLLEGE_NOT_FOUND(HttpStatus.BAD_REQUEST,"COLLEGE-0001","해당 학과를 찾을 수가 없습니다."),
+
     SURVEY_DATE_NOT_VALID(HttpStatus.BAD_REQUEST,"SURVEY-0000","지금 설문조사 입력 기간이 아닙니다."),
     SURVEY_NOT_SHARE(HttpStatus.BAD_REQUEST,"SURVEY-0001","해당 설문조사는 공개 전입니다."),
 

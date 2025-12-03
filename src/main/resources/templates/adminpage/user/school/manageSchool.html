@@ -571,10 +571,6 @@
     });
 </script>
 
-<script id="loadIntroPage" type="module">
-
-</script>
-
 <script id="saveIntroPage" type="module">
     function collectIntro() {
         const titleInput = document.getElementById("intro-title");
@@ -638,34 +634,45 @@
     // ===== 단과대(College) 수집 =====
     // 지금 DTO는 단과대 1개만 받으므로, 첫 번째 카드만 사용
     function collectCollegeDto() {
-        const firstCard = document.querySelector("#college-list .college-card");
-        if (!firstCard) {
-            // 단과대 입력이 없을 경우, null 반환 (백엔드에서 nullable 허용이면)
-            return null;
+        const cards = document.querySelectorAll("#college-list .college-card");
+
+        if (!cards.length) {
+            return [];   // 비어있으면 빈 배열
         }
 
-        const nameInput = firstCard.querySelector('[data-role="college-name"]');
-        const typeSelect = firstCard.querySelector('[data-role="college-type"]');
-        const descTextarea = firstCard.querySelector('[data-role="college-description"]');
+        const dtoList = [];
 
-        const name = nameInput?.value.trim() || "";
-        const description = descTextarea?.value.trim() || "";
-        const type = typeSelect?.value || "UNDERGRADUATE";
+        cards.forEach(card => {
+            const nameInput = card.querySelector('[data-role="college-name"]');
+            const typeSelect = card.querySelector('[data-role="college-type"]');
+            const descTextarea = card.querySelector('[data-role="college-description"]');
 
-        // 학과 태그들 수집 → "컴공과_전기과_..." 형태
-        const deptChips = firstCard.querySelectorAll("[data-dept-name]");
-        const deptList = Array.from(deptChips)
-            .map(chip => chip.dataset.deptName || chip.textContent.trim())
-            .filter(v => v.length > 0);
+            const name = nameInput?.value.trim() || "";
+            const description = descTextarea?.value.trim() || "";
+            const type = typeSelect?.value || "UNDERGRADUATE";
 
-        const departments = deptList.join("_"); // DTO 요구사항대로 '_'로 join
+            // 학과 태그들 수집
+            const deptChips = card.querySelectorAll("[data-dept-name]");
+            const deptList = Array.from(deptChips)
+                .map(chip => chip.dataset.deptName || chip.textContent.trim())
+                .filter(v => v.length > 0);
 
-        return {
-            name,
-            description,
-            type,
-            departments
-        };
+            const departments = deptList.join("_");
+
+            // 단과대 id가 있을 수도 있음
+            const collegeId = card.dataset.id
+                ? Number(card.dataset.id)
+                : null;
+
+            dtoList.push({
+                id: collegeId,   // null → 신규, 숫자 → 기존 업데이트
+                name,
+                description,
+                type,
+                departments
+            });
+        });
+        return dtoList;
     }
 
     // ===== 메인: 저장 버튼 클릭 시 호출 =====
@@ -673,6 +680,10 @@
         // 1. 각 부분 데이터 수집
         const intro = collectIntro();
         const basicInfo = collectBasicInfo();
+        const boardId = Number(window.currentBoardId);
+
+        console.log("boardId: ",boardId);
+        console.log("windo boardId: ",Number(window.currentBoardId));
 
         const rankRaw = document.getElementById("college-rank")?.value.trim() || "";
         const collegeRank = rankRaw === "" ? 0 : parseInt(rankRaw, 10) || 0;
@@ -691,48 +702,119 @@
             urlsDto,        // HomepageUrlSaveDto
             collegeDto,     // CollegeSaveDto (또는 null)
             homepageUrl,
-            englishPageUrl
+            englishPageUrl,
+            boardId
         };
 
         console.log("보내는 TotalIntroSaveDto:", payload);
 
-        const requestUrl = "/api/v1/school/intro"; // TODO: 실제 엔드포인트로 변경
-        // try {
-        //     // window.api가 있으면:
-        //     if (window.api && typeof window.api.post === "function") {
-        //         const res = await window.api.post(requestUrl, payload);
-        //         // 서버 응답 구조에 따라 수정
-        //         alert("소개 페이지가 저장되었습니다.");
-        //         // 필요하면 목록 화면으로 이동
-        //         // showBoardList();
-        //         return;
-        //     }
-        //
-        //     // api 헬퍼가 없다면 fetch 사용
-        //     const res = await fetch(requestUrl, {
-        //         method: "POST",
-        //         headers: {
-        //             "Content-Type": "application/json"
-        //         },
-        //         body: JSON.stringify(payload)
-        //     });
-        //
-        //     if (!res.ok) {
-        //         throw new Error("HTTP " + res.status);
-        //     }
-        //
-        //     const data = await res.json().catch(() => null);
-        //     console.log("서버 응답:", data);
-        //     alert("소개 페이지가 저장되었습니다.");
-        //     // showBoardList();
-        // } catch (e) {
-        //     console.error("소개 저장 중 오류:", e);
-        //     alert("소개 페이지 저장 중 오류가 발생했습니다.");
-        // }
+        const requestUrl = "/api/v1/admin/school/intro"; // TODO: 실제 엔드포인트로 변경
+        try {
+            // window.api가 있으면:
+            if (window.api && typeof window.api.post === "function") {
+                const res = await window.api.post(requestUrl, payload);
+                // 서버 응답 구조에 따라 수정
+                alert("소개 페이지가 저장되었습니다.");
+                // 필요하면 목록 화면으로 이동
+                showBoardList();
+                return;
+            }
+
+            // api 헬퍼가 없다면 fetch 사용
+            const res = await fetch(requestUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                throw new Error("HTTP " + res.status);
+            }
+
+            const data = await res.json().catch(() => null);
+            console.log("서버 응답:", data);
+            alert("소개 페이지가 저장되었습니다.");
+            showBoardList();
+        } catch (e) {
+            console.error("소개 저장 중 오류:", e);
+            alert("소개 페이지 저장 중 오류가 발생했습니다.");
+        }
     }
 
     window.saveIntroBoard = saveIntroBoard;
 
+</script>
+
+<script id="load-introPage" type="module">
+    async function loadIntroBoard(boardId) {
+
+        const data = await api.get(`/admin/school/intro/${boardId}`);
+        console.log("로드된 intro 데이터:", data);
+
+        /* -----------------------------
+           1) IntroInfo
+        ------------------------------ */
+        document.getElementById('intro-title').value = data.intro.title || "";
+        document.getElementById('intro-description').value = data.intro.description || "";
+
+        // advantages
+        const advList = document.getElementById('advantages-list');
+        advList.innerHTML = "";
+        if (data.intro.advantages) {
+            data.intro.advantages.forEach(adv => addAdvantage(adv));
+        }
+
+        /* -----------------------------
+           2) BasicInfo
+        ------------------------------ */
+        document.getElementById('basic-schoolName').value = data.basicInfo.schoolName || "";
+        document.getElementById('basic-builtAt').value = data.basicInfo.builtAt || "";
+        document.getElementById('basic-location').value = data.basicInfo.location || "";
+
+        // feature (List<String>)
+        if (data.basicInfo.feature && data.basicInfo.feature.length > 0) {
+            document.getElementById('basic-feature').value = data.basicInfo.feature.join(", ");
+        }
+
+        /* -----------------------------
+           3) CollegeRank
+        ------------------------------ */
+        document.getElementById('college-rank').value = data.collegeRank ?? "";
+
+        /* -----------------------------
+           4) homepageUrl + englishUrl
+        ------------------------------ */
+        document.getElementById('homepage-url').value = data.homepageUrl || "";
+        document.getElementById('english-url').value = data.englishPageUrl || "";
+
+        /* -----------------------------
+           5) UrlInfo (추가 링크 목록)
+        ------------------------------ */
+        const urlList = document.getElementById('url-list');
+        urlList.innerHTML = "";
+
+        if (data.homepageUrls &&
+            data.homepageUrls.urlNames &&
+            data.homepageUrls.urls) {
+
+            data.homepageUrls.urlNames.forEach((name, idx) => {
+                addUrlField(name, data.homepageUrls.urls[idx]);
+            });
+        }
+
+        /* -----------------------------
+           6) CollegeInfo (단과대 정보)
+        ------------------------------ */
+        const collegeList = document.getElementById('college-list');
+        collegeList.innerHTML = "";
+
+        data.colleges.forEach(college => {
+            addCollege(college.collegeName, college.type, college.departments,college.id);
+        });
+
+    }window.loadIntroBoard = loadIntroBoard;
 </script>
 
 <script id="board-management" type="module">
@@ -821,8 +903,10 @@
         fetchScheduleList(boardId, 0); // ← 게시판 ID로 목록 불러오기
     }
 
-    function editIntroBoard(boardName) {
+    function editIntroBoard(boardName, boardId) {
         window.currentBoardName = boardName;
+        console.log("Intro board수정 클릭 boardId:",boardId);
+        window.currentBoardId = boardId;
         document.getElementById("intro-board-title").textContent =
             boardName + " 수정";
         document.getElementById("board-list-view").classList.add("hidden");
@@ -831,48 +915,61 @@
         document.getElementById("schedule-list-editor").classList.add("hidden");
         document.getElementById("post-editor").classList.add("hidden");
         document.getElementById("filePost-editor").classList.add("hidden");
+        loadIntroBoard(boardId);
         window.currentView = "intro-editor";
     }
 
     //intro editor 관련 javascript
 
-    function addAdvantage() {
+    function addAdvantage(value = "") {
         const container = document.getElementById("advantages-list");
         if (!container) return;
 
-        const div = document.createElement("div");
-        // 한 줄에 input + 삭제버튼, 반응형으로는 세로 쌓이게
-        div.className = "flex flex-col md:flex-row gap-2 items-stretch";
+        if(value===""){
+            const div = document.createElement("div");
+            div.className = "flex flex-col md:flex-row gap-2 items-stretch";
 
-        const input = document.createElement("input");
-        input.className = "dark-input flex-1";
-        input.placeholder = "강점 입력 (예: 높은 취업률, 다양한 교환학생 프로그램 등)";
+            const input = document.createElement("input");
+            input.className = "dark-input flex-1";
+            input.placeholder = "강점 입력 (예: 높은 취업률, 다양한 교환학생 프로그램 등)";
 
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.innerText = "삭제";
-        btn.className =
-            "px-3 py-2 rounded-button bg-gray-800 text-gray-300 text-xs md:text-sm " +
-            "hover:bg-gray-700 border border-gray-700 whitespace-nowrap";
-        btn.onclick = () => div.remove();
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.innerText = "삭제";
+            btn.className =
+                "px-3 py-2 rounded-button bg-gray-800 text-gray-300 text-xs md:text-sm " +
+                "hover:bg-gray-700 border border-gray-700 whitespace-nowrap";
+            btn.onclick = () => div.remove();
 
-        div.appendChild(input);
-        div.appendChild(btn);
+            div.appendChild(input);
+            div.appendChild(btn);
 
-        container.appendChild(div);
+            container.appendChild(div);
+        }else{
+            const row = document.createElement("div");
+            row.className = "flex gap-2";
+
+            row.innerHTML = `
+        <input class="dark-input flex-1" value="${value}">
+        <button type="button" class="text-red-400 hover:text-red-300" onclick="this.parentElement.remove()">
+            <i class="ri-delete-bin-line"></i>
+        </button>
+    `;
+            container.appendChild(row);
+        }
     }
 
-
-    function addUrlField() {
+    function addUrlField(name = "", url = "") {
         const container = document.getElementById("url-list");
         if (!container) return;
 
-        const div = document.createElement("div");
-        // 카드형으로: 어두운 배경 + border
-        div.className =
-            "rounded-2xl border border-gray-800 bg-gray-900/70 p-3 md:p-4 space-y-3";
+        if(name==="" && url===""){
+            const div = document.createElement("div");
+            // 카드형으로: 어두운 배경 + border
+            div.className =
+                "rounded-2xl border border-gray-800 bg-gray-900/70 p-3 md:p-4 space-y-3";
 
-        div.innerHTML = `
+            div.innerHTML = `
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
                 <label class="block text-xs font-medium text-gray-200 mb-1">
@@ -904,15 +1001,30 @@
         </div>
     `;
 
-        // 삭제 버튼에서 closest로 찾을 수 있게 data 속성 부여
-        div.setAttribute("data-url-card", "true");
+            // 삭제 버튼에서 closest로 찾을 수 있게 data 속성 부여
+            div.setAttribute("data-url-card", "true");
 
-        container.appendChild(div);
+            container.appendChild(div);
+        }else{
+            const row = document.createElement("div");
+            row.className = "grid grid-cols-1 md:grid-cols-2 gap-3";
+
+            row.innerHTML = `
+        <input class="dark-input" placeholder="링크 이름" value="${name}">
+        <div class="flex gap-3">
+            <input class="dark-input flex-1" placeholder="URL" value="${url}">
+            <button type="button" class="text-red-400 hover:text-red-300" onclick="this.parentElement.parentElement.remove()">
+                <i class="ri-delete-bin-line"></i>
+            </button>
+        </div>
+    `;
+            container.appendChild(row);
+        }
     }
 
     let collegeCounter = 0;
 
-    function addCollege() {
+    function addCollege(name = "", type = "UNDERGRADUATE", departments = [],id = null) {
         const list = document.getElementById("college-list");
         const index = collegeCounter++;
 
@@ -920,82 +1032,103 @@
         wrapper.className = "college-card border border-gray-800 rounded-2xl bg-gray-900/70 p-4 md:p-5 space-y-4";
         wrapper.dataset.collegeIndex = String(index);
 
-        // 단과대 카드 내부 구조
+        // 카드 HTML (원본 그대로 유지)
         wrapper.innerHTML = `
-            <div class="flex items-start justify-between gap-3">
-                <div class="flex-1 space-y-3">
+        <div class="flex items-start justify-between gap-3">
+            <div class="flex-1 space-y-3">
 
-                    <!-- 단과대 이름 -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-200 mb-1">
-                            단과대 이름
-                        </label>
-                        <input
-                            type="text"
-                            class="dark-input"
-                            data-role="college-name"
-                            placeholder="예: 공과대학"
-                        />
-                    </div>
-
-                    <!-- 학위 구분 + 설명 -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-200 mb-1">
-                            학위 구분
-                        </label>
-                        <select class="dark-input" data-role="college-type">
-                            <option value="UNDERGRADUATE">학사 과정</option>
-                            <option value="GRADUATE">석/박사 과정</option>
-                        </select>
-                        <p class="field-help">해당 단과대의 주 교육 과정을 선택해 주세요.</p>
-                    </div>
-
-                    <!-- 단과대 설명 -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-200 mb-1">
-                            단과대 설명 (선택)
-                        </label>
-                        <textarea
-                            class="dark-input !rounded-2xl !h-20 !py-2.5 resize-none"
-                            data-role="college-description"
-                            placeholder="단과대의 주요 전공 및 특징을 간단히 소개해 주세요."></textarea>
-                    </div>
-
-                    <!-- 학과(과) 태그 영역 -->
-                    <div>
-                        <div class="flex items-center justify-between mb-1">
-                            <label class="block text-sm font-medium text-gray-200">
-                                소속 학과
-                            </label>
-                            <span class="text-xs text-gray-500">
-                                학과명을 입력 후 Enter를 누르면 추가됩니다.
-                            </span>
-                        </div>
-
-                        <!-- 태그들이 쌓이는 곳 -->
-                        <div class="flex flex-wrap gap-2 mb-2" data-role="department-chips"></div>
-
-                        <!-- 학과 입력 -->
-                        <input
-                            type="text"
-                            class="dark-input"
-                            data-role="department-input"
-                            placeholder="예: 컴퓨터공학과, 전기공학과 등 입력 후 Enter"
-                        />
-                    </div>
+                <!-- 단과대 이름 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-200 mb-1">
+                        단과대 이름
+                    </label>
+                    <input
+                        type="text"
+                        class="dark-input"
+                        data-role="college-name"
+                        placeholder="예: 공과대학"
+                    />
                 </div>
 
-                <!-- 단과대 삭제 버튼 -->
-                <button
-                    type="button"
-                    class="ml-2 text-gray-500 hover:text-red-500 text-sm flex-shrink-0"
-                    onclick="removeCollege(this)">
-                    <i class="ri-close-line mr-0.5"></i> 삭제
-                </button>
+                <!-- 학위 구분 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-200 mb-1">
+                        학위 구분
+                    </label>
+                    <select class="dark-input" data-role="college-type">
+                        <option value="UNDERGRADUATE">학사 과정</option>
+                        <option value="GRADUATE">석/박사 과정</option>
+                    </select>
+                    <p class="field-help">해당 단과대의 주 교육 과정을 선택해 주세요.</p>
+                </div>
+
+                <!-- 설명 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-200 mb-1">
+                        단과대 설명 (선택)
+                    </label>
+                    <textarea
+                        class="dark-input !rounded-2xl !h-20 !py-2.5 resize-none"
+                        data-role="college-description"
+                        placeholder="단과대의 주요 전공 및 특징을 간단히 소개해 주세요."></textarea>
+                </div>
+
+                <!-- 학과 태그 영역 -->
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-sm font-medium text-gray-200">
+                            소속 학과
+                        </label>
+                        <span class="text-xs text-gray-500">
+                            학과명을 입력 후 Enter를 누르면 추가됩니다.
+                        </span>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 mb-2" data-role="department-chips"></div>
+
+                    <input
+                        type="text"
+                        class="dark-input"
+                        data-role="department-input"
+                        placeholder="예: 컴퓨터공학과, 전기공학과 등 입력 후 Enter"
+                    />
+                </div>
             </div>
-        `;
+
+            <!-- 단과대 삭제 -->
+            <button
+                type="button"
+                class="ml-2 text-gray-500 hover:text-red-500 text-sm flex-shrink-0"
+                onclick="removeCollege(this)">
+                <i class="ri-close-line mr-0.5"></i> 삭제
+            </button>
+        </div>
+    `;
 
         list.appendChild(wrapper);
+        if (id !== null) wrapper.dataset.id = id;
+
+
+        wrapper.querySelector('[data-role="college-name"]').value = name || "";
+        wrapper.querySelector('[data-role="college-type"]').value = type || "UNDERGRADUATE";
+        const chipWrap = wrapper.querySelector('[data-role="department-chips"]');
+
+        if (departments && Array.isArray(departments)) {
+            departments.forEach(dep => {
+                const chip = document.createElement("span");
+                chip.className = "px-2 py-1 bg-gray-700 text-gray-100 text-xs rounded-full flex items-center gap-1 dept-chip";
+                chip.dataset.deptName = dep;
+                chip.innerHTML = `
+                <span class="mr-1">${dep}</span>
+                <button type="button" class="text-gray-300 hover:text-red-400"
+                        onclick="this.parentElement.remove()">
+                    <i class="ri-close-line text-xs"></i>
+                </button>
+            `;
+                chipWrap.appendChild(chip);
+            });
+        }
+
         setupDepartmentInput(wrapper);
     }
 

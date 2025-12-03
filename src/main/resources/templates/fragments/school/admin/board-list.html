@@ -106,8 +106,8 @@
                                         <div class="flex space-x-2">
                                             <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
                                                     th:if="${board.boardType == 'INTRO'}"
-                                                    th:attr="data-board-title=${board.boardTitle}"
-                                                    onclick="editIntroBoard(this.dataset.boardTitle)">
+                                                    th:attr="data-board-title=${board.boardTitle}, data-board-id=${board.id}"
+                                                    onclick="editIntroBoard(this.dataset.boardTitle,this.dataset.boardId)">
                                                 수정
                                             </button>
 

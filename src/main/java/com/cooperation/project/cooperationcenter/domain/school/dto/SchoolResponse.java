@@ -250,19 +250,19 @@ public class SchoolResponse {
     ){
     }
 
-    public record IntroDto(
-            String title,
-            String content,
-            Long boardId,
-            Long introId
-    ){
-        public static SchoolResponse.IntroDto from(IntroPost introPost){
-            return new SchoolResponse.IntroDto(
-                    introPost.getTitle(),
-                    introPost.getContent(),
-                    introPost.getSchoolBoard().getId(),
-                    introPost.getId()
-            );
-        }
-    }
+//    public record IntroDto(
+//            String title,
+//            String content,
+//            Long boardId,
+//            Long introId
+//    ){
+//        public static SchoolResponse.IntroDto from(IntroPost introPost){
+//            return new SchoolResponse.IntroDto(
+//                    introPost.getTitle(),
+//                    introPost.getContent(),
+//                    introPost.getSchoolBoard().getId(),
+//                    introPost.getId()
+//            );
+//        }
+//    }
 }

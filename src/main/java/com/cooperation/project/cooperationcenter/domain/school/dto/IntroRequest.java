@@ -9,9 +9,10 @@ public class IntroRequest {
             BasicInfoSaveDto basicInfo,
             int collegeRank,
             HomepageUrlSaveDto urlsDto,
-            CollegeSaveDto collegeDto,
+            List<CollegeSaveDto> collegeDto,
             String homepageUrl,
-            String englishPageUrl
+            String englishPageUrl,
+            long boardId
     ){}
 
 
@@ -35,6 +36,7 @@ public class IntroRequest {
 
 
     public record CollegeSaveDto(
+            Long id,
             String name,
             String description,
             String type,

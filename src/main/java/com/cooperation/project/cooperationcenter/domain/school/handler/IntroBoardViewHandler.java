@@ -1,14 +1,17 @@
 package com.cooperation.project.cooperationcenter.domain.school.handler;
 
+import com.cooperation.project.cooperationcenter.domain.school.dto.IntroResponse;
 import com.cooperation.project.cooperationcenter.domain.school.model.SchoolBoard;
 import com.cooperation.project.cooperationcenter.domain.school.service.SchoolFindService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class IntroBoardViewHandler implements BoardViewHandler{
 
     private final SchoolFindService schoolFindService;
@@ -26,9 +29,10 @@ public class IntroBoardViewHandler implements BoardViewHandler{
                          Pageable pageable,
                          String keyword) {
 
-        String content = schoolFindService.loadIntroByBoard(board).getContent();
+        IntroResponse.IntroPostResponseDto content = schoolFindService.loadIntroByBoard(board).toResponse();
+        log.info("content:{}",content.colleges().toString());
         model.addAttribute("content", content);
-        String url = schoolPath + school + "/" +content;
+        String url = schoolPath + school + "/" +"introductionTemplate";
         return url;
     }
 }

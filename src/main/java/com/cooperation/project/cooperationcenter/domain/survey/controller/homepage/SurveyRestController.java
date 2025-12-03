@@ -156,19 +156,17 @@ public class SurveyRestController {
         return BaseResponse.onSuccess(surveySaveService.getTemplate(type));
     }
 
-    //note 설문조사 폴더용 controller7
-
     @GetMapping("/admin/folders")
     public BaseResponse<?> getFolders(){
         return BaseResponse.onSuccess(surveyFolderService.getSurveyFolderDtos());
     }
-    //fixme 수정
+
     @PostMapping("/admin/folders")
     public BaseResponse<?> makeFolder(@RequestBody SurveyFolderDto request,@AuthenticationPrincipal MemberDetails memberDetails){
         surveyFolderService.saveSurveyFolderDto(request,memberDetails);
         return BaseResponse.onSuccess("success");
     }
-    //fixme 수정
+
     @PatchMapping("/admin/folders/{folderId}")
     public BaseResponse<?> updateFolder(@RequestBody SurveyFolderDto request){
         surveyFolderService.updateSurveyFolderDto(request);

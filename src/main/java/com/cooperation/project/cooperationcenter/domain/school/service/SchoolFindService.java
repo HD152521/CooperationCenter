@@ -32,7 +32,7 @@ public class SchoolFindService {
     private final FilePostRepository filePostRepository;
     private final SchoolScheduleRepository schoolScheduleRepository;
     private final SchoolPostQSDLRepository schoolPostQSDLRepository;
-
+    private final CollegeRepository collegeRepository;
 
     private final FileAttachmentRepository fileAttachmentRepository;
 
@@ -344,15 +344,6 @@ public class SchoolFindService {
         }
     }
 
-    public SchoolResponse.IntroDto loadIntroByIdByDto(Long introId){
-        try{
-            return SchoolResponse.IntroDto.from(loadIntroById(introId));
-        }catch(Exception e){
-            log.warn(e.getMessage());
-            return null;
-        }
-    }
-
     public IntroPost loadIntroByBoard(SchoolBoard schoolBoard){
         try{
             return introPostRepository.findIntroPostsBySchoolBoard(schoolBoard).orElseThrow(
@@ -364,20 +355,29 @@ public class SchoolFindService {
         }
     }
 
-    public SchoolResponse.IntroDto loadIntroByBoardByDto(SchoolBoard schoolBoard){
-        try{
-            return SchoolResponse.IntroDto.from(loadIntroByBoard(schoolBoard));
-        }catch (Exception e){
-            log.warn(e.getMessage());
-            return null;
-        }
-    }
-
     public List<SchoolResponse.SchoolPageDto> getSchoolPage(){
         List<School> schools = loadAllSchool();
         return schools.stream()
                 .map(SchoolResponse.SchoolPageDto::from)
                 .collect(Collectors.toList());
+    }
+
+    public List<College> loadCollegesByIntro(IntroPost introPost){
+        try{
+            return collegeRepository.findCollegesByIntroPost(introPost);
+        }catch (Exception e){
+            return Collections.emptyList();
+        }
+    }
+
+    public College loadCollegesById(Long id){
+        try{
+            return collegeRepository.findCollegeById(id).orElseThrow(
+                    () -> new BaseException(ErrorCode.COLLEGE_NOT_FOUND)
+            );
+        }catch (Exception e){
+            return null;
+        }
     }
 
     public List<FileAttachment> loadFileByPost(SchoolPost schoolPost){

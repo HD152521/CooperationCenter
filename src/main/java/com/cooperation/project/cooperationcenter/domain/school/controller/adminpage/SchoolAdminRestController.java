@@ -1,6 +1,7 @@
 package com.cooperation.project.cooperationcenter.domain.school.controller.adminpage;
 
 
+import com.cooperation.project.cooperationcenter.domain.school.dto.IntroRequest;
 import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolRequest;
 import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolResponse;
 import com.cooperation.project.cooperationcenter.domain.school.service.SchoolFindService;
@@ -32,6 +33,16 @@ public class SchoolAdminRestController {
         return BaseResponse.onSuccess("success");
     }
 
+    @PostMapping("/intro")
+    public BaseResponse<?> saveIntro(@RequestBody IntroRequest.TotalIntroSaveDto request){
+        schoolService.saveIntro(request);
+        return BaseResponse.onSuccess("success");
+    }
+
+    @GetMapping("/intro/{boardId}")
+    public BaseResponse<?> getIntro(@PathVariable Long boardId){
+        return BaseResponse.onSuccess(schoolService.loadIntro(boardId));
+    }
 
     @PostMapping("/board")
     public BaseResponse<?> saveBoard(@RequestBody SchoolRequest.SchoolBoardDto request){
