@@ -575,7 +575,7 @@
     function collectIntro() {
         const titleInput = document.getElementById("intro-title");
         const descInput = document.getElementById("intro-description");
-
+        const schoolPicUrl = document.getElementById("schoolPicUrl");
         const title = titleInput ? titleInput.value.trim() : "";
         const description = descInput ? descInput.value.trim() : "";
 
@@ -587,7 +587,8 @@
         return {
             title,
             description,
-            advantages
+            advantages,
+            schoolPicUrl
         };
     }
 
@@ -758,7 +759,7 @@
         ------------------------------ */
         document.getElementById('intro-title').value = data.intro.title || "";
         document.getElementById('intro-description').value = data.intro.description || "";
-
+        document.getElementById('schoolPicUrl').value = data.intro.schoolPicUrl || "";
         // advantages
         const advList = document.getElementById('advantages-list');
         advList.innerHTML = "";

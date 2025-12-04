@@ -34,6 +34,7 @@ public class IntroPost extends BaseEntity {
     private String title;
     private String description;
     private String advantages;  //_로 구분
+    private String schoolPicUrl;
 
     //note BasicInfo
     private String schoolName;
@@ -75,6 +76,7 @@ public class IntroPost extends BaseEntity {
             this.advantages = (intro.advantages() != null)
                     ? String.join("_", intro.advantages())
                     : null;
+            this.schoolPicUrl = intro.schoolPicUrl();
         }
 
         IntroRequest.BasicInfoSaveDto basic = request.basicInfo();
@@ -110,7 +112,8 @@ public class IntroPost extends BaseEntity {
         IntroResponse.IntroInfo introInfo = new IntroResponse.IntroInfo(
                 this.title,
                 this.description,
-                this.advantages != null ? List.of(this.advantages.split("_")) : null
+                this.advantages != null ? List.of(this.advantages.split("_")) : null,
+                this.schoolPicUrl
         );
 
         // basic info

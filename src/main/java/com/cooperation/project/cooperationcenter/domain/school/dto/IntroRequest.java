@@ -19,7 +19,8 @@ public class IntroRequest {
     public record IntroSaveDto(
             String title,
             String description,
-            List<String> advantages
+            List<String> advantages,
+            String schoolPicUrl
     ){}
     
     public record BasicInfoSaveDto(

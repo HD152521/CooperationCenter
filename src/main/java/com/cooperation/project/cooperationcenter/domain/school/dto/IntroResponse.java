@@ -19,7 +19,8 @@ public class IntroResponse {
     public record IntroInfo(
             String title,
             String description,
-            List<String> advantages
+            List<String> advantages,
+            String schoolPicUrl
     ) {}
 
     // --- 기본 정보 ---
