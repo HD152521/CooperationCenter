@@ -92,8 +92,7 @@ public class MemberService {
         }
 
         Member member = Member.fromDto(request.withEncodedPassword(encodedPassword),agency,uuid);
-        memberRepository.save(member);
-        agency.addMember(member);
+        agency.addMember(memberRepository.save(member));
     }
 
     private Agency checkAgency(MemberRequest.SignupExistingAgencyDto agencyDto){
@@ -278,6 +277,10 @@ public class MemberService {
     public void acceptedMember(String email){
         Member member = memberRepository.findMemberByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+        boolean duplicated = memberRepository.countMemberByEmailAndStatus(email,UserStatus.APPROVED)>0;
+        if(duplicated) throw new BaseException(
+                ErrorCode.MEMBER_ALREADY_ACCEPTED_EMAIL
+        );
         member.accept();
         Agency agency = member.getAgency();
         if(!agency.isShare()) {

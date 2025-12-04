@@ -14,6 +14,7 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member,Long>,MemberRepositoryCustom  {
     Optional<Member> findMemberByEmail(String email);
+    int countMemberByEmailAndStatus(String email,UserStatus status);
     Boolean existsMemberByEmail(String email);
     List<Member> findTop4ByApprovalSignupFalseOrderByCreatedAtDesc();
     Page<Member> findByStatus(UserStatus status, Pageable pageable);

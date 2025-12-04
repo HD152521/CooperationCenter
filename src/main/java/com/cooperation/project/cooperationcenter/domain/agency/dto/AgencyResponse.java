@@ -17,7 +17,9 @@ public class AgencyResponse {
             String imgUrl
     ){
         public static ListDto from(Agency agency){
-            String filePath = "/api/v1/file/img/member/"+agency.getAgencyPicture().getFileId();
+            String filePath = agency.getAgencyPicture()==null?
+            "https://cooperation-center.oss-cn-beijing.aliyuncs.com/agencty_default.png?Expires=1764853051&OSSAccessKeyId=TMP.3KrVdT2JuRGdUxwy5UwGNixMYZEMdBKzyMPfVJ1GmT9Hz3fnd7tmRof5XKaoUMguTQuXDvHTG2sAD2UfSqdge9UopcrtHL&Signature=b0E8okCMFY2UrPI62oN9V4gWB1s%3D"
+                    :"/api/v1/file/img/member/"+agency.getAgencyPicture().getFileId();
             return new ListDto(
                     agency.getAgencyName(),
                     agency.getAgencyAddress1(),

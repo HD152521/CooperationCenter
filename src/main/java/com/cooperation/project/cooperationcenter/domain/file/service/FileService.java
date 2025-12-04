@@ -235,6 +235,10 @@ public class FileService {
         return ossService.presignedGetUrl(file.getPath(), 15, false, file.getStoredName(), null);
     }
 
+    public URL getViewUrl(String path,String fileName){
+        return ossService.presignedGetUrl(path, 15, false, fileName, null);
+    }
+
     public URL getDownloadUrl(FileAttachment file){
         return ossService.presignedGetUrl(file.getPath(), 15, true, file.getStoredName(), file.getContentType());
     }
@@ -262,4 +266,18 @@ public class FileService {
                 .location(URI.create(url.toString()))
                 .build();
     }
+
+    public ResponseEntity<Void> viewDefaultImg(String fileName){
+        try{
+            URL url = getViewUrl(fileName,fileName);
+            return ResponseEntity.status(HttpStatus.FOUND) // 302
+                    .location(URI.create(url.toString()))
+                    .build();
+
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
 }

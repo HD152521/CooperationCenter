@@ -74,12 +74,7 @@ public class AgencyService {
 
     public Page<Agency> getAgencyAllByPage(Pageable pageable) {
         try {
-            Page<Agency> originalPage = agencyRepository.findAgenciesByShare(true,pageable);
-
-            // 조건에 맞는 항목만 필터링
             List<Agency> filtered = getAgencyShare();
-
-            // 필터링된 데이터를 Page 객체로 다시 래핑
             return new PageImpl<>(filtered, pageable, filtered.size());
 
         } catch (Exception e) {

@@ -49,9 +49,11 @@ public class Agency extends BaseEntity {
     @JoinColumn(name = "business_picture_id")
     private FileAttachment businessPicture;
 
+    @Builder.Default
     @OneToMany(mappedBy = "agency")
     private List<Member> member = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "agency")
     private List<Student> students = new ArrayList<>();
 
