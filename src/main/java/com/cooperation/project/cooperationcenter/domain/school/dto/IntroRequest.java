@@ -12,6 +12,7 @@ public class IntroRequest {
             List<CollegeSaveDto> collegeDto,
             String homepageUrl,
             String englishPageUrl,
+            String mapUrl,
             long boardId
     ){}
 

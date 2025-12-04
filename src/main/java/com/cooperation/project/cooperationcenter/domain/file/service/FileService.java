@@ -236,7 +236,8 @@ public class FileService {
     }
 
     public URL getViewUrl(String path,String fileName){
-        return ossService.presignedGetUrl(path, 15, false, fileName, null);
+        log.info("path:{}, fileName:{}",path,fileName);
+        return ossService.presignedGetUrl(path, 15, false, null, null);
     }
 
     public URL getDownloadUrl(FileAttachment file){
@@ -250,26 +251,20 @@ public class FileService {
 
         FileAttachment attachment = saveFileModel(path,file,fileType);
 
-//        String url = "/api/v1/file/img/school/"+attachment.getFileId();
-//
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("result", List.of(Map.of(
-//                "url", url,
-//                "name", attachment.getOriginalName(),
-//                "size", attachment.getSize(),
-//                "align", "center",
-//                "tag", "img"
-//        )));
-
         URL url = getViewUrl(attachment);
         return ResponseEntity.status(HttpStatus.FOUND) // 302
                 .location(URI.create(url.toString()))
                 .build();
     }
 
-    public ResponseEntity<Void> viewDefaultImg(String fileName){
+    public ResponseEntity<Void> viewDefaultImg(String type){
         try{
+            String fileName = null;
+            if(type.equalsIgnoreCase("agency")) fileName = "agency_default.png";
+            else if(type.equalsIgnoreCase("school")) fileName = "school_default.jpg";
             URL url = getViewUrl(fileName,fileName);
+            log.info("url log:{}",url.toString());
+            log.info("url log:{}",fileName);
             return ResponseEntity.status(HttpStatus.FOUND) // 302
                     .location(URI.create(url.toString()))
                     .build();

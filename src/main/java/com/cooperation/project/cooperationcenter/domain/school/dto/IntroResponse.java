@@ -11,6 +11,8 @@ public class IntroResponse {
             List<CollegeInfo> colleges,
             String homepageUrl,
             String englishPageUrl,
+            String mapUrl,
+            String mapLocationURl,
             int collegeRank,
             SchoolDto schoolDto
     ) {}

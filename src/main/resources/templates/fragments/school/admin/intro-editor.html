@@ -115,9 +115,10 @@
                                 <label for="intro-description" class="block text-sm font-medium text-gray-200 mb-1">
                                     학교 사진 URL
                                 </label>
-                                <textarea id="schoolPicUrl"
+                                <input id="schoolPicUrl"
+                                       type="text"
                                           class="dark-input !rounded-2xl !h-28 !py-2.5 resize-none"
-                                          placeholder="학교를 한 문장으로 소개해 주세요."></textarea>
+                                          placeholder="">
                                 <p class="field-help">
                                     학교 소개 페이지에 보여질 학교 사진입니다.
                                 </p>
@@ -172,7 +173,7 @@
                                        class="dark-input"
                                        placeholder="예: 서울특별시 광진구 ○○로"/>
                                 <p class="field-help">
-                                    캠퍼스의 대표 위치(도시, 구 단위)를 간단히 적어주세요.
+                                    대학교의 위치를 상세하게 적어주세요! 이 주소를 기반으로 지도가 표시됩니다!
                                 </p>
                             </div>
 
@@ -294,6 +295,17 @@
                                        placeholder="예: https://en.example.ac.kr/"/>
                                 <p class="field-help">
                                     영문 소개 페이지가 없으면 비워두셔도 됩니다.
+                                </p>
+                            </div>
+                            <div>
+                                <label for="map-url"
+                                       class="block text-sm font-medium text-gray-200 mb-1">
+                                    학교 위치 안내도 페이지 URL (선택)
+                                </label>
+                                <input id="map-url"
+                                       class="dark-input"
+                                       placeholder="예: https://en.example.ac.kr/"/>
+                                <p class="field-help">
                                 </p>
                             </div>
                         </div>

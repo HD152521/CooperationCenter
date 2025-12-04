@@ -57,11 +57,12 @@ public class FileRestController {
 
     @GetMapping("/default/agency")
     public ResponseEntity<Void> getAgencyDefaultImage(){
-        return fileService.viewDefaultImg("agency_default");
+        log.info("enter agency");
+        return fileService.viewDefaultImg("agency");
     }
 
     @GetMapping("/default/school")
     public ResponseEntity<Void> getSchoolDefaultImage(){
-        return fileService.viewDefaultImg("schoolDefault");
+        return fileService.viewDefaultImg("school");
     }
 }

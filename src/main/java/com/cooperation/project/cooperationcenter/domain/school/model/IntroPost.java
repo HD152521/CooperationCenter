@@ -11,6 +11,8 @@ import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +53,7 @@ public class IntroPost extends BaseEntity {
 
     private String homepageUrl;
     private String englishPageUrl;
+    private String mapUrl;
     private int collegeRank;
 
 
@@ -64,6 +67,14 @@ public class IntroPost extends BaseEntity {
 
     public void updateCollege(List<College> colleges){
         this.college = colleges;
+    }
+
+    public String getImgUrl(){
+        if(this.schoolPicUrl==null){
+            return "/api/v1/file/default/school";
+        }else{
+            return this.schoolPicUrl;
+        }
     }
 
     public void fromDto(IntroRequest.TotalIntroSaveDto request){
@@ -103,7 +114,7 @@ public class IntroPost extends BaseEntity {
         if(request.homepageUrl()!=null) this.homepageUrl = request.homepageUrl();
         if(request.englishPageUrl()!=null) this.englishPageUrl = request.englishPageUrl();
         if(request.collegeRank() != 0) this.collegeRank = request.collegeRank();
-
+        if(request.mapUrl() != null) this.mapUrl = request.mapUrl();
     }
 
     public IntroResponse.IntroPostResponseDto toResponse() {
@@ -113,7 +124,7 @@ public class IntroPost extends BaseEntity {
                 this.title,
                 this.description,
                 this.advantages != null ? List.of(this.advantages.split("_")) : null,
-                this.schoolPicUrl
+                getImgUrl()
         );
 
         // basic info
@@ -150,6 +161,10 @@ public class IntroPost extends BaseEntity {
                 collegeInfoList,
                 this.homepageUrl,
                 this.englishPageUrl,
+                this.mapUrl,
+                "https://www.google.com/maps?q="
+                        + URLEncoder.encode(this.location, StandardCharsets.UTF_8)
+                        + "&output=embed",
                 this.collegeRank,
                 new IntroResponse.SchoolDto(
                         school.getSchoolKoreanName(),
