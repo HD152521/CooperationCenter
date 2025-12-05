@@ -14,6 +14,7 @@ import java.util.List;
 public class Profile{
     public record ProfileDto(
         MemberDto member,
+        AgencyDto agency,
         Page<SurveyDto> surveys,
         MemberFileDto businessCertification,
         MemberFileDto agencyPicture
@@ -26,14 +27,7 @@ public class Profile{
             String homePhoneNumber,
             String phoneNumber,
             String address1,
-            String address2,
-            String agencyOwner,
-            String agencyName,
-            String agencyPhone,
-            String agencyRegion,
-            String agencyEmail,
-            String agencyAddress1,
-            String agencyAddress2
+            String address2
     ){
         public static MemberDto from(Member member){
             Agency agency = member.getAgency();
@@ -44,7 +38,22 @@ public class Profile{
                     member.getHomePhoneNumber(),
                     member.getPhoneNumber(),
                     member.getAddress1(),
-                    member.getAddress2(),
+                    member.getAddress2()
+            );
+        }
+    }
+
+    public record AgencyDto(
+            String agencyOwner,
+            String agencyName,
+            String agencyPhone,
+            String agencyRegion,
+            String agencyEmail,
+            String agencyAddress1,
+            String agencyAddress2
+    ){
+        public static AgencyDto from(Agency agency){
+            return new AgencyDto(
                     agency.getAgencyOwner(),
                     agency.getAgencyName(),
                     agency.getAgencyPhone(),
@@ -54,6 +63,7 @@ public class Profile{
                     agency.getAgencyAddress2()
             );
         }
+
     }
 
     public record SurveyDto(

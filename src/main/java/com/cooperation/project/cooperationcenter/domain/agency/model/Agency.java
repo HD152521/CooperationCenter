@@ -94,7 +94,7 @@ public class Agency extends BaseEntity {
                 .build();
     }
 
-    public void updateAgency(Profile.MemberDto dto){
+    public void updateAgency(Profile.AgencyDto dto){
         this.agencyName = dto.agencyName();
         this.agencyAddress1 = dto.agencyAddress1();
         this.agencyAddress2 = dto.agencyAddress2();

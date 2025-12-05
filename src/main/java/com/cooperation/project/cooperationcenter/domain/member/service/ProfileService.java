@@ -54,6 +54,7 @@ public class ProfileService {
 
         return new Profile.ProfileDto(
                 Profile.MemberDto.from(member),
+                Profile.AgencyDto.from(agency),
                 Profile.SurveyDto.from(logs),
                 Profile.MemberFileDto.from(agency.getBusinessPicture()),
                 Profile.MemberFileDto.from(agency.getAgencyPicture()));
@@ -69,7 +70,7 @@ public class ProfileService {
     }
 
     @Transactional
-    public void updateAgency(Profile.MemberDto request,MemberDetails memberDetails){
+    public void updateAgency(Profile.AgencyDto request,MemberDetails memberDetails){
         Member member = getMember(memberDetails.getUsername());
         Agency agency = member.getAgency();
 
