@@ -55,4 +55,14 @@ public class FileRestController {
         return fileService.saveSchoolImgAndReturnUrl(type, file);
     }
 
+    @GetMapping("/default/agency")
+    public ResponseEntity<Void> getAgencyDefaultImage(){
+        log.info("enter agency");
+        return fileService.viewDefaultImg("agency");
+    }
+
+    @GetMapping("/default/school")
+    public ResponseEntity<Void> getSchoolDefaultImage(){
+        return fileService.viewDefaultImg("school");
+    }
 }

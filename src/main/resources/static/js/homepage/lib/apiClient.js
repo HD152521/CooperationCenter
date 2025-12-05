@@ -101,7 +101,7 @@ export const api = {
             return j;
         }
         if (ct.startsWith("text/"))          return res.text();
-        return j; // 파일/바이너리 응답 등
+        return res;
     }
 };
 

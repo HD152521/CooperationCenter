@@ -18,4 +18,8 @@ public enum PostType {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Invalid board type: " + type));
     }
+
+    public boolean equalsType(String type) {
+        return this.type.equalsIgnoreCase(type);
+    }
 }

@@ -74,11 +74,11 @@ public class MemberCookieService {
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
     }
 
-        public void deleteCookie(HttpServletResponse response, TokenResponse tokenResponse){
-            expiredCookie(response,tokenResponse);
+        public void deleteCookie(HttpServletResponse response){
+            expiredCookie(response);
         }
 
-        private void expiredCookie(HttpServletResponse response, TokenResponse tokenResponse){
+        private void expiredCookie(HttpServletResponse response){
             ResponseCookie deleteAccess = ResponseCookie.from(JWT_ACCESS_TOKEN_COOKIE_NAME, "")
                     .httpOnly(true)
 //                    .secure(true)

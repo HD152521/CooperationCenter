@@ -190,7 +190,7 @@
 
                     <!-- 참여하기 버튼 -->
                     <td class="px-4 py-3 text-right">
-                        <form th:action="@{/survey/answer/{id}(id=${survey.surveyId})}" method="post">
+                        <form th:action="@{/survey/answer/{id}(id=${survey.surveyId})}" method="get">
                             <button class="px-3 py-1 bg-white text-blue-600 border border-blue-600 text-sm rounded hover:bg-blue-50 transition-colors">
                                 참여하기
                             </button>

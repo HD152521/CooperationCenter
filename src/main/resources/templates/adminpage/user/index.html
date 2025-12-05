@@ -26,312 +26,313 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen text-gray-100">
-<div class="flex">
-    <aside th:replace="~{adminpage/common/leftSide :: leftSide}"></aside>
-    <main class="flex-1 p-8">
-        <header class="mb-8">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-3xl font-bold text-white">관리자 대시보드</h1>
-                    <p class="text-gray-400 mt-2">시스템 현황을 한눈에 확인하세요</p>
+<body>
+<div class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen text-gray-100">
+    <div class="flex">
+        <aside th:replace="~{adminpage/common/leftSide :: leftSide}"></aside>
+        <main class="flex-1 p-8">
+            <header class="mb-8">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-white">관리자 대시보드</h1>
+                        <p class="text-gray-400 mt-2">시스템 현황을 한눈에 확인하세요</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <!--                    <div c&lt;!&ndash;lass="bg-red-500 text-white px-3 py-1 rounded-full text-sm">-->
+                        <!--                        -->
+                        <!--                    </div>&ndash;&gt;-->
+                        <div class="text-right">
+                            <p class="text-white font-medium">김관리자</p>
+                            <p class="text-sm text-gray-400">최고 관리자</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex items-center space-x-4">
-<!--                    <div c&lt;!&ndash;lass="bg-red-500 text-white px-3 py-1 rounded-full text-sm">-->
-<!--                        -->
-<!--                    </div>&ndash;&gt;-->
-                    <div class="text-right">
-                        <p class="text-white font-medium">김관리자</p>
-                        <p class="text-sm text-gray-400">최고 관리자</p>
+            </header>
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
+                <div class="admin-card rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <div class="w-6 h-6 flex items-center justify-center mr-3 text-primary">
+                                <i class="ri-user-add-line"></i>
+                            </div>
+                            회원가입 승인 대기
+                        </h2>
+                        <button class="text-gray-400 hover:text-white transition-colors">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-refresh-line"></i>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                            <tr class="table-header text-left">
+                                <th class="p-3 text-sm font-medium text-gray-300">이름</th>
+                                <th class="p-3 text-sm font-medium text-gray-300">
+                                    이메일
+                                </th>
+                                <th class="p-3 text-sm font-medium text-gray-300">
+                                    신청일
+                                </th>
+                                <th class="p-3 text-sm font-medium text-gray-300">액션</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="table-row border-b border-gray-700" th:each="pending : ${pendingDto}">
+                                <td class="p-3 text-white" th:text="${pending.memberName}">이름</td>
+                                <td class="p-3 text-gray-300" th:text="${pending.memberEmail}">이메일</td>
+                                <td class="p-3 text-gray-400"
+                                    th:text="${#temporals.format(pending.createdAt, 'yyyy-MM-dd HH:mm')}">가입일
+                                </td>
+                                <td class="p-3">
+                                    <div class="flex space-x-2">
+                                        <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap view-details-btn"
+                                                th:attr="data-email=${pending.memberEmail}">
+                                            상세보기
+                                        </button>
+                                        <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap approve-btn accept-btn"
+                                                th:attr="data-email=${pending.memberEmail}">
+                                            승인하기
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="admin-card rounded-xl p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <div class="w-6 h-6 flex items-center justify-center mr-3 text-primary">
+                                <i class="ri-login-box-line"></i>
+                            </div>
+                            최근 로그인 기록
+                        </h2>
+                        <button class="text-gray-400 hover:text-white transition-colors">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-refresh-line"></i>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full" id="login-log-table">
+                            <thead>
+                            <tr class="table-header text-left">
+                                <th class="p-3 text-sm font-medium text-gray-300">사용자</th>
+                                <th class="p-3 text-sm font-medium text-gray-300">로그인 시간</th>
+                                <th class="p-3 text-sm font-medium text-gray-300">IP 주소</th>
+                                <th class="p-3 text-sm font-medium text-gray-300">상태</th>
+                            </tr>
+                            </thead>
+                            <tbody id="login-log-body">
+                            <!-- 데이터가 JS로 동적으로 삽입될 예정 -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-        </header>
-        <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
             <div class="admin-card rounded-xl p-6">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-xl font-bold text-white flex items-center">
                         <div class="w-6 h-6 flex items-center justify-center mr-3 text-primary">
-                            <i class="ri-user-add-line"></i>
+                            <i class="ri-file-list-3-line"></i>
                         </div>
-                        회원가입 승인 대기
+                        설문조사 참여 현황-수정필요
                     </h2>
-                    <button class="text-gray-400 hover:text-white transition-colors">
-                        <div class="w-5 h-5 flex items-center justify-center">
-                            <i class="ri-refresh-line"></i>
-                        </div>
-                    </button>
+                    <div class="flex items-center space-x-4">
+                        <!--                    <select-->
+                        <!--                            class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8"-->
+                        <!--                    >-->
+                        <!--                        <option>전체 기간</option>-->
+                        <!--                        <option>최근 7일</option>-->
+                        <!--                        <option>최근 30일</option>-->
+                        <!--                    </select>-->
+                        <button id="refresh-survey-answer" class="text-gray-400 hover:text-white transition-colors">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-refresh-line"></i>
+                            </div>
+                        </button>
+                    </div>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead>
                         <tr class="table-header text-left">
-                            <th class="p-3 text-sm font-medium text-gray-300">이름</th>
+                            <th class="p-3 text-sm font-medium text-gray-300">참여자</th>
                             <th class="p-3 text-sm font-medium text-gray-300">
-                                이메일
+                                설문조사
                             </th>
                             <th class="p-3 text-sm font-medium text-gray-300">
-                                신청일
+                                참여 시간
                             </th>
-                            <th class="p-3 text-sm font-medium text-gray-300">액션</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr class="table-row border-b border-gray-700" th:each="pending : ${pendingDto}">
-                            <td class="p-3 text-white" th:text="${pending.memberName}">이름</td>
-                            <td class="p-3 text-gray-300" th:text="${pending.memberEmail}">이메일</td>
-                            <td class="p-3 text-gray-400"
-                                th:text="${#temporals.format(pending.createdAt, 'yyyy-MM-dd HH:mm')}">가입일
-                            </td>
-                            <td class="p-3">
-                                <div class="flex space-x-2">
-                                    <button class="px-3 py-1 bg-gray-600 text-white text-sm rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap view-details-btn"
-                                            th:attr="data-email=${pending.memberEmail}">
-                                        상세보기
-                                    </button>
-                                    <button class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap approve-btn accept-btn"
-                                            th:attr="data-email=${pending.memberEmail}">
-                                        승인하기
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="admin-card rounded-xl p-6">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-xl font-bold text-white flex items-center">
-                        <div class="w-6 h-6 flex items-center justify-center mr-3 text-primary">
-                            <i class="ri-login-box-line"></i>
-                        </div>
-                        최근 로그인 기록
-                    </h2>
-                    <button class="text-gray-400 hover:text-white transition-colors">
-                        <div class="w-5 h-5 flex items-center justify-center">
-                            <i class="ri-refresh-line"></i>
-                        </div>
-                    </button>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full" id="login-log-table">
-                        <thead>
-                        <tr class="table-header text-left">
-                            <th class="p-3 text-sm font-medium text-gray-300">사용자</th>
-                            <th class="p-3 text-sm font-medium text-gray-300">로그인 시간</th>
-                            <th class="p-3 text-sm font-medium text-gray-300">IP 주소</th>
+                            <th class="p-3 text-sm font-medium text-gray-300">
+                                소요 시간
+                            </th>
                             <th class="p-3 text-sm font-medium text-gray-300">상태</th>
                         </tr>
                         </thead>
-                        <tbody id="login-log-body">
-                        <!-- 데이터가 JS로 동적으로 삽입될 예정 -->
+                        <tbody id="survey-answer-body">
+
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div>
-        <div class="admin-card rounded-xl p-6">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-bold text-white flex items-center">
-                    <div class="w-6 h-6 flex items-center justify-center mr-3 text-primary">
-                        <i class="ri-file-list-3-line"></i>
-                    </div>
-                    설문조사 참여 현황-수정필요
-                </h2>
-                <div class="flex items-center space-x-4">
-<!--                    <select-->
-<!--                            class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8"-->
-<!--                    >-->
-<!--                        <option>전체 기간</option>-->
-<!--                        <option>최근 7일</option>-->
-<!--                        <option>최근 30일</option>-->
-<!--                    </select>-->
-                    <button id="refresh-survey-answer" class="text-gray-400 hover:text-white transition-colors">
-                        <div class="w-5 h-5 flex items-center justify-center">
-                            <i class="ri-refresh-line"></i>
+        </main>
+    </div>
+    <div id="user-details-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div id="document-preview-modal"
+             class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-gray-800 rounded-xl p-6 max-w-4xl w-full mx-4">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-white">사업자등록증</h3>
+                    <button class="text-gray-400 hover:text-white close-preview">
+                        <div class="w-6 h-6 flex items-center justify-center">
+                            <i class="ri-close-line"></i>
                         </div>
                     </button>
                 </div>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead>
-                    <tr class="table-header text-left">
-                        <th class="p-3 text-sm font-medium text-gray-300">참여자</th>
-                        <th class="p-3 text-sm font-medium text-gray-300">
-                            설문조사
-                        </th>
-                        <th class="p-3 text-sm font-medium text-gray-300">
-                            참여 시간
-                        </th>
-                        <th class="p-3 text-sm font-medium text-gray-300">
-                            소요 시간
-                        </th>
-                        <th class="p-3 text-sm font-medium text-gray-300">상태</th>
-                    </tr>
-                    </thead>
-                    <tbody id="survey-answer-body">
-
-                    </tbody>
-                </table>
+                <div class="bg-gray-700 rounded-lg p-4">
+                    <img src="https://readdy.ai/api/search-image?query=A%20high-quality%2C%20professional%20business%20registration%20certificate%20document%20with%20official%20stamps%20and%20seals%2C%20clean%20white%20background%2C%20crisp%20text%2C%20and%20formal%20layout.%20The%20document%20appears%20to%20be%20an%20official%20government-issued%20business%20registration%20certificate%20with%20detailed%20company%20information%20and%20registration%20numbers.&width=800&height=1000&seq=1&orientation=portrait"
+                         alt="사업자등록증" class="w-full h-auto rounded-lg"/>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap close-preview">
+                        닫기
+                    </button>
+                </div>
             </div>
         </div>
-    </main>
-</div>
-<div id="user-details-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div id="document-preview-modal"
-         class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-gray-800 rounded-xl p-6 max-w-4xl w-full mx-4">
+        <div class="bg-gray-800 rounded-xl p-6 max-w-2xl w-full mx-4">
             <div class="flex items-center justify-between mb-6">
-                <h3 class="text-xl font-bold text-white">사업자등록증</h3>
-                <button class="text-gray-400 hover:text-white close-preview">
+                <h3 class="text-xl font-bold text-white">사용자 상세 정보</h3>
+                <button id="close-details" class="text-gray-400 hover:text-white">
                     <div class="w-6 h-6 flex items-center justify-center">
                         <i class="ri-close-line"></i>
                     </div>
                 </button>
             </div>
-            <div class="bg-gray-700 rounded-lg p-4">
-                <img src="https://readdy.ai/api/search-image?query=A%20high-quality%2C%20professional%20business%20registration%20certificate%20document%20with%20official%20stamps%20and%20seals%2C%20clean%20white%20background%2C%20crisp%20text%2C%20and%20formal%20layout.%20The%20document%20appears%20to%20be%20an%20official%20government-issued%20business%20registration%20certificate%20with%20detailed%20company%20information%20and%20registration%20numbers.&width=800&height=1000&seq=1&orientation=portrait"
-                     alt="사업자등록증" class="w-full h-auto rounded-lg"/>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="text-gray-400 text-sm">기본 정보</h4>
+                        <div class="bg-gray-700 rounded-lg p-4 mt-2">
+                            <div class="mb-3">
+                                <p class="text-gray-400 text-sm">기업명</p>
+                                <p class="text-white" id="detail-name">정수연</p>
+                            </div>
+                            <div class="mb-3">
+                                <p class="text-gray-400 text-sm">이메일</p>
+                                <p class="text-white" id="detail-email">
+                                    suyeon.jung@email.com </p>
+                            </div>
+                            <div class="mb-3">
+                                <p class="text-gray-400 text-sm">사업자등록번호</p>
+                                <p class="text-white" id="detail-business-number">
+                                    123-45-67890 </p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm">가입일</p>
+                                <p class="text-white" id="detail-join-date">2024-12-15</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-gray-400 text-sm">연락처 정보</h4>
+                        <div class="bg-gray-700 rounded-lg p-4 mt-2">
+                            <div class="mb-3">
+                                <p class="text-gray-400 text-sm">대표 전화번호</p>
+                                <p class="text-white" id="detail-phone">02-1234-5678</p>
+                            </div>
+                            <div class="mb-3">
+                                <p class="text-gray-400 text-sm">담당자 연락처</p>
+                                <p class="text-white" id="detail-contact-phone">
+                                    010-1234-5678 </p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm">사업장 주소</p>
+                                <p class="text-white" id="detail-address">
+                                    서울특별시 강남구 테헤란로 123 </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="text-gray-400 text-sm">계정 정보</h4>
+                        <div class="bg-gray-700 rounded-lg p-4 mt-2">
+                            <div class="mb-3">
+                                <p class="text-gray-400 text-sm">계정 상태</p>
+                                <div class="flex items-center mt-1">
+                                    <div class="w-2 h-2 rounded-full bg-green-500 mr-2"></div>
+                                    <p class="text-white" id="detail-status">활성</p>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <p class="text-gray-400 text-sm">마지막 로그인</p>
+                                <p class="text-white" id="detail-last-login">
+                                    2025-01-09 08:45 </p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400 text-sm">로그인 방식</p>
+                                <p class="text-white" id="detail-login-method">이메일</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-gray-400 text-sm">사업자 등록증</h4>
+                        <div class="bg-gray-700 rounded-lg p-4 mt-2">
+                            <div class="mb-3">
+                                <p class="text-gray-400 text-sm">제출 상태</p>
+                                <div class="flex items-center mt-1">
+                                    <div class="w-2 h-2 rounded-full bg-green-500 mr-2"></div>
+                                    <p class="text-white">확인 완료</p>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <p class="text-gray-400 text-sm">제출일</p>
+                                <p class="text-white">2024-12-15</p>
+                            </div>
+                            <div>
+                                <button class="mt-2 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap flex items-center"
+                                        id="view-business-registration">
+                                    <div class="w-4 h-4 flex items-center justify-center mr-2">
+                                        <i class="ri-file-text-line"></i>
+                                    </div>
+                                    사업자등록증 보기
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="mt-6 flex justify-end">
-                <button class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap close-preview">
+                <button id="close-details-btn"
+                        class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
                     닫기
                 </button>
             </div>
         </div>
     </div>
-    <div class="bg-gray-800 rounded-xl p-6 max-w-2xl w-full mx-4">
-        <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold text-white">사용자 상세 정보</h3>
-            <button id="close-details" class="text-gray-400 hover:text-white">
-                <div class="w-6 h-6 flex items-center justify-center">
-                    <i class="ri-close-line"></i>
-                </div>
-            </button>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-4">
-                <div>
-                    <h4 class="text-gray-400 text-sm">기본 정보</h4>
-                    <div class="bg-gray-700 rounded-lg p-4 mt-2">
-                        <div class="mb-3">
-                            <p class="text-gray-400 text-sm">기업명</p>
-                            <p class="text-white" id="detail-name">정수연</p>
-                        </div>
-                        <div class="mb-3">
-                            <p class="text-gray-400 text-sm">이메일</p>
-                            <p class="text-white" id="detail-email">
-                                suyeon.jung@email.com </p>
-                        </div>
-                        <div class="mb-3">
-                            <p class="text-gray-400 text-sm">사업자등록번호</p>
-                            <p class="text-white" id="detail-business-number">
-                                123-45-67890 </p>
-                        </div>
-                        <div>
-                            <p class="text-gray-400 text-sm">가입일</p>
-                            <p class="text-white" id="detail-join-date">2024-12-15</p>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <h4 class="text-gray-400 text-sm">연락처 정보</h4>
-                    <div class="bg-gray-700 rounded-lg p-4 mt-2">
-                        <div class="mb-3">
-                            <p class="text-gray-400 text-sm">대표 전화번호</p>
-                            <p class="text-white" id="detail-phone">02-1234-5678</p>
-                        </div>
-                        <div class="mb-3">
-                            <p class="text-gray-400 text-sm">담당자 연락처</p>
-                            <p class="text-white" id="detail-contact-phone">
-                                010-1234-5678 </p>
-                        </div>
-                        <div>
-                            <p class="text-gray-400 text-sm">사업장 주소</p>
-                            <p class="text-white" id="detail-address">
-                                서울특별시 강남구 테헤란로 123 </p>
-                        </div>
-                    </div>
-                </div>
+    <div id="approval-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-white mb-4">회원가입 승인</h3>
+            <p class="text-gray-300 mb-6">
+                선택한 사용자의 회원가입을 승인하시겠습니까? </p>
+            <div class="flex space-x-4">
+                <button id="cancel-approval"
+                        class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
+                    취소
+                </button>
+                <button id="confirm-approval"
+                        class="flex-1 px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
+                    승인하기
+                </button>
             </div>
-            <div class="space-y-4">
-                <div>
-                    <h4 class="text-gray-400 text-sm">계정 정보</h4>
-                    <div class="bg-gray-700 rounded-lg p-4 mt-2">
-                        <div class="mb-3">
-                            <p class="text-gray-400 text-sm">계정 상태</p>
-                            <div class="flex items-center mt-1">
-                                <div class="w-2 h-2 rounded-full bg-green-500 mr-2"></div>
-                                <p class="text-white" id="detail-status">활성</p>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <p class="text-gray-400 text-sm">마지막 로그인</p>
-                            <p class="text-white" id="detail-last-login">
-                                2025-01-09 08:45 </p>
-                        </div>
-                        <div>
-                            <p class="text-gray-400 text-sm">로그인 방식</p>
-                            <p class="text-white" id="detail-login-method">이메일</p>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <h4 class="text-gray-400 text-sm">사업자 등록증</h4>
-                    <div class="bg-gray-700 rounded-lg p-4 mt-2">
-                        <div class="mb-3">
-                            <p class="text-gray-400 text-sm">제출 상태</p>
-                            <div class="flex items-center mt-1">
-                                <div class="w-2 h-2 rounded-full bg-green-500 mr-2"></div>
-                                <p class="text-white">확인 완료</p>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <p class="text-gray-400 text-sm">제출일</p>
-                            <p class="text-white">2024-12-15</p>
-                        </div>
-                        <div>
-                            <button class="mt-2 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap flex items-center"
-                                    id="view-business-registration">
-                                <div class="w-4 h-4 flex items-center justify-center mr-2">
-                                    <i class="ri-file-text-line"></i>
-                                </div>
-                                사업자등록증 보기
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="mt-6 flex justify-end">
-            <button id="close-details-btn"
-                    class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
-                닫기
-            </button>
         </div>
     </div>
 </div>
-<div id="approval-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4">
-        <h3 class="text-xl font-bold text-white mb-4">회원가입 승인</h3>
-        <p class="text-gray-300 mb-6">
-            선택한 사용자의 회원가입을 승인하시겠습니까? </p>
-        <div class="flex space-x-4">
-            <button id="cancel-approval"
-                    class="flex-1 px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap">
-                취소
-            </button>
-            <button id="confirm-approval"
-                    class="flex-1 px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
-                승인하기
-            </button>
-        </div>
-    </div>
-</div>
-
 
 <script id="approval-system" type="module">
     const modal = document.getElementById("approval-modal");

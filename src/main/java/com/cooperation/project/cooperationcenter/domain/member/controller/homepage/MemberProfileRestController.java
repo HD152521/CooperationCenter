@@ -39,7 +39,7 @@ public class MemberProfileRestController {
     }
 
     @PatchMapping("/agency")
-    public BaseResponse<?> updateAgencyInfo(@RequestBody Profile.MemberDto request, @AuthenticationPrincipal MemberDetails memberDetails){
+    public BaseResponse<?> updateAgencyInfo(@RequestBody Profile.AgencyDto request, @AuthenticationPrincipal MemberDetails memberDetails){
         log.info("request:{}",request.toString());
         try{
             profileService.updateAgency(request,memberDetails);

@@ -30,12 +30,13 @@ public class MemberRestController {
 
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<?> signup(
-            @RequestPart("data") String data,
+            @RequestPart("memberData") String memberData,
+            @RequestPart("agencyData") String agencyData,
             @RequestPart(name = "agencyPicture", required = false) MultipartFile agencyPicture,
             @RequestPart(name = "businessCertificate", required = false) MultipartFile businessCertificate
     ) throws JsonProcessingException {
         try{
-            memberService.signup(data,agencyPicture,businessCertificate);
+            memberService.signup(memberData,agencyData,agencyPicture,businessCertificate);
             return BaseResponse.onSuccess("success");
         }catch (BaseException e){
             return BaseResponse.onFailure(e.getCode(),null);

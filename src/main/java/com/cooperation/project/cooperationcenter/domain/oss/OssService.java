@@ -69,6 +69,7 @@ public class OssService {
         req.setExpiration(exp);
 
         ObjectMetadata md = oss.getObjectMetadata(bucket, key);
+        log.info("key:{}",key);
         log.info("CT={}", md.getContentType());
         log.info("CD={}", md.getContentDisposition());     // 여기서 attachment면 '객체 메타' 원인
         log.info("USER={}", md.getUserMetadata());         // x-oss-meta-... 강제다운로드 류 키가 있나 확인
@@ -89,7 +90,6 @@ public class OssService {
                 cd += "; filename=\"" + encoded + "\"; filename*=UTF-8''" + encoded;
             }
             req.addQueryParameter("response-content-disposition", cd);
-//             if (contentType != null) req.addQueryParameter("response-content-type", contentType);
         }
 
         return oss.generatePresignedUrl(req);

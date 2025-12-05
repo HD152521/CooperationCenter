@@ -4,6 +4,7 @@ import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails
 import com.cooperation.project.cooperationcenter.domain.survey.dto.*;
 import com.cooperation.project.cooperationcenter.domain.survey.model.Survey;
 import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.*;
+import com.cooperation.project.cooperationcenter.global.exception.BaseException;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.zxing.WriterException;
@@ -88,7 +89,7 @@ public class SurveyRestController {
     
     //note 설문조사 답변 및 로그 확인
     @PostMapping("/answer")
-    public ResponseEntity<Void> receiveSurveyAnswer(
+    public BaseResponse<?> receiveSurveyAnswer(
             @RequestPart("data") String data,
             HttpServletRequest request,
             @AuthenticationPrincipal MemberDetails memberDetails
@@ -96,11 +97,13 @@ public class SurveyRestController {
         log.info("[submit answer] dto:{}",data);
         try{
             surveyAnswerService.answerSurvey(data,request,memberDetails);
-        }catch (Exception e){
+        }catch(BaseException e){
+          log.warn(e.getMessage());
+        } catch (Exception e){
             log.warn(e.getMessage());
         }
         log.info("save answer");
-        return ResponseEntity.ok().build();
+        return BaseResponse.onSuccess("succeess");
     }
 
     @GetMapping("/admin/answer")
@@ -153,19 +156,17 @@ public class SurveyRestController {
         return BaseResponse.onSuccess(surveySaveService.getTemplate(type));
     }
 
-    //note 설문조사 폴더용 controller7
-
     @GetMapping("/admin/folders")
     public BaseResponse<?> getFolders(){
         return BaseResponse.onSuccess(surveyFolderService.getSurveyFolderDtos());
     }
-    //fixme 수정
+
     @PostMapping("/admin/folders")
     public BaseResponse<?> makeFolder(@RequestBody SurveyFolderDto request,@AuthenticationPrincipal MemberDetails memberDetails){
         surveyFolderService.saveSurveyFolderDto(request,memberDetails);
         return BaseResponse.onSuccess("success");
     }
-    //fixme 수정
+
     @PatchMapping("/admin/folders/{folderId}")
     public BaseResponse<?> updateFolder(@RequestBody SurveyFolderDto request){
         surveyFolderService.updateSurveyFolderDto(request);
