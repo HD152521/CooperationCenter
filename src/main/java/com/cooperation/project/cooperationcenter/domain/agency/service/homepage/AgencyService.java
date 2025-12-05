@@ -35,7 +35,6 @@ public class AgencyService {
         AgencyRegion agencyRegion = AgencyRegion.fromLabel(region);
         Page<Agency> agencies = getAgencyAllByPage(pageable);
         List<Agency> filtered = agencies.stream()
-                .filter(agency -> (agency.getMember() == null || agency.getMember().isAccept()))
                 .filter(agency -> keyword == null || agency.getAgencyName().toLowerCase().contains(keyword.toLowerCase()))
                 .filter(agency -> agencyRegion == null || agency.getAgencyRegion().equals(agencyRegion))
                 .toList();
@@ -44,7 +43,7 @@ public class AgencyService {
     }
 
     public List<AgencyResponse.ListDto> getAgencyListForHome(){
-        List<Agency> agencies = getAgencyAll();
+        List<Agency> agencies = getAgencyShare();
         if(agencies==null){
             log.info("null임");
         }
@@ -57,9 +56,16 @@ public class AgencyService {
 
     public List<Agency> getAgencyAll() {
         try {
-            return agencyRepository.findAll().stream()
-                    .filter(agency -> (agency.getMember()==null||agency.getMember().isAccept()))
-                    .collect(Collectors.toList());
+            return getAgencyShare();
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Agency> getAgencyShare() {
+        try {
+            return agencyRepository.findAgenciesByShare(true);
         } catch (Exception e) {
             log.warn(e.getMessage());
             return Collections.emptyList();
@@ -68,15 +74,7 @@ public class AgencyService {
 
     public Page<Agency> getAgencyAllByPage(Pageable pageable) {
         try {
-            Page<Agency> originalPage = agencyRepository.findAll(pageable);
-
-            // 조건에 맞는 항목만 필터링
-            List<Agency> filtered = originalPage
-                    .stream()
-                    .filter(agency -> agency.getMember() == null || agency.getMember().isAccept())
-                    .toList();
-
-            // 필터링된 데이터를 Page 객체로 다시 래핑
+            List<Agency> filtered = getAgencyShare();
             return new PageImpl<>(filtered, pageable, filtered.size());
 
         } catch (Exception e) {

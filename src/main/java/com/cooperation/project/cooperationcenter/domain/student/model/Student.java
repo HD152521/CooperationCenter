@@ -1,5 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.student.model;
 
+import com.cooperation.project.cooperationcenter.domain.agency.model.Agency;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.student.dto.Gender;
 import com.cooperation.project.cooperationcenter.domain.student.dto.StudentRequest;
@@ -47,10 +48,14 @@ public class Student extends BaseEntity {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "agency_id", nullable = false) // unique 제거
+    private Agency agency;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "survey_log_id", nullable = false)
     private SurveyLog surveyLog;
 
-    public static Student from(StudentRequest.MappingDto dto,SurveyLog surveyLog,Member member){
+    public static Student from(StudentRequest.MappingDto dto,SurveyLog surveyLog,Member member,Agency agency){
         String[] univer = new String[3];
         String[] splitDegree = dto.degreeZip().split(",");
         for(int i=0;i<splitDegree.length;i++) univer[i] = splitDegree[i];
@@ -71,6 +76,7 @@ public class Student extends BaseEntity {
                 .degree(univer[0])
                 .department(univer[1])
                 .major(univer[2])
+                .agency(agency)
                 .build();
     }
 

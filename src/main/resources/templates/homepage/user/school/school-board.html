@@ -17,62 +17,6 @@
                         <i class="ri-search-line"></i>
                     </div>
                 </div>
-                <div class="relative">
-                    <button id="filterButton"
-                            class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 text-sm font-medium text-gray-700 whitespace-nowrap !rounded-button">
-                        <div class="w-5 h-5 flex items-center justify-center">
-                            <i class="ri-filter-3-line"></i>
-                        </div>
-                        <span>필터</span>
-                    </button>
-                    <div id="filterDropdown"
-                         class="hidden absolute right-0 mt-2 w-60 bg-white rounded shadow-lg z-10 p-4">
-                        <h3 class="font-medium text-gray-700 mb-3">문서 유형</h3>
-                        <div class="space-y-2">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" class="accent-primary">
-                                <span class="text-sm">입학 신청</span>
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" class="accent-primary">
-                                <span class="text-sm">장학금</span>
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" class="accent-primary">
-                                <span class="text-sm">기숙사</span>
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" class="accent-primary">
-                                <span class="text-sm">비자</span>
-                            </label>
-                        </div>
-                        <div class="border-t border-gray-200 my-3 pt-3">
-                            <h3 class="font-medium text-gray-700 mb-3">정렬 기준</h3>
-                            <div class="space-y-2">
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="radio" name="sort" class="accent-primary">
-                                    <span class="text-sm">최신순</span>
-                                </label>
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="radio" name="sort" class="accent-primary">
-                                    <span class="text-sm">이름순</span>
-                                </label>
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="radio" name="sort" class="accent-primary">
-                                    <span class="text-sm">인기순</span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="flex justify-end gap-2 mt-4">
-                            <button class="px-3 py-1.5 text-sm border border-gray-300 rounded text-gray-700 hover:bg-gray-50 whitespace-nowrap !rounded-button">
-                                초기화
-                            </button>
-                            <button class="px-3 py-1.5 text-sm bg-primary text-white rounded hover:bg-primary/90 whitespace-nowrap !rounded-button">
-                                적용
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
         <!-- 중요 공지 -->
@@ -98,60 +42,72 @@
                 </thead>
 
                 <tbody class="divide-y divide-gray-200" th:if="${filePostDto != null}">
-                <!-- 1) 공지 먼저 -->
-                <tr th:each="post : ${filePostDto.content}" th:if="${post.type == 'NOTICE'}" class="bg-amber-50">
-                    <td class="px-4 py-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 flex items-center justify-center rounded
-                    bg-amber-100 text-amber-700">
-                                <i class="ri-pushpin-2-fill"></i>
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-2">
-            <span class="inline-flex items-center px-2 py-0.5 text-[11px] rounded
-                         bg-amber-200 text-amber-800">공지</span>
-                                    <p class="font-medium text-gray-900" th:text="${post.title}">문서 제목</p>
-                                </div>
-                                <p class="text-xs text-gray-600 mt-0.5" th:text="${post.description} ?: '설명 없음'">설명</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-4 py-4 text-sm text-gray-700"
-                        th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">2025-06-01
-                    </td>
-                    <td class="px-4 py-4">
-                        <a class="inline-flex items-center gap-1 px-2.5 py-1 text-xs bg-primary text-white rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/40"
-                           th:href="@{/api/v1/file/school/{fileId}(fileId=${post.fileId})}">
-                            <div class="w-4 h-4 flex items-center justify-center"><i class="ri-download-line"></i></div>
-                            <span>다운로드</span>
-                        </a>
-                    </td>
-                </tr>
 
-                <!-- 2) 일반 문서 -->
-                <tr th:each="post : ${filePostDto.content}" th:if="${post.type != 'NOTICE'}">
-                    <td class="px-4 py-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-600 rounded">
-                                <i class="ri-file-text-line"></i>
-                            </div>
-                            <div>
-                                <p class="font-medium text-gray-800" th:text="${post.title}">문서 제목</p>
-                                <p class="text-xs text-gray-500 mt-0.5" th:text="${post.description} ?: '설명 없음'">설명</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-4 py-4 text-sm text-gray-600"
-                        th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">2025-06-01
-                    </td>
-                    <td class="px-4 py-4">
-                        <a class="inline-flex items-center gap-1 px-2.5 py-1 text-xs bg-primary text-white rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/40"
-                           th:href="@{/api/v1/file/school/{fileId}(fileId=${post.fileId})}">
-                            <div class="w-4 h-4 flex items-center justify-center"><i class="ri-download-line"></i></div>
-                            <span>다운로드</span>
-                        </a>
-                    </td>
-                </tr>
+                    <th:block th:each="post, iterStat : ${filePostDto}">
+                        <tr class="post-row cursor-pointer"
+                            th:classappend="${post.type == 'NOTICE'} ? ' bg-amber-50' : ''"
+                            th:attr="data-school=${school}, data-post-id=${post.id}, data-board-id=${boardId}">
+
+                            <!-- 1) 제목/설명 + 공지/일반 아이콘/배지 -->
+                            <td class="px-4 py-4">
+                                <div class="flex items-center gap-3">
+                                    <!-- 아이콘: 공지/일반 분기 -->
+                                    <div th:if="${post.type == 'NOTICE'}"
+                                         class="w-8 h-8 flex items-center justify-center rounded bg-amber-100 text-amber-700">
+                                        <i class="ri-pushpin-2-fill"></i>
+                                    </div>
+                                    <div th:if="${post.type != 'NOTICE'}"
+                                         class="w-8 h-8 flex items-center justify-center rounded bg-gray-100 text-gray-600">
+                                        <i class="ri-file-text-line"></i>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <!-- 공지 배지 -->
+                                            <span th:if="${post.type == 'NOTICE'}"
+                                                  class="inline-flex items-center px-2 py-0.5 text-[11px] rounded
+                                 bg-amber-200 text-amber-800">
+                        공지
+                    </span>
+                                            <p class="font-medium text-gray-900 hover:text-primary"
+                                               th:text="${post.title}">
+                                                문서 제목
+                                            </p>
+                                        </div>
+                                        <p class="text-xs text-gray-600 mt-0.5"
+                                           th:text="${post.description} ?: '설명 없음'">
+                                            설명
+                                        </p>
+                                    </div>
+
+                                    <!-- 첨부 아이콘 표시하고 싶으면 여기에 -->
+                                    <div class="w-5 h-5 flex items-center justify-center text-gray-400"
+                                         th:if="${post.isFile}">
+                                        <i class="ri-attachment-line"></i>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- 2) 작성일 -->
+                            <td class="px-4 py-4 text-sm text-gray-700"
+                                th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">
+                                2025-06-01
+                            </td>
+
+                            <!-- 3) 다운로드 버튼 -->
+                            <td class="px-4 py-4">
+                                <a class="inline-flex items-center gap-1 px-2.5 py-1 text-xs bg-primary text-white rounded-md
+                  hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/40"
+                                   th:href="@{/api/v1/file/school/{fileId}(fileId=${post.fileId})}">
+                                    <div class="w-4 h-4 flex items-center justify-center">
+                                        <i class="ri-download-line"></i>
+                                    </div>
+                                    <span>다운로드</span>
+                                </a>
+                            </td>
+                        </tr>
+
+                    </th:block>
 
                 <!-- 비어있을 때 -->
                 <tr th:if="${#lists.isEmpty(filePostDto.content)}">
@@ -268,20 +224,42 @@
     </div>
 </main>
 <th:block th:fragment="script">
-    <script id="filterDropdownScript" type="module">
-        const filterButton = document.getElementById("filterButton");
-        const filterDropdown = document.getElementById("filterDropdown");
-        filterButton?.addEventListener("click", function () {
-            filterDropdown.classList.toggle("hidden");
-        });
-        document.addEventListener("click", function (event) {
-            if (
-                !filterButton.contains(event.target) &&
-                !filterDropdown.contains(event.target)
-            ) {
-                filterDropdown.classList.add("hidden");
-            }
-        });
-    </script>
+<!--    <script id="filterDropdownScript" type="module">-->
+<!--        const filterButton = document.getElementById("filterButton");-->
+<!--        const filterDropdown = document.getElementById("filterDropdown");-->
+<!--        filterButton?.addEventListener("click", function () {-->
+<!--            filterDropdown.classList.toggle("hidden");-->
+<!--        });-->
+<!--        document.addEventListener("click", function (event) {-->
+<!--            if (-->
+<!--                !filterButton.contains(event.target) &&-->
+<!--                !filterDropdown.contains(event.target)-->
+<!--            ) {-->
+<!--                filterDropdown.classList.add("hidden");-->
+<!--            }-->
+<!--        });-->
+<!--    </script>-->
 </th:block>
+<script id="searchScript" type="module">
+    const searchInput = document.querySelector('input[type="search"]');
+    searchInput?.addEventListener("keypress", function (e) {
+        console.log(e);
+        if (e.key === "Enter") {
+            const searchTerm = this.value.trim();
+
+            const path = window.location.pathname;
+            const parts = path.split("/").filter(Boolean);
+            const school = parts[1];
+            const boardId = parts[3];
+
+            let url = `/school/${school}/board/${boardId}`;
+
+            if (searchTerm) {
+                console.log("검색어:", searchTerm);
+                url += `?keyword=${encodeURIComponent(searchTerm)}`;
+            }
+            window.location.href = url;
+        }
+    });
+</script>
 </html>

@@ -79,69 +79,6 @@
                     </tr>
                 </th:block>
 
-
-                <!-- 공지글 먼저 렌더링 -->
-                <!--                    <th:block th:each="post : ${postDto}">-->
-                <!--                        <tr th:if="${post.type == 'NOTICE'}"-->
-                <!--                            class="post-row important cursor-pointer"-->
-                <!--                            th:attr="data-school=${school}, data-post-id=${post.id}, data-board-id=${boardId} ">-->
-                <!--                            <td class="px-4 py-4 text-sm text-gray-600">-->
-                <!--                                <div class="flex items-center gap-2">-->
-                <!--                                    <div class="w-5 h-5 flex items-center justify-center text-red-500">-->
-                <!--                                        <i class="ri-pushpin-fill"></i>-->
-                <!--                                    </div>-->
-                <!--                                    <span class="font-medium">공지</span>-->
-                <!--                                </div>-->
-                <!--                            </td>-->
-                <!--                            <td class="px-4 py-4">-->
-                <!--                                <div class="flex items-center gap-3">-->
-                <!--                                    <div>-->
-                <!--                                        <p class="font-medium text-gray-800 hover:text-primary"-->
-                <!--                                           th:text="${post.title}"></p>-->
-                <!--                                        <p class="text-xs text-gray-500 mt-0.5"-->
-                <!--                                           th:text="${post.description}"></p>-->
-                <!--                                    </div>-->
-                <!--                                    <div class="w-5 h-5 flex items-center justify-center text-gray-400" th:if="${post.isFile}">-->
-                <!--                                        <i class="ri-attachment-line"></i>-->
-                <!--                                    </div>-->
-                <!--                                </div>-->
-                <!--                            </td>-->
-                <!--                            <td class="px-4 py-4 text-sm text-gray-600">작성자</td>-->
-                <!--                            <td class="px-4 py-4 text-sm text-gray-600"-->
-                <!--                                th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}"></td>-->
-                <!--                            <td class="px-4 py-4 text-sm text-gray-600"-->
-                <!--                                th:text="${#numbers.formatInteger(post.views, 1, 'COMMA')}"></td>-->
-                <!--                        </tr>-->
-                <!--                    </th:block>-->
-
-                <!--                    &lt;!&ndash; 일반글 렌더링 &ndash;&gt;-->
-                <!--                    <th:block th:each="post, iterStat : ${postDto}">-->
-                <!--                        <tr th:if="${post.type != 'NOTICE'}"-->
-                <!--                            class="post-row cursor-pointer"-->
-                <!--                            th:attr="data-school=${school}, data-post-id=${post.id}, data-board-id=${boardId}">-->
-                <!--                            <td class="px-4 py-4 text-sm text-gray-600 text-center"-->
-                <!--                                th:text="${iterStat.count}"></td>-->
-                <!--                            <td class="px-4 py-4">-->
-                <!--                                <div class="flex items-center gap-3">-->
-                <!--                                    <div>-->
-                <!--                                        <p class="font-medium text-gray-800 hover:text-primary"-->
-                <!--                                           th:text="${post.title}"></p>-->
-                <!--                                        <p class="text-xs text-gray-500 mt-0.5"-->
-                <!--                                           th:text="${post.description}"></p>-->
-                <!--                                    </div>-->
-                <!--                                    <div class="w-5 h-5 flex items-center justify-center text-gray-400" th:if="${post.isFile}">-->
-                <!--                                        <i class="ri-attachment-line"></i>-->
-                <!--                                    </div>-->
-                <!--                                </div>-->
-                <!--                            </td>-->
-                <!--                            <td class="px-4 py-4 text-sm text-gray-600">작성자</td>-->
-                <!--                            <td class="px-4 py-4 text-sm text-gray-600"-->
-                <!--                                th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}"></td>-->
-                <!--                            <td class="px-4 py-4 text-sm text-gray-600"-->
-                <!--                                th:text="${#numbers.formatInteger(post.views, 1, 'COMMA')}"></td>-->
-                <!--                        </tr>-->
-                <!--                    </th:block>-->
-
                 </tbody>
             </table>
         </div>
@@ -229,23 +166,6 @@
         </div>
     </div>
 </main>
-<!--<script id="filterDropdownScript" type="module">-->
-<!--    document.addEventListener("DOMContentLoaded", function () {-->
-<!--        const filterButton = document.getElementById("filterButton");-->
-<!--        const filterDropdown = document.getElementById("filterDropdown");-->
-<!--        filterButton.addEventListener("click", function () {-->
-<!--            filterDropdown.classList.toggle("hidden");-->
-<!--        });-->
-<!--        document.addEventListener("click", function (event) {-->
-<!--            if (-->
-<!--                !filterButton.contains(event.target) &&-->
-<!--                !filterDropdown.contains(event.target)-->
-<!--            ) {-->
-<!--                filterDropdown.classList.add("hidden");-->
-<!--            }-->
-<!--        });-->
-<!--    });-->
-<!--</script>-->
 <script id="postClickScript" type="module">
     const postRows = document.querySelectorAll(".post-row");
     postRows.forEach((row) => {
@@ -262,9 +182,19 @@
     searchInput?.addEventListener("keypress", function (e) {
         if (e.key === "Enter") {
             const searchTerm = this.value.trim();
+
+            const path = window.location.pathname;
+            const parts = path.split("/").filter(Boolean);
+            const school = parts[1];
+            const boardId = parts[3];
+
+            let url = `/school/${school}/board/${boardId}`;
+
             if (searchTerm) {
                 console.log("검색어:", searchTerm);
+                url += `?keyword=${encodeURIComponent(searchTerm)}`;
             }
+            window.location.href = url;
         }
     });
 </script>

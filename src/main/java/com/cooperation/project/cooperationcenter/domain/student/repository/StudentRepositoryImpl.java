@@ -93,7 +93,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom {
     private BooleanExpression memberNameContains(String agencyName, QStudent st) {
         log.info("agencyName:{}",agencyName);
         if (!hasText(agencyName)) return null;
-        return st.member.agencyName.containsIgnoreCase(agencyName);
+        return st.agency.agencyName.containsIgnoreCase(agencyName);
     }
 
     private BooleanExpression nameContains(String name, QStudent st) {

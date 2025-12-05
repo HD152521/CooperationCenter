@@ -43,7 +43,7 @@
 </head>
 <body>
 <div class="bg-gray-50 min-h-screen">
-    <header th:replace="~{homepage/common/survey-make-nav :: survey-make-nav}"></header>
+    <header th:replace="~{fragments/common/survey-nav :: survey-nav}"></header>
     <div class="w-full bg-white shadow-sm progress-wrapper">
         <div class="container mx-auto px-4 py-2">
             <div class="relative h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -90,87 +90,87 @@
 <!--TODO: 안쓰는 스크립트 제거-->
 <script id="survey-interaction" type="module">
     // 글자수 카운트 기능
-    // function initializeSurveyInteractions() {
-    //     // 글자 수 카운트
-    //     document.querySelectorAll('textarea[name^="q"]').forEach((textarea) => {
-    //         textarea?.addEventListener('input', function () {
-    //             let charCount = textarea.closest('.question-container')?.querySelector('.char-count')
-    //                 || document.getElementById('charCount');
-    //             if (!charCount) return;
-    //
-    //             const count = this.value.length;
-    //             charCount.textContent = count > 500 ? 500 : count;
-    //
-    //             if (count > 500) this.value = this.value.substring(0, 500);
-    //
-    //             updateProgress();
-    //         });
-    //     });
-    //
-    //     // 파일 입력
-    //     document.querySelectorAll('input[type="file"]').forEach((fileInput) => {
-    //         const type = fileInput.dataset.type; // file or image
-    //         const container = fileInput.closest('.space-y-3');
-    //         console.log(container);
-    //         const fileNameDisplay = type === "image"
-    //             ? container?.querySelector('.image-input')
-    //             : container?.querySelector('.file-name');
-    //         console.log(fileNameDisplay);
-    //
-    //         if (fileNameDisplay) {
-    //             fileInput?.addEventListener("change", function () {
-    //                 console.log("파일 변환됨");
-    //                 fileNameDisplay.textContent = this.files.length > 0
-    //                     ? `선택된 파일: ${this.files[0].name}`
-    //                     : '';
-    //                 updateProgress();
-    //             });
-    //         }
-    //     });
-    //
-    //     // 라디오 버튼 스타일 처리
-    //     document.querySelectorAll('.custom-radio input[type="radio"]').forEach((input) => {
-    //         input?.addEventListener('change', function () {
-    //             const name = this.getAttribute('name');
-    //             document.querySelectorAll(`.custom-radio input[name="${name}"]`).forEach((radio) => {
-    //                 const span = radio.nextElementSibling?.querySelector('span');
-    //                 if (span) {
-    //                     span.style.transform = radio.checked ? 'scale(1)' : 'scale(0)';
-    //                 }
-    //             });
-    //             updateProgress();
-    //         });
-    //     });
-    //
-    //     // 체크박스 스타일 처리
-    //     document.querySelectorAll('.custom-checkbox input[type="checkbox"]').forEach((input) => {
-    //         input?.addEventListener('change', function () {
-    //             const span = this.nextElementSibling?.querySelector('span');
-    //             if (span) {
-    //                 span.style.opacity = this.checked ? '1' : '0';
-    //                 this.nextElementSibling.style.backgroundColor = this.checked ? '#4F46E5' : 'transparent';
-    //                 this.nextElementSibling.style.borderColor = this.checked ? '#4F46E5' : '#D1D5DB';
-    //             }
-    //             updateProgress();
-    //         });
-    //     });
-    //
-    //     // 드롭다운
-    //     document.querySelectorAll('select').forEach((select) => {
-    //         select?.addEventListener('change', updateProgress);
-    //     });
-    //
-    //     // 텍스트 입력 필드
-    //     document.querySelectorAll('input[type="text"]').forEach((input) => {
-    //         input?.addEventListener('input', updateProgress);
-    //     });
-    //
-    //     // 날짜 선택
-    //     document.querySelectorAll('input[type="date"]').forEach((input) => {
-    //         input?.addEventListener('change', updateProgress);
-    //     });
-    //     updateProgress();
-    // }
+    function initializeSurveyInteractions() {
+        // 글자 수 카운트
+        document.querySelectorAll('textarea[name^="q"]').forEach((textarea) => {
+            textarea?.addEventListener('input', function () {
+                let charCount = textarea.closest('.question-container')?.querySelector('.char-count')
+                    || document.getElementById('charCount');
+                if (!charCount) return;
+
+                const count = this.value.length;
+                charCount.textContent = count > 500 ? 500 : count;
+
+                if (count > 500) this.value = this.value.substring(0, 500);
+
+                updateProgress();
+            });
+        });
+
+        // 파일 입력
+        document.querySelectorAll('input[type="file"]').forEach((fileInput) => {
+            const type = fileInput.dataset.type; // file or image
+            const container = fileInput.closest('.space-y-3');
+            console.log(container);
+            const fileNameDisplay = type === "image"
+                ? container?.querySelector('.image-input')
+                : container?.querySelector('.file-name');
+            console.log(fileNameDisplay);
+
+            if (fileNameDisplay) {
+                fileInput?.addEventListener("change", function () {
+                    console.log("파일 변환됨");
+                    fileNameDisplay.textContent = this.files.length > 0
+                        ? `선택된 파일: ${this.files[0].name}`
+                        : '';
+                    updateProgress();
+                });
+            }
+        });
+
+        // 라디오 버튼 스타일 처리
+        document.querySelectorAll('.custom-radio input[type="radio"]').forEach((input) => {
+            input?.addEventListener('change', function () {
+                const name = this.getAttribute('name');
+                document.querySelectorAll(`.custom-radio input[name="${name}"]`).forEach((radio) => {
+                    const span = radio.nextElementSibling?.querySelector('span');
+                    if (span) {
+                        span.style.transform = radio.checked ? 'scale(1)' : 'scale(0)';
+                    }
+                });
+                updateProgress();
+            });
+        });
+
+        // 체크박스 스타일 처리
+        document.querySelectorAll('.custom-checkbox input[type="checkbox"]').forEach((input) => {
+            input?.addEventListener('change', function () {
+                const span = this.nextElementSibling?.querySelector('span');
+                if (span) {
+                    span.style.opacity = this.checked ? '1' : '0';
+                    this.nextElementSibling.style.backgroundColor = this.checked ? '#4F46E5' : 'transparent';
+                    this.nextElementSibling.style.borderColor = this.checked ? '#4F46E5' : '#D1D5DB';
+                }
+                updateProgress();
+            });
+        });
+
+        // 드롭다운
+        document.querySelectorAll('select').forEach((select) => {
+            select?.addEventListener('change', updateProgress);
+        });
+
+        // 텍스트 입력 필드
+        document.querySelectorAll('input[type="text"]').forEach((input) => {
+            input?.addEventListener('input', updateProgress);
+        });
+
+        // 날짜 선택
+        document.querySelectorAll('input[type="date"]').forEach((input) => {
+            input?.addEventListener('change', updateProgress);
+        });
+        updateProgress();
+    }
 
     // 진행 상태바 상단 고정 스타일 적용 (선택적으로 호출 가능)
     const progressWrapper = document.querySelector('.progress-wrapper');
@@ -181,76 +181,76 @@
         progressWrapper.style.backgroundColor = 'white';
     }
 
-    // function updateProgress() {
-    //     const allQuestionEls = Array.from(document.querySelectorAll('[id^="question-"]'));
-    //     const visibleQuestionEls = allQuestionEls.filter(q => q.style.display !== 'none');
-    //
-    //     let answeredRequired = 0;
-    //     let totalRequired = 0;
-    //
-    //     visibleQuestionEls.forEach(qEl => {
-    //         const idx = parseInt(qEl.id.split('-')[1])-1; // question-3 → 3
-    //         const q = window.questions[idx];
-    //         if (!q) return;
-    //         totalRequired++;
-    //
-    //         const name = `q${idx}`;
-    //         const inputs = document.querySelectorAll(`[name="${name}"]`);
-    //
-    //         let isAnswered = false;
-    //         if (q.type === 'multiple' || q.type === 'multiplecheck') {
-    //             isAnswered = Array.from(inputs).some(input => input.checked);
-    //         } else if (['dropdown', 'short', 'essay', 'date'].includes(q.type)) {
-    //             isAnswered = inputs[0] && inputs[0].value.trim() !== '';
-    //         } else if (q.type === 'file') {
-    //             isAnswered = inputs[0] && inputs[0].files.length > 0;
-    //         } else if (q.type === 'image') {
-    //             isAnswered = inputs[0] && inputs[0].files.length > 0;
-    //         }else if (q.type === 'hierarchy') {
-    //             const selects = qEl.querySelectorAll('select');
-    //             isAnswered = false;
-    //             let lastActiveSelect = null;
-    //
-    //             for (const sel of selects) {
-    //                 const hasRealOptions = Array.from(sel.options).some(opt => opt.value !== "");
-    //                 if (hasRealOptions) lastActiveSelect = sel;
-    //             }
-    //             if (lastActiveSelect) {
-    //                 const value = lastActiveSelect.value?.trim();
-    //                 if (value && value !== "") {
-    //                     isAnswered = true;
-    //                 }
-    //             }
-    //
-    //             if (selects.length === 1 && selects[0].value && selects[0].value.trim() !== "") {
-    //                 isAnswered = true;
-    //             }
-    //         }
-    //
-    //         if (isAnswered) answeredRequired++;
-    //     });
-    //
-    //     const progressPercent = totalRequired === 0 ? 100 : (answeredRequired / totalRequired) * 100;
-    //
-    //     const progressBar = document.querySelector('.progress-bar');
-    //     if (progressBar) {
-    //         progressBar.style.width = `${progressPercent}%`;
-    //     }
-    //
-    //     const progressCount = document.getElementById('progress-count');
-    //     if (progressCount) {
-    //         progressCount.textContent = `${answeredRequired}/${totalRequired} 문항`;
-    //     }
-    //
-    //     const progressText = document.getElementById('progress-text');
-    //     if (progressText) {
-    //         progressText.textContent = `${Math.round(progressPercent)}% 완료`;
-    //     }
-    // }
+    function updateProgress() {
+        const allQuestionEls = Array.from(document.querySelectorAll('[id^="question-"]'));
+        const visibleQuestionEls = allQuestionEls.filter(q => q.style.display !== 'none');
+
+        let answeredRequired = 0;
+        let totalRequired = 0;
+
+        visibleQuestionEls.forEach(qEl => {
+            const idx = parseInt(qEl.id.split('-')[1])-1; // question-3 → 3
+            const q = window.questions[idx];
+            if (!q) return;
+            totalRequired++;
+
+            const name = `q${idx}`;
+            const inputs = document.querySelectorAll(`[name="${name}"]`);
+
+            let isAnswered = false;
+            if (q.type === 'multiple' || q.type === 'multiplecheck') {
+                isAnswered = Array.from(inputs).some(input => input.checked);
+            } else if (['dropdown', 'short', 'essay', 'date'].includes(q.type)) {
+                isAnswered = inputs[0] && inputs[0].value.trim() !== '';
+            } else if (q.type === 'file') {
+                isAnswered = inputs[0] && inputs[0].files.length > 0;
+            } else if (q.type === 'image') {
+                isAnswered = inputs[0] && inputs[0].files.length > 0;
+            }else if (q.type === 'hierarchy') {
+                const selects = qEl.querySelectorAll('select');
+                isAnswered = false;
+                let lastActiveSelect = null;
+
+                for (const sel of selects) {
+                    const hasRealOptions = Array.from(sel.options).some(opt => opt.value !== "");
+                    if (hasRealOptions) lastActiveSelect = sel;
+                }
+                if (lastActiveSelect) {
+                    const value = lastActiveSelect.value?.trim();
+                    if (value && value !== "") {
+                        isAnswered = true;
+                    }
+                }
+
+                if (selects.length === 1 && selects[0].value && selects[0].value.trim() !== "") {
+                    isAnswered = true;
+                }
+            }
+
+            if (isAnswered) answeredRequired++;
+        });
+
+        const progressPercent = totalRequired === 0 ? 100 : (answeredRequired / totalRequired) * 100;
+
+        const progressBar = document.querySelector('.progress-bar');
+        if (progressBar) {
+            progressBar.style.width = `${progressPercent}%`;
+        }
+
+        const progressCount = document.getElementById('progress-count');
+        if (progressCount) {
+            progressCount.textContent = `${answeredRequired}/${totalRequired} 문항`;
+        }
+
+        const progressText = document.getElementById('progress-text');
+        if (progressText) {
+            progressText.textContent = `${Math.round(progressPercent)}% 완료`;
+        }
+    }
 
     // export module functions
-    // window.initializeSurveyInteractions = initializeSurveyInteractions;
-    // window.updateProgress = updateProgress;
+    window.initializeSurveyInteractions = initializeSurveyInteractions;
+    window.updateProgress = updateProgress;
 </script>
 <script th:inline="javascript" type="module">
     //note API받아오는 코드
@@ -414,193 +414,193 @@
 </script>
 <script type="module">
     //note 질문 가져와서 넣어주는 코드
-    // function renderQuestions(questions) {
-    //     const container = document.getElementById('questions-container');
-    //     container.innerHTML = '';
-    //
-    //     questions.forEach((q, idx) => {
-    //         const wrapper = document.createElement('div');
-    //         wrapper.className = 'bg-white border border-gray-200 rounded-lg p-5 mb-6';
-    //         wrapper.id = `question-${idx+1}`;
-    //         //<span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-sm font-medium mr-3 flex-shrink-0">${idx + 1}</span>
-    //
-    //         const header = `
-    //         <div class="flex items-start mb-4">
-    //
-    //             <div class="flex justify-between w-full">
-    //                 <div>
-    //                     <h3 class="text-lg font-medium text-gray-900 mb-1">${q.question}</h3>
-    //                     <p class="text-sm text-gray-500">${q.description}</p>
-    //                 </div>
-    //                 ${q.required ? '<span class="text-red-500 text-sm ml-4">* 필수</span>' : ''}
-    //             </div>
-    //         </div>
-    //     `;
-    //
-    //         let body = '';
-    //         if (q.type === 'short') {
-    //             body = `<input name="q${idx}" type="text" class="w-full px-4 py-2 border border-gray-300 rounded" placeholder="답변 입력">`;
-    //         } else if (q.type === 'essay') {
-    //             body = `<div>
-    //                         <textarea name="q${idx}" id="essay" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded" placeholder="답변 입력"></textarea>
-    //                         <div class="text-right mt-2 text-sm text-gray-500">
-    //                             <span id="charCount">0</span>/500자
-    //                         </div>
-    //                     </div>`;
-    //         } else if (q.type === 'multiple') {
-    //             body = q.options.map(opt => `
-    //             <label class="custom-radio flex items-center">
-    //                 <input type="radio" name="q${idx}" class="sr-only" data-next-question="${opt.nextQuestion}">
-    //                 <span class="w-5 h-5 border-2 border-gray-300 rounded-full flex items-center justify-center mr-3 relative">
-    //                     <span class="absolute w-3 h-3 bg-primary rounded-full transform scale-0 transition-transform"></span>
-    //                 </span>
-    //                 <span class="text-gray-700">${opt.text}</span>
-    //             </label>
-    //         `).join('');
-    //         } else if (q.type === 'multiplecheck') {
-    //             body = q.options.map(opt => `
-    //             <label class="custom-checkbox flex items-center">
-    //                 <input type="checkbox" name="q${idx}" class="sr-only" data-next-question="${opt.nextQuestion}">
-    //                 <span class="w-5 h-5 border-2 border-gray-300 rounded flex items-center justify-center mr-3 relative">
-    //                     <span class="absolute opacity-0 text-white">
-    //                         <i class="ri-check-line text-xs"></i>
-    //                     </span>
-    //                 </span>
-    //                 <span class="text-gray-700">${opt.text}</span>
-    //             </label>
-    //         `).join('');
-    //         } else if (q.type === 'dropdown') {
-    //             const options = q.options.map(opt => `<option value="${opt.text}" data-next-question="${opt.nextQuestion}">${opt.text}</option>`).join('');
-    //             body = `
-    //             <select name="q${idx}" class="w-full px-4 py-2 border border-gray-300 rounded" >
-    //                 <option value="">선택하세요</option>
-    //                 ${options}
-    //             </select>
-    //         `;
-    //         } else if (q.type === 'date') {
-    //             body = `
-    //             <input type="date" name="q${idx}" class="w-full px-4 py-2 border border-gray-300 rounded">
-    //         `;
-    //         } else if (q.type === 'file') {
-    //             body = `
-    //             <input type="file" name="q${idx}" id="file-input" data-type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" class="sr-only">
-    //             <label for="file-input" class="flex items-center justify-center px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors">
-    //                 <i class="ri-upload-2-line mr-2"></i>
-    //                 <span class="text-gray-600">파일 선택 또는 드래그하여 업로드</span>
-    //             </label>
-    //             <div id="file-name" class=" file-name mt-2 text-sm text-gray-500"></div>
-    //         `;
-    //         }
-    //         else if (q.type === 'image') {
-    //             body = `
-    //             <input type="file" name="q${idx}" id="image-input" data-type="image" accept="image/*" class="sr-only">
-    //             <label for="image-input" class="flex items-center justify-center px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors">
-    //                 <i class="ri-image-line mr-2"></i>
-    //                 <span class="text-gray-600">이미지 선택 또는 드래그하여 업로드</span>
-    //             </label>
-    //             <div id="image-input" class="image-input mt-2 text-sm text-gray-500"></div>
-    //         `;
-    //         }else if (q.type === 'hierarchy') {
-    //             body = `
-    //     <div class="flex gap-4 hierarchy-group" name="q${idx}">
-    //     <select class="hierarchy-select px-4 py-2 border border-gray-300 rounded" data-level="1">
-    //         <option value="">1단계 선택</option>
-    //     </select>
-    //     <select class="hierarchy-select px-4 py-2 border border-gray-300 rounded" data-level="2" disabled>
-    //         <option value="">2단계 선택</option>
-    //     </select>
-    //     <select class="hierarchy-select px-4 py-2 border border-gray-300 rounded" data-level="3" disabled>
-    //         <option value="">3단계 선택</option>
-    //     </select>
-    // </div>
-    // `;
-    //         }
-    //
-    //         wrapper.innerHTML = header + `<div class="space-y-3">${body}</div>`;
-    //         container.appendChild(wrapper);
-    //     });
-    // }
+    function renderQuestions(questions) {
+        const container = document.getElementById('questions-container');
+        container.innerHTML = '';
+
+        questions.forEach((q, idx) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'bg-white border border-gray-200 rounded-lg p-5 mb-6';
+            wrapper.id = `question-${idx+1}`;
+            //<span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-sm font-medium mr-3 flex-shrink-0">${idx + 1}</span>
+
+            const header = `
+            <div class="flex items-start mb-4">
+
+                <div class="flex justify-between w-full">
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-1">${q.question}</h3>
+                        <p class="text-sm text-gray-500">${q.description}</p>
+                    </div>
+                    ${q.required ? '<span class="text-red-500 text-sm ml-4">* 필수</span>' : ''}
+                </div>
+            </div>
+        `;
+
+            let body = '';
+            if (q.type === 'short') {
+                body = `<input name="q${idx}" type="text" class="w-full px-4 py-2 border border-gray-300 rounded" placeholder="답변 입력">`;
+            } else if (q.type === 'essay') {
+                body = `<div>
+                            <textarea name="q${idx}" id="essay" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded" placeholder="답변 입력"></textarea>
+                            <div class="text-right mt-2 text-sm text-gray-500">
+                                <span id="charCount">0</span>/500자
+                            </div>
+                        </div>`;
+            } else if (q.type === 'multiple') {
+                body = q.options.map(opt => `
+                <label class="custom-radio flex items-center">
+                    <input type="radio" name="q${idx}" class="sr-only" data-next-question="${opt.nextQuestion}">
+                    <span class="w-5 h-5 border-2 border-gray-300 rounded-full flex items-center justify-center mr-3 relative">
+                        <span class="absolute w-3 h-3 bg-primary rounded-full transform scale-0 transition-transform"></span>
+                    </span>
+                    <span class="text-gray-700">${opt.text}</span>
+                </label>
+            `).join('');
+            } else if (q.type === 'multiplecheck') {
+                body = q.options.map(opt => `
+                <label class="custom-checkbox flex items-center">
+                    <input type="checkbox" name="q${idx}" class="sr-only" data-next-question="${opt.nextQuestion}">
+                    <span class="w-5 h-5 border-2 border-gray-300 rounded flex items-center justify-center mr-3 relative">
+                        <span class="absolute opacity-0 text-white">
+                            <i class="ri-check-line text-xs"></i>
+                        </span>
+                    </span>
+                    <span class="text-gray-700">${opt.text}</span>
+                </label>
+            `).join('');
+            } else if (q.type === 'dropdown') {
+                const options = q.options.map(opt => `<option value="${opt.text}" data-next-question="${opt.nextQuestion}">${opt.text}</option>`).join('');
+                body = `
+                <select name="q${idx}" class="w-full px-4 py-2 border border-gray-300 rounded" >
+                    <option value="">선택하세요</option>
+                    ${options}
+                </select>
+            `;
+            } else if (q.type === 'date') {
+                body = `
+                <input type="date" name="q${idx}" class="w-full px-4 py-2 border border-gray-300 rounded">
+            `;
+            } else if (q.type === 'file') {
+                body = `
+                <input type="file" name="q${idx}" id="file-input" data-type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" class="sr-only">
+                <label for="file-input" class="flex items-center justify-center px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                    <i class="ri-upload-2-line mr-2"></i>
+                    <span class="text-gray-600">파일 선택 또는 드래그하여 업로드</span>
+                </label>
+                <div id="file-name" class=" file-name mt-2 text-sm text-gray-500"></div>
+            `;
+            }
+            else if (q.type === 'image') {
+                body = `
+                <input type="file" name="q${idx}" id="image-input" data-type="image" accept="image/*" class="sr-only">
+                <label for="image-input" class="flex items-center justify-center px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                    <i class="ri-image-line mr-2"></i>
+                    <span class="text-gray-600">이미지 선택 또는 드래그하여 업로드</span>
+                </label>
+                <div id="image-input" class="image-input mt-2 text-sm text-gray-500"></div>
+            `;
+            }else if (q.type === 'hierarchy') {
+                body = `
+        <div class="flex gap-4 hierarchy-group" name="q${idx}">
+        <select class="hierarchy-select px-4 py-2 border border-gray-300 rounded" data-level="1">
+            <option value="">1단계 선택</option>
+        </select>
+        <select class="hierarchy-select px-4 py-2 border border-gray-300 rounded" data-level="2" disabled>
+            <option value="">2단계 선택</option>
+        </select>
+        <select class="hierarchy-select px-4 py-2 border border-gray-300 rounded" data-level="3" disabled>
+            <option value="">3단계 선택</option>
+        </select>
+    </div>
+    `;
+            }
+
+            wrapper.innerHTML = header + `<div class="space-y-3">${body}</div>`;
+            container.appendChild(wrapper);
+        });
+    }
 
     // export module functions
-    // window.renderQuestions = renderQuestions;
+    window.renderQuestions = renderQuestions;
 </script>
 <script type="module">
-    // function setUpJumpHandlers() {
-    //     const allQuestions = Array.from(document.querySelectorAll('[id^="question-"]'));
-    //
-    //     function handleJump(e, nextIdxStr) {
-    //         const nextIdx = parseInt(nextIdxStr);
-    //         if (isNaN(nextIdx)) return;
-    //
-    //         const currentWrapper = e.target.closest('[id^="question-"]');
-    //         if (!currentWrapper) return;
-    //
-    //         const currentId = currentWrapper.id; // e.g., "question-3"
-    //         const currentIdx = parseInt(currentId.split('-')[1]);
-    //
-    //         if (isNaN(currentIdx)) return;
-    //
-    //         // 모든 문항 순회하면서 처리
-    //         allQuestions.forEach(el => {
-    //             const elIdx = parseInt(el.id.split('-')[1]);
-    //
-    //             // 현재 문항은 항상 보여야 함
-    //             if (elIdx === currentIdx || elIdx === nextIdx) {
-    //                 el.style.display = '';
-    //             }
-    //             // currentIdx < idx < nextIdx → 숨김
-    //             else if (elIdx > currentIdx && elIdx < nextIdx) {
-    //                 el.style.display = 'none';
-    //             }
-    //         });
-    //
-    //         const target = document.getElementById(`question-${nextIdx}`);
-    //         if (target) {
-    //             const topOffset = 80; // progress bar 높이보다 약간 더 여유있게
-    //             const top = target.getBoundingClientRect().top + window.scrollY - topOffset;
-    //
-    //             window.scrollTo({
-    //                 top,
-    //                 behavior: 'smooth'
-    //             });
-    //         }
-    //     }
-    //
-    //     document.querySelectorAll('input[type="radio"]').forEach(input => {
-    //         input.addEventListener('change', (e) => {
-    //             handleJump(e, e.target.dataset.nextQuestion);
-    //             updateProgress();
-    //         });
-    //     });
-    //
-    //     document.querySelectorAll('select').forEach(select => {
-    //         select.addEventListener('change', (e) => {
-    //             const selectedOption = e.target.options[e.target.selectedIndex];
-    //             const next = selectedOption.dataset.nextQuestion;
-    //
-    //             const currentWrapper = e.target.closest('[id^="question-"]');
-    //             if (!currentWrapper) return;
-    //             const currentIdx = parseInt(currentWrapper.id.split('-')[1]);
-    //
-    //             if (!next || selectedOption.value === '' || selectedOption.text === '선택하세요') {
-    //                 // 이전에 숨겼던 문항들 중 currentIdx 이후 것만 다시 보임
-    //                 allQuestions.forEach(el => {
-    //                     const elIdx = parseInt(el.id.split('-')[1]);
-    //                     if (elIdx > currentIdx) {
-    //                         el.style.display = '';
-    //                     }
-    //                 });
-    //             } else {
-    //                 handleJump(e, next);
-    //             }
-    //
-    //             updateProgress();
-    //         });
-    //     });
-    // }
+    function setUpJumpHandlers() {
+        const allQuestions = Array.from(document.querySelectorAll('[id^="question-"]'));
+
+        function handleJump(e, nextIdxStr) {
+            const nextIdx = parseInt(nextIdxStr);
+            if (isNaN(nextIdx)) return;
+
+            const currentWrapper = e.target.closest('[id^="question-"]');
+            if (!currentWrapper) return;
+
+            const currentId = currentWrapper.id; // e.g., "question-3"
+            const currentIdx = parseInt(currentId.split('-')[1]);
+
+            if (isNaN(currentIdx)) return;
+
+            // 모든 문항 순회하면서 처리
+            allQuestions.forEach(el => {
+                const elIdx = parseInt(el.id.split('-')[1]);
+
+                // 현재 문항은 항상 보여야 함
+                if (elIdx === currentIdx || elIdx === nextIdx) {
+                    el.style.display = '';
+                }
+                // currentIdx < idx < nextIdx → 숨김
+                else if (elIdx > currentIdx && elIdx < nextIdx) {
+                    el.style.display = 'none';
+                }
+            });
+
+            const target = document.getElementById(`question-${nextIdx}`);
+            if (target) {
+                const topOffset = 80; // progress bar 높이보다 약간 더 여유있게
+                const top = target.getBoundingClientRect().top + window.scrollY - topOffset;
+
+                window.scrollTo({
+                    top,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        document.querySelectorAll('input[type="radio"]').forEach(input => {
+            input.addEventListener('change', (e) => {
+                handleJump(e, e.target.dataset.nextQuestion);
+                updateProgress();
+            });
+        });
+
+        document.querySelectorAll('select').forEach(select => {
+            select.addEventListener('change', (e) => {
+                const selectedOption = e.target.options[e.target.selectedIndex];
+                const next = selectedOption.dataset.nextQuestion;
+
+                const currentWrapper = e.target.closest('[id^="question-"]');
+                if (!currentWrapper) return;
+                const currentIdx = parseInt(currentWrapper.id.split('-')[1]);
+
+                if (!next || selectedOption.value === '' || selectedOption.text === '선택하세요') {
+                    // 이전에 숨겼던 문항들 중 currentIdx 이후 것만 다시 보임
+                    allQuestions.forEach(el => {
+                        const elIdx = parseInt(el.id.split('-')[1]);
+                        if (elIdx > currentIdx) {
+                            el.style.display = '';
+                        }
+                    });
+                } else {
+                    handleJump(e, next);
+                }
+
+                updateProgress();
+            });
+        });
+    }
 
     // export module functions
-    // window.setUpJumpHandlers = setUpJumpHandlers;
+    window.setUpJumpHandlers = setUpJumpHandlers;
 </script>
 
 <script id="submitForm" th:inline="javascript" type="module">

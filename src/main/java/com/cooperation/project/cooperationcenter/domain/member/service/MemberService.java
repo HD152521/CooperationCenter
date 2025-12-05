@@ -71,17 +71,43 @@ public class MemberService {
     private String origin;
 
     @Transactional
-    public void signup(String data, MultipartFile agencyPicture,MultipartFile businessCertificate) throws Exception{
-        MemberRequest.SignupDto request = mappingToDto(data);
+    public void signup(String memberData,String agencyData, MultipartFile agencyPicture,MultipartFile businessCertificate) throws Exception{
+
+        MemberRequest.SignupMemberDto request = MemberRequest.SignupMemberDto.from(memberData);
         String encodedPassword = passwordEncoder.encode(request.password());
-
         String uuid = UUID.randomUUID().toString();
-        FileAttachment file1 = (agencyPicture==null) ? null : fileService.saveFile(new FileAttachmentDto(agencyPicture,"member",null,uuid,null));
-        FileAttachment file2 = (businessCertificate==null) ? null : fileService.saveFile(new FileAttachmentDto(businessCertificate,"member", null,uuid,null));
 
-        Member member = Member.fromDto(request.withEncodedPassword(encodedPassword),file1,file2,uuid);
-        memberRepository.save(member);
+        Agency agency = null;
+        if(request.isExistingAgency()){
+            MemberRequest.SignupExistingAgencyDto agencyDto = MemberRequest.SignupExistingAgencyDto.from(agencyData);
+            agency = checkAgency(agencyDto);
+        }else{
+            MemberRequest.SignupNewAgencyDto agencyDto = MemberRequest.SignupNewAgencyDto.from(agencyData);
+            agency = makeAgency(agencyDto);
+
+            FileAttachment file1 = (agencyPicture==null) ? null : fileService.saveFile(new FileAttachmentDto(agencyPicture,"member",null,uuid,null));
+            FileAttachment file2 = (businessCertificate==null) ? null : fileService.saveFile(new FileAttachmentDto(businessCertificate,"member", null,uuid,null));
+
+            agency.updateFiles(file1,file2);
+        }
+
+        Member member = Member.fromDto(request.withEncodedPassword(encodedPassword),agency,uuid);
+        agency.addMember(memberRepository.save(member));
     }
+
+    private Agency checkAgency(MemberRequest.SignupExistingAgencyDto agencyDto){
+        return agencyRepository.findAgencyByAgencyNameAndAgencyEmail(agencyDto.agencyName(),agencyDto.agencyEmail()).orElseThrow(
+                () -> new BaseException(ErrorCode.AGENCY_NOT_FOUND)
+        );
+    }
+
+    private Agency makeAgency(MemberRequest.SignupNewAgencyDto agencyDto){
+        return agencyRepository.save(
+                Agency.fromDto(agencyDto)
+        );
+    }
+
+
 
     public void login(MemberRequest.LoginDto requestDto,HttpServletResponse response,HttpServletRequest request){
         Member member = memberRepository.findMemberByEmail(requestDto.email())
@@ -109,12 +135,7 @@ public class MemberService {
     }
 
 
-    private MemberRequest.SignupDto mappingToDto(String data) throws JsonProcessingException{
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(data, MemberRequest.SignupDto.class);
-    }
-
-    public Member createMember(MemberRequest.SignupDto request){
+    public Member createMember(MemberRequest.SignupMemberDto request){
         try{
             Member member = Member.builder()
 
@@ -140,7 +161,7 @@ public class MemberService {
         Cookie[] cookies = request.getCookies();
         String accessToken = jwtProvider.resolvAccesseToken(request);
         String refreshToken = jwtProvider.resolveRefreshToken(request);
-        memberCookieService.deleteCookie(response,TokenResponse.of(AccessToken.of(accessToken),RefreshToken.of(refreshToken)));
+        memberCookieService.deleteCookie(response);
         SecurityContextHolder.clearContext();
     }
 
@@ -256,12 +277,16 @@ public class MemberService {
     public void acceptedMember(String email){
         Member member = memberRepository.findMemberByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+        boolean duplicated = memberRepository.countMemberByEmailAndStatus(email,UserStatus.APPROVED)>0;
+        if(duplicated) throw new BaseException(
+                ErrorCode.MEMBER_ALREADY_ACCEPTED_EMAIL
+        );
         member.accept();
-        if(member.getAgency()==null) {
-            Agency agency = Agency.fromMember(member);
+        Agency agency = member.getAgency();
+        if(!agency.isShare()) {
+            agency.setShare();
             agencyRepository.save(agency);
             member.setAgency(agency);
-            //fixme 여기서 이미 있는 유학원이면 추가를 하면 안됨.
         }
         memberRepository.save(member);
     }
@@ -271,6 +296,12 @@ public class MemberService {
         Member member = memberRepository.findMemberByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
         member.pending();
+        Agency agency = member.getAgency();
+        agency.removeMember(member);
+        if(agency.getMember().isEmpty() && agency.isShare()){
+            agency.setShare();
+            agencyRepository.save(agency);
+        }
         memberRepository.save(member);
     }
 

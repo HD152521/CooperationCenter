@@ -77,6 +77,7 @@ public class SchoolBoard extends BaseEntity {
     }
     public void deleteFilePost(FilePost post){filePosts.remove(post);}
     public void deleteSchedule(SchoolSchedule schedule){schedules.remove(schedule);}
+
     public void setIntroPost(IntroPost introPost) {
         this.introPost = introPost;
     }

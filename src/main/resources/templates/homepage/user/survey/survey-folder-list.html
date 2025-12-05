@@ -179,7 +179,7 @@
 </main>
 
 <th:block th:fragment="script">
-    <script type="module">
+    <script th:inline="javascript">
         // ===== 공통: API Base URL 및 인증 헤더 =====
         const folderApiUrl = "/api/v1/survey/admin/folders";
         const authHeaders = (() => {
@@ -329,6 +329,7 @@
                 }
 
                 try {
+                    console.log("save");
                     if (mode === "create") {
                         // POST /api/v1/survey/admin/folders
                         // Body: SurveyFolderDto 호환 (folderId/createdAt은 서버에서 생성/세팅)

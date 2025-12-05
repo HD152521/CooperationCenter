@@ -24,9 +24,14 @@ document.addEventListener("turbo:load", () => {
     const webLogoutBtn = document.getElementById("web-logout-button");
     LeafEvent.addAsyncListener(webLogoutBtn, "click", logoutListener);
 
+    const profileBtn = document.getElementById("profile-button");
+    LeafEvent.addAsyncListener(profileBtn, "click",  async function () {
+        Turbo.visit("/profile");
+    });
+
     async function logoutListener() {
         try {
-            const response = await fetch("/member/logout", {
+            const response = await fetch("/api/v1/member/logout", {
                 method: "POST",
                 credentials: "include"
             });

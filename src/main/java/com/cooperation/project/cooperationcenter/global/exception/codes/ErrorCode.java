@@ -93,10 +93,15 @@ public enum ErrorCode implements BaseCode {
     MEMBER_ALREADY_EXIST(HttpStatus.BAD_REQUEST,"MEMBER-0002","member already exist"),
     MEMBER_NOT_ACCEPTED(HttpStatus.BAD_REQUEST,"MEMBER-0003","아직 계정이 활성화되지 않았습니다."),
     MEMBER_NOT_ADMIN(HttpStatus.BAD_REQUEST,"MEMBER-0004","Meber is not ADMIN"),
+    MEMBER_ALREADY_ACCEPTED_EMAIL(HttpStatus.BAD_REQUEST,"MEMBER-0005","해당 이메일로 승인된 아이디가 존재합니다."),
+
+    COLLEGE_NOT_FOUND(HttpStatus.BAD_REQUEST,"COLLEGE-0001","해당 학과를 찾을 수가 없습니다."),
 
     SURVEY_DATE_NOT_VALID(HttpStatus.BAD_REQUEST,"SURVEY-0000","지금 설문조사 입력 기간이 아닙니다."),
     SURVEY_NOT_SHARE(HttpStatus.BAD_REQUEST,"SURVEY-0001","해당 설문조사는 공개 전입니다."),
 
+    AGENCY_NOT_FOUND(HttpStatus.BAD_REQUEST,"AGENCY-0001","해당 유학원은 가입 되지 않은 상태입니다. 확인 후에 다시 가입해주세요"),
+    
     // 5xx : server error
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SERVER-0000", "서버 에러");
 

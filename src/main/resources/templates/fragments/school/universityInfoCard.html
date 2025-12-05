@@ -27,20 +27,19 @@
        - link2Text : 두 번째 링크의 이름 (예: "입학처 페이지")
        - link2Url  : 두 번째 링크 URL
 -->
-<section th:fragment="universityLinkCard(title, link1Text, link1Url, link2Text, link2Url)">
+<section th:fragment="universityLinkCard(title, urlNames, urls)">
     <div class="bg-white rounded-lg shadow-sm p-6 min-h-[200px]">
         <h2 class="text-xl font-semibold mb-4" th:text="${title}">관련 홈페이지</h2>
 
-        <div class="space-y-2">
-            <p class="text-gray-500 text-sm">
-                <span th:text="${link1Text}"></span>:
-                <a th:href="${link1Url}" target="_blank" rel="noopener" class="text-primary underline">바로가기</a>
-            </p>
-            <p class="text-gray-500 text-sm">
-                <span th:text="${link2Text}"></span>:
-                <a th:href="${link2Url}" target="_blank" rel="noopener" class="text-primary underline">바로가기</a>
-            </p>
-        </div>
+        <ul class="space-y-2">
+            <li th:each="name, iter : ${urlNames}">
+                <span class="font-medium" th:text="${name}"></span>
+                :
+                <a class="text-primary hover:underline"
+                   th:href="${urls[iter.index]}"
+                   > 바로가기 </a>
+            </li>
+        </ul>
     </div>
 </section>
 

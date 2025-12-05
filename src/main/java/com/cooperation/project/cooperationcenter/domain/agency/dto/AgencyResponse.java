@@ -17,7 +17,9 @@ public class AgencyResponse {
             String imgUrl
     ){
         public static ListDto from(Agency agency){
-            String filePath = "/api/v1/file/img/member/"+agency.getAgencyPicture().getFileId();
+            String filePath = agency.getAgencyPicture()==null?
+            "/api/v1/file/default/agency"
+                    :"/api/v1/file/img/member/"+agency.getAgencyPicture().getFileId();
             return new ListDto(
                     agency.getAgencyName(),
                     agency.getAgencyAddress1(),

@@ -2,9 +2,7 @@ package com.cooperation.project.cooperationcenter.domain.school.service;
 
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.file.repository.FileAttachmentRepository;
-import com.cooperation.project.cooperationcenter.domain.school.dto.ScheduleType;
-import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolRequest;
-import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolResponse;
+import com.cooperation.project.cooperationcenter.domain.school.dto.*;
 import com.cooperation.project.cooperationcenter.domain.school.model.*;
 import com.cooperation.project.cooperationcenter.domain.school.repository.*;
 import com.cooperation.project.cooperationcenter.global.exception.BaseException;
@@ -12,10 +10,12 @@ import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCod
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +32,7 @@ public class SchoolFindService {
     private final FilePostRepository filePostRepository;
     private final SchoolScheduleRepository schoolScheduleRepository;
     private final SchoolPostQSDLRepository schoolPostQSDLRepository;
-
+    private final CollegeRepository collegeRepository;
 
     private final FileAttachmentRepository fileAttachmentRepository;
 
@@ -166,12 +166,41 @@ public class SchoolFindService {
 
     public Page<FilePost> loadFilePostByPage(SchoolBoard board, Pageable pageable){
         try{
-            return filePostRepository.findFilePostBySchoolBoard(board,pageable);
+            return filePostRepository.findFilePostBySchoolBoardAndStatus(board,pageable, PostStatus.PUBLISHED);
         }catch(Exception e){
             log.warn(e.getMessage());
             return null;
         }
     }
+
+    public Page<FilePost> loadFilePostByPageByKeyword(SchoolBoard board, Pageable pageable,String keyword){
+        try{
+            return filePostRepository.findFilePostBySchoolBoardAndStatusAndPostTitleContainingIgnoreCase(board, PostStatus.PUBLISHED,keyword,pageable);
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public List<FilePost> loadNoticeFilePostByPageByKeyword(SchoolBoard board,String keyword){
+        try{
+            return filePostRepository.findFilePostBySchoolBoardAndStatusAndPostTitleContainingIgnoreCaseAndType(board, PostStatus.PUBLISHED,keyword, PostType.NOTICE);
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    public List<FilePost> loadNormalFilePostByPageByKeyword(SchoolBoard board,String keyword){
+        try{
+            return filePostRepository.findFilePostBySchoolBoardAndStatusAndPostTitleContainingIgnoreCaseAndType(board, PostStatus.PUBLISHED,keyword,PostType.NORMAL);
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+
 
 
     public List<SchoolResponse.SchoolPostDto> loadPostByBoardByDto(SchoolBoard board){
@@ -185,10 +214,40 @@ public class SchoolFindService {
         }
     }
 
-    public Page<SchoolResponse.SchoolPostDto> loadPostByBoardByDto(SchoolBoard board,Pageable pageable){
+    public List<SchoolPost> loadNoticePostByBoardAndKeyword(SchoolBoard board, Pageable pageable, String keyword){
+        PostType type = PostType.NOTICE;
+        PostStatus status = PostStatus.PUBLISHED;
         try{
-            return schoolPostRepository.findPostsByBoardOrderByNoticeFirst(board.getId(),pageable)
-                    .map(SchoolResponse.SchoolPostDto::from);
+            return schoolPostRepository.searchPosts(board,type,status,keyword);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    public List<SchoolPost> loadNormalPostByBoardAndKeyword(SchoolBoard board, Pageable pageable, String keyword){
+        PostType type = PostType.NORMAL;
+        PostStatus status = PostStatus.PUBLISHED;
+        try{
+            return schoolPostRepository.searchPosts(board,type,status,keyword);
+        }catch (Exception e){
+            log.warn(e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    public Page<SchoolResponse.SchoolPostDto> loadPostByBoardByDto(SchoolBoard board,Pageable pageable,String keyword){
+        try{
+            List<SchoolResponse.SchoolPostDto> noticePage = SchoolResponse.SchoolPostDto.from(loadNoticePostByBoardAndKeyword(board,pageable,keyword));
+            List<SchoolResponse.SchoolPostDto> normalPage = SchoolResponse.SchoolPostDto.from(loadNormalPostByBoardAndKeyword(board,pageable,keyword));
+
+            List<SchoolResponse.SchoolPostDto> merged = new ArrayList<>();
+            merged.addAll(noticePage);
+            merged.addAll(normalPage);
+
+            int total = merged.size();
+            return new PageImpl<>(merged, pageable, total);
+
         }catch(Exception e){
             log.warn(e.getMessage());
             return Page.empty();
@@ -205,7 +264,7 @@ public class SchoolFindService {
         }
     }
 
-    public Page<SchoolResponse.SchoolPostDto> loadFilePostPageByBoardByDto(SchoolBoard board,Pageable pageable){
+    public Page<SchoolResponse.SchoolPostDto> getFilePostPageByBoardByDto(SchoolBoard board,Pageable pageable){
         try{
             return loadFilePostByPage(board,pageable)
                     .map(SchoolResponse.SchoolPostDto::from);
@@ -215,6 +274,24 @@ public class SchoolFindService {
         }
     }
 
+    public Page<SchoolResponse.SchoolPostDto> getFilePostPageByBoardByDto(SchoolBoard board,Pageable pageable,String keyword){
+        try{
+            List<SchoolResponse.SchoolPostDto> noticeFilePost = SchoolResponse.SchoolPostDto.fromFilePost(loadNoticeFilePostByPageByKeyword(board,keyword));
+            List<SchoolResponse.SchoolPostDto> normalFilePost = SchoolResponse.SchoolPostDto.fromFilePost(loadNormalFilePostByPageByKeyword(board,keyword));
+            List<SchoolResponse.SchoolPostDto> merged = new ArrayList<>();
+
+            merged.addAll(noticeFilePost);
+            merged.addAll(normalFilePost);
+
+            int total = merged.size();
+            log.info("find file post size : {}",total);
+            return new PageImpl<>(merged,pageable,total);
+
+        }catch(Exception e){
+            log.warn(e.getMessage());
+            return null;
+        }
+    }
 
 
     public SchoolPost getBeforePostById(Long postId, SchoolBoard board){
@@ -267,15 +344,6 @@ public class SchoolFindService {
         }
     }
 
-    public SchoolResponse.IntroDto loadIntroByIdByDto(Long introId){
-        try{
-            return SchoolResponse.IntroDto.from(loadIntroById(introId));
-        }catch(Exception e){
-            log.warn(e.getMessage());
-            return null;
-        }
-    }
-
     public IntroPost loadIntroByBoard(SchoolBoard schoolBoard){
         try{
             return introPostRepository.findIntroPostsBySchoolBoard(schoolBoard).orElseThrow(
@@ -287,20 +355,29 @@ public class SchoolFindService {
         }
     }
 
-    public SchoolResponse.IntroDto loadIntroByBoardByDto(SchoolBoard schoolBoard){
-        try{
-            return SchoolResponse.IntroDto.from(loadIntroByBoard(schoolBoard));
-        }catch (Exception e){
-            log.warn(e.getMessage());
-            return null;
-        }
-    }
-
     public List<SchoolResponse.SchoolPageDto> getSchoolPage(){
         List<School> schools = loadAllSchool();
         return schools.stream()
                 .map(SchoolResponse.SchoolPageDto::from)
                 .collect(Collectors.toList());
+    }
+
+    public List<College> loadCollegesByIntro(IntroPost introPost){
+        try{
+            return collegeRepository.findCollegesByIntroPost(introPost);
+        }catch (Exception e){
+            return Collections.emptyList();
+        }
+    }
+
+    public College loadCollegesById(Long id){
+        try{
+            return collegeRepository.findCollegeById(id).orElseThrow(
+                    () -> new BaseException(ErrorCode.COLLEGE_NOT_FOUND)
+            );
+        }catch (Exception e){
+            return null;
+        }
     }
 
     public List<FileAttachment> loadFileByPost(SchoolPost schoolPost){

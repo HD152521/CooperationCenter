@@ -1,5 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.student.service;
 
+import com.cooperation.project.cooperationcenter.domain.agency.model.Agency;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.student.dto.StudentRequest;
 import com.cooperation.project.cooperationcenter.domain.student.dto.StudentResponse;
@@ -105,7 +106,8 @@ public class StudentService {
 
         StudentRequest.MappingDto dto = mapper.convertValue(domainMap, StudentRequest.MappingDto.class);
         log.info("stduent:{}",dto.toString());
-        Student student = Student.from(dto,surveyLog,member);
+        Agency agency = member.getAgency();
+        Student student = Student.from(dto,surveyLog,member,agency);
 
         saveStudent(student);
         log.info("after changing answer to Student");
