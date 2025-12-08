@@ -1,1018 +1,514 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout/university-layout :: university-layout(~{::head}, ~{::main}, ~{::script})}">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>학교 소개 - 대학교</title>
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet"
-    />
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-    />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { primary: "#3B82F6", secondary: "#10B981" },
-                    borderRadius: {
-                        none: "0px",
-                        sm: "4px",
-                        DEFAULT: "8px",
-                        md: "12px",
-                        lg: "16px",
-                        xl: "20px",
-                        "2xl": "24px",
-                        "3xl": "32px",
-                        full: "9999px",
-                        button: "8px",
-                    },
-                },
-            },
-        };
-    </script>
-    <style>
-        :where([class^="ri-"])::before { content: "\f3c2"; }
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-        }
-        .nav-link.active {
-            color: #3B82F6;
-            font-weight: 600;
-            background-color: rgba(59, 130, 246, 0.1);
-        }
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -29px;
-            top: 0;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background-color: #3B82F6;
-            border: 2px solid white;
-        }
-        .timeline-item::after {
-            content: '';
-            position: absolute;
-            left: -23px;
-            top: 14px;
-            width: 2px;
-            height: calc(100% + 16px);
-            background-color: #e5e7eb;
-        }
-        .timeline-item:last-child::after {
-            display: none;
-        }
-        .custom-checkbox {
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            border: 2px solid #d1d5db;
-            border-radius: 4px;
-            position: relative;
-            cursor: pointer;
-        }
-        .custom-checkbox:checked {
-            background-color: #3B82F6;
-            border-color: #3B82F6;
-        }
-        .custom-checkbox:checked::after {
-            content: '';
-            position: absolute;
-            left: 5px;
-            top: 2px;
-            width: 6px;
-            height: 10px;
-            border: solid white;
-            border-width: 0 2px 2px 0;
-            transform: rotate(45deg);
-        }
-    </style>
+    <title th:text="${school}">세종대학교 소개</title>
 </head>
-<body class="bg-gray-50">
-<!-- 상단 배너 -->
-<nav th:replace="~{homepage/common/nav-user :: nav-user}"></nav>
-<div class="container mx-auto px-4 py-8 pt-16 flex flex-col md:flex-row gap-8">
-    <!-- 좌측 네비게이션 -->
-    <aside class="w-full md:w-64 md:shrink-0 md:self-start">
-        <div th:replace="~{homepage/user/school/school-left-sidebar :: school-left}"></div>
-    </aside>
-    <!-- 메인 콘텐츠 -->
-    <main class="flex-1 py-6 px-0 md:px-6">
-        <!-- 헤더 섹션 -->
-        <div class="mb-8">
-            <div class="flex items-center text-sm text-gray-500 mb-2">
-                <a href="#" class="hover:text-primary">홈</a>
-                <span class="mx-2">></span>
-                <a href="#" class="hover:text-primary">대학교</a>
-                <span class="mx-2">></span>
-                <span class="text-primary">학교 소개</span>
-            </div>
-            <h1 class="text-3xl font-bold text-gray-900">학교 소개</h1>
-        </div>
-        <!-- 소개 섹션 -->
-        <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <div class="flex flex-col md:flex-row gap-8">
-                <div class="md:w-1/2">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-4">
-                        글로벌 인재 양성의 요람
-                    </h2>
-                    <p class="text-gray-700 mb-4">
-                        한국대학교는 1954년 설립 이래 70년 동안 국내외에서 인정받는
-                        글로벌 인재를 양성해왔습니다. 우리 대학은 혁신적인 교육
-                        프로그램과 연구 활동을 통해 학생들이 미래 사회의 리더로 성장할
-                        수 있도록 지원하고 있습니다.
-                    </p>
-                    <p class="text-gray-700 mb-4">
-                        특히 국제화에 중점을 두고 전 세계 250여 개 대학과 교류 협정을
-                        맺고 있으며, 매년 1,000명 이상의 학생들이 해외 교환학생
-                        프로그램에 참여하고 있습니다. 또한, 외국인 유학생을 위한 다양한
-                        장학 제도와 지원 프로그램을 운영하고 있습니다.
-                    </p>
-                    <div class="flex space-x-4 mt-6">
-                        <button
-                                class="px-5 py-2.5 bg-primary text-white rounded-button hover:bg-blue-600 transition whitespace-nowrap flex items-center"
-                        >
-                  <span class="w-5 h-5 flex items-center justify-center mr-2">
-                    <i class="ri-download-line"></i>
-                  </span>
-                            학교 브로슈어 다운로드
-                        </button>
-                        <button
-                                class="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-button hover:bg-gray-50 transition whitespace-nowrap flex items-center"
-                        >
-                  <span class="w-5 h-5 flex items-center justify-center mr-2">
-                    <i class="ri-video-line"></i>
-                  </span>
-                            홍보 영상 보기
-                        </button>
-                    </div>
-                </div>
-                <div class="md:w-1/2">
-                    <div class="rounded-lg overflow-hidden h-72 bg-gray-100">
-                        <img
-                                src="https://readdy.ai/api/search-image?query=A%20modern%20university%20campus%20with%20beautiful%20architecture%2C%20students%20walking%20between%20buildings%2C%20green%20spaces%20with%20trees%2C%20and%20a%20central%20plaza.%20The%20image%20should%20show%20a%20vibrant%20academic%20environment%20with%20diverse%20students%20in%20a%20Korean%20university%20setting.&width=600&height=400&seq=1&orientation=landscape"
-                                alt="대학교 캠퍼스"
-                                class="w-full h-full object-cover object-top"
-                        />
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- 역사와 비전 -->
-        <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">역사와 비전</h2>
-            <div class="flex flex-col md:flex-row gap-8">
-                <!-- 연혁 -->
-                <div class="md:w-1/2">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">
-                        주요 연혁
-                    </h3>
-                    <div class="relative pl-8 ml-4">
-                        <div class="timeline-item relative pb-8">
-                            <h4 class="font-medium text-gray-900">1954년</h4>
-                            <p class="text-gray-600">한국대학교 설립, 3개 학과로 시작</p>
-                        </div>
-                        <div class="timeline-item relative pb-8">
-                            <h4 class="font-medium text-gray-900">1972년</h4>
-                            <p class="text-gray-600">
-                                종합대학교로 승격, 7개 단과대학 설립
-                            </p>
-                        </div>
-                        <div class="timeline-item relative pb-8">
-                            <h4 class="font-medium text-gray-900">1995년</h4>
-                            <p class="text-gray-600">
-                                국제교류센터 설립 및 첫 해외 자매결연
-                            </p>
-                        </div>
-                        <div class="timeline-item relative pb-8">
-                            <h4 class="font-medium text-gray-900">2005년</h4>
-                            <p class="text-gray-600">글로벌 캠퍼스 개교, 국제학부 신설</p>
-                        </div>
-                        <div class="timeline-item relative pb-8">
-                            <h4 class="font-medium text-gray-900">2015년</h4>
-                            <p class="text-gray-600">
-                                QS 세계대학평가 아시아 50위권 진입
-                            </p>
-                        </div>
-                        <div class="timeline-item relative">
-                            <h4 class="font-medium text-gray-900">2024년</h4>
-                            <p class="text-gray-600">개교 70주년, 글로벌 혁신센터 개관</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- 비전과 미션 -->
-                <div class="md:w-1/2">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">
-                        비전과 미션
-                    </h3>
-                    <div class="bg-blue-50 p-5 rounded-lg mb-6">
-                        <h4 class="font-medium text-primary mb-2">비전</h4>
-                        <p class="text-gray-700">
-                            "글로벌 지식 창출과 인재 양성을 통한 인류 사회 발전에 기여하는
-                            세계적 대학"
-                        </p>
-                    </div>
-                    <div class="bg-green-50 p-5 rounded-lg mb-6">
-                        <h4 class="font-medium text-secondary mb-2">미션</h4>
-                        <p class="text-gray-700">
-                            "창의적 사고와 국제적 시각을 갖춘 미래 지향적 인재 양성"
-                        </p>
-                    </div>
-                    <h4 class="font-medium text-gray-900 mb-3">핵심 가치</h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                  <span
-                          class="w-10 h-10 flex items-center justify-center bg-blue-100 text-primary rounded-full mr-3"
-                  >
-                    <i class="ri-lightbulb-line ri-lg"></i>
-                  </span>
-                            <span class="text-gray-700">창의성</span>
-                        </div>
-                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                  <span
-                          class="w-10 h-10 flex items-center justify-center bg-green-100 text-secondary rounded-full mr-3"
-                  >
-                    <i class="ri-global-line ri-lg"></i>
-                  </span>
-                            <span class="text-gray-700">국제화</span>
-                        </div>
-                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                  <span
-                          class="w-10 h-10 flex items-center justify-center bg-yellow-100 text-yellow-600 rounded-full mr-3"
-                  >
-                    <i class="ri-team-line ri-lg"></i>
-                  </span>
-                            <span class="text-gray-700">협력</span>
-                        </div>
-                        <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                  <span
-                          class="w-10 h-10 flex items-center justify-center bg-red-100 text-red-600 rounded-full mr-3"
-                  >
-                    <i class="ri-heart-line ri-lg"></i>
-                  </span>
-                            <span class="text-gray-700">봉사</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- 학과 및 프로그램 -->
-        <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">
-                학과 및 프로그램
-            </h2>
-            <div class="mb-6">
-                <div class="flex flex-wrap gap-2 mb-4">
-                    <button
-                            class="px-4 py-2 bg-primary text-white rounded-full whitespace-nowrap"
-                    >
-                        전체
-                    </button>
-                    <button
-                            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 whitespace-nowrap"
-                    >
-                        인문대학
-                    </button>
-                    <button
-                            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 whitespace-nowrap"
-                    >
-                        사회과학대학
-                    </button>
-                    <button
-                            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 whitespace-nowrap"
-                    >
-                        자연과학대학
-                    </button>
-                    <button
-                            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 whitespace-nowrap"
-                    >
-                        공과대학
-                    </button>
-                    <button
-                            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 whitespace-nowrap"
-                    >
-                        경영대학
-                    </button>
-                    <button
-                            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 whitespace-nowrap"
-                    >
-                        의과대학
-                    </button>
-                    <button
-                            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 whitespace-nowrap"
-                    >
-                        예술대학
-                    </button>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div
-                        class="border rounded-lg overflow-hidden hover:shadow-md transition"
-                >
-                    <div class="h-40 bg-gray-100">
-                        <img
-                                src="https://readdy.ai/api/search-image?query=Computer%20science%20department%20with%20modern%20computer%20labs%2C%20students%20working%20on%20programming%20projects%2C%20high-tech%20equipment%2C%20and%20collaborative%20workspaces%20in%20a%20bright%2C%20modern%20university%20building.&width=400&height=250&seq=2&orientation=landscape"
-                                alt="컴퓨터공학과"
-                                class="w-full h-full object-cover object-top"
-                        />
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-semibold text-gray-900 mb-1">컴퓨터공학과</h3>
-                        <p class="text-gray-600 text-sm mb-3">
-                            인공지능, 빅데이터, 소프트웨어 개발 등 첨단 IT 분야의 전문가
-                            양성
-                        </p>
-                        <div class="flex justify-between items-center">
-                  <span
-                          class="text-xs bg-blue-100 text-primary px-2 py-1 rounded-full"
-                  >공과대학</span
-                  >
-                            <a href="#" class="text-primary text-sm hover:underline"
-                            >자세히 보기</a
-                            >
-                        </div>
-                    </div>
-                </div>
-                <div
-                        class="border rounded-lg overflow-hidden hover:shadow-md transition"
-                >
-                    <div class="h-40 bg-gray-100">
-                        <img
-                                src="https://readdy.ai/api/search-image?query=International%20business%20classroom%20with%20diverse%20students%2C%20professor%20teaching%20global%20economics%2C%20charts%20showing%20international%20trade%20on%20screens%2C%20and%20a%20modern%20business%20school%20setting.&width=400&height=250&seq=3&orientation=landscape"
-                                alt="국제경영학과"
-                                class="w-full h-full object-cover object-top"
-                        />
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-semibold text-gray-900 mb-1">국제경영학과</h3>
-                        <p class="text-gray-600 text-sm mb-3">
-                            글로벌 비즈니스 환경에서 활약할 수 있는 경영 전문가 양성
-                        </p>
-                        <div class="flex justify-between items-center">
-                  <span
-                          class="text-xs bg-green-100 text-secondary px-2 py-1 rounded-full"
-                  >경영대학</span
-                  >
-                            <a href="#" class="text-primary text-sm hover:underline"
-                            >자세히 보기</a
-                            >
-                        </div>
-                    </div>
-                </div>
-                <div
-                        class="border rounded-lg overflow-hidden hover:shadow-md transition"
-                >
-                    <div class="h-40 bg-gray-100">
-                        <img
-                                src="https://readdy.ai/api/search-image?query=Biomedical%20research%20laboratory%20with%20students%20in%20lab%20coats%2C%20microscopes%2C%20advanced%20scientific%20equipment%2C%20researchers%20analyzing%20samples%2C%20and%20modern%20medical%20research%20facilities.&width=400&height=250&seq=4&orientation=landscape"
-                                alt="생명공학과"
-                                class="w-full h-full object-cover object-top"
-                        />
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-semibold text-gray-900 mb-1">생명공학과</h3>
-                        <p class="text-gray-600 text-sm mb-3">
-                            바이오 기술과 의약품 개발 분야의 연구 인력 양성
-                        </p>
-                        <div class="flex justify-between items-center">
-                  <span
-                          class="text-xs bg-yellow-100 text-yellow-600 px-2 py-1 rounded-full"
-                  >자연과학대학</span
-                  >
-                            <a href="#" class="text-primary text-sm hover:underline"
-                            >자세히 보기</a
-                            >
-                        </div>
-                    </div>
-                </div>
-                <div
-                        class="border rounded-lg overflow-hidden hover:shadow-md transition"
-                >
-                    <div class="h-40 bg-gray-100">
-                        <img
-                                src="https://readdy.ai/api/search-image?query=Korean%20language%20classroom%20with%20international%20students%20learning%20hangul%2C%20cultural%20artifacts%20displayed%2C%20interactive%20language%20learning%20technology%2C%20and%20a%20warm%2C%20welcoming%20educational%20environment.&width=400&height=250&seq=5&orientation=landscape"
-                                alt="한국어학과"
-                                class="w-full h-full object-cover object-top"
-                        />
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-semibold text-gray-900 mb-1">한국어학과</h3>
-                        <p class="text-gray-600 text-sm mb-3">
-                            외국인을 위한 한국어 교육 및 한국 문화 전파 전문가 양성
-                        </p>
-                        <div class="flex justify-between items-center">
-                  <span
-                          class="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded-full"
-                  >인문대학</span
-                  >
-                            <a href="#" class="text-primary text-sm hover:underline"
-                            >자세히 보기</a
-                            >
-                        </div>
-                    </div>
-                </div>
-                <div
-                        class="border rounded-lg overflow-hidden hover:shadow-md transition"
-                >
-                    <div class="h-40 bg-gray-100">
-                        <img
-                                src="https://readdy.ai/api/search-image?query=Media%20production%20studio%20with%20broadcasting%20equipment%2C%20students%20filming%20with%20professional%20cameras%2C%20editing%20workstations%2C%20green%20screen%2C%20and%20modern%20digital%20media%20facilities.&width=400&height=250&seq=6&orientation=landscape"
-                                alt="미디어커뮤니케이션학과"
-                                class="w-full h-full object-cover object-top"
-                        />
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-semibold text-gray-900 mb-1">
-                            미디어커뮤니케이션학과
-                        </h3>
-                        <p class="text-gray-600 text-sm mb-3">
-                            디지털 미디어 콘텐츠 제작 및 커뮤니케이션 전문가 양성
-                        </p>
-                        <div class="flex justify-between items-center">
-                  <span
-                          class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full"
-                  >사회과학대학</span
-                  >
-                            <a href="#" class="text-primary text-sm hover:underline"
-                            >자세히 보기</a
-                            >
-                        </div>
-                    </div>
-                </div>
-                <div
-                        class="border rounded-lg overflow-hidden hover:shadow-md transition"
-                >
-                    <div class="h-40 bg-gray-100">
-                        <img
-                                src="https://readdy.ai/api/search-image?query=Environmental%20science%20field%20research%20with%20students%20collecting%20water%20samples%2C%20monitoring%20equipment%2C%20sustainable%20energy%20demonstrations%2C%20and%20ecological%20study%20areas%20on%20campus.&width=400&height=250&seq=7&orientation=landscape"
-                                alt="환경공학과"
-                                class="w-full h-full object-cover object-top"
-                        />
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-semibold text-gray-900 mb-1">환경공학과</h3>
-                        <p class="text-gray-600 text-sm mb-3">
-                            지속가능한 환경 관리 및 친환경 기술 개발 전문가 양성
-                        </p>
-                        <div class="flex justify-between items-center">
-                  <span
-                          class="text-xs bg-blue-100 text-primary px-2 py-1 rounded-full"
-                  >공과대학</span
-                  >
-                            <a href="#" class="text-primary text-sm hover:underline"
-                            >자세히 보기</a
-                            >
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="mt-6 text-center">
-                <button
-                        class="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-button hover:bg-gray-50 transition whitespace-nowrap"
-                >
-                    더 많은 학과 보기
-                </button>
-            </div>
-        </section>
-        <!-- 특성화 프로그램 -->
-        <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">특성화 프로그램</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="flex bg-blue-50 rounded-lg p-5">
-              <span
-                      class="w-12 h-12 flex items-center justify-center bg-primary text-white rounded-full mr-4 flex-shrink-0"
-              >
-                <i class="ri-global-line ri-lg"></i>
-              </span>
-                    <div>
-                        <h3 class="font-semibold text-gray-900 mb-2">
-                            글로벌 리더십 프로그램
-                        </h3>
-                        <p class="text-gray-600 text-sm">
-                            해외 유수 대학과의 교환학생 프로그램, 글로벌 인턴십, 국제
-                            봉사활동 등을 통해 글로벌 리더를 양성합니다.
-                        </p>
-                    </div>
-                </div>
-                <div class="flex bg-green-50 rounded-lg p-5">
-              <span
-                      class="w-12 h-12 flex items-center justify-center bg-secondary text-white rounded-full mr-4 flex-shrink-0"
-              >
-                <i class="ri-rocket-line ri-lg"></i>
-              </span>
-                    <div>
-                        <h3 class="font-semibold text-gray-900 mb-2">
-                            창업 지원 프로그램
-                        </h3>
-                        <p class="text-gray-600 text-sm">
-                            학생 창업을 위한 멘토링, 투자 유치, 창업 공간 제공 등 다양한
-                            지원을 통해 미래 기업가를 육성합니다.
-                        </p>
-                    </div>
-                </div>
-                <div class="flex bg-yellow-50 rounded-lg p-5">
-              <span
-                      class="w-12 h-12 flex items-center justify-center bg-yellow-500 text-white rounded-full mr-4 flex-shrink-0"
-              >
-                <i class="ri-book-open-line ri-lg"></i>
-              </span>
-                    <div>
-                        <h3 class="font-semibold text-gray-900 mb-2">
-                            융합 학문 프로그램
-                        </h3>
-                        <p class="text-gray-600 text-sm">
-                            AI, 바이오, 문화콘텐츠 등 다양한 학문 분야를 융합한 특성화
-                            교육과정을 운영합니다.
-                        </p>
-                    </div>
-                </div>
-                <div class="flex bg-red-50 rounded-lg p-5">
-              <span
-                      class="w-12 h-12 flex items-center justify-center bg-red-500 text-white rounded-full mr-4 flex-shrink-0"
-              >
-                <i class="ri-user-voice-line ri-lg"></i>
-              </span>
-                    <div>
-                        <h3 class="font-semibold text-gray-900 mb-2">
-                            산학협력 프로그램
-                        </h3>
-                        <p class="text-gray-600 text-sm">
-                            국내외 유수 기업과의 협력을 통한 현장 실습, 인턴십, 취업 연계
-                            프로그램을 제공합니다.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- 캠퍼스 시설 -->
-        <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">캠퍼스 시설</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div class="rounded-lg overflow-hidden h-64">
-                    <img
-                            src="https://readdy.ai/api/search-image?query=Modern%20university%20library%20with%20multiple%20floors%2C%20extensive%20book%20collections%2C%20comfortable%20study%20spaces%2C%20students%20reading%20and%20researching%2C%20and%20advanced%20digital%20resources%20in%20a%20bright%2C%20contemporary%20architectural%20setting.&width=400&height=300&seq=8&orientation=portrait"
-                            alt="중앙도서관"
-                            class="w-full h-full object-cover object-top"
-                    />
-                </div>
-                <div class="rounded-lg overflow-hidden h-64">
-                    <img
-                            src="https://readdy.ai/api/search-image?query=State-of-the-art%20university%20sports%20complex%20with%20indoor%20swimming%20pool%2C%20basketball%20courts%2C%20fitness%20center%2C%20running%20track%2C%20and%20students%20engaging%20in%20various%20athletic%20activities%20in%20a%20modern%20facility.&width=400&height=300&seq=9&orientation=portrait"
-                            alt="체육관"
-                            class="w-full h-full object-cover object-top"
-                    />
-                </div>
-                <div class="rounded-lg overflow-hidden h-64">
-                    <img
-                            src="https://readdy.ai/api/search-image?query=University%20student%20center%20with%20cafes%2C%20lounges%2C%20club%20meeting%20spaces%2C%20event%20halls%2C%20and%20students%20socializing%20and%20participating%20in%20extracurricular%20activities%20in%20a%20vibrant%20campus%20hub.&width=400&height=300&seq=10&orientation=portrait"
-                            alt="학생회관"
-                            class="w-full h-full object-cover object-top"
-                    />
-                </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="p-4 border rounded-lg">
-                    <h3 class="font-medium text-gray-900 mb-2">중앙도서관</h3>
-                    <p class="text-gray-600 text-sm">
-                        200만 권 이상의 장서와 전자 자료, 24시간 열람실, 그룹 스터디룸
-                        보유
-                    </p>
-                </div>
-                <div class="p-4 border rounded-lg">
-                    <h3 class="font-medium text-gray-900 mb-2">종합체육관</h3>
-                    <p class="text-gray-600 text-sm">
-                        수영장, 헬스장, 농구장, 배드민턴장 등 다양한 스포츠 시설 구비
-                    </p>
-                </div>
-                <div class="p-4 border rounded-lg">
-                    <h3 class="font-medium text-gray-900 mb-2">학생회관</h3>
-                    <p class="text-gray-600 text-sm">
-                        동아리방, 학생 라운지, 카페테리아, 공연장 등 학생 활동 공간
-                    </p>
-                </div>
-                <div class="p-4 border rounded-lg">
-                    <h3 class="font-medium text-gray-900 mb-2">기숙사</h3>
-                    <p class="text-gray-600 text-sm">
-                        5,000명 수용 가능한 현대식 기숙사, 유학생 전용 기숙사 운영
-                    </p>
-                </div>
-            </div>
-        </section>
-        <!-- 국제 프로그램 -->
-        <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">국제 프로그램</h2>
-            <div class="flex flex-col md:flex-row gap-8">
-                <div class="md:w-1/2">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">
-                        교환학생 프로그램
-                    </h3>
-                    <p class="text-gray-700 mb-4">
-                        한국대학교는 전 세계 250여 개 대학과 교류 협정을 맺고 있으며,
-                        매년 1,000명 이상의 학생들이 해외 교환학생 프로그램에 참여하고
-                        있습니다.
-                    </p>
-                    <div class="mb-4">
-                        <h4 class="font-medium text-gray-900 mb-2">주요 협력 대학</h4>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="flex items-center p-2 bg-gray-50 rounded-md">
-                    <span class="w-6 h-6 flex items-center justify-center mr-2">
-                      <i class="ri-flag-line"></i>
-                    </span>
-                                <span class="text-sm text-gray-700"
-                                >하버드대학교 (미국)</span
-                                >
-                            </div>
-                            <div class="flex items-center p-2 bg-gray-50 rounded-md">
-                    <span class="w-6 h-6 flex items-center justify-center mr-2">
-                      <i class="ri-flag-line"></i>
-                    </span>
-                                <span class="text-sm text-gray-700"
-                                >옥스포드대학교 (영국)</span
-                                >
-                            </div>
-                            <div class="flex items-center p-2 bg-gray-50 rounded-md">
-                    <span class="w-6 h-6 flex items-center justify-center mr-2">
-                      <i class="ri-flag-line"></i>
-                    </span>
-                                <span class="text-sm text-gray-700">도쿄대학교 (일본)</span>
-                            </div>
-                            <div class="flex items-center p-2 bg-gray-50 rounded-md">
-                    <span class="w-6 h-6 flex items-center justify-center mr-2">
-                      <i class="ri-flag-line"></i>
-                    </span>
-                                <span class="text-sm text-gray-700"
-                                >베이징대학교 (중국)</span
-                                >
-                            </div>
-                        </div>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">
-                        어학 프로그램
-                    </h3>
-                    <p class="text-gray-700 mb-4">
-                        외국인 학생들을 위한 한국어 교육 프로그램과 한국 학생들을 위한
-                        다양한 외국어 교육 프로그램을 운영하고 있습니다.
-                    </p>
-                    <div class="flex flex-wrap gap-2">
-                        <div
-                                class="bg-blue-100 text-primary px-3 py-1 rounded-full text-sm"
-                        >
-                            한국어 집중 과정
-                        </div>
-                        <div
-                                class="bg-blue-100 text-primary px-3 py-1 rounded-full text-sm"
-                        >
-                            영어 회화 프로그램
-                        </div>
-                        <div
-                                class="bg-blue-100 text-primary px-3 py-1 rounded-full text-sm"
-                        >
-                            글로벌 비즈니스 영어
-                        </div>
-                        <div
-                                class="bg-blue-100 text-primary px-3 py-1 rounded-full text-sm"
-                        >
-                            중국어 단기 과정
-                        </div>
-                    </div>
-                </div>
-                <div class="md:w-1/2">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">
-                        국제 협력 현황
-                    </h3>
-                    <div class="bg-white rounded-lg mb-6 h-64" id="worldMap">
-                        <div id="internationalChart" class="w-full h-full"></div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <div class="flex justify-between items-center mb-2">
-                                <h4 class="font-medium text-gray-900">교환학생 파견</h4>
-                                <span class="text-lg font-semibold text-primary"
-                                >1,250명</span
-                                >
-                            </div>
-                            <p class="text-sm text-gray-600">연간 해외 파견 학생 수</p>
-                        </div>
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <div class="flex justify-between items-center mb-2">
-                                <h4 class="font-medium text-gray-900">외국인 유학생</h4>
-                                <span class="text-lg font-semibold text-primary"
-                                >2,800명</span
-                                >
-                            </div>
-                            <p class="text-sm text-gray-600">재학 중인 외국인 학생 수</p>
-                        </div>
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <div class="flex justify-between items-center mb-2">
-                                <h4 class="font-medium text-gray-900">협력 대학</h4>
-                                <span class="text-lg font-semibold text-primary"
-                                >250개</span
-                                >
-                            </div>
-                            <p class="text-sm text-gray-600">전 세계 협력 대학 수</p>
-                        </div>
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <div class="flex justify-between items-center mb-2">
-                                <h4 class="font-medium text-gray-900">국제 프로그램</h4>
-                                <span class="text-lg font-semibold text-primary">45개</span>
-                            </div>
-                            <p class="text-sm text-gray-600">
-                                운영 중인 국제 프로그램 수
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- 위치 정보 -->
-        <section class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">캠퍼스 위치</h2>
-            <div class="flex flex-col md:flex-row gap-8">
-                <div class="md:w-1/2">
-                    <div
-                            class="rounded-lg overflow-hidden h-80 bg-cover bg-center"
-                            style="background-image: url('https://public.readdy.ai/gen_page/map_placeholder_1280x720.png')"
-                    ></div>
-                </div>
-                <div class="md:w-1/2">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">
-                        찾아오시는 길
-                    </h3>
-                    <div class="mb-4">
-                        <h4 class="font-medium text-gray-900 mb-2">주소</h4>
-                        <p class="text-gray-700">
-                            서울특별시 강남구 테헤란로 123 한국대학교
-                        </p>
-                    </div>
-                    <div class="mb-4">
-                        <h4 class="font-medium text-gray-900 mb-2">대중교통</h4>
-                        <div class="flex items-start mb-2">
-                  <span
-                          class="w-6 h-6 flex items-center justify-center bg-blue-500 text-white rounded-full mr-2 mt-0.5 flex-shrink-0"
-                  >
-                    <i class="ri-train-line"></i>
-                  </span>
-                            <div>
-                                <p class="text-gray-700 font-medium">지하철</p>
-                                <p class="text-gray-600 text-sm">
-                                    2호선 강남역 3번 출구에서 도보 5분
-                                </p>
-                            </div>
-                        </div>
-                        <div class="flex items-start">
-                  <span
-                          class="w-6 h-6 flex items-center justify-center bg-green-500 text-white rounded-full mr-2 mt-0.5 flex-shrink-0"
-                  >
-                    <i class="ri-bus-line"></i>
-                  </span>
-                            <div>
-                                <p class="text-gray-700 font-medium">버스</p>
-                                <p class="text-gray-600 text-sm">
-                                    간선버스: 145, 301, 472 / 지선버스: 3412, 4412
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mb-4">
-                        <h4 class="font-medium text-gray-900 mb-2">주차 안내</h4>
-                        <p class="text-gray-700 mb-2">
-                            캠퍼스 내 방문자 주차장 이용 가능 (1시간 3,000원)
-                        </p>
-                        <p class="text-gray-600 text-sm">
-                            * 행사 참여자는 주차 할인권 제공
-                        </p>
-                    </div>
-                    <button
-                            class="px-5 py-2.5 bg-primary text-white rounded-button hover:bg-blue-600 transition whitespace-nowrap flex items-center mt-4"
-                    >
-                <span class="w-5 h-5 flex items-center justify-center mr-2">
-                  <i class="ri-map-pin-line"></i>
-                </span>
-                        길찾기 바로가기
-                    </button>
-                </div>
-            </div>
-        </section>
-    </main>
-</div>
-<footer class="bg-gray-800 text-white py-10 mt-10">
-    <div class="container mx-auto px-4">
-        <div class="flex flex-col md:flex-row justify-between mb-8">
-            <div class="mb-6 md:mb-0">
-                <h2 class="text-2xl font-['Pacifico'] text-white mb-4">logo</h2>
-                <p class="text-gray-300 max-w-md">
-                    한국대학교는 창의적 사고와 국제적 시각을 갖춘 미래 지향적 인재
-                    양성을 위해 최선을 다하고 있습니다.
-                </p>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">빠른 링크</h3>
-                    <ul class="space-y-2">
-                        <li>
-                            <a href="#" class="text-gray-300 hover:text-white"
-                            >학교 소개</a
-                            >
-                        </li>
-                        <li>
-                            <a
-                                    href="https://readdy.ai/home/d027a641-c27a-4a46-8bd3-4dec8c797f39/0c56e8ce-323f-465a-83a2-3b7026a8823f"
-                                    data-readdy="true"
-                                    class="text-gray-300 hover:text-white"
-                            >학교 신청 양식들</a
-                            >
-                        </li>
-                        <li>
-                            <a href="#" class="text-gray-300 hover:text-white"
-                            >학사 일정</a
-                            >
-                        </li>
-                        <li>
-                            <a href="#" class="text-gray-300 hover:text-white"
-                            >입학 안내</a
-                            >
-                        </li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">연락처</h3>
-                    <ul class="space-y-2">
-                        <li class="flex items-center">
-                  <span class="w-5 h-5 flex items-center justify-center mr-2">
-                    <i class="ri-phone-line"></i>
-                  </span>
-                            <span>02-123-4567</span>
-                        </li>
-                        <li class="flex items-center">
-                  <span class="w-5 h-5 flex items-center justify-center mr-2">
-                    <i class="ri-mail-line"></i>
-                  </span>
-                            <span>info@university.ac.kr</span>
-                        </li>
-                        <li class="flex items-center">
-                  <span class="w-5 h-5 flex items-center justify-center mr-2">
-                    <i class="ri-map-pin-line"></i>
-                  </span>
-                            <span>서울시 강남구 테헤란로 123</span>
-                        </li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">팔로우</h3>
-                    <div class="flex space-x-3">
-                        <a
-                                href="#"
-                                class="w-10 h-10 flex items-center justify-center bg-gray-700 rounded-full hover:bg-primary transition"
-                        >
-                            <i class="ri-facebook-fill"></i>
-                        </a>
-                        <a
-                                href="#"
-                                class="w-10 h-10 flex items-center justify-center bg-gray-700 rounded-full hover:bg-primary transition"
-                        >
-                            <i class="ri-instagram-line"></i>
-                        </a>
-                        <a
-                                href="#"
-                                class="w-10 h-10 flex items-center justify-center bg-gray-700 rounded-full hover:bg-primary transition"
-                        >
-                            <i class="ri-youtube-line"></i>
-                        </a>
-                        <a
-                                href="#"
-                                class="w-10 h-10 flex items-center justify-center bg-gray-700 rounded-full hover:bg-primary transition"
-                        >
-                            <i class="ri-twitter-x-line"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div
-                class="border-t border-gray-700 pt-6 flex flex-col md:flex-row justify-between items-center"
-        >
-            <p class="text-gray-400 text-sm mb-4 md:mb-0">
-                © 2025 한국대학교. All rights reserved.
-            </p>
-            <div class="flex space-x-4">
-                <a href="#" class="text-gray-400 hover:text-white text-sm"
-                >개인정보처리방침</a
-                >
-                <a href="#" class="text-gray-400 hover:text-white text-sm"
-                >이용약관</a
-                >
-                <a href="#" class="text-gray-400 hover:text-white text-sm"
-                >사이트맵</a
-                >
-            </div>
-        </div>
+<main class="min-w-0 flex-1 py-6 px-0 md:px-6">
+    <div th:replace="~{fragments/school/universityNavHeader :: universityNavHeader('세종대학교 소개')}"></div>
+
+    <div th:replace="~{fragments/school/universityIntroSection :: universityIntroSection(
+  '글로벌 혁신 대학',
+  '세종대학교는 서울 광진구에 위치한 사립 종합대학으로, 공학·컴퓨터/AI, 호텔관광, 콘텐츠 분야에 강점을 지니고 있습니다.',
+  'https://www.sejong.ac.kr/',
+  'https://en.sejong.ac.kr/eng/index.do',
+  'https://www.sejong.ac.kr/_res/sejong/_share/img/sub-visual/sub-visual01.jpg'
+)}">
+        <ul id="univIntro" class="list-disc pl-5 text-gray-700 space-y-1">
+            <li>도심 접근성 우수(어린이대공원 인접)</li>
+            <li>산학연 협력 및 실무 중심 교육 강화</li>
+            <li>국내외 각종 대학평가에서 꾸준한 성장세</li>
+        </ul>
     </div>
-</footer>
-<script id="chart-script">
-    document.addEventListener("DOMContentLoaded", function () {
-        const chartDom = document.getElementById("internationalChart");
-        const myChart = echarts.init(chartDom);
-        const option = {
-            animation: false,
-            tooltip: {
-                trigger: "item",
-                backgroundColor: "rgba(255, 255, 255, 0.8)",
-                borderColor: "#eee",
-                borderWidth: 1,
-                textStyle: {
-                    color: "#1f2937",
-                },
-            },
-            legend: {
-                top: "5%",
-                left: "center",
-                textStyle: {
-                    color: "#1f2937",
-                },
-            },
-            series: [
-                {
-                    name: "국제 협력 현황",
-                    type: "pie",
-                    radius: ["40%", "70%"],
-                    avoidLabelOverlap: false,
-                    itemStyle: {
-                        borderRadius: 8,
-                        borderColor: "#fff",
-                        borderWidth: 2,
-                    },
-                    label: {
-                        show: false,
-                        position: "center",
-                    },
-                    emphasis: {
-                        label: {
-                            show: true,
-                            fontSize: "16",
-                            fontWeight: "bold",
-                            color: "#1f2937",
-                        },
-                    },
-                    labelLine: {
-                        show: false,
-                    },
-                    data: [
-                        { value: 85, name: "아시아" },
-                        { value: 65, name: "북미" },
-                        { value: 55, name: "유럽" },
-                        { value: 25, name: "오세아니아" },
-                        { value: 20, name: "기타" },
-                    ],
-                    color: [
-                        "rgba(87, 181, 231, 1)",
-                        "rgba(141, 211, 199, 1)",
-                        "rgba(251, 191, 114, 1)",
-                        "rgba(252, 141, 98, 1)",
-                        "rgba(190, 190, 190, 1)",
-                    ],
-                },
-            ],
-        };
-        myChart.setOption(option);
-        window.addEventListener("resize", function () {
-            myChart.resize();
-        });
-    });
-</script>
-<script id="mobile-menu-script">
-    document.addEventListener("DOMContentLoaded", function () {
-        const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-        const mobileMenu = document.getElementById("mobileMenu");
-        const mobileUnivBtn = document.getElementById("mobileUnivBtn");
-        const mobileUnivSubmenu = document.getElementById("mobileUnivSubmenu");
 
-        mobileMenuBtn.addEventListener("click", function () {
-            mobileMenu.classList.toggle("hidden");
-        });
 
-        mobileUnivBtn.addEventListener("click", function () {
-            mobileUnivSubmenu.classList.toggle("hidden");
-        });
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
 
-        document.addEventListener("click", function (event) {
-            if (
-                !mobileMenuBtn.contains(event.target) &&
-                !mobileMenu.contains(event.target)
-            ) {
-                mobileMenu.classList.add("hidden");
+        <div th:replace="~{fragments/school/universityBasicInfo :: universityBasicInfo(
+            '세종대학교',
+  'Sejong University',
+  '1940년 (경성인문학원으로 출발)',
+  '서울특별시 광진구 능동로 209, 05006',
+  '공학·컴퓨터/AI, 호텔관광, 콘텐츠 분야 특성화 / 산학연 협력 강화'
+)}"></div>
+
+
+        <div th:replace="~{fragments/school/universityInfoCard :: universityInfoCard(
+  'QS 세계 대학 순위',
+  '392',
+  'QS World University Rankings 2026',
+  '',
+  '* TopUniversities 기준'
+)}"></div>
+
+
+        <div th:replace="~{fragments/school/universityInfoCard :: universityLinkCard(
+  '관련 홈페이지',
+  '국제처 홈페이지',
+  'https://www.sejong.ac.kr/kor/admission/foreign-admissions.do',
+  '어학원 홈페이지',
+  'https://sos.sejong.ac.kr/eng/admission/guide/koreanEdu.do'
+)}"></div>
+    </section>
+
+    <!-- (옵션) 학과/프로그램 카드 미리보기: 필요 없으면 섹션 삭제 -->
+    <section id="sejong-academics" class="bg-white rounded-lg shadow-sm p-6 mb-8">
+        <!-- 헤더 + 검색 -->
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">세종대학교 학사 학과/학부</h2>
+            <div class="w-full md:w-80 relative">
+                <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input id="deptSearch" type="text" placeholder="학과/학부 검색"
+                       class="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"/>
+            </div>
+        </div>
+
+        <!-- 단과대학 탭 (가로 스크롤) -->
+        <div id="collegeFilters" class="flex items-center gap-2 overflow-x-auto pb-2 mb-6">
+            <button data-filter="all" class="px-3 py-1.5 rounded-full bg-primary text-white text-sm whitespace-nowrap">
+                전체
+            </button>
+            <button data-filter="인문과학대학"
+                    class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-sm whitespace-nowrap hover:bg-gray-200">
+                인문과학대학
+            </button>
+            <button data-filter="사회과학대학"
+                    class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-sm whitespace-nowrap hover:bg-gray-200">
+                사회과학대학
+            </button>
+            <button data-filter="경영경제대학"
+                    class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-sm whitespace-nowrap hover:bg-gray-200">
+                경영경제대학
+            </button>
+            <button data-filter="호텔관광대학"
+                    class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-sm whitespace-nowrap hover:bg-gray-200">
+                호텔관광대학
+            </button>
+            <button data-filter="자연과학대학"
+                    class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-sm whitespace-nowrap hover:bg-gray-200">
+                자연과학대학
+            </button>
+            <button data-filter="생명과학대학"
+                    class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-sm whitespace-nowrap hover:bg-gray-200">
+                생명과학대학
+            </button>
+            <button data-filter="인공지능융합대학"
+                    class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-sm whitespace-nowrap hover:bg-gray-200">
+                인공지능융합대학
+            </button>
+            <button data-filter="공과대학"
+                    class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-sm whitespace-nowrap hover:bg-gray-200">
+                공과대학
+            </button>
+            <button data-filter="예체능대학"
+                    class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-sm whitespace-nowrap hover:bg-gray-200">
+                예체능대학
+            </button>
+            <button data-filter="대양휴머니티칼리지"
+                    class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-sm whitespace-nowrap hover:bg-gray-200">
+                대양휴머니티칼리지
+            </button>
+            <button data-filter="전공자율선택제"
+                    class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-sm whitespace-nowrap hover:bg-gray-200">
+                전공자율선택제
+            </button>
+        </div>
+
+
+        <div id="collegeGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+            <article class="border rounded-xl p-5 hover:shadow-md transition group" data-college="인문과학대학">
+                <header class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-gray-900">인문과학대학</h3>
+                    <span class="text-xs text-gray-500" data-count>—</span>
+                </header>
+                <div class="flex flex-wrap gap-2" data-chips>
+                    <span class="chip" data-dept>국어국문학과</span>
+                    <span class="chip" data-dept>국제학부</span>
+                    <span class="chip" data-dept>역사학과</span>
+                    <span class="chip" data-dept>교육학과</span>
+                    <span class="chip" data-dept>글로벌인재학부</span>
+                </div>
+                <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more>더보기</button>
+            </article>
+
+            <!-- 사회과학대학 -->
+            <article class="border rounded-xl p-5 hover:shadow-md transition group" data-college="사회과학대학">
+                <header class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-gray-900">사회과학대학</h3>
+                    <span class="text-xs text-gray-500" data-count>—</span>
+                </header>
+                <div class="flex flex-wrap gap-2" data-chips>
+                    <span class="chip" data-dept>행정학과</span>
+                    <span class="chip" data-dept>미디어커뮤니케이션학과</span>
+                    <span class="chip" data-dept>법학과</span>
+                </div>
+                <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more>더보기</button>
+            </article>
+
+            <!-- 경영경제대학 -->
+            <article class="border rounded-xl p-5 hover:shadow-md transition group" data-college="경영경제대학">
+                <header class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-gray-900">경영경제대학</h3>
+                    <span class="text-xs text-gray-500" data-count>—</span>
+                </header>
+                <div class="flex flex-wrap gap-2" data-chips>
+                    <span class="chip" data-dept>경영학부</span>
+                    <span class="chip" data-dept>경제학과</span>
+                </div>
+                <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more>더보기</button>
+            </article>
+
+            <!-- 호텔관광대학 -->
+            <article class="border rounded-xl p-5 hover:shadow-md transition group" data-college="호텔관광대학">
+                <header class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-gray-900">호텔관광대학</h3>
+                    <span class="text-xs text-gray-500" data-count>—</span>
+                </header>
+                <div class="flex flex-wrap gap-2" data-chips>
+                    <span class="chip" data-dept>호텔관광외식경영학부</span>
+                    <span class="chip" data-dept>호텔외식관광프랜차이즈경영학과</span>
+                    <span class="chip" data-dept>글로벌조리학과</span>
+                    <span class="chip" data-dept>호텔외식비즈니스학과</span>
+                </div>
+                <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more>더보기</button>
+            </article>
+
+            <!-- 자연과학대학 -->
+            <article class="border rounded-xl p-5 hover:shadow-md transition group" data-college="자연과학대학">
+                <header class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-gray-900">자연과학대학</h3>
+                    <span class="text-xs text-gray-500" data-count>—</span>
+                </header>
+                <div class="flex flex-wrap gap-2" data-chips>
+                    <span class="chip" data-dept>수학통계학과</span>
+                    <span class="chip" data-dept>물리천문학과</span>
+                    <span class="chip" data-dept>화학과</span>
+                </div>
+                <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more>더보기</button>
+            </article>
+
+            <!-- 생명과학대학 -->
+            <article class="border rounded-xl p-5 hover:shadow-md transition group" data-college="생명과학대학">
+                <header class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-gray-900">생명과학대학</h3>
+                    <span class="text-xs text-gray-500" data-count>—</span>
+                </header>
+                <div class="flex flex-wrap gap-2" data-chips>
+                    <span class="chip" data-dept>생명시스템학부</span>
+                    <span class="chip" data-dept>스마트생명산업융합학과</span>
+                </div>
+                <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more>더보기</button>
+            </article>
+
+            <!-- 인공지능융합대학 -->
+            <article class="border rounded-xl p-5 hover:shadow-md transition group" data-college="인공지능융합대학">
+                <header class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-gray-900">인공지능융합대학</h3>
+                    <span class="text-xs text-gray-500" data-count>—</span>
+                </header>
+                <div class="flex flex-wrap gap-2" data-chips>
+                    <span class="chip" data-dept>AI융합전자공학과</span>
+                    <span class="chip" data-dept>반도체시스템공학과</span>
+                    <span class="chip" data-dept>컴퓨터공학과</span>
+                    <span class="chip" data-dept>정보보호학과</span>
+                    <span class="chip" data-dept>지능IoT학과</span>
+                    <span class="chip" data-dept>사이버국방학과</span>
+                    <span class="chip" data-dept>인공지능데이터사이언스학과</span>
+                    <span class="chip" data-dept>AI로봇학과</span>
+                    <span class="chip" data-dept>지능정보융합학과</span>
+                    <span class="chip" data-dept>콘텐츠소프트웨어학과</span>
+                    <span class="chip" data-dept>양자지능정보학과</span>
+                    <span class="chip" data-dept>국방AI로봇융합공학과</span>
+                    <span class="chip" data-dept>창의소프트학부</span>
+                </div>
+                <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more></button>
+            </article>
+
+            <!-- 공과대학 -->
+            <article class="border rounded-xl p-5 hover:shadow-md transition group" data-college="인공지능융합대학">
+                <header class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-gray-900">인공지능융합대학</h3>
+                    <span class="text-xs text-gray-500" data-count>—</span>
+                </header>
+                <div data-chips>
+                    <span class="chip" data-dept>건축공학과</span>
+                    <span class="chip" data-dept>건축학과</span>
+                    <span class="chip" data-dept>건설환경공학과</span>
+                    <span class="chip" data-dept>환경융합공학과</span>
+                    <span class="chip" data-dept>지구자원시스템공학과</span>
+                    <span class="chip" data-dept>기계공학과</span>
+                    <span class="chip" data-dept>우주항공시스템공학부</span>
+                    <span class="chip" data-dept>나노신소재공학과</span>
+                    <span class="chip" data-dept>양자원자력공학과</span>
+                    <span class="chip" data-dept>국방시스템공학과</span>
+                </div>
+                <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more></button>
+            </article>
+
+            <!-- 예체능대학 -->
+            <article class="border rounded-xl p-5 hover:shadow-md transition group" data-college="예체능대학">
+                <header class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-gray-900">예체능대학</h3>
+                    <span class="text-xs text-gray-500" data-count>—</span>
+                </header>
+                <div class="flex flex-wrap gap-2" data-chips>
+                    <span class="chip" data-dept>회화과</span>
+                    <span class="chip" data-dept>패션디자인학과</span>
+                    <span class="chip" data-dept>음악과</span>
+                    <span class="chip" data-dept>체육학과</span>
+                    <span class="chip" data-dept>무용과</span>
+                    <span class="chip" data-dept>영화예술학과</span>
+                </div>
+                <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more>더보기</button>
+            </article>
+
+            <!-- 대양휴머니티칼리지 -->
+            <article class="border rounded-xl p-5 hover:shadow-md transition group" data-college="대양휴머니티칼리지">
+                <header class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-gray-900">대양휴머니티칼리지</h3>
+                    <span class="text-xs text-gray-500" data-count>—</span>
+                </header>
+                <div class="flex flex-wrap gap-2" data-chips>
+                    <span class="chip" data-dept>자유전공학부</span>
+                </div>
+                <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more>더보기</button>
+            </article>
+
+            <!-- 전공자율선택제 -->
+            <article class="border rounded-xl p-5 hover:shadow-md transition group" data-college="전공자율선택제">
+                <header class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-gray-900">전공자율선택제</h3>
+                    <span class="text-xs text-gray-500" data-count>—</span>
+                </header>
+                <div class="flex flex-wrap gap-2" data-chips>
+                    <span class="chip" data-dept>자유전공학부(유형1)</span>
+                    <span class="chip" data-dept>계열별 통합모집(유형2)</span>
+                    <span class="chip subtle" data-desc>유형2 계열: 인문사회 · 경상호텔관광 · 자연생명 · IT · 첨단융합 · 공과</span>
+                </div>
+                <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more>더보기</button>
+            </article>
+
+        </div>
+    </section>
+
+    <!--        석박사 과-->
+    <section id="sejong-graduate" class="bg-white rounded-lg shadow-sm p-6 mb-8">
+        <!-- 헤더 + 검색 -->
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">세종대학교 대학원 과/학과</h2>
+            <div class="w-full md:w-80 relative">
+                <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input id="gradDeptSearch" type="text" placeholder="대학원 과/학과 검색"
+                       class="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"/>
+            </div>
+        </div>
+
+        <!-- 단과대학 필터 -->
+        <div id="gradCollegeFilters" class="flex items-center gap-2 overflow-x-auto pb-2 mb-6">
+            <button data-filter="all" class="px-3 py-1.5 rounded-full bg-primary text-white text-sm whitespace-nowrap">
+                전체
+            </button>
+            <button data-filter="인문·사회"
+                    class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-sm whitespace-nowrap hover:bg-gray-200">
+                인문·사회
+            </button>
+            <button data-filter="자연과학"
+                    class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-sm whitespace-nowrap hover:bg-gray-200">
+                자연과학
+            </button>
+            <button data-filter="공학"
+                    class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-sm whitespace-nowrap hover:bg-gray-200">
+                공학
+            </button>
+            <button data-filter="예체능"
+                    class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-sm whitespace-nowrap hover:bg-gray-200">
+                예체능
+            </button>
+            <button data-filter="협동/융합"
+                    class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-sm whitespace-nowrap hover:bg-gray-200">
+                협동/융합
+            </button>
+        </div>
+
+        <!-- 카드 그리드 -->
+        <div id="gradCollegeGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+
+            <!-- 인문·사회 -->
+            <article class="border rounded-xl p-5 hover:shadow-md transition group" data-college="인문·사회">
+                <header class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-gray-900">인문·사회</h3>
+                    <span class="text-xs text-gray-500" data-count>—</span>
+                </header>
+                <div class="flex flex-wrap gap-2" data-chips>
+                    <span class="chip" data-dept>국어국문학과</span>
+                    <span class="chip" data-dept>영어영문학과</span>
+                    <span class="chip" data-dept>일어일문학과</span>
+                    <span class="chip" data-dept>중국통상학과</span>
+                    <span class="chip" data-dept>역사학과</span>
+                    <span class="chip" data-dept>교육학과</span>
+                    <span class="chip" data-dept>미디어커뮤니케이션학과</span>
+                    <span class="chip" data-dept>행정학과</span>
+                    <span class="chip" data-dept>호텔관광조리외식경영학과</span>
+                    <span class="chip" data-dept>경영학과</span>
+                    <span class="chip" data-dept>경제학과</span>
+                    <span class="chip" data-dept>법학과</span>
+                </div>
+                <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more>더보기</button>
+            </article>
+
+            <!-- 자연과학 -->
+            <article class="border rounded-xl p-5 hover:shadow-md transition group" data-college="자연과학">
+                <header class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-gray-900">자연과학</h3>
+                    <span class="text-xs text-gray-500" data-count>—</span>
+                </header>
+                <div class="flex flex-wrap gap-2" data-chips>
+                    <span class="chip" data-dept>수학과</span>
+                    <span class="chip" data-dept>응용통계학과</span>
+                    <span class="chip" data-dept>화학과</span>
+                    <span class="chip" data-dept>물리학과</span>
+                    <span class="chip" data-dept>분자생물학과</span>
+                    <span class="chip" data-dept>천문우주학과</span>
+                </div>
+                <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more>더보기</button>
+            </article>
+
+            <!-- 공학 -->
+            <article class="border rounded-xl p-5 hover:shadow-md transition group" data-college="공학">
+                <header class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-gray-900">공학</h3>
+                    <span class="text-xs text-gray-500" data-count>—</span>
+                </header>
+                <div class="flex flex-wrap gap-2" data-chips>
+                    <span class="chip" data-dept>건축공학과</span>
+                    <span class="chip" data-dept>건설환경공학과</span>
+                    <span class="chip" data-dept>기계공학과</span>
+                    <span class="chip" data-dept>전자공학과</span>
+                    <span class="chip" data-dept>반도체시스템공학과</span>
+                    <span class="chip" data-dept>컴퓨터공학과</span>
+                    <span class="chip" data-dept>인공지능데이터사이언스학과</span>
+                    <span class="chip" data-dept>나노신소재공학과</span>
+                    <span class="chip" data-dept>지능형로봇공학과</span>
+                    <span class="chip" data-dept>우주항공시스템공학과</span>
+                </div>
+                <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more>더보기</button>
+            </article>
+
+            <!-- 예체능 -->
+            <article class="border rounded-xl p-5 hover:shadow-md transition group" data-college="예체능">
+                <header class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-gray-900">예체능</h3>
+                    <span class="text-xs text-gray-500" data-count>—</span>
+                </header>
+                <div class="flex flex-wrap gap-2" data-chips>
+                    <span class="chip" data-dept>무용학과</span>
+                    <span class="chip" data-dept>체육학과</span>
+                    <span class="chip" data-dept>음악학과</span>
+                    <span class="chip" data-dept>영화예술학과</span>
+                    <span class="chip" data-dept>패션디자인학과</span>
+                    <span class="chip" data-dept>회화학과</span>
+                    <span class="chip" data-dept>만화애니메이션학과</span>
+                    <span class="chip" data-dept>디자인이노베이션학과</span>
+                </div>
+                <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more>더보기</button>
+            </article>
+
+            <!-- 협동/융합 -->
+            <article class="border rounded-xl p-5 hover:shadow-md transition group" data-college="협동/융합">
+                <header class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-semibold text-gray-900">협동/융합</h3>
+                    <span class="text-xs text-gray-500" data-count>—</span>
+                </header>
+                <div class="flex flex-wrap gap-2" data-chips>
+                    <span class="chip" data-dept>도시·부동산·유통협동학과</span>
+                    <span class="chip" data-dept>복지·커뮤니케이션협동학과</span>
+                    <span class="chip" data-dept>기후에너지융합학과</span>
+                    <span class="chip" data-dept>인공지능언어공학과</span>
+                    <span class="chip" data-dept>메타버스학과</span>
+                    <span class="chip" data-dept>지능형반도체융합학과</span>
+                </div>
+                <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more>더보기</button>
+            </article>
+
+        </div>
+    </section>
+    <div th:replace="~{fragments/school/universityCampusMap :: universityCampus(
+  '캠퍼스 위치',
+  'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3165.487797563933!2d127.07460067648073!3d37.5502822245114!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357ca51c8b8e8a1d%3A0x9e16a07c0c8e7c2f!2z7ISc7Jq47Yq567OE7Iuc6rO17ZWZ6rWQIOyEnOyauOq0gA!5e0!3m2!1sko!2skr!4v1739000000000!5m2!1sko!2skr',
+  '서울특별시 광진구 능동로 209 (05006) 세종대학교',
+  'https://en.sejong.ac.kr/eng/Direction.do',
+  '오시는 길 안내'
+)}"></div>
+
+</main>
+<th:block th:fragment="script">
+    <script type="module">
+        const grid = document.getElementById('collegeGrid');
+        const cards = Array.from(grid.querySelectorAll('article[data-college]'));
+        const filters = document.getElementById('collegeFilters');
+        const search = document.getElementById('deptSearch');
+
+        // 칩 개수 > 10 이면 접기 처리
+        cards.forEach(card => {
+            const chipsWrap = card.querySelector('[data-chips]');
+            const chips = Array.from(chipsWrap.querySelectorAll('.chip:not([data-desc])'));
+            const moreBtn = card.querySelector('[data-more]');
+            const countEl = card.querySelector('[data-count]');
+
+            // 카운트 표시
+            countEl.textContent = chips.length + '개';
+
+            if (chips.length > 10) {
+                chips.slice(10).forEach(ch => ch.classList.add('hidden'));
+                moreBtn.classList.remove('hidden');
+                moreBtn?.addEventListener('click', () => {
+                    const hidden = chips.slice(10).some(ch => ch.classList.contains('hidden'));
+                    chips.slice(10).forEach(ch => ch.classList.toggle('hidden'));
+                    moreBtn.textContent = hidden ? '접기' : '더보기';
+                });
             }
         });
-    });
-</script>
-<script src="/js/homepage/common/login.js"></script>
-<script src="/js/homepage/common/nav-user.js"></script>
-</body>
+
+        function applyFilter() {
+            const activeBtn = filters.querySelector('button.active');
+            const collegeFilter = activeBtn ? activeBtn.dataset.filter : 'all';
+            const q = (search.value || '').trim().toLowerCase();
+
+            cards.forEach(card => {
+                const college = card.dataset.college;
+                const chips = Array.from(card.querySelectorAll('.chip'));
+                // 검색
+                let hitChip = false;
+                chips.forEach(c => {
+                    const match = c.textContent.toLowerCase().includes(q);
+                    c.style.opacity = q ? (match ? '1' : '0.25') : '1';
+                    if (match) hitChip = true;
+                });
+                // 카드 표시 조건
+                const passCollege = (collegeFilter === 'all') || (collegeFilter === college);
+                const passSearch = q ? hitChip : true;
+                card.style.display = (passCollege && passSearch) ? '' : 'none';
+            });
+        }
+
+        // 초기 active
+        filters?.querySelector('button[data-filter="all"]').classList.add('active');
+
+        // 탭 클릭
+        filters?.addEventListener('click', (e) => {
+            const btn = e.target.closest('button[data-filter]');
+            if (!btn) return;
+            filters.querySelectorAll('button').forEach(b => {
+                b.classList.remove('active', 'bg-primary', 'text-white');
+                b.classList.add('bg-gray-100', 'text-gray-700');
+            });
+            btn.classList.add('active', 'bg-primary', 'text-white');
+            btn.classList.remove('bg-gray-100', 'text-gray-700');
+            applyFilter();
+        });
+
+        // 검색
+        search?.addEventListener('input', applyFilter);
+    </script>
+</th:block>
 </html>

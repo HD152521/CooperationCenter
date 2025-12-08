@@ -1,5 +1,6 @@
 package com.cooperation.project.cooperationcenter.domain.member.dto;
 
+import com.cooperation.project.cooperationcenter.domain.agency.model.Agency;
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.survey.model.Survey;
@@ -13,6 +14,7 @@ import java.util.List;
 public class Profile{
     public record ProfileDto(
         MemberDto member,
+        AgencyDto agency,
         Page<SurveyDto> surveys,
         MemberFileDto businessCertification,
         MemberFileDto agencyPicture
@@ -25,7 +27,23 @@ public class Profile{
             String homePhoneNumber,
             String phoneNumber,
             String address1,
-            String address2,
+            String address2
+    ){
+        public static MemberDto from(Member member){
+            Agency agency = member.getAgency();
+            return new MemberDto(
+                    member.getMemberName(),
+                    member.getBirth(),
+                    member.getEmail(),
+                    member.getHomePhoneNumber(),
+                    member.getPhoneNumber(),
+                    member.getAddress1(),
+                    member.getAddress2()
+            );
+        }
+    }
+
+    public record AgencyDto(
             String agencyOwner,
             String agencyName,
             String agencyPhone,
@@ -34,24 +52,18 @@ public class Profile{
             String agencyAddress1,
             String agencyAddress2
     ){
-        public static MemberDto from(Member member){
-            return new MemberDto(
-                    member.getMemberName(),
-                    member.getBirth(),
-                    member.getEmail(),
-                    member.getHomePhoneNumber(),
-                    member.getPhoneNumber(),
-                    member.getAddress1(),
-                    member.getAddress2(),
-                    member.getAgencyOwner(),
-                    member.getAgencyName(),
-                    member.getAgencyPhone(),
-                    member.getAgencyRegion().getLabel(),
-                    member.getAgencyEmail(),
-                    member.getAgencyAddress1(),
-                    member.getAgencyAddress2()
+        public static AgencyDto from(Agency agency){
+            return new AgencyDto(
+                    agency.getAgencyOwner(),
+                    agency.getAgencyName(),
+                    agency.getAgencyPhone(),
+                    agency.getAgencyRegion().getLabel(),
+                    agency.getAgencyEmail(),
+                    agency.getAgencyAddress1(),
+                    agency.getAgencyAddress2()
             );
         }
+
     }
 
     public record SurveyDto(

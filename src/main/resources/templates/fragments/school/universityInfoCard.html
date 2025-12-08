@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<!--  대학 정보 카드 Fragment
+     ▸ Props:
+       - title  : 카드 제목 (예: "학생 수", "등록금" 등)
+       - value1 : 주요 값 (예: "15,000명")
+       - value2 : 부가 설명 (예: "2024년 기준")
+       - value3 : [사용되지 않음 — 필요 시 확장용]
+       - note   : 보조 설명 (예: "전국 평균 대비 5% 증가")
+-->
+<section th:fragment="universityInfoCard(title, value1, value2, value3, note)">
+    <div class="bg-white rounded-lg shadow-sm p-6 min-h-[200px]">
+        <h2 class="text-xl font-semibold mb-4" th:text="${title}">카드 제목</h2>
+        <p class="text-3xl font-bold" th:text="${value1}">내용 1</p>
+        <p class="text-gray-600 text-sm mt-1" th:text="${value2}">내용 2</p>
+        <p class="text-xs text-gray-500 mt-3" th:text="${note}">보조 설명</p>
+    </div>
+</section>
+
+
+<!--  링크형 카드 Fragment
+     ▸ Props:
+       - title     : 카드 제목 (예: "관련 홈페이지")
+       - link1Text : 첫 번째 링크의 이름 (예: "학교 공식 홈페이지")
+       - link1Url  : 첫 번째 링크 URL
+       - link2Text : 두 번째 링크의 이름 (예: "입학처 페이지")
+       - link2Url  : 두 번째 링크 URL
+-->
+<section th:fragment="universityLinkCard(title, urlNames, urls)">
+    <div class="bg-white rounded-lg shadow-sm p-6 min-h-[200px]">
+        <h2 class="text-xl font-semibold mb-4" th:text="${title}">관련 홈페이지</h2>
+
+        <ul class="space-y-2">
+            <li th:each="name, iter : ${urlNames}">
+                <span class="font-medium" th:text="${name}"></span>
+                :
+                <a class="text-primary hover:underline"
+                   th:href="${urls[iter.index]}"
+                   > 바로가기 </a>
+            </li>
+        </ul>
+    </div>
+</section>
+
+</html>

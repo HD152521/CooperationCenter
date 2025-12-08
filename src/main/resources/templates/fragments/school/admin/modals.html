@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Modals Fragment</title>
+</head>
+
+<body>
+<!-- ============================
+        MODALS FRAGMENT
+=============================== -->
+<th:block th:fragment="modals">
+
+    <!-- ========================================================= -->
+    <!-- 1) 새 게시판 추가 모달 -->
+    <!-- ========================================================= -->
+    <div id="addBoardModal"
+         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-gray-800 rounded-xl p-6 w-[480px] shadow-2xl">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-white">새 게시판 추가</h3>
+                <button onclick="closeAddBoardModal()"
+                        class="text-gray-400 hover:text-white transition-colors">
+                    <div class="w-6 h-6 flex items-center justify-center">
+                        <i class="ri-close-line"></i>
+                    </div>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">학교 이름(한국어)</label>
+                    <input type="text"
+                           class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
+                           placeholder="학교 이름을 입력하세요"/>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">학교 이름(영어)</label>
+                    <input type="text"
+                           class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
+                           placeholder="학교 이름을 입력하세요"/>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">학교 로고 URL</label>
+                    <input type="url"
+                           class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
+                           placeholder="로고 이미지 URL을 입력하세요"/>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3 mt-6">
+                <button onclick="closeAddBoardModal()"
+                        class="px-4 py-2 bg-gray-700 text-white rounded-button hover:bg-gray-600 transition-colors whitespace-nowrap">
+                    취소
+                </button>
+                <button onclick="saveNewBoard()"
+                        class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
+                    추가하기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- 2) 새 카테고리 추가 모달 -->
+    <!-- ========================================================= -->
+    <div id="addCategoryModal"
+         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50"
+         data-school-id="">
+        <div class="bg-gray-800 rounded-xl p-6 w-[480px] shadow-2xl">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-white">새 카테고리 추가</h3>
+                <button onclick="closeAddCategoryModal()"
+                        class="text-gray-400 hover:text-white transition-colors">
+                    <div class="w-6 h-6 flex items-center justify-center">
+                        <i class="ri-close-line"></i>
+                    </div>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">카테고리 이름</label>
+                    <input id="boardTitle" type="text"
+                           class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
+                           placeholder="카테고리 이름을 입력하세요"/>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">카테고리 설명</label>
+                    <input id="boardDesc" type="text"
+                           class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
+                           placeholder="카테고리 이름을 입력하세요"/>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">게시판 유형</label>
+                    <div class="grid grid-cols-2 gap-4">
+
+                        <!-- INTRO -->
+                        <label class="relative flex items-center justify-center p-4 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
+                            <input type="radio" name="boardType" value="intro" class="sr-only" checked/>
+                            <div class="flex flex-col items-center">
+                                <div class="w-8 h-8 flex items-center justify-center mb-2 text-primary">
+                                    <i class="ri-file-text-line"></i>
+                                </div>
+                                <span class="text-white font-medium">소개형</span>
+                                <span class="text-xs text-gray-400 mt-1">단일 페이지 형태</span>
+                            </div>
+                            <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none"></div>
+                        </label>
+
+                        <!-- BOARD -->
+                        <label class="relative flex items-center justify-center p-4 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
+                            <input type="radio" name="boardType" value="board" class="sr-only"/>
+                            <div class="flex flex-col items-center">
+                                <div class="w-8 h-8 flex items-center justify-center mb-2 text-primary">
+                                    <i class="ri-list-check"></i>
+                                </div>
+                                <span class="text-white font-medium">게시글형</span>
+                                <span class="text-xs text-gray-400 mt-1">다중 게시글 형태</span>
+                            </div>
+                            <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none"></div>
+                        </label>
+
+                        <!-- FILES -->
+                        <label class="relative flex items-center justify-center p-4 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
+                            <input type="radio" name="boardType" value="files" class="sr-only"/>
+                            <div class="flex flex-col items-center">
+                                <div class="w-8 h-8 flex items-center justify-center mb-2 text-primary">
+                                    <i class="ri-file-text-line"></i>
+                                </div>
+                                <span class="text-white font-medium">파일 목록형</span>
+                                <span class="text-xs text-gray-400 mt-1">파일 목록 형태</span>
+                            </div>
+                            <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none"></div>
+                        </label>
+
+                        <!-- SCHEDULE -->
+                        <label class="relative flex items-center justify-center p-4 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
+                            <input type="radio" name="boardType" value="schedule" class="sr-only"/>
+                            <div class="flex flex-col items-center">
+                                <div class="w-8 h-8 flex items-center justify-center mb-2 text-primary">
+                                    <i class="ri-calendar-check-line"></i>
+                                </div>
+                                <span class="text-white font-medium">스케줄 게시판</span>
+                                <span class="text-xs text-gray-400 mt-1">일정 추가 형태</span>
+                            </div>
+                            <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none"></div>
+                        </label>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3 mt-6">
+                <button onclick="closeAddCategoryModal()"
+                        class="px-4 py-2 bg-gray-700 text-white rounded-button hover:bg-gray-600 transition-colors whitespace-nowrap">
+                    취소
+                </button>
+                <button onclick="submitAddCategory()"
+                        class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap">
+                    추가하기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- 3) 새 일정 추가/수정 모달 -->
+    <!-- ========================================================= -->
+    <div id="addScheduleModal"
+         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50"
+         data-schedule-id="">
+        <div class="bg-gray-800 rounded-xl p-6 w-[560px] shadow-2xl">
+
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-white">새 일정 추가</h3>
+                <button class="text-gray-400 hover:text-white transition-colors"
+                        id="closeAddScheduleModalBtn">
+                    <div class="w-6 h-6 flex items-center justify-center">
+                        <i class="ri-close-line"></i>
+                    </div>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+
+                <div>
+                    <label for="scheduleTitle"
+                           class="block text-sm font-medium text-gray-300 mb-2">제목</label>
+                    <input id="scheduleTitle" type="text"
+                           class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
+                           placeholder="일정 제목을 입력하세요"/>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="scheduleStartDate"
+                               class="block text-sm font-medium text-gray-300 mb-2">시작 날짜</label>
+                        <input id="scheduleStartDate" type="date"
+                               class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"/>
+                    </div>
+
+                    <div>
+                        <label for="scheduleEndDate"
+                               class="block text-sm font-medium text-gray-300 mb-2">끝 날짜</label>
+                        <input id="scheduleEndDate" type="date"
+                               class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"/>
+                    </div>
+                </div>
+
+                <!-- 유형 선택 -->
+                <div>
+                    <span class="block text-sm font-medium text-gray-300 mb-2">게시판 타입</span>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+
+                        <label class="relative flex items-center justify-center p-3 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
+                            <input type="radio" name="scheduleType" value="ACADEMIC" class="sr-only peer" checked/>
+                            <div class="flex items-center gap-2 text-white">
+                                <i class="ri-graduation-cap-fill text-primary"></i>
+                                <span class="text-sm">ACADEMIC</span>
+                            </div>
+                            <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 peer-checked:opacity-100"></div>
+                        </label>
+
+                        <label class="relative flex items-center justify-center p-3 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
+                            <input type="radio" name="scheduleType" value="ADMISSION" class="sr-only peer"/>
+                            <div class="flex items-center gap-2 text-white">
+                                <i class="ri-door-open-line text-primary"></i>
+                                <span class="text-sm">ADMISSION</span>
+                            </div>
+                            <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 peer-checked:opacity-100"></div>
+                        </label>
+
+                        <label class="relative flex items-center justify-center p-3 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
+                            <input type="radio" name="scheduleType" value="SCHOLARSHIP" class="sr-only peer"/>
+                            <div class="flex items-center gap-2 text-white">
+                                <i class="ri-award-line text-primary"></i>
+                                <span class="text-sm">SCHOLARSHIP</span>
+                            </div>
+                            <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 peer-checked:opacity-100"></div>
+                        </label>
+
+                        <label class="relative flex items-center justify-center p-3 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
+                            <input type="radio" name="scheduleType" value="DORMITORY" class="sr-only peer"/>
+                            <div class="flex items-center gap-2 text-white">
+                                <i class="ri-home-4-line text-primary"></i>
+                                <span class="text-sm">DORMITORY</span>
+                            </div>
+                            <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 peer-checked:opacity-100"></div>
+                        </label>
+
+                        <label class="relative flex items-center justify-center p-3 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
+                            <input type="radio" name="scheduleType" value="INTERNATIONAL" class="sr-only peer"/>
+                            <div class="flex items-center gap-2 text-white">
+                                <i class="ri-plane-line text-primary"></i>
+                                <span class="text-sm">INTERNATIONAL</span>
+                            </div>
+                            <div class="absolute inset-0 border-2 rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 peer-checked:opacity-100"></div>
+                        </label>
+
+                    </div>
+
+                    <p class="text-xs text-gray-400 mt-2">※ 위 값은 서버로 그대로 전달될 enum 문자열입니다.</p>
+                </div>
+
+            </div>
+
+            <div class="flex justify-end space-x-3 mt-6">
+                <button class="px-4 py-2 bg-gray-700 text-white rounded-button hover:bg-gray-600 transition-colors whitespace-nowrap"
+                        id="scheduleCancelBtn">취소
+                </button>
+
+                <button class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
+                        id="scheduleSubmitBtn">
+                    추가하기
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>

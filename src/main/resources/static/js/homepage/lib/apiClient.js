@@ -98,10 +98,10 @@ export const api = {
                 }
                 return ("result" in j ? j.result : j);
             }
-            return res.json();
+            return j;
         }
         if (ct.startsWith("text/"))          return res.text();
-        return res; // 파일/바이너리 응답 등
+        return res;
     }
 };
 

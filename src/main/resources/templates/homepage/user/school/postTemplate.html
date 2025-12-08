@@ -1,482 +1,201 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout/university-layout :: university-layout(~{::head}, ~{::main}, ~{::script})}">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>공지사항 - 국제 프로그램</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet"
-    />
-    <link
-            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-            rel="stylesheet"
-    />
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#3b82f6",
-                        secondary: "#6b7280",
-                    },
-                    borderRadius: {
-                        none: "0px",
-                        sm: "4px",
-                        DEFAULT: "8px",
-                        md: "12px",
-                        lg: "16px",
-                        xl: "20px",
-                        "2xl": "24px",
-                        "3xl": "32px",
-                        full: "9999px",
-                        button: "8px",
-                    },
-                },
-            },
-        };
-    </script>
-    <style>
-        :where([class^="ri-"])::before { content: "\f3c2"; }
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-        }
-        .nav-item.active {
-            border-left: 4px solid #3b82f6;
-            background-color: rgba(59, 130, 246, 0.1);
-        }
-        .nav-item:hover:not(.active) {
-            background-color: rgba(59, 130, 246, 0.05);
-        }
-        input[type="checkbox"] {
-            appearance: none;
-            -webkit-appearance: none;
-            width: 1.25rem;
-            height: 1.25rem;
-            border: 2px solid #d1d5db;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            outline: none;
-            transition: all 0.2s ease;
-        }
-        input[type="checkbox"]:checked {
-            background-color: #3b82f6;
-            border-color: #3b82f6;
-        }
-        input[type="checkbox"]:checked::after {
-            content: "";
-            width: 0.5rem;
-            height: 0.5rem;
-            display: block;
-            background-color: white;
-            border-radius: 1px;
-        }
-        input[type="search"]::-webkit-search-decoration,
-        input[type="search"]::-webkit-search-cancel-button,
-        input[type="search"]::-webkit-search-results-button,
-        input[type="search"]::-webkit-search-results-decoration {
-            display: none;
-        }
-        input[type="radio"] {
-            appearance: none;
-            -webkit-appearance: none;
-            width: 1.25rem;
-            height: 1.25rem;
-            border: 2px solid #d1d5db;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            outline: none;
-            transition: all 0.2s ease;
-        }
-        input[type="radio"]:checked {
-            border-color: #3b82f6;
-        }
-        input[type="radio"]:checked::after {
-            content: "";
-            width: 0.5rem;
-            height: 0.5rem;
-            display: block;
-            background-color: #3b82f6;
-            border-radius: 50%;
-        }
-        .post-row:hover {
-            background-color: rgba(59, 130, 246, 0.02);
-        }
-        .post-row.important {
-            background-color: rgba(255, 243, 205, 0.5);
-            border-left: 4px solid #f59e0b;
-        }
-    </style>
-    <style>:root{ --header-h: 72px; }</style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-<nav th:replace="~{homepage/common/nav-user :: nav-user}"></nav>
-<div class="container mx-auto px-4 py-8 pt-16 flex flex-col md:flex-row gap-8">
-    <aside class="w-full md:w-64 md:shrink-0 md:self-start md:sticky md:top-[calc(var(--header-h)+16px)]">
-        <div th:replace="~{homepage/user/school/school-left-sidebar :: school-left}"></div>
-    </aside>
-
-    <div class="min-w-0 flex-1 py-6 px-0 md:px-6">
-        <div class="bg-white rounded shadow p-6">
-            <div
-                    class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4"
-            >
-                <h2 class="text-2xl font-bold text-gray-800">공지사항</h2>
-                <div class="flex items-center gap-3">
-                    <div class="relative">
-                        <input
-                                type="search"
-                                placeholder="공지사항 검색"
-                                class="pl-10 pr-4 py-2 w-full md:w-64 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
-                        />
-                        <div
-                                class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400"
-                        >
-                            <i class="ri-search-line"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="min-w-full">
-                    <thead>
-                    <tr class="bg-gray-50 text-left">
-                        <th
-                                class="px-4 py-3 text-sm font-medium text-gray-600 border-b w-16"
-                        >
-                            번호
-                        </th>
-                        <th
-                                class="px-4 py-3 text-sm font-medium text-gray-600 border-b"
-                        >
-                            제목
-                        </th>
-                        <th
-                                class="px-4 py-3 text-sm font-medium text-gray-600 border-b w-24"
-                        >
-                            작성자
-                        </th>
-                        <th
-                                class="px-4 py-3 text-sm font-medium text-gray-600 border-b w-28"
-                        >
-                            작성일
-                        </th>
-                        <th
-                                class="px-4 py-3 text-sm font-medium text-gray-600 border-b w-20"
-                        >
-                            조회수
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200">
-                    <th:block th:each="post, iterStat : ${postDto}">
-                        <tr class="post-row cursor-pointer"
-                            th:classappend="${post.type == 'NOTICE'} ? ' important' : ''"
-                            th:attr="data-school=${school}, data-post-id=${post.id}, data-board-id=${boardId}">
-
-                            <!-- 첫 번째 칸: 공지 여부에 따라 내용 다르게 -->
-                            <td class="px-4 py-4 text-sm text-gray-600 text-center">
-                                <div th:if="${post.type == 'NOTICE'}" class="flex items-center gap-2 justify-center">
-                                    <div class="w-5 h-5 flex items-center justify-center text-red-500">
-                                        <i class="ri-pushpin-fill"></i>
-                                    </div>
-                                    <span class="font-medium">공지</span>
-                                </div>
-                                <span th:if="${post.type != 'NOTICE'}"
-                                      th:text="${postDto.totalElements - (postDto.number * postDto.size) - iterStat.index}"></span>
-                            </td>
-
-                            <!-- 제목, 설명, 첨부파일 -->
-                            <td class="px-4 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div>
-                                        <p class="font-medium text-gray-800 hover:text-primary" th:text="${post.title}"></p>
-                                        <p class="text-xs text-gray-500 mt-0.5" th:text="${post.description}"></p>
-                                    </div>
-                                    <div class="w-5 h-5 flex items-center justify-center text-gray-400" th:if="${post.isFile}">
-                                        <i class="ri-attachment-line"></i>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <!-- 작성자, 작성일, 조회수 -->
-                            <td class="px-4 py-4 text-sm text-gray-600">작성자</td>
-                            <td class="px-4 py-4 text-sm text-gray-600"
-                                th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}"></td>
-                            <td class="px-4 py-4 text-sm text-gray-600"
-                                th:text="${#numbers.formatInteger(post.views, 1, 'COMMA')}"></td>
-                        </tr>
-                    </th:block>
-
-
-                    <!-- 공지글 먼저 렌더링 -->
-                    <!--                    <th:block th:each="post : ${postDto}">-->
-                    <!--                        <tr th:if="${post.type == 'NOTICE'}"-->
-                    <!--                            class="post-row important cursor-pointer"-->
-                    <!--                            th:attr="data-school=${school}, data-post-id=${post.id}, data-board-id=${boardId} ">-->
-                    <!--                            <td class="px-4 py-4 text-sm text-gray-600">-->
-                    <!--                                <div class="flex items-center gap-2">-->
-                    <!--                                    <div class="w-5 h-5 flex items-center justify-center text-red-500">-->
-                    <!--                                        <i class="ri-pushpin-fill"></i>-->
-                    <!--                                    </div>-->
-                    <!--                                    <span class="font-medium">공지</span>-->
-                    <!--                                </div>-->
-                    <!--                            </td>-->
-                    <!--                            <td class="px-4 py-4">-->
-                    <!--                                <div class="flex items-center gap-3">-->
-                    <!--                                    <div>-->
-                    <!--                                        <p class="font-medium text-gray-800 hover:text-primary"-->
-                    <!--                                           th:text="${post.title}"></p>-->
-                    <!--                                        <p class="text-xs text-gray-500 mt-0.5"-->
-                    <!--                                           th:text="${post.description}"></p>-->
-                    <!--                                    </div>-->
-                    <!--                                    <div class="w-5 h-5 flex items-center justify-center text-gray-400" th:if="${post.isFile}">-->
-                    <!--                                        <i class="ri-attachment-line"></i>-->
-                    <!--                                    </div>-->
-                    <!--                                </div>-->
-                    <!--                            </td>-->
-                    <!--                            <td class="px-4 py-4 text-sm text-gray-600">작성자</td>-->
-                    <!--                            <td class="px-4 py-4 text-sm text-gray-600"-->
-                    <!--                                th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}"></td>-->
-                    <!--                            <td class="px-4 py-4 text-sm text-gray-600"-->
-                    <!--                                th:text="${#numbers.formatInteger(post.views, 1, 'COMMA')}"></td>-->
-                    <!--                        </tr>-->
-                    <!--                    </th:block>-->
-
-                    <!--                    &lt;!&ndash; 일반글 렌더링 &ndash;&gt;-->
-                    <!--                    <th:block th:each="post, iterStat : ${postDto}">-->
-                    <!--                        <tr th:if="${post.type != 'NOTICE'}"-->
-                    <!--                            class="post-row cursor-pointer"-->
-                    <!--                            th:attr="data-school=${school}, data-post-id=${post.id}, data-board-id=${boardId}">-->
-                    <!--                            <td class="px-4 py-4 text-sm text-gray-600 text-center"-->
-                    <!--                                th:text="${iterStat.count}"></td>-->
-                    <!--                            <td class="px-4 py-4">-->
-                    <!--                                <div class="flex items-center gap-3">-->
-                    <!--                                    <div>-->
-                    <!--                                        <p class="font-medium text-gray-800 hover:text-primary"-->
-                    <!--                                           th:text="${post.title}"></p>-->
-                    <!--                                        <p class="text-xs text-gray-500 mt-0.5"-->
-                    <!--                                           th:text="${post.description}"></p>-->
-                    <!--                                    </div>-->
-                    <!--                                    <div class="w-5 h-5 flex items-center justify-center text-gray-400" th:if="${post.isFile}">-->
-                    <!--                                        <i class="ri-attachment-line"></i>-->
-                    <!--                                    </div>-->
-                    <!--                                </div>-->
-                    <!--                            </td>-->
-                    <!--                            <td class="px-4 py-4 text-sm text-gray-600">작성자</td>-->
-                    <!--                            <td class="px-4 py-4 text-sm text-gray-600"-->
-                    <!--                                th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}"></td>-->
-                    <!--                            <td class="px-4 py-4 text-sm text-gray-600"-->
-                    <!--                                th:text="${#numbers.formatInteger(post.views, 1, 'COMMA')}"></td>-->
-                    <!--                        </tr>-->
-                    <!--                    </th:block>-->
-
-                    </tbody>
-                </table>
-            </div>
-            <div class="flex items-center justify-between mt-6">
-                <!-- 1. 총 게시글 개수 및 현재 범위 -->
-                <p class="text-sm text-gray-600">
-                    총 <span th:text="${postDto.totalElements}"></span>개 게시글 중
-                    <span th:text="${postDto.number * postDto.size + 1}"></span> -
-                    <span th:text="${postDto.number * postDto.size + postDto.numberOfElements}"></span>
-                </p>
-
-                <!-- 2. 페이지 버튼 -->
-                <div class="flex items-center gap-1">
-
-                    <!-- 이전 버튼 -->
-                    <a th:href="@{'/school/' + ${school} + '/board/' + ${boardId} + '?page=' + ${postDto.number - 1}}"
-                       class="w-9 h-9 flex items-center justify-center rounded border border-gray-300 text-gray-500 hover:bg-gray-50 whitespace-nowrap !rounded-button"
-                       th:classappend="${postDto.first} ? ' opacity-50 cursor-not-allowed pointer-events-none' : ''">
-                        <div class="w-5 h-5 flex items-center justify-center">
-                            <i class="ri-arrow-left-s-line"></i>
-                        </div>
-                    </a>
-
-                    <!-- 페이지 번호들 -->
-                    <th:block th:each="i : ${#numbers.sequence(0, postDto.totalPages - 1)}">
-                        <a th:href="@{'/school/' + ${school} + '/board/' + ${boardId} + '?page=' + ${i}}"
-                           class="w-9 h-9 flex items-center justify-center rounded border whitespace-nowrap !rounded-button"
-                           th:classappend="${i == postDto.number} ? ' bg-primary text-white hover:bg-primary/90' : ' border-gray-300 text-gray-700 hover:bg-gray-50'">
-                            <span th:text="${i + 1}"></span>
-                        </a>
-                    </th:block>
-
-                    <!-- 다음 버튼 -->
-                    <a th:href="@{'/school/' + ${school} + '/board/' + ${boardId} + '?page=' + ${postDto.number + 1}}"
-                       class="w-9 h-9 flex items-center justify-center rounded border border-gray-300 text-gray-500 hover:bg-gray-50 whitespace-nowrap !rounded-button"
-                       th:classappend="${postDto.last} ? ' opacity-50 cursor-not-allowed pointer-events-none' : ''">
-                        <div class="w-5 h-5 flex items-center justify-center">
-                            <i class="ri-arrow-right-s-line"></i>
-                        </div>
-                    </a>
-
-                </div>
-            </div>
-        </div>
-        <div class="mt-8 bg-white rounded shadow p-6">
-            <h3 class="text-lg font-bold text-gray-800 mb-4">
-                공지사항 이용 안내
-            </h3>
-            <div class="space-y-4">
-                <div class="flex items-start gap-3">
-                    <div
-                            class="w-6 h-6 flex items-center justify-center text-primary mt-0.5"
-                    >
-                        <i class="ri-information-line"></i>
-                    </div>
-                    <div>
-                        <p class="text-gray-700">
-                            중요한 공지사항은 상단에 고정되어 표시됩니다.
-                        </p>
-                    </div>
-                </div>
-                <div class="flex items-start gap-3">
-                    <div
-                            class="w-6 h-6 flex items-center justify-center text-primary mt-0.5"
-                    >
-                        <i class="ri-attachment-line"></i>
-                    </div>
-                    <div>
-                        <p class="text-gray-700">
-                            첨부파일이 있는 게시글은
-                            <span class="font-medium">클립 아이콘</span>으로 표시됩니다.
-                        </p>
-                    </div>
-                </div>
-                <div class="flex items-start gap-3">
-                    <div
-                            class="w-6 h-6 flex items-center justify-center text-primary mt-0.5"
-                    >
+<main class="min-w-0 flex-1 py-6 px-0 md:px-6">
+    <div class="bg-white rounded shadow p-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+            <h2 class="text-2xl font-bold text-gray-800">공지사항</h2>
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <input type="search" placeholder="공지사항 검색"
+                           class="pl-10 pr-4 py-2 w-full md:w-64 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm"/>
+                    <div class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400">
                         <i class="ri-search-line"></i>
                     </div>
-                    <div>
-                        <p class="text-gray-700">
-                            검색창을 통해 제목과 내용으로 게시글을 찾을 수 있습니다.
-                        </p>
-                    </div>
                 </div>
-                <div class="flex items-start gap-3">
-                    <div
-                            class="w-6 h-6 flex items-center justify-center text-primary mt-0.5"
-                    >
-                        <i class="ri-question-line"></i>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead>
+                <tr class="bg-gray-50 text-left">
+                    <th class="px-4 py-3 text-sm font-medium text-gray-600 border-b w-16">
+                        번호
+                    </th>
+                    <th class="px-4 py-3 text-sm font-medium text-gray-600 border-b">
+                        제목
+                    </th>
+                    <th class="px-4 py-3 text-sm font-medium text-gray-600 border-b w-24">
+                        작성자
+                    </th>
+                    <th class="px-4 py-3 text-sm font-medium text-gray-600 border-b w-28">
+                        작성일
+                    </th>
+                    <th class="px-4 py-3 text-sm font-medium text-gray-600 border-b w-20">
+                        조회수
+                    </th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                <th:block th:each="post, iterStat : ${postDto}">
+                    <tr class="post-row cursor-pointer" th:classappend="${post.type == 'NOTICE'} ? ' important' : ''"
+                        th:attr="data-school=${school}, data-post-id=${post.id}, data-board-id=${boardId}">
+
+                        <!-- 첫 번째 칸: 공지 여부에 따라 내용 다르게 -->
+                        <td class="px-4 py-4 text-sm text-gray-600 text-center">
+                            <div th:if="${post.type == 'NOTICE'}" class="flex items-center gap-2 justify-center">
+                                <div class="w-5 h-5 flex items-center justify-center text-red-500">
+                                    <i class="ri-pushpin-fill"></i>
+                                </div>
+                                <span class="font-medium">공지</span>
+                            </div>
+                            <span th:if="${post.type != 'NOTICE'}"
+                                  th:text="${postDto.totalElements - (postDto.number * postDto.size) - iterStat.index}"></span>
+                        </td>
+
+                        <!-- 제목, 설명, 첨부파일 -->
+                        <td class="px-4 py-4">
+                            <div class="flex items-center gap-3">
+                                <div>
+                                    <p class="font-medium text-gray-800 hover:text-primary" th:text="${post.title}"></p>
+                                    <p class="text-xs text-gray-500 mt-0.5" th:text="${post.description}"></p>
+                                </div>
+                                <div class="w-5 h-5 flex items-center justify-center text-gray-400"
+                                     th:if="${post.isFile}">
+                                    <i class="ri-attachment-line"></i>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- 작성자, 작성일, 조회수 -->
+                        <td class="px-4 py-4 text-sm text-gray-600">작성자</td>
+                        <td class="px-4 py-4 text-sm text-gray-600"
+                            th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}"></td>
+                        <td class="px-4 py-4 text-sm text-gray-600"
+                            th:text="${#numbers.formatInteger(post.views, 1, 'COMMA')}"></td>
+                    </tr>
+                </th:block>
+
+                </tbody>
+            </table>
+        </div>
+        <div class="flex items-center justify-between mt-6">
+            <!-- 1. 총 게시글 개수 및 현재 범위 -->
+            <p class="text-sm text-gray-600">
+                총 <span th:text="${postDto.totalElements}"></span>개 게시글 중
+                <span th:text="${postDto.number * postDto.size + 1}"></span> -
+                <span th:text="${postDto.number * postDto.size + postDto.numberOfElements}"></span>
+            </p>
+
+            <!-- 2. 페이지 버튼 -->
+            <div class="flex items-center gap-1">
+                <!-- 이전 버튼 -->
+                <a th:href="@{'/school/' + ${school} + '/board/' + ${boardId} + '?page=' + ${postDto.number - 1}}"
+                   class="w-9 h-9 flex items-center justify-center rounded border border-gray-300 text-gray-500 hover:bg-gray-50 whitespace-nowrap !rounded-button"
+                   th:classappend="${postDto.first} ? ' opacity-50 cursor-not-allowed pointer-events-none' : ''">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-arrow-left-s-line"></i>
                     </div>
-                    <div>
-                        <p class="text-gray-700">
-                            문의사항은 국제교류처 (02-1234-5678)로 연락주세요.
-                        </p>
+                </a>
+
+                <!-- 페이지 번호들 -->
+                <th:block th:each="i : ${#numbers.sequence(0, postDto.totalPages - 1)}">
+                    <a th:href="@{'/school/' + ${school} + '/board/' + ${boardId} + '?page=' + ${i}}"
+                       class="w-9 h-9 flex items-center justify-center rounded border whitespace-nowrap !rounded-button"
+                       th:classappend="${i == postDto.number} ? ' bg-primary text-white hover:bg-primary/90' : ' border-gray-300 text-gray-700 hover:bg-gray-50'">
+                        <span th:text="${i + 1}"></span>
+                    </a>
+                </th:block>
+
+                <!-- 다음 버튼 -->
+                <a th:href="@{'/school/' + ${school} + '/board/' + ${boardId} + '?page=' + ${postDto.number + 1}}"
+                   class="w-9 h-9 flex items-center justify-center rounded border border-gray-300 text-gray-500 hover:bg-gray-50 whitespace-nowrap !rounded-button"
+                   th:classappend="${postDto.last} ? ' opacity-50 cursor-not-allowed pointer-events-none' : ''">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-arrow-right-s-line"></i>
                     </div>
+                </a>
+
+            </div>
+        </div>
+    </div>
+    <div class="mt-8 bg-white rounded shadow p-6">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">
+            공지사항 이용 안내 </h3>
+        <div class="space-y-4">
+            <div class="flex items-start gap-3">
+                <div class="w-6 h-6 flex items-center justify-center text-primary mt-0.5">
+                    <i class="ri-information-line"></i>
+                </div>
+                <div>
+                    <p class="text-gray-700">
+                        중요한 공지사항은 상단에 고정되어 표시됩니다. </p>
+                </div>
+            </div>
+            <div class="flex items-start gap-3">
+                <div class="w-6 h-6 flex items-center justify-center text-primary mt-0.5">
+                    <i class="ri-attachment-line"></i>
+                </div>
+                <div>
+                    <p class="text-gray-700">
+                        첨부파일이 있는 게시글은
+                        <span class="font-medium">클립 아이콘</span>으로 표시됩니다. </p>
+                </div>
+            </div>
+            <div class="flex items-start gap-3">
+                <div class="w-6 h-6 flex items-center justify-center text-primary mt-0.5">
+                    <i class="ri-search-line"></i>
+                </div>
+                <div>
+                    <p class="text-gray-700">
+                        검색창을 통해 제목과 내용으로 게시글을 찾을 수 있습니다. </p>
+                </div>
+            </div>
+            <div class="flex items-start gap-3">
+                <div class="w-6 h-6 flex items-center justify-center text-primary mt-0.5">
+                    <i class="ri-question-line"></i>
+                </div>
+                <div>
+                    <p class="text-gray-700">
+                        문의사항은 국제교류처 (02-1234-5678)로 연락주세요. </p>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<footer class="bg-gray-800 text-white py-8 mt-12">
-    <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-                <h3 class="text-lg font-bold mb-4">대학교 국제 프로그램</h3>
-                <p class="text-gray-300 text-sm">
-                    글로벌 인재 양성을 위한 최고의 교육 환경을 제공합니다. 다양한 국제
-                    프로그램을 통해 세계 각국의 학생들과 함께 성장하세요.
-                </p>
-            </div>
-            <div>
-                <h3 class="text-lg font-bold mb-4">연락처</h3>
-                <ul class="space-y-2 text-sm text-gray-300">
-                    <li class="flex items-center gap-2">
-                        <div class="w-5 h-5 flex items-center justify-center">
-                            <i class="ri-map-pin-line"></i>
-                        </div>
-                        <span>서울특별시 강남구 대학로 123</span>
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <div class="w-5 h-5 flex items-center justify-center">
-                            <i class="ri-phone-line"></i>
-                        </div>
-                        <span>02-1234-5678</span>
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <div class="w-5 h-5 flex items-center justify-center">
-                            <i class="ri-mail-line"></i>
-                        </div>
-                        <span>international@university.ac.kr</span>
-                    </li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="text-lg font-bold mb-4">빠른 링크</h3>
-                <ul class="space-y-2 text-sm text-gray-300">
-                    <li>
-                        <a href="#" class="hover:text-primary">대학교 메인 홈페이지</a>
-                    </li>
-                    <li><a href="#" class="hover:text-primary">학사 일정</a></li>
-                    <li><a href="#" class="hover:text-primary">도서관</a></li>
-                    <li><a href="#" class="hover:text-primary">캠퍼스 맵</a></li>
-                    <li><a href="#" class="hover:text-primary">커뮤니티</a></li>
-                </ul>
-            </div>
-        </div>
-        <div
-                class="border-t border-gray-700 mt-8 pt-6 text-center text-sm text-gray-400"
-        >
-            <p>© 2025 대학교 국제 프로그램. All rights reserved.</p>
-        </div>
-    </div>
-</footer>
-<!--<script id="filterDropdownScript">-->
-<!--    document.addEventListener("DOMContentLoaded", function () {-->
-<!--        const filterButton = document.getElementById("filterButton");-->
-<!--        const filterDropdown = document.getElementById("filterDropdown");-->
-<!--        filterButton.addEventListener("click", function () {-->
-<!--            filterDropdown.classList.toggle("hidden");-->
-<!--        });-->
-<!--        document.addEventListener("click", function (event) {-->
-<!--            if (-->
-<!--                !filterButton.contains(event.target) &&-->
-<!--                !filterDropdown.contains(event.target)-->
-<!--            ) {-->
-<!--                filterDropdown.classList.add("hidden");-->
-<!--            }-->
-<!--        });-->
-<!--    });-->
-<!--</script>-->
-<script id="postClickScript">
-    document.addEventListener("DOMContentLoaded", function () {
-        const postRows = document.querySelectorAll(".post-row");
-        postRows.forEach((row) => {
-            row.addEventListener("click", function () {
-                const school = this.dataset.school;
-                const boardId = this.dataset.boardId;
-                const postId = this.dataset.postId;
-                window.location.href = `/school/${school}/board/${boardId}/post/${postId}`;
-            });
+</main>
+<script id="postClickScript" type="module">
+    const postRows = document.querySelectorAll(".post-row");
+    postRows.forEach((row) => {
+        row?.addEventListener("click", function () {
+            const school = this.dataset.school;
+            const boardId = this.dataset.boardId;
+            const postId = this.dataset.postId;
+            window.location.href = `/school/${school}/board/${boardId}/post/${postId}`;
         });
     });
 </script>
-<script id="searchScript">
-    document.addEventListener("DOMContentLoaded", function () {
-        const searchInput = document.querySelector('input[type="search"]');
-        searchInput.addEventListener("keypress", function (e) {
-            if (e.key === "Enter") {
-                const searchTerm = this.value.trim();
-                if (searchTerm) {
-                    console.log("검색어:", searchTerm);
-                }
+<script id="searchScript" type="module">
+    const searchInput = document.querySelector('input[type="search"]');
+    searchInput?.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+            const searchTerm = this.value.trim();
+
+            const path = window.location.pathname;
+            const parts = path.split("/").filter(Boolean);
+            const school = parts[1];
+            const boardId = parts[3];
+
+            let url = `/school/${school}/board/${boardId}`;
+
+            if (searchTerm) {
+                console.log("검색어:", searchTerm);
+                url += `?keyword=${encodeURIComponent(searchTerm)}`;
             }
-        });
+            window.location.href = url;
+        }
     });
 </script>
-</body>
 </html>

@@ -3,10 +3,12 @@ package com.cooperation.project.cooperationcenter.domain.school.dto;
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.school.model.*;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -84,6 +86,11 @@ public class SchoolResponse {
         }
     }
 
+    public record PostResponseDto(
+            Page<SchoolPostDto> notices,
+            Page<SchoolPostDto> normals
+    ){}
+
     public record SchoolPostDto(
             Long id,
             String title,
@@ -120,8 +127,13 @@ public class SchoolResponse {
                         .collect(Collectors.toList());
             }
 
+
             public static Page<SchoolPostDto> fromPostPage(Page<SchoolPost> posts){
                 return posts.map(SchoolPostDto::from);
+            }
+
+            public static List<SchoolPostDto> fromFilePost(List<FilePost> filePosts){
+                return filePosts.stream().map(SchoolPostDto::from).toList();
             }
 
             public static SchoolPostDto from(FilePost post){
@@ -238,19 +250,19 @@ public class SchoolResponse {
     ){
     }
 
-    public record IntroDto(
-            String title,
-            String content,
-            Long boardId,
-            Long introId
-    ){
-        public static SchoolResponse.IntroDto from(IntroPost introPost){
-            return new SchoolResponse.IntroDto(
-                    introPost.getTitle(),
-                    introPost.getContent(),
-                    introPost.getSchoolBoard().getId(),
-                    introPost.getId()
-            );
-        }
-    }
+//    public record IntroDto(
+//            String title,
+//            String content,
+//            Long boardId,
+//            Long introId
+//    ){
+//        public static SchoolResponse.IntroDto from(IntroPost introPost){
+//            return new SchoolResponse.IntroDto(
+//                    introPost.getTitle(),
+//                    introPost.getContent(),
+//                    introPost.getSchoolBoard().getId(),
+//                    introPost.getId()
+//            );
+//        }
+//    }
 }

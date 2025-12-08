@@ -62,11 +62,4 @@ public class SchoolRequest {
     public record PostIdDto(
             Long postId
     ){}
-
-    public record IntroDto(
-            Long introId,
-            String title,
-            String content,
-            Long boardId
-    ){}
 }

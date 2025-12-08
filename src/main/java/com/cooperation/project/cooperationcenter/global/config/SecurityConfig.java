@@ -51,15 +51,16 @@ public class SecurityConfig {
                                         "/swagger-ui/**",
                                         "/swagger-resources/**",
                                         "/api-test/**").permitAll()
-//                                .requestMatchers("/api/v1/**").permitAll()
-//                                .requestMatchers("/**").permitAll()
+
                                 //note 일반 사용자 페이지
                                 .requestMatchers("/","/home", "/member/signup","/member/login",
                                         "/member/login","/member/logout", "/admin/login","/agency/list").permitAll()
-                                .requestMatchers("/api/v1/member/**","/api/v1/file/img/**").permitAll()
+                                .requestMatchers("/api/v1/member/**","/api/v1/file/img/**","/api/v1/file/default/**").permitAll()
                                 .requestMatchers("/school/**","/api/v1/file/school/**").permitAll()
                                 .requestMatchers("/check/**","/member/password/**","/api/v1/member/reset/**").permitAll()
-                                .requestMatchers("/api/v1/tencent/**").permitAll()
+                                .requestMatchers("/api/v1/tencent/**","/api/v1/agency/region").permitAll()
+                                .requestMatchers("/api/v1/admin/login").permitAll()
+
 
 
                                 //note 로그인한 사용자

@@ -1,61 +1,31 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout/university-layout :: university-layout(~{::head}, ~{::main}, ~{::script})}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>국제 프로그램 - 학사 일정</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com/3.4.16">
-    </script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#3b82f6",
-                        secondary: "#6b7280",
-                    },
-                    borderRadius: {
-                        none: "0px",
-                        sm: "4px",
-                        DEFAULT: "8px",
-                        md: "12px",
-                        lg: "16px",
-                        xl: "20px",
-                        "2xl": "24px",
-                        "3xl": "32px",
-                        full: "9999px",
-                        button: "8px",
-                    },
-                },
-            },
-        };
-    </script>
     <style>
-        :where([class^="ri-"])::before { content: "\f3c2"; }
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-        }
         .nav-item.active {
             border-left: 4px solid #3b82f6;
             background-color: rgba(59, 130, 246, 0.1);
         }
+
         .nav-item:hover:not(.active) {
             background-color: rgba(59, 130, 246, 0.05);
         }
+
         .calendar-day {
             min-height: 100px;
         }
+
         .calendar-day.today {
             background-color: rgba(59, 130, 246, 0.05);
             border: 1px solid #3b82f6;
         }
+
         .calendar-day.has-event {
             position: relative;
         }
+
         .calendar-day.has-event::after {
             content: '';
             position: absolute;
@@ -67,10 +37,12 @@
             border-radius: 50%;
             background-color: #3b82f6;
         }
+
         .calendar-day.other-month {
             background-color: #f9fafb;
             color: #9ca3af;
         }
+
         .event-dot {
             width: 8px;
             height: 8px;
@@ -78,40 +50,72 @@
             display: inline-block;
             margin-right: 6px;
         }
+
         .event-dot.academic {
             background-color: #3b82f6;
         }
+
         .event-dot.admission {
             background-color: #10b981;
         }
+
         .event-dot.scholarship {
             background-color: #f59e0b;
         }
+
         .event-dot.dormitory {
             background-color: #8b5cf6;
         }
+
         .event-dot.international {
             background-color: #ec4899;
         }
+
         .tab-button.active {
             background-color: #3b82f6;
             color: white;
         }
+
         .range-bar {
             height: 8px;
             border-radius: 9999px;
-            align-self: end;        /* 셀 하단에 붙이기 */
-            margin: 0 2px 4px 2px;  /* 좌/우/아래 여백 */
+            align-self: end; /* 셀 하단에 붙이기 */
+            margin: 0 2px 4px 2px; /* 좌/우/아래 여백 */
             cursor: pointer;
             z-index: 1;
         }
-        .range-academic      { background-color: rgba(59,130,246,0.7); }   /* blue   */
-        .range-admission     { background-color: rgba(16,185,129,0.7); }   /* green  */
-        .range-scholarship   { background-color: rgba(245,158,11,0.7); }   /* yellow */
-        .range-dormitory     { background-color: rgba(139,92,246,0.7); }   /* purple */
-        .range-international { background-color: rgba(236,72,153,0.7); }   /* pink   */
+
+        .range-academic {
+            background-color: rgba(59, 130, 246, 0.7);
+        }
+
+        /* blue   */
+        .range-admission {
+            background-color: rgba(16, 185, 129, 0.7);
+        }
+
+        /* green  */
+        .range-scholarship {
+            background-color: rgba(245, 158, 11, 0.7);
+        }
+
+        /* yellow */
+        .range-dormitory {
+            background-color: rgba(139, 92, 246, 0.7);
+        }
+
+        /* purple */
+        .range-international {
+            background-color: rgba(236, 72, 153, 0.7);
+        }
+
+        /* pink   */
     </style>
-    <style>:root{ --header-h: 72px; }</style>
+    <style>
+        :root {
+            --header-h: 72px;
+        }
+    </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
 <!-- 상단 배너 -->
@@ -123,7 +127,7 @@
         <div th:replace="~{homepage/user/school/school-left-sidebar :: school-left}"></div>
     </aside>
     <!-- 우측 메인 콘텐츠 (학사 일정) -->
-    <main class="min-w-0 flex-1 py-6 px-0 md:px-6" >
+    <main class="min-w-0 flex-1 py-6 px-0 md:px-6">
 
 
         <div class="bg-white rounded shadow p-6">
@@ -137,7 +141,10 @@
                         <!--                        </div>-->
                     </div>
                     <div class="flex items-center border border-gray-300 rounded-full p-1">
-                        <button id="monthViewBtn" class="tab-button active px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap !rounded-button">월별 보기</button>
+                        <button id="monthViewBtn"
+                                class="tab-button active px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap !rounded-button">
+                            월별 보기
+                        </button>
                         <!--                        <button id="semesterViewBtn" class="tab-button px-4 py-1.5 rounded-full text-sm font-medium text-gray-700 whitespace-nowrap !rounded-button">학기별 보기</button>-->
                     </div>
                 </div>
@@ -146,95 +153,105 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                 <div class="flex items-center gap-3">
                     <div class="relative">
-                        <button id="filterButton" class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 text-sm font-medium text-gray-700 whitespace-nowrap !rounded-button">
+                        <button id="filterButton"
+                                class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 text-sm font-medium text-gray-700 whitespace-nowrap !rounded-button">
                             <div class="w-5 h-5 flex items-center justify-center">
                                 <i class="ri-filter-3-line"></i>
                             </div>
                             <span>일정 필터</span>
                         </button>
-                        <div id="filterDropdown" class="absolute left-0 mt-2 w-60 bg-white rounded shadow-lg z-10 p-4 hidden">
+                        <div id="filterDropdown"
+                             class="absolute left-0 mt-2 w-60 bg-white rounded shadow-lg z-10 p-4 hidden">
                             <h3 class="font-medium text-gray-700 mb-3">일정 유형</h3>
 
                             <div class="space-y-2">
                                 <!-- academic -->
                                 <label class="flex items-center gap-2 cursor-pointer select-none">
-                                    <input type="checkbox" class="sr-only peer" checked data-type="academic" />
-                                    <div
-                                            class="w-5 h-5 border-2 rounded-sm flex items-center justify-center
-               border-gray-300 bg-white
-               peer-checked:bg-primary peer-checked:border-primary transition-colors">
+                                    <input type="checkbox" class="sr-only peer" checked data-type="academic"/>
+                                    <div class="w-5 h-5 border-2 rounded-sm flex items-center justify-center border-gray-300 bg-white peer-checked:bg-primary peer-checked:border-primary transition-colors">
                                         <i class="ri-check-line text-white text-xs opacity-0 peer-checked:opacity-100 transition-opacity"></i>
                                     </div>
                                     <span class="text-sm flex items-center">
-        <span class="event-dot academic"></span>학사
-      </span>
+                                    <span class="event-dot academic"></span>학사</span>
                                 </label>
 
                                 <!-- admission -->
                                 <label class="flex items-center gap-2 cursor-pointer select-none">
-                                    <input type="checkbox" class="sr-only peer" checked data-type="admission" />
+                                    <input type="checkbox" class="sr-only peer" checked data-type="admission"/>
                                     <div class="w-5 h-5 border-2 rounded-sm flex items-center justify-center border-gray-300 bg-white peer-checked:bg-primary peer-checked:border-primary transition-colors">
                                         <i class="ri-check-line text-white text-xs opacity-0 peer-checked:opacity-100 transition-opacity"></i>
                                     </div>
                                     <span class="text-sm flex items-center">
-        <span class="event-dot admission"></span>입학
-      </span>
+                                        <span class="event-dot admission"></span>입학
+                                    </span>
                                 </label>
 
                                 <!-- scholarship -->
                                 <label class="flex items-center gap-2 cursor-pointer select-none">
-                                    <input type="checkbox" class="sr-only peer" checked data-type="scholarship" />
+                                    <input type="checkbox" class="sr-only peer" checked data-type="scholarship"/>
                                     <div class="w-5 h-5 border-2 rounded-sm flex items-center justify-center border-gray-300 bg-white peer-checked:bg-primary peer-checked:border-primary transition-colors">
                                         <i class="ri-check-line text-white text-xs opacity-0 peer-checked:opacity-100 transition-opacity"></i>
                                     </div>
                                     <span class="text-sm flex items-center">
-        <span class="event-dot scholarship"></span>장학
-      </span>
+                                        <span class="event-dot scholarship"></span>장학
+                                    </span>
                                 </label>
 
                                 <!-- dormitory -->
                                 <label class="flex items-center gap-2 cursor-pointer select-none">
-                                    <input type="checkbox" class="sr-only peer" checked data-type="dormitory" />
+                                    <input type="checkbox" class="sr-only peer" checked data-type="dormitory"/>
                                     <div class="w-5 h-5 border-2 rounded-sm flex items-center justify-center border-gray-300 bg-white peer-checked:bg-primary peer-checked:border-primary transition-colors">
                                         <i class="ri-check-line text-white text-xs opacity-0 peer-checked:opacity-100 transition-opacity"></i>
                                     </div>
                                     <span class="text-sm flex items-center">
-        <span class="event-dot dormitory"></span>기숙사
-      </span>
+                                        <span class="event-dot dormitory"></span>기숙사
+                                    </span>
                                 </label>
 
                                 <!-- international -->
                                 <label class="flex items-center gap-2 cursor-pointer select-none">
-                                    <input type="checkbox" class="sr-only peer" checked data-type="international" />
+                                    <input type="checkbox" class="sr-only peer" checked data-type="international"/>
                                     <div class="w-5 h-5 border-2 rounded-sm flex items-center justify-center border-gray-300 bg-white peer-checked:bg-primary peer-checked:border-primary transition-colors">
                                         <i class="ri-check-line text-white text-xs opacity-0 peer-checked:opacity-100 transition-opacity"></i>
                                     </div>
                                     <span class="text-sm flex items-center">
-        <span class="event-dot international"></span>국제 학생
-      </span>
+                                        <span class="event-dot international"></span>국제 학생
+                                    </span>
                                 </label>
                             </div>
 
                             <div class="flex justify-end gap-2 mt-4">
-                                <button id="filterReset" class="px-3 py-1.5 text-sm border border-gray-300 rounded text-gray-700 hover:bg-gray-50 whitespace-nowrap !rounded-button">초기화</button>
-                                <button id="filterApply" class="px-3 py-1.5 text-sm bg-primary text-white rounded hover:bg-primary/90 whitespace-nowrap !rounded-button">적용</button>
+                                <button id="filterReset"
+                                        class="px-3 py-1.5 text-sm border border-gray-300 rounded text-gray-700 hover:bg-gray-50 whitespace-nowrap !rounded-button">
+                                    초기화
+                                </button>
+                                <button id="filterApply"
+                                        class="px-3 py-1.5 text-sm bg-primary text-white rounded hover:bg-primary/90 whitespace-nowrap !rounded-button">
+                                    적용
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button id="prevMonth" class="w-9 h-9 flex items-center justify-center rounded border border-gray-300 text-gray-500 hover:bg-gray-50 whitespace-nowrap !rounded-button">
+                    <button id="prevMonth"
+                            class="w-9 h-9 flex items-center justify-center rounded border border-gray-300 text-gray-500 hover:bg-gray-50 whitespace-nowrap !rounded-button">
                         <div class="w-5 h-5 flex items-center justify-center">
                             <i class="ri-arrow-left-s-line"></i>
                         </div>
                     </button>
-                    <h3 id="currentMonthYear" class="text-lg font-medium text-gray-800 min-w-[150px] text-center">2025년 7월</h3>
-                    <button id="nextMonth" class="w-9 h-9 flex items-center justify-center rounded border border-gray-300 text-gray-500 hover:bg-gray-50 whitespace-nowrap !rounded-button">
+                    <h3 id="currentMonthYear" class="text-lg font-medium text-gray-800 min-w-[150px] text-center">2025년
+                        7월</h3>
+                    <button id="nextMonth"
+                            class="w-9 h-9 flex items-center justify-center rounded border border-gray-300 text-gray-500 hover:bg-gray-50 whitespace-nowrap !rounded-button">
                         <div class="w-5 h-5 flex items-center justify-center">
                             <i class="ri-arrow-right-s-line"></i>
                         </div>
                     </button>
-                    <button id="todayBtn" class="ml-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 text-sm font-medium text-gray-700 whitespace-nowrap !rounded-button">오늘</button>
+                    <button id="todayBtn"
+                            class="ml-2 px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 text-sm font-medium text-gray-700 whitespace-nowrap !rounded-button">
+                        오늘
+                    </button>
                 </div>
             </div>
             <!-- 월별 보기 (기본 뷰) -->
@@ -260,443 +277,461 @@
                 <div id="monthlySummaryList" class="space-y-4"></div>
             </div>
         </div>
+
+        <div id="dayEventsModal" class="fixed inset-0 bg-black/30 hidden z-50">
+            <div class="absolute inset-0" data-action="close-day-modal"></div>
+            <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+                  w-[320px] max-w-[90vw] bg-white rounded-lg shadow-lg border p-4">
+                <div class="flex items-center justify-between mb-2">
+                    <h4 id="dayEventsTitle" class="font-semibold text-gray-800 text-sm">이날의 일정</h4>
+                    <button id="dayEventsClose"
+                            class="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100"
+                            title="닫기" data-action="close-day-modal">
+                        <i class="ri-close-line text-xl text-gray-500"></i>
+                    </button>
+                </div>
+                <div id="dayEventsList" class="space-y-2 max-h-[50vh] overflow-auto text-sm"></div>
+            </div>
+        </div>
     </main>
 </div>
-<!-- 푸터 -->
-<footer class="bg-gray-800 text-white py-8 w-full mt-auto">
-    <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-                <h3 class="text-lg font-bold mb-4">대학교 국제 프로그램</h3>
-                <p class="text-gray-300 text-sm">글로벌 인재 양성을 위한 최고의 교육 환경을 제공합니다. 다양한 국제 프로그램을 통해 세계 각국의 학생들과 함께 성장하세요.</p>
-            </div>
-            <div>
-                <h3 class="text-lg font-bold mb-4">연락처</h3>
-                <ul class="space-y-2 text-sm text-gray-300">
-                    <li class="flex items-center gap-2">
-                        <div class="w-5 h-5 flex items-center justify-center">
-                            <i class="ri-map-pin-line"></i>
-                        </div>
-                        <span>서울특별시 강남구 대학로 123</span>
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <div class="w-5 h-5 flex items-center justify-center">
-                            <i class="ri-phone-line"></i>
-                        </div>
-                        <span>02-1234-5678</span>
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <div class="w-5 h-5 flex items-center justify-center">
-                            <i class="ri-mail-line"></i>
-                        </div>
-                        <span>international@university.ac.kr</span>
-                    </li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="text-lg font-bold mb-4">빠른 링크</h3>
-                <ul class="space-y-2 text-sm text-gray-300">
-                    <li><a href="#" class="hover:text-primary">대학교 메인 홈페이지</a></li>
-                    <li><a href="#" class="hover:text-primary">학사 일정</a></li>
-                    <li><a href="#" class="hover:text-primary">도서관</a></li>
-                    <li><a href="#" class="hover:text-primary">캠퍼스 맵</a></li>
-                    <li><a href="#" class="hover:text-primary">커뮤니티</a></li>
-                </ul>
-            </div>
+    <th:block th:fragment="script">
+        <script id="filterDropdownScript" type="module">
+            const filterButton = document.getElementById("filterButton");
+            const filterDropdown = document.getElementById("filterDropdown");
+            filterButton?.addEventListener("click", function () {
+                filterDropdown.classList.toggle("hidden");
+            });
+            document.addEventListener("click", function (event) {
+                if (
+                    !filterButton.contains(event.target) &&
+                    !filterDropdown.contains(event.target)
+                ) {
+                    filterDropdown.classList.add("hidden");
+                }
+            });
+        </script>
+
+
+        <script id="calendarViewScript" th:inline="javascript">
+            document.addEventListener("DOMContentLoaded", function () {
+                const monthViewBtn = document.getElementById("monthViewBtn");
+                // const semesterViewBtn = document.getElementById("semesterViewBtn");
+                const monthView = document.getElementById("monthView");
+                const semesterView = document.getElementById("semesterView");
+                const prevMonthBtn = document.getElementById("prevMonth");
+                const nextMonthBtn = document.getElementById("nextMonth");
+                const currentMonthYearEl = document.getElementById("currentMonthYear");
+                const todayBtn = document.getElementById("todayBtn");
+                const calendarGrid = document.getElementById("calendarGrid");
+
+                const dayEventsModal = document.getElementById("dayEventsModal");
+                const dayEventsTitle = document.getElementById("dayEventsTitle");
+                const dayEventsList = document.getElementById("dayEventsList");
+
+                let currentDate = new Date();
+
+                // 이벤트 데이터 (하루 + 기간)
+                // const events = [
+                //     // 하루
+                //     { date: "2025-08-01", title: "2학기 등록 시작", type: "academic" },
+                //     { date: "2025-08-05", title: "기숙사 신청 마감", type: "dormitory" },
+                //     { date: "2025-08-10", title: "입학 설명회", type: "admission" },
+                //     { date: "2025-08-15", title: "장학금 신청 시작", type: "scholarship" },
+                //     { date: "2025-08-20", title: "국제학생 오리엔테이션", type: "international" },
+                //     { date: "2025-08-31", title: "입학 신청 마감", type: "admission" },
+                //     { date: "2025-08-31", title: "입학 신청 마감1", type: "admission" },
+                //     { date: "2025-08-31", title: "입학 신청 마감2", type: "admission" },
+                //     { date: "2025-08-31", title: "입학 신청 마감3", type: "admission" },
+                //     { date: "2025-08-31", title: "입학 신청 마감4", type: "admission" },
+                //
+                //     // 기간
+                //     { start: "2025-08-05", end: "2025-08-07", title: "기숙사 신청 기간", type: "dormitory" },
+                //     { start: "2025-08-18", end: "2025-08-24", title: "국제학생 오리엔테이션 주간", type: "international" }
+                // ];
+                const raw = /*[[${SchoolScheduleDto}]]*/ [];   // List<ScheduleDto> 주입됨
+                // 캘린더가 쓰는 형태로 변환: start/end/title/type(소문자)
+                const events = raw.map(s => ({
+                    start: s.startDate,                     // LocalDate -> "yyyy-MM-dd"
+                    end: s.endDate ?? s.startDate,        // end 없으면 start로
+                    title: s.title,
+                    type: (s.type ?? '').toLowerCase()
+                }));
+
+                // 스타일 클래스
+                function badgeClass(type) {
+                    switch (type) {
+                        case "academic":
+                            return "bg-blue-100 text-blue-800";
+                        case "admission":
+                            return "bg-green-100 text-green-800";
+                        case "scholarship":
+                            return "bg-yellow-100 text-yellow-800";
+                        case "dormitory":
+                            return "bg-purple-100 text-purple-800";
+                        case "international":
+                            return "bg-pink-100 text-pink-800";
+                        default:
+                            return "bg-gray-100 text-gray-800";
+                    }
+                }
+
+                const ONE_DAY = 24 * 60 * 60 * 1000;
+                const toDateNum = (s) => Number(s.replaceAll("-", ""));
+                const toDateObj = (key) => {
+                    const [y, m, d] = key.split("-").map(Number);
+                    return new Date(y, m - 1, d);
+                };
+                const addDaysKey = (key, n) => {
+                    const dt = toDateObj(key);
+                    dt.setDate(dt.getDate() + n);
+                    return fmt(dt.getFullYear(), dt.getMonth() + 1, dt.getDate());
+                };
+                const clampRangeToGrid = (start, end, gridStart, gridEnd) => {
+                    const s = start < gridStart ? gridStart : start;
+                    const e = end > gridEnd ? gridEnd : end;
+                    return (s <= e) ? [s, e] : null;
+                };
+
+                // 활성 필터
+                function getActiveTypes() {
+                    const boxes = document.querySelectorAll('input[type="checkbox"][data-type]');
+                    const picked = [];
+                    boxes.forEach(b => {
+                        if (b.checked) picked.push(b.dataset.type);
+                    });
+                    return picked.length ? new Set(picked) :
+                        new Set(["academic", "admission", "scholarship", "dormitory", "international"]);
+                }
+
+                // YYYY-MM-DD
+                function fmt(y, m, d) {
+                    return `${String(y)}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+                }
+
+                // 헤더
+                function updateCalendarHeader() {
+                    currentMonthYearEl.textContent =
+                        `${currentDate.getFullYear()}년 ${currentDate.getMonth() + 1}월`;
+                }
+
+                // 날짜별 이벤트 맵 (하루 + 기간을 하루 단위로 펼침)
+                function buildDailyEventsMap(gridStartKey, gridEndKey) {
+                    const map = new Map();
+                    const active = getActiveTypes();
+                    const seenPerDay = new Map(); // 중복 방지 (제목+타입)
+
+                    const push = (dayKey, ev) => {
+                        if (!map.has(dayKey)) map.set(dayKey, []);
+                        let s = seenPerDay.get(dayKey);
+                        if (!s) {
+                            s = new Set();
+                            seenPerDay.set(dayKey, s);
+                        }
+                        const dedupeKey = `${ev.title}__${ev.type}`;
+                        if (s.has(dedupeKey)) return;
+                        s.add(dedupeKey);
+                        map.get(dayKey).push({
+                            title: ev.title, type: ev.type,
+                            start: ev.start, end: ev.end,
+                            date: ev.date ?? dayKey
+                        });
+                    };
+
+                    events.forEach(ev => {
+                        if (!active.has(ev.type)) return;
+
+                        if (ev.date) { // 하루
+                            if (ev.date >= gridStartKey && ev.date <= gridEndKey) push(ev.date, ev);
+                            return;
+                        }
+                        if (ev.start && ev.end) { // 기간
+                            const clipped = clampRangeToGrid(ev.start, ev.end, gridStartKey, gridEndKey);
+                            if (!clipped) return;
+                            let [d, end] = clipped;
+                            while (d <= end) {
+                                push(d, ev);
+                                d = addDaysKey(d, 1);
+                            }
+                        }
+                    });
+
+                    for (const [k, list] of map) list.sort((a, b) => a.title.localeCompare(b.title));
+                    return map;
+                }
+
+                // 날짜 셀에 칩 채우기
+                function renderDailyChips(cellByKey, dailyMap) {
+                    const maxShow = 2;
+                    for (const [dayKey, list] of dailyMap) {
+                        const cell = cellByKey.get(dayKey);
+                        if (!cell || list.length === 0) continue;
+
+                        cell.classList.add("has-event");
+                        const wrap = document.createElement("div");
+                        wrap.className = "mt-1 space-y-1";
+
+                        list.slice(0, maxShow).forEach(ev => {
+                            const chip = document.createElement("div");
+                            chip.className = `text-xs rounded px-1 py-0.5 truncate ${badgeClass(ev.type)}`;
+                            chip.textContent = ev.title;
+                            wrap.appendChild(chip);
+                        });
+
+                        if (list.length > maxShow) {
+                            const more = document.createElement("div");
+                            more.className = "text-[10px] text-gray-500 cursor-pointer underline";
+                            more.textContent = `+${list.length - maxShow} 더보기`;
+                            more.dataset.action = "open-day-events";
+                            more.dataset.date = dayKey;
+                            wrap.appendChild(more);
+                        }
+                        cell.appendChild(wrap);
+                    }
+                }
+
+                // 특정 날짜의 모든 이벤트(모달용)
+                function getEventsForDate(dateKey) {
+                    const active = getActiveTypes();
+                    return events.filter(ev => {
+                        if (!active.has(ev.type)) return false;
+                        if (ev.date) return ev.date === dateKey;
+                        if (ev.start && ev.end) return ev.start <= dateKey && dateKey <= ev.end;
+                        return false;
+                    });
+                }
+
+                // 요약 카드 (기존과 동일, 중복키 보완)
+                function cardVisual(type) {
+                    switch (type) {
+                        case "academic":
+                            return {icon: "ri-calendar-check-line", box: "bg-blue-100", text: "text-primary"};
+                        case "admission":
+                            return {icon: "ri-presentation-line", box: "bg-green-100", text: "text-green-600"};
+                        case "scholarship":
+                            return {icon: "ri-money-dollar-circle-line", box: "bg-yellow-100", text: "text-yellow-600"};
+                        case "dormitory":
+                            return {icon: "ri-home-4-line", box: "bg-purple-100", text: "text-purple-600"};
+                        case "international":
+                            return {icon: "ri-global-line", box: "bg-pink-100", text: "text-pink-600"};
+                        default:
+                            return {icon: "ri-calendar-line", box: "bg-gray-100", text: "text-gray-600"};
+                    }
+                }
+
+                function weekdayKo(dateStr) {
+                    return ["일", "월", "화", "수", "목", "금", "토"][new Date(dateStr + "T00:00:00").getDay()];
+                }
+
+                function makeKeyForSummary(ev) {
+                    return `${ev.start ?? ev.date}__${ev.end ?? ""}__${ev.title}__${ev.type}`;
+                }
+
+                function renderMonthlySummary() {
+                    const wrap = document.getElementById("monthlySummaryList");
+                    const titleEl = document.getElementById("monthlySummaryTitle");
+                    const y = currentDate.getFullYear();
+                    const m = currentDate.getMonth() + 1;
+                    titleEl.textContent = `${y}년 ${m}월 주요 일정`;
+
+                    const active = getActiveTypes();
+                    const matchMonth = (d) => {
+                        const [yy, mm] = d.split("-").map(Number);
+                        return yy === y && mm === m;
+                    };
+
+                    const monthEvents = events.filter(ev => {
+                        if (!active.has(ev.type)) return false;
+                        if (ev.date) return matchMonth(ev.date);
+                        if (ev.start && ev.end) {
+                            return matchMonth(ev.start) || matchMonth(ev.end) ||
+                                (toDateNum(ev.start) < toDateNum(`${y}-${String(m).padStart(2, "0")}-01`) &&
+                                    toDateNum(ev.end) > toDateNum(`${y}-${String(m).padStart(2, "0")}-31`));
+                        }
+                        return false;
+                    });
+
+                    const seen = new Set();
+                    const sorted = monthEvents
+                        .slice()
+                        .sort((a, b) => (a.start ?? a.date).localeCompare(b.start ?? b.date))
+                        .filter(ev => {
+                            const k = makeKeyForSummary(ev);
+                            if (seen.has(k)) return false;
+                            seen.add(k);
+                            return true;
+                        });
+
+                    wrap.innerHTML = sorted.length ? sorted.map(ev => {
+                        const visual = cardVisual(ev.type);
+                        const chip = `class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badgeClass(ev.type)}"`;
+                        const dateText = ev.start && ev.end ? `${ev.start} ~ ${ev.end}` : `${ev.date} (${weekdayKo(ev.date)})`;
+                        const typeKo =
+                            ev.type === "academic" ? "학사" :
+                                ev.type === "admission" ? "입학" :
+                                    ev.type === "scholarship" ? "장학" :
+                                        ev.type === "dormitory" ? "기숙사" : "국제 학생";
+
+                        return `
+    <div class="flex items-start gap-4 p-4 rounded-lg border border-gray-200 hover:border-primary hover:bg-blue-50 transition-colors">
+      <div class="w-12 h-12 ${visual.box} rounded-lg flex items-center justify-center ${visual.text} flex-shrink-0">
+        <div class="w-6 h-6 flex items-center justify-center"><i class="${visual.icon}"></i></div>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h4 class="font-medium text-gray-800">${ev.title}</h4>
+          <span ${chip}><span class="event-dot ${ev.type}"></span>${typeKo}</span>
         </div>
-        <div class="border-t border-gray-700 mt-8 pt-6 text-center text-sm text-gray-400">
-            <p>© 2025 대학교 국제 프로그램. All rights reserved.</p>
-        </div>
-    </div>
-</footer>
-<div id="dayEventsModal" class="fixed inset-0 bg-black/30 hidden z-50">
-    <div class="absolute inset-0" data-action="close-day-modal"></div>
-    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
-                  w-[320px] max-w-[90vw] bg-white rounded-lg shadow-lg border p-4">
-        <div class="flex items-center justify-between mb-2">
-            <h4 id="dayEventsTitle" class="font-semibold text-gray-800 text-sm">이날의 일정</h4>
-            <button id="dayEventsClose" class="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100"
-                    title="닫기" data-action="close-day-modal">
-                <i class="ri-close-line text-xl text-gray-500"></i>
-            </button>
-        </div>
-        <div id="dayEventsList" class="space-y-2 max-h-[50vh] overflow-auto text-sm"></div>
-    </div>
-</div>
-<script id="filterDropdownScript">
-    document.addEventListener("DOMContentLoaded", function () {
-        const filterButton = document.getElementById("filterButton");
-        const filterDropdown = document.getElementById("filterDropdown");
-        filterButton.addEventListener("click", function () {
-            filterDropdown.classList.toggle("hidden");
-        });
-        document.addEventListener("click", function (event) {
-            if (
-                !filterButton.contains(event.target) &&
-                !filterDropdown.contains(event.target)
-            ) {
-                filterDropdown.classList.add("hidden");
-            }
-        });
-    });
-</script>
+        <p class="text-gray-600 text-sm mt-1">${dateText}</p>
+      </div>
+    </div>`;
+                    }).join("") : `<div class="text-sm text-gray-500">이 달에는 표시할 일정이 없습니다.</div>`;
+                }
 
+                // 달력 렌더 (칩 방식으로만 표시)
+                function renderCalendar() {
+                    updateCalendarHeader();
+                    calendarGrid.innerHTML = "";
 
-<script id="calendarViewScript" th:inline="javascript">
-    document.addEventListener("DOMContentLoaded", function () {
-        const monthViewBtn = document.getElementById("monthViewBtn");
-        // const semesterViewBtn = document.getElementById("semesterViewBtn");
-        const monthView = document.getElementById("monthView");
-        const semesterView = document.getElementById("semesterView");
-        const prevMonthBtn = document.getElementById("prevMonth");
-        const nextMonthBtn = document.getElementById("nextMonth");
-        const currentMonthYearEl = document.getElementById("currentMonthYear");
-        const todayBtn = document.getElementById("todayBtn");
-        const calendarGrid = document.getElementById("calendarGrid");
+                    const year = currentDate.getFullYear();
+                    const month = currentDate.getMonth();
 
-        const dayEventsModal = document.getElementById("dayEventsModal");
-        const dayEventsTitle = document.getElementById("dayEventsTitle");
-        const dayEventsList  = document.getElementById("dayEventsList");
+                    const firstDayOfWeek = new Date(year, month, 1).getDay();
+                    const daysInCurrent = new Date(year, month + 1, 0).getDate();
+                    const daysInPrev = new Date(year, month, 0).getDate();
 
-        let currentDate = new Date();
+                    let startPrevDay = daysInPrev - firstDayOfWeek + 1;
+                    const today = new Date();
 
-        // 이벤트 데이터 (하루 + 기간)
-        // const events = [
-        //     // 하루
-        //     { date: "2025-08-01", title: "2학기 등록 시작", type: "academic" },
-        //     { date: "2025-08-05", title: "기숙사 신청 마감", type: "dormitory" },
-        //     { date: "2025-08-10", title: "입학 설명회", type: "admission" },
-        //     { date: "2025-08-15", title: "장학금 신청 시작", type: "scholarship" },
-        //     { date: "2025-08-20", title: "국제학생 오리엔테이션", type: "international" },
-        //     { date: "2025-08-31", title: "입학 신청 마감", type: "admission" },
-        //     { date: "2025-08-31", title: "입학 신청 마감1", type: "admission" },
-        //     { date: "2025-08-31", title: "입학 신청 마감2", type: "admission" },
-        //     { date: "2025-08-31", title: "입학 신청 마감3", type: "admission" },
-        //     { date: "2025-08-31", title: "입학 신청 마감4", type: "admission" },
-        //
-        //     // 기간
-        //     { start: "2025-08-05", end: "2025-08-07", title: "기숙사 신청 기간", type: "dormitory" },
-        //     { start: "2025-08-18", end: "2025-08-24", title: "국제학생 오리엔테이션 주간", type: "international" }
-        // ];
-        const raw = /*[[${SchoolScheduleDto}]]*/ [];   // List<ScheduleDto> 주입됨
-        // 캘린더가 쓰는 형태로 변환: start/end/title/type(소문자)
-        const events = raw.map(s => ({
-            start: s.startDate,                     // LocalDate -> "yyyy-MM-dd"
-            end:   s.endDate ?? s.startDate,        // end 없으면 start로
-            title: s.title,
-            type:  (s.type ?? '').toLowerCase()
-        }));
+                    const cellByKey = new Map();
 
-        // 스타일 클래스
-        function badgeClass(type) {
-            switch (type) {
-                case "academic":      return "bg-blue-100 text-blue-800";
-                case "admission":     return "bg-green-100 text-green-800";
-                case "scholarship":   return "bg-yellow-100 text-yellow-800";
-                case "dormitory":     return "bg-purple-100 text-purple-800";
-                case "international": return "bg-pink-100 text-pink-800";
-                default:              return "bg-gray-100 text-gray-800";
-            }
-        }
-        const ONE_DAY = 24*60*60*1000;
-        const toDateNum = (s) => Number(s.replaceAll("-", ""));
-        const toDateObj = (key) => { const [y,m,d]=key.split("-").map(Number); return new Date(y,m-1,d); };
-        const addDaysKey = (key,n) => { const dt=toDateObj(key); dt.setDate(dt.getDate()+n); return fmt(dt.getFullYear(),dt.getMonth()+1,dt.getDate()); };
-        const clampRangeToGrid = (start,end,gridStart,gridEnd) => {
-            const s = start < gridStart ? gridStart : start;
-            const e = end   > gridEnd   ? gridEnd   : end;
-            return (s <= e) ? [s,e] : null;
-        };
+                    for (let i = 0; i < 42; i++) {
+                        const cell = document.createElement("div");
+                        cell.className = "calendar-day p-2 border rounded";
 
-        // 활성 필터
-        function getActiveTypes() {
-            const boxes = document.querySelectorAll('input[type="checkbox"][data-type]');
-            const picked = [];
-            boxes.forEach(b => { if (b.checked) picked.push(b.dataset.type); });
-            return picked.length ? new Set(picked) :
-                new Set(["academic","admission","scholarship","dormitory","international"]);
-        }
+                        let cellYear = year, cellMonth = month, dayNum;
 
-        // YYYY-MM-DD
-        function fmt(y,m,d){ return `${String(y)}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`; }
+                        if (i < firstDayOfWeek) {
+                            dayNum = startPrevDay + i;
+                            cell.classList.add("other-month");
+                            if (cellMonth === 0) {
+                                cellMonth = 11;
+                                cellYear = year - 1;
+                            } else {
+                                cellMonth -= 1;
+                            }
+                        } else if (i >= firstDayOfWeek + daysInCurrent) {
+                            dayNum = i - (firstDayOfWeek + daysInCurrent) + 1;
+                            cell.classList.add("other-month");
+                            if (cellMonth === 11) {
+                                cellMonth = 0;
+                                cellYear = year + 1;
+                            } else {
+                                cellMonth += 1;
+                            }
+                        } else {
+                            dayNum = i - firstDayOfWeek + 1;
+                        }
 
-        // 헤더
-        function updateCalendarHeader() {
-            currentMonthYearEl.textContent =
-                `${currentDate.getFullYear()}년 ${currentDate.getMonth()+1}월`;
-        }
+                        const isToday =
+                            cellYear === today.getFullYear() &&
+                            cellMonth === today.getMonth() &&
+                            dayNum === today.getDate();
+                        if (isToday) cell.classList.add("today");
 
-        // 날짜별 이벤트 맵 (하루 + 기간을 하루 단위로 펼침)
-        function buildDailyEventsMap(gridStartKey, gridEndKey) {
-            const map = new Map();
-            const active = getActiveTypes();
-            const seenPerDay = new Map(); // 중복 방지 (제목+타입)
+                        const dateLabel = document.createElement("div");
+                        dateLabel.className = "text-xs" + (isToday ? " font-bold" : "");
+                        dateLabel.textContent = String(dayNum);
+                        cell.appendChild(dateLabel);
 
-            const push = (dayKey, ev) => {
-                if (!map.has(dayKey)) map.set(dayKey, []);
-                let s = seenPerDay.get(dayKey);
-                if (!s) { s = new Set(); seenPerDay.set(dayKey, s); }
-                const dedupeKey = `${ev.title}__${ev.type}`;
-                if (s.has(dedupeKey)) return;
-                s.add(dedupeKey);
-                map.get(dayKey).push({
-                    title: ev.title, type: ev.type,
-                    start: ev.start, end: ev.end,
-                    date: ev.date ?? dayKey
+                        const key = fmt(cellYear, cellMonth + 1, dayNum);
+                        cell.dataset.date = key;
+                        calendarGrid.appendChild(cell);
+                        cellByKey.set(key, cell);
+                    }
+
+                    // 그리드 범위 내에서 하루/기간을 하루 단위로 펼쳐 칩 표시
+                    const keys = Array.from(cellByKey.keys()).sort();
+                    const gridStartKey = keys[0];
+                    const gridEndKey = keys[keys.length - 1];
+                    const dailyMap = buildDailyEventsMap(gridStartKey, gridEndKey);
+
+                    renderDailyChips(cellByKey, dailyMap);
+                    renderMonthlySummary();
+                }
+
+                // 탭 전환
+                monthViewBtn.addEventListener("click", () => {
+                    monthViewBtn.classList.add("active");
+                    // semesterViewBtn.classList.remove("active");
+                    monthView.classList.remove("hidden");
+                    semesterView.classList.add("hidden");
                 });
-            };
+                // semesterViewBtn.addEventListener("click", () => {
+                //     semesterViewBtn.classList.add("active");
+                //     monthViewBtn.classList.remove("active");
+                //     semesterView.classList.remove("hidden");
+                //     monthView.classList.add("hidden");
+                // });
 
-            events.forEach(ev => {
-                if (!active.has(ev.type)) return;
-
-                if (ev.date) { // 하루
-                    if (ev.date >= gridStartKey && ev.date <= gridEndKey) push(ev.date, ev);
-                    return;
-                }
-                if (ev.start && ev.end) { // 기간
-                    const clipped = clampRangeToGrid(ev.start, ev.end, gridStartKey, gridEndKey);
-                    if (!clipped) return;
-                    let [d, end] = clipped;
-                    while (d <= end) { push(d, ev); d = addDaysKey(d, 1); }
-                }
-            });
-
-            for (const [k, list] of map) list.sort((a,b)=>a.title.localeCompare(b.title));
-            return map;
-        }
-
-        // 날짜 셀에 칩 채우기
-        function renderDailyChips(cellByKey, dailyMap) {
-            const maxShow = 2;
-            for (const [dayKey, list] of dailyMap) {
-                const cell = cellByKey.get(dayKey);
-                if (!cell || list.length === 0) continue;
-
-                cell.classList.add("has-event");
-                const wrap = document.createElement("div");
-                wrap.className = "mt-1 space-y-1";
-
-                list.slice(0,maxShow).forEach(ev => {
-                    const chip = document.createElement("div");
-                    chip.className = `text-xs rounded px-1 py-0.5 truncate ${badgeClass(ev.type)}`;
-                    chip.textContent = ev.title;
-                    wrap.appendChild(chip);
+                // 월 이동
+                prevMonthBtn.addEventListener("click", () => {
+                    currentDate.setMonth(currentDate.getMonth() - 1);
+                    renderCalendar();
+                });
+                nextMonthBtn.addEventListener("click", () => {
+                    currentDate.setMonth(currentDate.getMonth() + 1);
+                    renderCalendar();
+                });
+                todayBtn.addEventListener("click", () => {
+                    const t = new Date();
+                    currentDate = new Date(t.getFullYear(), t.getMonth(), t.getDate());
+                    renderCalendar();
                 });
 
-                if (list.length > maxShow) {
-                    const more = document.createElement("div");
-                    more.className = "text-[10px] text-gray-500 cursor-pointer underline";
-                    more.textContent = `+${list.length - maxShow} 더보기`;
-                    more.dataset.action = "open-day-events";
-                    more.dataset.date = dayKey;
-                    wrap.appendChild(more);
-                }
-                cell.appendChild(wrap);
-            }
-        }
+                // 필터 변경 시 재렌더
+                document.querySelectorAll('input[type="checkbox"][data-type]')
+                    .forEach(cb => cb.addEventListener("change", renderCalendar));
 
-        // 특정 날짜의 모든 이벤트(모달용)
-        function getEventsForDate(dateKey) {
-            const active = getActiveTypes();
-            return events.filter(ev => {
-                if (!active.has(ev.type)) return false;
-                if (ev.date) return ev.date === dateKey;
-                if (ev.start && ev.end) return ev.start <= dateKey && dateKey <= ev.end;
-                return false;
+                // 초기 렌더
+                renderCalendar();
+
+                // 모달
+                function openDayModal(dateKey) {
+                    const [y, m, d] = dateKey.split("-").map(Number);
+                    dayEventsTitle.textContent = `${y}년 ${m}월 ${d}일 일정`;
+
+                    const items = getEventsForDate(dateKey);
+                    dayEventsList.innerHTML = items.length
+                        ? items.map(ev => `
+    <div class="flex items-start gap-2 p-2 rounded border border-gray-200">
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium ${badgeClass(ev.type)}">${ev.type}</span>
+      <div class="flex-1 leading-[1.2]">
+        <div class="font-medium text-gray-800">${ev.title}</div>
+        <div class="text-[11px] text-gray-500">${dateKey}</div>
+      </div>
+    </div>`).join("")
+                        : `<div class="text-gray-500 text-xs">표시할 일정이 없습니다.</div>`;
+
+                    document.getElementById("dayEventsModal").classList.remove("hidden");
+                }
+
+                function closeDayModal() {
+                    document.getElementById("dayEventsModal").classList.add("hidden");
+                }
+
+                calendarGrid.addEventListener("click", (e) => {
+                    const opener = e.target.closest('[data-action="open-day-events"]');
+                    if (opener?.dataset.date) openDayModal(opener.dataset.date);
+                });
+                document.getElementById("dayEventsModal").addEventListener("click", (e) => {
+                    if (e.target.closest('[data-action="close-day-modal"]')) closeDayModal();
+                });
+                document.addEventListener("keydown", (e) => {
+                    if (e.key === "Escape" && !document.getElementById("dayEventsModal").classList.contains("hidden")) closeDayModal();
+                });
             });
-        }
-
-        // 요약 카드 (기존과 동일, 중복키 보완)
-        function cardVisual(type) {
-            switch (type) {
-                case "academic":      return { icon: "ri-calendar-check-line", box: "bg-blue-100", text: "text-primary" };
-                case "admission":     return { icon: "ri-presentation-line",  box: "bg-green-100", text: "text-green-600" };
-                case "scholarship":   return { icon: "ri-money-dollar-circle-line", box: "bg-yellow-100", text: "text-yellow-600" };
-                case "dormitory":     return { icon: "ri-home-4-line",        box: "bg-purple-100", text: "text-purple-600" };
-                case "international": return { icon: "ri-global-line",        box: "bg-pink-100", text: "text-pink-600" };
-                default:              return { icon: "ri-calendar-line",      box: "bg-gray-100", text: "text-gray-600" };
-            }
-        }
-        function weekdayKo(dateStr){ return ["일","월","화","수","목","금","토"][new Date(dateStr+"T00:00:00").getDay()]; }
-        function makeKeyForSummary(ev){ return `${ev.start ?? ev.date}__${ev.end ?? ""}__${ev.title}__${ev.type}`; }
-
-        function renderMonthlySummary() {
-            const wrap = document.getElementById("monthlySummaryList");
-            const titleEl = document.getElementById("monthlySummaryTitle");
-            const y = currentDate.getFullYear();
-            const m = currentDate.getMonth()+1;
-            titleEl.textContent = `${y}년 ${m}월 주요 일정`;
-
-            const active = getActiveTypes();
-            const matchMonth = (d) => { const [yy,mm]=d.split("-").map(Number); return yy===y && mm===m; };
-
-            const monthEvents = events.filter(ev => {
-                if (!active.has(ev.type)) return false;
-                if (ev.date) return matchMonth(ev.date);
-                if (ev.start && ev.end) {
-                    return matchMonth(ev.start) || matchMonth(ev.end) ||
-                        (toDateNum(ev.start) < toDateNum(`${y}-${String(m).padStart(2,"0")}-01`) &&
-                            toDateNum(ev.end)   > toDateNum(`${y}-${String(m).padStart(2,"0")}-31`));
-                }
-                return false;
-            });
-
-            const seen = new Set();
-            const sorted = monthEvents
-                .slice()
-                .sort((a,b)=>(a.start ?? a.date).localeCompare(b.start ?? b.date))
-                .filter(ev => { const k=makeKeyForSummary(ev); if (seen.has(k)) return false; seen.add(k); return true; });
-
-            wrap.innerHTML = sorted.length ? sorted.map(ev => {
-                const visual = cardVisual(ev.type);
-                const chip = `class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badgeClass(ev.type)}"`;
-                const dateText = ev.start && ev.end ? `${ev.start} ~ ${ev.end}` : `${ev.date} (${weekdayKo(ev.date)})`;
-                const typeKo =
-                    ev.type === "academic" ? "학사" :
-                        ev.type === "admission" ? "입학" :
-                            ev.type === "scholarship" ? "장학" :
-                                ev.type === "dormitory" ? "기숙사" : "국제 학생";
-
-                return `
-        <div class="flex items-start gap-4 p-4 rounded-lg border border-gray-200 hover:border-primary hover:bg-blue-50 transition-colors">
-          <div class="w-12 h-12 ${visual.box} rounded-lg flex items-center justify-center ${visual.text} flex-shrink-0">
-            <div class="w-6 h-6 flex items-center justify-center"><i class="${visual.icon}"></i></div>
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h4 class="font-medium text-gray-800">${ev.title}</h4>
-              <span ${chip}><span class="event-dot ${ev.type}"></span>${typeKo}</span>
-            </div>
-            <p class="text-gray-600 text-sm mt-1">${dateText}</p>
-          </div>
-        </div>`;
-            }).join("") : `<div class="text-sm text-gray-500">이 달에는 표시할 일정이 없습니다.</div>`;
-        }
-
-        // 달력 렌더 (칩 방식으로만 표시)
-        function renderCalendar() {
-            updateCalendarHeader();
-            calendarGrid.innerHTML = "";
-
-            const year  = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-
-            const firstDayOfWeek = new Date(year, month, 1).getDay();
-            const daysInCurrent  = new Date(year, month + 1, 0).getDate();
-            const daysInPrev     = new Date(year, month, 0).getDate();
-
-            let startPrevDay = daysInPrev - firstDayOfWeek + 1;
-            const today = new Date();
-
-            const cellByKey = new Map();
-
-            for (let i=0;i<42;i++){
-                const cell = document.createElement("div");
-                cell.className = "calendar-day p-2 border rounded";
-
-                let cellYear = year, cellMonth = month, dayNum;
-
-                if (i < firstDayOfWeek) {
-                    dayNum = startPrevDay + i;
-                    cell.classList.add("other-month");
-                    if (cellMonth === 0) { cellMonth = 11; cellYear = year - 1; } else { cellMonth -= 1; }
-                } else if (i >= firstDayOfWeek + daysInCurrent) {
-                    dayNum = i - (firstDayOfWeek + daysInCurrent) + 1;
-                    cell.classList.add("other-month");
-                    if (cellMonth === 11) { cellMonth = 0; cellYear = year + 1; } else { cellMonth += 1; }
-                } else {
-                    dayNum = i - firstDayOfWeek + 1;
-                }
-
-                const isToday =
-                    cellYear === today.getFullYear() &&
-                    cellMonth === today.getMonth() &&
-                    dayNum === today.getDate();
-                if (isToday) cell.classList.add("today");
-
-                const dateLabel = document.createElement("div");
-                dateLabel.className = "text-xs" + (isToday ? " font-bold" : "");
-                dateLabel.textContent = String(dayNum);
-                cell.appendChild(dateLabel);
-
-                const key = fmt(cellYear, cellMonth+1, dayNum);
-                cell.dataset.date = key;
-                calendarGrid.appendChild(cell);
-                cellByKey.set(key, cell);
-            }
-
-            // 그리드 범위 내에서 하루/기간을 하루 단위로 펼쳐 칩 표시
-            const keys = Array.from(cellByKey.keys()).sort();
-            const gridStartKey = keys[0];
-            const gridEndKey   = keys[keys.length-1];
-            const dailyMap = buildDailyEventsMap(gridStartKey, gridEndKey);
-
-            renderDailyChips(cellByKey, dailyMap);
-            renderMonthlySummary();
-        }
-
-        // 탭 전환
-        monthViewBtn.addEventListener("click", () => {
-            monthViewBtn.classList.add("active");
-            // semesterViewBtn.classList.remove("active");
-            monthView.classList.remove("hidden");
-            semesterView.classList.add("hidden");
-        });
-        // semesterViewBtn.addEventListener("click", () => {
-        //     semesterViewBtn.classList.add("active");
-        //     monthViewBtn.classList.remove("active");
-        //     semesterView.classList.remove("hidden");
-        //     monthView.classList.add("hidden");
-        // });
-
-        // 월 이동
-        prevMonthBtn.addEventListener("click", () => { currentDate.setMonth(currentDate.getMonth()-1); renderCalendar(); });
-        nextMonthBtn.addEventListener("click", () => { currentDate.setMonth(currentDate.getMonth()+1); renderCalendar(); });
-        todayBtn.addEventListener("click", () => {
-            const t = new Date();
-            currentDate = new Date(t.getFullYear(), t.getMonth(), t.getDate());
-            renderCalendar();
-        });
-
-        // 필터 변경 시 재렌더
-        document.querySelectorAll('input[type="checkbox"][data-type]')
-            .forEach(cb => cb.addEventListener("change", renderCalendar));
-
-        // 초기 렌더
-        renderCalendar();
-
-        // 모달
-        function openDayModal(dateKey) {
-            const [y,m,d] = dateKey.split("-").map(Number);
-            dayEventsTitle.textContent = `${y}년 ${m}월 ${d}일 일정`;
-
-            const items = getEventsForDate(dateKey);
-            dayEventsList.innerHTML = items.length
-                ? items.map(ev => `
-        <div class="flex items-start gap-2 p-2 rounded border border-gray-200">
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium ${badgeClass(ev.type)}">${ev.type}</span>
-          <div class="flex-1 leading-[1.2]">
-            <div class="font-medium text-gray-800">${ev.title}</div>
-            <div class="text-[11px] text-gray-500">${dateKey}</div>
-          </div>
-        </div>`).join("")
-                : `<div class="text-gray-500 text-xs">표시할 일정이 없습니다.</div>`;
-
-            document.getElementById("dayEventsModal").classList.remove("hidden");
-        }
-        function closeDayModal(){ document.getElementById("dayEventsModal").classList.add("hidden"); }
-
-        calendarGrid.addEventListener("click", (e) => {
-            const opener = e.target.closest('[data-action="open-day-events"]');
-            if (opener?.dataset.date) openDayModal(opener.dataset.date);
-        });
-        document.getElementById("dayEventsModal").addEventListener("click", (e) => {
-            if (e.target.closest('[data-action="close-day-modal"]')) closeDayModal();
-        });
-        document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape" && !document.getElementById("dayEventsModal").classList.contains("hidden")) closeDayModal();
-        });
-    });
-</script>
+        </script>
+    </th:block>
 </body>
 </html>

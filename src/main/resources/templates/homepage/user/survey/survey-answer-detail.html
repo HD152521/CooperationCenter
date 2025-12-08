@@ -1,35 +1,8 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html th:replace="~{fragments/layout/base :: base(~{::head}, ~{::body})}"
+      xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>응답자 상세 정보</title>
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { primary: "#4f46e5", secondary: "#6366f1" },
-                    borderRadius: {
-                        none: "0px",
-                        sm: "4px",
-                        DEFAULT: "8px",
-                        md: "12px",
-                        lg: "16px",
-                        xl: "20px",
-                        "2xl": "24px",
-                        "3xl": "32px",
-                        full: "9999px",
-                        button: "8px",
-                    },
-                },
-            },
-        };
-    </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
     <style>
         :where([class^="ri-"])::before { content: "\f3c2"; }
@@ -145,9 +118,9 @@
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-lg font-medium text-gray-900 mb-6">응답 내용</h2>
 
-                <!-- ✅ 여기 루프 안에서만 an/questionId 사용 -->
-                <div class="space-y-8" th:each="an, iterStat : ${answerLog.answer}">
-                    <div class="space-y-4">
+                <div>
+                    <div th:each="an, iterStat : ${answerLog.answer}"
+                         class="space-y-4 py-5 border-gray-200 last:border-b-0">
 
                         <!-- 질문 헤더 + 타입 뱃지 -->
                         <div class="flex items-start justify-between gap-3">
@@ -309,8 +282,7 @@
     </div>
 </main>
 
-<script src="/js/homepage/common/url.js"></script>
-<script>
+<script type="module">
     function parseUuidAndFilename(fullName) {
         const underscoreIndex = fullName.indexOf('_');
         if (underscoreIndex === -1) return { uuid: fullName, filename: '' };

@@ -1,13 +1,13 @@
-const surveyUrl = "/api/v1/survey"
-const surveyAdminUrl = "/api/v1/survey/admin"
+const surveyUrl = "/survey"
+const surveyAdminUrl = "/admin/survey"
 
-const memberUrl = "/api/v1/member"
-const memberAdminUrl = "/api/v1/member/admin"
+const memberUrl = "/member"
+const memberAdminUrl = "/admin/member"
 
-const profileUrl = "/api/v1/profile"
+const profileUrl = "/profile"
 
 
 const fileUrl="/api/v1/file"
-const fileAdminUrl="/api/v1/file"
+const fileAdminUrl="/avi/v1/file"
 
-// <script src="/js/homepage/url.js"></script>
+export default {surveyUrl, surveyAdminUrl, memberUrl, memberAdminUrl, profileUrl, fileUrl, fileAdminUrl}

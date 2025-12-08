@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
+<li th:fragment="card(school)" class="p-5 sm:p-6 flex items-center gap-4 sm:gap-6 hover:bg-gray-50 transition-colors">
+    <!-- 로고 -->
+    <div class="shrink-0">
+        <img th:src="${school.imgUrl}" th:alt="${school.koreanName}" class="w-14 h-14 sm:w-16 sm:h-16 object-contain"/>
+    </div>
+
+    <!-- 텍스트 블록 -->
+    <div class="flex-1 min-w-0 w-full">
+        <!-- 한 줄 레이아웃: 좌측 학교명, 우측 카테고리 -->
+        <div class="flex w-full flex-col sm:flex-row sm:items-center sm:gap-4">
+            <!-- 학교명 (한/영) : 왼쪽 -->
+            <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+        <span class="text-base sm:text-lg font-semibold text-gray-900" th:text="${school.koreanName}">대학교 이름</span>
+                    <span class="text-sm sm:text-base text-gray-500" th:text="${school.englishName}">University English Name</span>
+                </div>
+            </div>
+
+            <!-- 카테고리 : 오른쪽 정렬 -->
+            <div class="mt-2 sm:mt-0 sm:ml-auto flex flex-wrap gap-2 justify-start sm:justify-end">
+                <a th:each="cat : ${school.categories}" th:text="${cat.categoryName()}"
+                   th:href="@{/school/{name}/board/{bid}(name=${school.englishName}, bid=${cat.boardId})}" class="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 text-xs sm:text-sm
+                hover:bg-primary/10 hover:text-primary transition-colors
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 우측 화살표 (선택 사항) -->
+    <i class="ri-arrow-right-s-line text-gray-400 text-xl shrink-0"></i>
+</li>
+
+
+<div th:fragment="empty-data">
+    <h3>no-data</h3>
+</div>
+</html>

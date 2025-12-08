@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang=ko xmlns:th="http://www.thymeleaf.org">
+<div class="mb-8" th:fragment="universityNavHeader(title)">
+    <div class="flex items-center text-sm text-gray-500 mb-2">
+        <a href="#" class="hover:text-primary">홈</a>
+        <span class="mx-2">></span>
+        <a href="#" class="hover:text-primary">대학교</a>
+        <span class="mx-2">></span>
+    </div>
+    <h1 class="text-3xl font-bold text-gray-900" th:title="${title}">세종대학교 소개</h1>
+</div>
+</html>

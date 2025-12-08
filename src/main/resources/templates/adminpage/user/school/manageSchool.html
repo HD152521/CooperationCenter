@@ -1,995 +1,407 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html th:replace="~{fragments/layout/base :: base(~{::head}, ~{::body})}" xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>게시판 관리</title>
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet"
-    />
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-    />
-<!--    편집툴-->
+    <!--    편집툴-->
     <link href="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/css/suneditor.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/suneditor@latest/dist/suneditor.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/suneditor@latest/src/lang/ko.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#3498DB",
-                        secondary: "#2C3E50",
-                    },
-                    borderRadius: {
-                        none: "0px",
-                        sm: "4px",
-                        DEFAULT: "8px",
-                        md: "12px",
-                        lg: "16px",
-                        xl: "20px",
-                        "2xl": "24px",
-                        "3xl": "32px",
-                        full: "9999px",
-                        button: "8px",
-                    },
-                },
-            },
-        };
-    </script>
     <style>
         :where([class^="ri-"])::before {
             content: "\f3c2";
         }
+
         .admin-card {
             background: linear-gradient(145deg, #2C2C3A, #232331);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
+
         .table-header {
             background: linear-gradient(135deg, #343446, #2A2A3C);
         }
+
         .table-row:hover {
             background: rgba(52, 152, 219, 0.1);
         }
+
         .status-badge {
             backdrop-filter: blur(10px);
         }
+
         .tree-node {
             transition: all 0.3s ease;
         }
+
         .tree-node.expanded > .tree-children {
             max-height: 1000px;
             opacity: 1;
         }
+
         .tree-children {
             max-height: 0;
             opacity: 0;
             overflow: hidden;
             transition: all 0.3s ease;
         }
+
         .editor-toolbar {
             background: linear-gradient(135deg, #343446, #2A2A3C);
             border-bottom: 1px solid #374151;
         }
+
         .editor-content {
             min-height: 400px;
             background: #1F2937;
             color: #F9FAFB;
         }
+
         .board-type-tag {
             font-size: 0.75rem;
             padding: 0.25rem 0.5rem;
             border-radius: 0.375rem;
             font-weight: 500;
         }
+
+        .dark-input {
+            width: 100%;
+            padding: 0.6rem 0.9rem;
+            border-radius: 9999px;
+            background-color: #111827;
+            border: 1px solid #374151;
+            color: #e5e7eb;
+            font-size: 0.875rem;
+            outline: none;
+            transition: all 0.15s ease-in-out;
+        }
+
+        .dark-input::placeholder {
+            color: #6b7280;
+        }
+
+        .dark-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59,130,246,0.35);
+            background-color: #020617;
+        }
+
+        .field-help {
+            margin-top: 0.25rem;
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.25rem;
+        }
+
+        .section-header-line {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #374151;
+        }
+
+        .section-helper {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
     </style>
 </head>
-<body
-        class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen text-gray-100"
->
-<div class="flex">
+<body>
+<div th:replace="~{fragments/school/admin/modals.html :: modals}"></div>
+<div class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen text-gray-100">
+    <div class="flex">
 
-<!--    leftSide-->
+        <!--    leftSide-->
 
-    <aside th:replace="~{adminpage/common/leftSide :: leftSide}"></aside>
+        <aside th:replace="~{adminpage/common/leftSide :: leftSide}"></aside>
 
-    <main class="flex-1 p-8">
-        <div id="board-list-view">
-            <header class="mb-8">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h1 class="text-3xl font-bold text-white">게시판 관리</h1>
-                        <p class="text-gray-400 mt-2">
-                            학교별 게시판을 관리하고 수정하세요
-                        </p>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <select
-                                class="bg-gray-700 text-white px-4 py-2 rounded-lg border-none pr-8"
-                        >
-                            <option>전체 학교</option>
-                            <option th:each="school : ${schoolDto}"
-                                    th:value="${school.schoolDto.englishName}"
-                                    th:text="${school.schoolDto.englishName}">
-                                학교 이름
-                            </option>
-                        </select>
-                        <button
-                                onclick="openAddBoardModal()"
-                                class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                        >
-                            <div
-                                    class="w-4 h-4 inline-flex items-center justify-center mr-2"
-                            >
-                                <i class="ri-add-line"></i>
-                            </div>
-                            새 게시판 추가
-                        </button>
-                    </div>
+        <main class="flex-1 p-8">
+            <div th:replace="~{fragments/school/admin/board-list.html :: boardList(schoolDto=${schoolDto})}"></div>
 
-                    <div
-                            id="addCategoryModal"
-                            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50"
-                    >
-                        <div class="bg-gray-800 rounded-xl p-6 w-[480px] shadow-2xl">
-                            <div class="flex items-center justify-between mb-6">
-                                <h3 class="text-xl font-bold text-white">
-                                    새 카테고리 추가
-                                </h3>
-                                <button
-                                        onclick="closeAddCategoryModal()"
-                                        class="text-gray-400 hover:text-white transition-colors"
-                                >
-                                    <div class="w-6 h-6 flex items-center justify-center">
-                                        <i class="ri-close-line"></i>
-                                    </div>
-                                </button>
-                            </div>
-                            <div class="space-y-4">
-                                <div>
-                                    <label for="boardTitle" class="block text-sm font-medium text-gray-300 mb-2">카테고리 이름</label>
-                                    <input
-                                            id="boardTitle"
-                                            type="text"
-                                            class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
-                                            placeholder="카테고리 이름을 입력하세요"
-                                    />
-                                </div>
-                                <div>
-                                    <label for="boardDesc" class="block text-sm font-medium text-gray-300 mb-2">카테고리 설명</label>
-                                    <input
-                                            id="boardDesc"
-                                            type="text"
-                                            class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
-                                            placeholder="카테고리 이름을 입력하세요"
-                                    />
-                                </div>
-                                <div>
-                                    <label
-                                            class="block text-sm font-medium text-gray-300 mb-2"
-                                    >게시판 유형</label
-                                    >
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <label
-                                                class="relative flex items-center justify-center p-4 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors"
-                                        >
-                                            <input
-                                                    type="radio"
-                                                    name="boardType"
-                                                    value="intro"
-                                                    class="sr-only"
-                                                    checked
-                                            />
-                                            <div class="flex flex-col items-center">
-                                                <div
-                                                        class="w-8 h-8 flex items-center justify-center mb-2 text-primary"
-                                                >
-                                                    <i class="ri-file-text-line"></i>
-                                                </div>
-                                                <span class="text-white font-medium">소개형</span>
-                                                <span class="text-xs text-gray-400 mt-1"
-                                                >단일 페이지 형태</span
-                                                >
-                                            </div>
-                                            <div
-                                                    class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none"
-                                            ></div>
-                                        </label>
-                                        <label
-                                                class="relative flex items-center justify-center p-4 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors"
-                                        >
-                                            <input
-                                                    type="radio"
-                                                    name="boardType"
-                                                    value="board"
-                                                    class="sr-only"
-                                            />
-                                            <div class="flex flex-col items-center">
-                                                <div
-                                                        class="w-8 h-8 flex items-center justify-center mb-2 text-primary"
-                                                >
-                                                    <i class="ri-list-check"></i>
-                                                </div>
-                                                <span class="text-white font-medium">게시글형</span>
-                                                <span class="text-xs text-gray-400 mt-1"
-                                                >다중 게시글 형태</span
-                                                >
-                                            </div>
-                                            <div
-                                                    class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none"
-                                            ></div>
-                                        </label>
-                                        <label
-                                                class="relative flex items-center justify-center p-4 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors"
-                                        >
-                                            <input
-                                                    type="radio"
-                                                    name="boardType"
-                                                    value="files"
-                                                    class="sr-only"
-                                                    checked
-                                            />
-                                            <div class="flex flex-col items-center">
-                                                <div
-                                                        class="w-8 h-8 flex items-center justify-center mb-2 text-primary"
-                                                >
-                                                    <i class="ri-file-text-line"></i>
-                                                </div>
-                                                <span class="text-white font-medium">파일 목록형</span>
-                                                <span class="text-xs text-gray-400 mt-1"
-                                                >파일 목록 형태</span
-                                                >
-                                            </div>
-                                            <div
-                                                    class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none"
-                                            ></div>
-                                        </label>
-                                        <label
-                                                class="relative flex items-center justify-center p-4 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors"
-                                        >
-                                            <input
-                                                    type="radio"
-                                                    name="boardType"
-                                                    value="schedule"
-                                                    class="sr-only"
-                                            />
-                                            <div class="flex flex-col items-center">
-                                                <div
-                                                        class="w-8 h-8 flex items-center justify-center mb-2 text-primary"
-                                                >
-                                                    <i class="ri-calendar-check-line"></i>
-                                                </div>
-                                                <span class="text-white font-medium">스캐줄 게시판</span>
-                                                <span class="text-xs text-gray-400 mt-1"
-                                                >일정 추가 형태</span
-                                                >
-                                            </div>
-                                            <div
-                                                    class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none"
-                                            ></div>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex justify-end space-x-3 mt-6">
-                                <button
-                                        onclick="closeAddCategoryModal()"
-                                        class="px-4 py-2 bg-gray-700 text-white rounded-button hover:bg-gray-600 transition-colors whitespace-nowrap"
-                                >
-                                    취소
-                                </button>
-                                <button
-                                        onclick="submitAddCategory()"
-                                        class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                                >
-                                    추가하기
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+            <div th:replace="~{fragments/school/admin/intro-editor :: introEditor()}"></div>
 
-                    <div
-                            id="addBoardModal"
-                            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50"
-                    >
-                        <div class="bg-gray-800 rounded-xl p-6 w-[480px] shadow-2xl">
-                            <div class="flex items-center justify-between mb-6">
-                                <h3 class="text-xl font-bold text-white">새 게시판 추가</h3>
-                                <button
-                                        onclick="closeAddBoardModal()"
-                                        class="text-gray-400 hover:text-white transition-colors"
-                                >
-                                    <div class="w-6 h-6 flex items-center justify-center">
-                                        <i class="ri-close-line"></i>
-                                    </div>
-                                </button>
-                            </div>
-                            <div class="space-y-4">
-                                <div>
-                                    <label
-                                            class="block text-sm font-medium text-gray-300 mb-2"
-                                    >학교 이름(한국어)</label
-                                    >
-                                    <input
-                                            type="text"
-                                            class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
-                                            placeholder="학교 이름을 입력하세요"
-                                    />
-                                </div>
-                                <div>
-                                    <label
-                                            class="block text-sm font-medium text-gray-300 mb-2"
-                                    >학교 이름(영어)</label
-                                    >
-                                    <input
-                                            type="text"
-                                            class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
-                                            placeholder="학교 이름을 입력하세요"
-                                    />
-                                </div>
-                                <div>
-                                    <label
-                                            class="block text-sm font-medium text-gray-300 mb-2"
-                                    >학교 로고 URL</label
-                                    >
-                                    <input
-                                            type="url"
-                                            class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
-                                            placeholder="로고 이미지 URL을 입력하세요"
-                                    />
-                                </div>
-                            </div>
-                            <div class="flex justify-end space-x-3 mt-6">
-                                <button
-                                        onclick="closeAddBoardModal()"
-                                        class="px-4 py-2 bg-gray-700 text-white rounded-button hover:bg-gray-600 transition-colors whitespace-nowrap"
-                                >
-                                    취소
-                                </button>
-                                <button
-                                        onclick="saveNewBoard()"
-                                        class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                                >
-                                    추가하기
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <script id="modal-functions">
-                        document.addEventListener("DOMContentLoaded", function () {
-                            window.openAddBoardModal = function () {
-                                document.getElementById("addBoardModal").classList.remove("hidden");
-                            };
-                            window.closeAddBoardModal = function () {
-                                document.getElementById("addBoardModal").classList.add("hidden");
-                            };
-                            window.openCategoryModal = function () {
-                                document.getElementById("categoryModal").classList.remove("hidden");
-                            };
-                            window.closeCategoryModal = function () {
-                                document.getElementById("categoryModal").classList.add("hidden");
-                            };
-                            window.openAddCategoryModal = function (buttonElement) {
-                                const modal = document.getElementById("addCategoryModal");
-                                const schoolId = buttonElement.dataset.schoolId;
-                                modal.dataset.schoolId = schoolId;
-                                modal.classList.remove("hidden");
-                            };
+            <div th:replace="~{fragments/school/admin/board-list-editor.html :: board-list-editor}"></div>
 
-                            window.closeAddCategoryModal = function () {
-                                const modal = document.getElementById("addCategoryModal");
-                                modal.classList.add("hidden");
-                                modal.dataset.schoolId = "";
-                            };
+            <div th:replace="~{fragments/school/admin/schedule-list-editor.html :: schedule-list-editor}"></div>
 
-                            window.deleteCategory = function (categoryName) {
-                                if (confirm(`"${categoryName}" 카테고리를 삭제하시겠습니까?`)) {
-                                    const notification = document.createElement("div");
-                                    notification.className =
-                                        "fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50";
-                                    notification.textContent = "카테고리가 삭제되었습니다";
-                                    document.body.appendChild(notification);
-                                    setTimeout(() => notification.remove(), 3000);
-                                }
-                            };
-                            window.saveNewBoard = async function () {
-                                const koreanNameInput = document.querySelectorAll(
-                                    '#addBoardModal input[type="text"]'
-                                )[0]; // 한국어 이름
-                                const englishNameInput = document.querySelectorAll(
-                                    '#addBoardModal input[type="text"]'
-                                )[1]; // 영어 이름
-                                const logoUrlInput = document.querySelector('#addBoardModal input[type="url"]');
+            <div th:replace="~{fragments/school/admin/post-editor.html :: postEditor}"></div>
 
-                                const schoolKoreanName = koreanNameInput.value.trim();
-                                const schoolEnglishName = englishNameInput.value.trim();
-                                const imgUrl = logoUrlInput.value.trim();
+            <div th:replace="~{fragments/school/admin/file-post-editor.html :: filePostEditor}"></div>
 
-                                if (!schoolKoreanName || !schoolEnglishName || !imgUrl) {
-                                    const notification = document.createElement("div");
-                                    notification.className =
-                                        "fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50";
-                                    notification.textContent = "모든 항목을 입력해주세요";
-                                    document.body.appendChild(notification);
-                                    setTimeout(() => notification.remove(), 3000);
-                                    return;
-                                }
+        </main>
+    </div>
+</div>
 
-                                const payload = {
-                                    schoolKoreanName: schoolKoreanName,
-                                    schoolEnglishName: schoolEnglishName,
-                                    imgUrl: imgUrl,
-                                };
+<script id="modal-functions" type="module">
+    window.openAddBoardModal = function () {
+        document.getElementById("addBoardModal").classList.remove("hidden");
+    };
+    window.closeAddBoardModal = function () {
+        document.getElementById("addBoardModal").classList.add("hidden");
+    };
+    window.openCategoryModal = function () {
+        document.getElementById("categoryModal").classList.remove("hidden");
+    };
+    window.closeCategoryModal = function () {
+        document.getElementById("categoryModal").classList.add("hidden");
+    };
 
-                                try {
-                                    const response = await fetch("/api/v1/admin/school/save", {
-                                        method: "POST",
-                                        headers: {
-                                            "Content-Type": "application/json",
-                                        },
-                                        body: JSON.stringify(payload),
-                                    });
+    window.openAddCategoryModal = function (buttonElement) {
+        const modal = document.getElementById("addCategoryModal");
+        const schoolId = buttonElement.dataset.schoolId;
+        modal.dataset.schoolId = schoolId;
+        modal.classList.remove("hidden");
+    };
 
-                                    const result = await response.json();
+    window.closeAddCategoryModal = function () {
+        const modal = document.getElementById("addCategoryModal");
+        modal.classList.add("hidden");
+        modal.dataset.schoolId = "";
+    };
 
-                                    if (result.isSuccess) {
-                                        const notification = document.createElement("div");
-                                        notification.className =
-                                            "fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50";
-                                        notification.textContent = "새 게시판이 추가되었습니다";
-                                        document.body.appendChild(notification);
-                                        setTimeout(() => notification.remove(), 3000);
-                                        closeAddBoardModal();
-                                        location.reload(); // 새로고침해서 반영
-                                    } else {
-                                        throw new Error(result.message || "추가 실패");
-                                    }
-                                } catch (error) {
-                                    const notification = document.createElement("div");
-                                    notification.className =
-                                        "fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50";
-                                    notification.textContent = "오류 발생: " + error.message;
-                                    document.body.appendChild(notification);
-                                    setTimeout(() => notification.remove(), 3000);
-                                }
-                            };
-                        });
-                    </script>
-                </div>
-            </header>
-            <div class="admin-card rounded-xl p-6">
-                <div class="space-y-4">
-                    <div th:each="schoolPage : ${schoolDto}" class="tree-node">
-                        <div
-                                class="flex items-center justify-between p-4 bg-gray-700 rounded-lg cursor-pointer"
-                                th:attr="data-english-name=${schoolPage.schoolDto.englishName}"
-                                onclick="toggleSchool(this.dataset.englishName)"
-                        >
-                            <div class="flex items-center">
-                                <div class="w-5 h-5 flex items-center justify-center mr-3 text-primary">
-                                    <i class="ri-arrow-right-s-line tree-arrow"
-                                       th:id="${schoolPage.schoolDto.englishName + '-arrow'}"></i>
-                                </div>
-                                <h3 class="text-lg font-semibold text-white"
-                                    th:text="${schoolPage.schoolDto.koreanName}">학교 이름</h3>
-                                <span class="ml-3 text-sm text-gray-400"
-                                      th:text="'(' + ${#lists.size(schoolPage.boardDtos)} + '개 게시판)'">
-                                    (0개 게시판)
-                                </span>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <button
-                                        class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                                        th:attr="data-school-id=${schoolPage.schoolDto.schoolId}, data-english-name=${schoolPage.schoolDto.englishName}"
-                                        onclick="openAddCategoryModal(this)"
-                                >
-                                    <div class="w-4 h-4 inline-flex items-center justify-center mr-1">
-                                        <i class="ri-add-line"></i>
-                                    </div>
-                                    새 카테고리 추가
-                                </button>
-                            </div>
-                        </div>
+    window.deleteCategory = function (categoryName) {
+        if (confirm(`"${categoryName}" 카테고리를 삭제하시겠습니까?`)) {
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50";
+            notification.textContent = "카테고리가 삭제되었습니다";
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+    };
 
-                        <div class="tree-children ml-8" th:id="${schoolPage.schoolDto.englishName + '-children'}">
-                            <div class="space-y-3 mt-4">
-                                <div class="bg-gray-800 rounded-lg p-4">
-                                    <div class="space-y-2">
-                                        <div class="flex items-center justify-between p-3 bg-gray-700 rounded-lg" th:each="board : ${schoolPage.boardDtos}"
-                                             th:attr="data-board-id=${board.id}"
-                                        >
-                                            <div class="flex items-center">
-                                                <div class="w-4 h-4 flex items-center justify-center mr-3">
-                                                    <i th:classappend="${board.boardType == 'INTRO'} ? 'ri-file-text-line' : 'ri-file-list-line'"
-                                                       class="text-gray-400"></i>
-                                                </div>
-                                                <span class="text-white" th:text="${board.boardTitle}">게시판 제목</span>
-                                                <span class="board-type-tag ml-3"
-                                                      th:with="
-                                                        typeName=${board.boardType != null} ? ${board.boardType} : 'UNKNOWN',
-                                                        typeClass=${typeName == 'INTRO'}  ? ' bg-blue-500 bg-opacity-20 text-blue-400' :
-                                                                    (${typeName == 'NOTICE'} ? ' bg-green-500 bg-opacity-20 text-green-400' :
-                                                                    (${typeName == 'FILES'}  ? ' bg-yellow-500 bg-opacity-20 text-yellow-400' :
-                                                                    (${typeName == 'SCHEDULE'} ? ' bg-purple-500 bg-opacity-20 text-purple-400' :
-                                                                                                 ' bg-gray-500 bg-opacity-20 text-gray-400'))),
-                                                        typeText=${typeName == 'INTRO'}  ? '소개페이지' :
-                                                                   (${typeName == 'NOTICE'} ? '게시판형' :
-                                                                   (${typeName == 'FILES'}  ? '파일형' :
-                                                                   (${typeName == 'SCHEDULE'} ? '스케줄형' : '알 수 없음')))"
-                                                      th:classappend="${typeClass}"
-                                                      th:text="${typeText}">
-                                                  게시판 유형
-                                                </span>
-                                            </div>
-                                            <div class="flex space-x-2">
-                                                <button
-                                                        class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                                                        th:if="${board.boardType == 'INTRO'}"
-                                                        th:attr="data-board-title=${board.boardTitle}"
-                                                        onclick="editIntroBoard(this.dataset.boardTitle)"
-                                                >
-                                                    수정
-                                                </button>
+    window.saveNewBoard = async function () {
+        const koreanNameInput = document.querySelectorAll(
+            '#addBoardModal input[type="text"]'
+        )[0]; // 한국어 이름
+        const englishNameInput = document.querySelectorAll(
+            '#addBoardModal input[type="text"]'
+        )[1]; // 영어 이름
+        const logoUrlInput = document.querySelector('#addBoardModal input[type="url"]');
 
-                                                <button
-                                                        class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                                                        th:if="${board.boardType == 'NOTICE'}"
-                                                        th:attr="data-board-title=${board.boardTitle}, data-board-id=${board.id}, data-board-type=${board.boardType}"
-                                                        onclick="editBoardList(this.dataset.boardTitle, this.dataset.boardId, this.dataset.boardType)"
-                                                >
-                                                    수정
-                                                </button>
+        const schoolKoreanName = koreanNameInput.value.trim();
+        const schoolEnglishName = englishNameInput.value.trim();
+        const imgUrl = logoUrlInput.value.trim();
 
-                                                <button
-                                                        class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                                                        th:if="${board.boardType == 'FILES'}"
-                                                        th:attr="data-board-title=${board.boardTitle}, data-board-id=${board.id}, data-board-type=${board.boardType}"
-                                                        onclick="editBoardList(this.dataset.boardTitle, this.dataset.boardId, this.dataset.boardType)"
-                                                >
-                                                    수정
-                                                </button>
-                                                <button
-                                                        class="px-3 py-1 bg-primary text-white text-sm rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                                                        th:if="${board.boardType == 'SCHEDULE'}"
-                                                        th:attr="data-board-title=${board.boardTitle}, data-board-id=${board.id}, data-board-type=${board.boardType}"
-                                                        onclick="editScheduleList(this.dataset.boardTitle, this.dataset.boardId, this.dataset.boardType)"
-                                                >
-                                                    수정
-                                                </button>
-                                                <button
-                                                        class="px-3 py-1 bg-red-600 text-white text-sm rounded-button hover:bg-red-700 transition-colors whitespace-nowrap"
-                                                        th:attr="data-board-title=${board.boardTitle},data-board-id=${board.id()}"
-                                                        onclick="deleteBoard(this.dataset.boardTitle,this.dataset.boardId)"
-                                                >
-                                                    삭제
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div id="intro-board-editor" class="hidden">
-            <header class="mb-8">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <button
-                                onclick="showBoardList()"
-                                class="mr-4 p-2 text-gray-400 hover:text-white transition-colors"
-                        >
-                            <div class="w-5 h-5 flex items-center justify-center">
-                                <i class="ri-arrow-left-line"></i>
-                            </div>
-                        </button>
-                        <div>
-                            <h1
-                                    class="text-3xl font-bold text-white"
-                                    id="intro-board-title"
-                            >
-                                소개페이지 수정
-                            </h1>
-                            <p class="text-gray-400 mt-2">
-                                페이지 내용을 수정하고 저장하세요
-                            </p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <button
-                                onclick="showBoardList()"
-                                class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap"
-                        >
-                            취소
-                        </button>
-                        <button
-                                onclick="saveIntroBoard()"
-                                class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                        >
-                            저장하기
-                        </button>
-                    </div>
-                </div>
-            </header>
-            <div id="editor-wrapper" class="admin-card rounded-xl overflow-hidden h-auto">
-                <textarea id="school-intro-editor" name="content"></textarea>
-            </div>
-        </div>
-        <div id="board-list-editor" class="hidden">
-<!--            게시글 목록 보여주기-->
-            <header class="mb-8">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <button
-                                onclick="showBoardList()"
-                                class="mr-4 p-2 text-gray-400 hover:text-white transition-colors"
-                        >
-                            <div class="w-5 h-5 flex items-center justify-center">
-                                <i class="ri-arrow-left-line"></i>
-                            </div>
-                        </button>
-                        <div>
-                            <h1
-                                    class="text-3xl font-bold text-white"
-                                    id="board-list-title"
+        if (!schoolKoreanName || !schoolEnglishName || !imgUrl) {
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50";
+            notification.textContent = "모든 항목을 입력해주세요";
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+            return;
+        }
 
-                            >
-                                게시판 관리
-                            </h1>
-                            <p class="text-gray-400 mt-2">게시글을 관리하고 수정하세요</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <button
-                                onclick="createNewPost()"
-                                class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                        >
-                            <div
-                                    class="w-4 h-4 inline-flex items-center justify-center mr-2"
-                            >
-                                <i class="ri-add-line"></i>
-                            </div>
-                            새 게시글 작성
-                        </button>
-                    </div>
-                </div>
-            </header>
-            <div class="admin-card rounded-xl p-6">
-                <div class="mb-6">
-                    <div class="flex items-center justify-between">
-                        <h2 class="text-xl font-bold text-white">게시글 목록</h2>
-                        <div class="flex items-center space-x-4">
-                            <select
-                                    class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8"
-                            >
-                                <option>전체</option>
-                                <option>공지</option>
-                                <option>일반</option>
-                            </select>
-                            <div class="relative">
-                                <input
-                                        type="text"
-                                        placeholder="제목 검색..."
-                                        class="bg-gray-700 text-white px-4 py-2 pr-10 rounded-lg text-sm border-none"
-                                />
-                                <div
-                                        class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 flex items-center justify-center"
-                                >
-                                    <i class="ri-search-line text-gray-400"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead>
-                        <tr class="table-header text-left">
-                            <th class="p-3 text-sm font-medium text-gray-300">제목</th>
-                            <th class="p-3 text-sm font-medium text-gray-300">
-                                작성자
-                            </th>
-                            <th class="p-3 text-sm font-medium text-gray-300">
-                                작성일
-                            </th>
-                            <th class="p-3 text-sm font-medium text-gray-300">
-                                조회수
-                            </th>
-                            <th class="p-3 text-sm font-medium text-gray-300">상태</th>
-                            <th class="p-3 text-sm font-medium text-gray-300">관리</th>
-                        </tr>
-                        </thead>
-                        <tbody id="post-table-body">
+        const payload = {
+            schoolKoreanName: schoolKoreanName,
+            schoolEnglishName: schoolEnglishName,
+            imgUrl: imgUrl,
+        };
 
-                        </tbody>
-                    </table>
-                </div>
-                <div class="flex items-center justify-center mt-6">
-                    <div id="pagination" class="flex items-center space-x-2">
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- 스케줄 리스트 전용 뷰 -->
-        <div id="schedule-list-editor" class="hidden">
-            <!-- 헤더 -->
-            <header class="mb-8">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <button
-                                onclick="showBoardList()"
-                                class="mr-4 p-2 text-gray-400 hover:text-white transition-colors"
-                        >
-                            <div class="w-5 h-5 flex items-center justify-center">
-                                <i class="ri-arrow-left-line"></i>
-                            </div>
-                        </button>
-                        <div>
-                            <h1 class="text-3xl font-bold text-white" id="schedule-list-title">
-                                일정 관리
-                            </h1>
-                            <p class="text-gray-400 mt-2">일정을 관리하고 수정하세요</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <button
-                                onclick="openAddScheduleModal()"
-                                class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                        >
-                            <div class="w-4 h-4 inline-flex items-center justify-center mr-2">
-                                <i class="ri-add-line"></i>
-                            </div>
-                            새 일정 추가
-                        </button>
-                    </div>
-                </div>
-            </header>
-
-            <div class="admin-card rounded-xl p-6">
-                <!-- 필터 -->
-                <div class="mb-6">
-                    <div class="flex items-center justify-between flex-col sm:flex-row gap-4">
-                        <h2 class="text-xl font-bold text-white">일정 목록</h2>
-
-                        <div class="flex items-center gap-3 flex-wrap">
-                            <!-- 타입 필터 -->
-                            <select
-                                    id="schedule-type-filter"
-                                    class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none pr-8"
-                            >
-                                <option value="">전체 타입</option>
-                                <option value="ACADEMIC">ACADEMIC</option>
-                                <option value="ADMISSION">ADMISSION</option>
-                                <option value="SCHOLARSHIP">SCHOLARSHIP</option>
-                                <option value="DORMITORY">DORMITORY</option>
-                                <option value="INTERNATIONAL">INTERNATIONAL</option>
-                            </select>
-
-                            <!-- 날짜 범위 -->
-                            <div class="flex items-center gap-2">
-                                <input
-                                        id="schedule-date-from"
-                                        type="date"
-                                        class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none"
-                                />
-                                <span class="text-gray-400 text-sm">~</span>
-                                <input
-                                        id="schedule-date-to"
-                                        type="date"
-                                        class="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border-none"
-                                />
-                            </div>
-
-                            <!-- 키워드 검색 -->
-                            <div class="relative">
-                                <input
-                                        id="schedule-search"
-                                        type="text"
-                                        placeholder="제목 검색..."
-                                        class="bg-gray-700 text-white px-4 py-2 pr-10 rounded-lg text-sm border-none"
-                                />
-                                <div
-                                        class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center"
-                                >
-                                    <i class="ri-search-line text-gray-400"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead>
-                        <tr class="table-header text-left">
-                            <th class="p-3 text-sm font-medium text-gray-300">제목</th>
-                            <th class="p-3 text-sm font-medium text-gray-300">시작일</th>
-                            <th class="p-3 text-sm font-medium text-gray-300">종료일</th>
-                            <th class="p-3 text-sm font-medium text-gray-300">타입</th>
-                            <th class="p-3 text-sm font-medium text-gray-300">상태</th>
-                            <th class="p-3 text-sm font-medium text-gray-300">관리</th>
-                        </tr>
-                        </thead>
-                        <tbody id="schedule-table-body">
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- 페이지네이션 -->
-                <div class="flex items-center justify-center mt-6">
-                    <div id="schedule-pagination" class="flex items-center space-x-2"></div>
-                </div>
-            </div>
-        </div>
-        <script id="schedule-modal-functions">
-            // 신규 작성 열기
-            window.openAddScheduleModal = function () {
-                const modal = document.getElementById("addScheduleModal");
-                // 모드 초기화
-                modal.dataset.scheduleId = "";
-                document.getElementById("scheduleTitle").value = "";
-                document.getElementById("scheduleStartDate").value = "";
-                document.getElementById("scheduleEndDate").value = "";
-                // 기본 타입 체크
-                document.querySelector('input[name="scheduleType"][value="ACADEMIC"]').checked = true;
-
-                // 타이틀도 바꾸고 열기
-                modal.querySelector("h3").textContent = "새 일정 추가";
-                modal.classList.remove("hidden");
-                modal.setAttribute("aria-hidden", "false");
-            };
-
-            // 수정 모드 열기 (스케줄 데이터 넣어줌)
-            window.openEditScheduleModal = async function (scheduleId) {
-                const modal = document.getElementById("addScheduleModal");
-                const res = await fetch(`/api/v1/admin/school/schedule?postId=${scheduleId}`);
-                const json = await res.json();
-                if (!json.isSuccess) throw new Error(json.message || "조회 실패");
-
-                const s = json.result;
-
-                modal.dataset.scheduleId = String(s.id);
-                document.getElementById("scheduleTitle").value = s.title ?? "";
-                document.getElementById("scheduleStartDate").value = s.startDate ?? "";
-                document.getElementById("scheduleEndDate").value = s.endDate ?? "";
-                // 타입 라디오
-                const typeInput = document.querySelector(`input[name="scheduleType"][value="${s.type}"]`);
-                if (typeInput) typeInput.checked = true;
-
-                modal.querySelector("h3").textContent = "일정 수정";
-                modal.classList.remove("hidden");
-                modal.setAttribute("aria-hidden", "false");
-            };
-
-            // 닫기(모든 경로에서 id 제거)
-            window.closeAddScheduleModal = function () {
-                const modal = document.getElementById("addScheduleModal");
-                modal.classList.add("hidden");
-                modal.setAttribute("aria-hidden", "true");
-                // 다음 열림에 영향 없게 비움
-                modal.dataset.scheduleId = "";
-            };
-
-            // 초기 바인딩(위임 방식)
-            document.addEventListener("DOMContentLoaded", function () {
-                const modal = document.getElementById("addScheduleModal");
-                if (!modal) {
-                    console.warn("[ScheduleModal] #addScheduleModal not in DOM at load (will still work if added later).");
-                }
-
-                // id="openAddScheduleBtn" 가 있다면 자동 바인딩(선택 사항)
-                const openBtn = document.getElementById("openAddScheduleBtn");
-                if (openBtn) openBtn.addEventListener("click", openAddScheduleModal);
-
-                // 모달 내부 닫기/취소 버튼 위임 바인딩
-                document.addEventListener("click", (e) => {
-                    // 오버레이 클릭으로 닫기
-                    const overlay = document.getElementById("addScheduleModal");
-                    if (overlay && e.target === overlay) {
-                        closeAddScheduleModal();
-                        return;
-                    }
-
-                    // 닫기 버튼들
-                    if (e.target.closest("#closeAddScheduleModalBtn")) {
-                        closeAddScheduleModal();
-                        return;
-                    }
-                    if (e.target.closest("#scheduleCancelBtn")) {
-                        closeAddScheduleModal();
-                        return;
-                    }
-                });
-
-                // ESC 로 닫기
-                document.addEventListener("keydown", (e) => {
-                    const m = document.getElementById("addScheduleModal");
-                    if (e.key === "Escape" && m && !m.classList.contains("hidden")) {
-                        closeAddScheduleModal();
-                    }
-                });
+        try {
+            const response = await fetch("/api/v1/admin/school/save", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
             });
-        </script>
-        <script id="scheduleFetch">
-            async function fetchScheduleList(boardId, page = 0) {
-                const root = document.getElementById("schedule-list-editor");
-                const typeEl = root.querySelector("#schedule-type-filter");
-                const fromEl = root.querySelector("#schedule-date-from");
-                const toEl   = root.querySelector("#schedule-date-to");
-                const kwEl   = root.querySelector("#schedule-search");
 
-                const type = (typeEl?.value || "").trim();           // ACADEMIC|...|""(전체)
-                const from = (fromEl?.value || "").trim();           // YYYY-MM-DD
-                const to   = (toEl?.value || "").trim();             // YYYY-MM-DD
-                const keyword = (kwEl?.value || "").trim();
+            const result = await response.json();
 
-                const params = new URLSearchParams();
-                params.append("boardId", boardId);
-                params.append("page", String(page));
-                // params.append("size", "10");
-                if (keyword) params.append("title", keyword);
-                if (type)    params.append("type", type);
-                if (from)    params.append("startDate", from);
-                if (to)      params.append("endDate", to);
+            if (result.isSuccess) {
+                const notification = document.createElement("div");
+                notification.className =
+                    "fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50";
+                notification.textContent = "새 게시판이 추가되었습니다";
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 3000);
+                closeAddBoardModal();
+                location.reload(); // 새로고침해서 반영
+            } else {
+                throw new Error(result.message || "추가 실패");
+            }
+        } catch (error) {
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50";
+            notification.textContent = "오류 발생: " + error.message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+    };
+</script>
+<script id="schedule-modal-functions" type="module">
+    // 신규 작성 열기
+    window.openAddScheduleModal = function () {
+        const modal = document.getElementById("addScheduleModal");
+        // 모드 초기화
+        modal.dataset.scheduleId = "";
+        document.getElementById("scheduleTitle").value = "";
+        document.getElementById("scheduleStartDate").value = "";
+        document.getElementById("scheduleEndDate").value = "";
+        // 기본 타입 체크
+        document.querySelector('input[name="scheduleType"][value="ACADEMIC"]').checked = true;
 
-                try {
-                    const res = await fetch(`/api/v1/admin/school/schedules?${params.toString()}`);
-                    const json = await res.json();
+        // 타이틀도 바꾸고 열기
+        modal.querySelector("h3").textContent = "새 일정 추가";
+        modal.classList.remove("hidden");
+        modal.setAttribute("aria-hidden", "false");
+    };
 
-                    if (json.isSuccess) {
-                        const pageData = json.result;          // { content, totalPages, number, ... }
-                        renderScheduleTable(pageData.content); // tbody 렌더
-                        renderSchedulePagination(pageData, boardId);
-                    } else {
-                        alert("일정 목록 불러오기 실패: " + (json.message || ""));
-                    }
-                } catch (e) {
-                    console.error(e);
-                    alert("서버 오류 발생");
-                }
+    // 수정 모드 열기 (스케줄 데이터 넣어줌)
+    window.openEditScheduleModal = async function (scheduleId) {
+        const modal = document.getElementById("addScheduleModal");
+        const res = await fetch(`/api/v1/admin/school/schedule?postId=${scheduleId}`);
+        const json = await res.json();
+        if (!json.isSuccess) throw new Error(json.message || "조회 실패");
+
+        const s = json.result;
+
+        modal.dataset.scheduleId = String(s.id);
+        document.getElementById("scheduleTitle").value = s.title ?? "";
+        document.getElementById("scheduleStartDate").value = s.startDate ?? "";
+        document.getElementById("scheduleEndDate").value = s.endDate ?? "";
+        // 타입 라디오
+        const typeInput = document.querySelector(`input[name="scheduleType"][value="${s.type}"]`);
+        if (typeInput) typeInput.checked = true;
+
+        modal.querySelector("h3").textContent = "일정 수정";
+        modal.classList.remove("hidden");
+        modal.setAttribute("aria-hidden", "false");
+    };
+
+    // 닫기(모든 경로에서 id 제거)
+    window.closeAddScheduleModal = function () {
+        const modal = document.getElementById("addScheduleModal");
+        modal.classList.add("hidden");
+        modal.setAttribute("aria-hidden", "true");
+        // 다음 열림에 영향 없게 비움
+        modal.dataset.scheduleId = "";
+    };
+
+    // 모달 초기 바인딩
+    const modal = document.getElementById("addScheduleModal");
+    if (!modal) {
+        console.warn("[ScheduleModal] #addScheduleModal not in DOM at load (will still work if added later).");
+    }
+
+    // id="openAddScheduleBtn" 가 있다면 자동 바인딩(선택 사항)
+    const openBtn = document.getElementById("openAddScheduleBtn");
+    if (openBtn) openBtn.addEventListener("click", openAddScheduleModal);
+
+    // 모달 내부 닫기/취소 버튼 위임 바인딩
+    document.addEventListener("click", (e) => {
+        // 오버레이 클릭으로 닫기
+        const overlay = document.getElementById("addScheduleModal");
+        if (overlay && e.target === overlay) {
+            closeAddScheduleModal();
+            return;
+        }
+
+        // 닫기 버튼들
+        if (e.target.closest("#closeAddScheduleModalBtn")) {
+            closeAddScheduleModal();
+            return;
+        }
+        if (e.target.closest("#scheduleCancelBtn")) {
+            closeAddScheduleModal();
+            return;
+        }
+    });
+
+    // ESC 로 닫기
+    document.addEventListener("keydown", (e) => {
+        const m = document.getElementById("addScheduleModal");
+        if (e.key === "Escape" && m && !m.classList.contains("hidden")) {
+            closeAddScheduleModal();
+        }
+    });
+</script>
+<script id="scheduleFetch" type="module">
+    async function fetchScheduleList(boardId, page = 0) {
+        const root = document.getElementById("schedule-list-editor");
+        const typeEl = root.querySelector("#schedule-type-filter");
+        const fromEl = root.querySelector("#schedule-date-from");
+        const toEl = root.querySelector("#schedule-date-to");
+        const kwEl = root.querySelector("#schedule-search");
+
+        const type = (typeEl?.value || "").trim();           // ACADEMIC|...|""(전체)
+        const from = (fromEl?.value || "").trim();           // YYYY-MM-DD
+        const to = (toEl?.value || "").trim();             // YYYY-MM-DD
+        const keyword = (kwEl?.value || "").trim();
+
+        const params = new URLSearchParams();
+        params.append("boardId", boardId);
+        params.append("page", String(page));
+        // params.append("size", "10");
+        if (keyword) params.append("title", keyword);
+        if (type) params.append("type", type);
+        if (from) params.append("startDate", from);
+        if (to) params.append("endDate", to);
+
+        try {
+            const res = await fetch(`/api/v1/admin/school/schedules?${params.toString()}`);
+            const json = await res.json();
+
+            if (json.isSuccess) {
+                const pageData = json.result;          // { content, totalPages, number, ... }
+                renderScheduleTable(pageData.content); // tbody 렌더
+                renderSchedulePagination(pageData, boardId);
+            } else {
+                alert("일정 목록 불러오기 실패: " + (json.message || ""));
+            }
+        } catch (e) {
+            console.error(e);
+            alert("서버 오류 발생");
+        }
+    }
+
+    // ✅ 테이블 렌더 (#schedule-table-body)
+    function renderScheduleTable(schedules = []) {
+        const tbody = document.getElementById("schedule-table-body");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+
+        const today = new Date();
+        const pad2 = (n) => String(n).padStart(2, "0");
+        const fmt = (d) => {
+            if (!d) return "-";
+            // 서버가 'YYYY-MM-DD'라면 그대로 출력
+            if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+            // 혹시 ISO면 날짜만
+            const dt = new Date(d);
+            return isNaN(dt) ? "-" : `${dt.getFullYear()}-${pad2(dt.getMonth() + 1)}-${pad2(dt.getDate())}`;
+        };
+        const statusBadge = (startDate, endDate) => {
+            // 진행 상태 계산 (클라이언트 표시용)
+            const s = startDate ? new Date(startDate) : null;
+            const e = endDate ? new Date(endDate) : null;
+
+            let label = "진행중", cls = "bg-green-500 text-green-400";
+            if (s && s > today) {
+                label = "예정";
+                cls = "bg-yellow-500 text-yellow-400";
+            }
+            if (e && e < today) {
+                label = "종료";
+                cls = "bg-gray-500 text-gray-400";
             }
 
-            // ✅ 테이블 렌더 (#schedule-table-body)
-            function renderScheduleTable(schedules = []) {
-                const tbody = document.getElementById("schedule-table-body");
-                if (!tbody) return;
-                tbody.innerHTML = "";
+            return `<span class="status-badge px-2 py-1 ${cls} bg-opacity-20 text-xs rounded-full">${label}</span>`;
+        };
 
-                const today = new Date();
-                const pad2 = (n) => String(n).padStart(2, "0");
-                const fmt = (d) => {
-                    if (!d) return "-";
-                    // 서버가 'YYYY-MM-DD'라면 그대로 출력
-                    if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
-                    // 혹시 ISO면 날짜만
-                    const dt = new Date(d);
-                    return isNaN(dt) ? "-" : `${dt.getFullYear()}-${pad2(dt.getMonth()+1)}-${pad2(dt.getDate())}`;
-                };
-                const statusBadge = (startDate, endDate) => {
-                    // 진행 상태 계산 (클라이언트 표시용)
-                    const s = startDate ? new Date(startDate) : null;
-                    const e = endDate ? new Date(endDate) : null;
-
-                    let label = "진행중", cls = "bg-green-500 text-green-400";
-                    if (s && s > today) { label = "예정"; cls = "bg-yellow-500 text-yellow-400"; }
-                    if (e && e < today) { label = "종료"; cls = "bg-gray-500 text-gray-400"; }
-
-                    return `<span class="status-badge px-2 py-1 ${cls} bg-opacity-20 text-xs rounded-full">${label}</span>`;
-                };
-
-                schedules.forEach((sch) => {
-                    const tr = document.createElement("tr");
-                    tr.className = "table-row border-b border-gray-700";
-                    tr.innerHTML = `
+        schedules.forEach((sch) => {
+            const tr = document.createElement("tr");
+            tr.className = "table-row border-b border-gray-700";
+            tr.innerHTML = `
         <td class="p-3 text-white">${sch.title || "-"}</td>
         <td class="p-3 text-gray-300">${fmt(sch.startDate)}</td>
         <td class="p-3 text-gray-300">${fmt(sch.endDate)}</td>
@@ -1018,559 +430,411 @@
           </div>
         </td>
       `;
-                    tbody.appendChild(tr);
-                });
-            }
+            tbody.appendChild(tr);
+        });
+    }
 
-            // ✅ 페이지네이션 렌더 (#schedule-pagination)
-            function renderSchedulePagination(pageData, boardId) {
-                const container = document.getElementById("schedule-pagination");
-                if (!container) return;
-                container.innerHTML = "";
+    // ✅ 페이지네이션 렌더 (#schedule-pagination)
+    function renderSchedulePagination(pageData, boardId) {
+        const container = document.getElementById("schedule-pagination");
+        if (!container) return;
+        container.innerHTML = "";
 
-                const { totalPages, number } = pageData;
+        const {totalPages, number} = pageData;
 
-                const makeBtn = (html, disabled, onClick) => {
-                    const b = document.createElement("button");
-                    b.innerHTML = html;
-                    b.className = `px-3 py-2 ${disabled ? "text-gray-600 cursor-not-allowed" : "text-gray-400 hover:text-white"} transition-colors`;
-                    b.disabled = !!disabled;
-                    if (!disabled) b.onclick = onClick;
-                    return b;
-                };
+        const makeBtn = (html, disabled, onClick) => {
+            const b = document.createElement("button");
+            b.innerHTML = html;
+            b.className = `px-3 py-2 ${disabled ? "text-gray-600 cursor-not-allowed" : "text-gray-400 hover:text-white"} transition-colors`;
+            b.disabled = !!disabled;
+            if (!disabled) b.onclick = onClick;
+            return b;
+        };
 
-                // Prev
-                container.appendChild(
-                    makeBtn(`<i class="ri-arrow-left-line"></i>`, number === 0, () => fetchScheduleList(boardId, number - 1))
-                );
+        // Prev
+        container.appendChild(
+            makeBtn(`<i class="ri-arrow-left-line"></i>`, number === 0, () => fetchScheduleList(boardId, number - 1))
+        );
 
-                // Pages
-                for (let i = 0; i < totalPages; i++) {
-                    const btn = document.createElement("button");
-                    btn.textContent = i + 1;
-                    btn.className = `px-3 py-2 ${i === number ? "bg-primary text-white" : "text-gray-400 hover:text-white"} transition-colors`;
-                    btn.onclick = () => fetchScheduleList(boardId, i);
-                    container.appendChild(btn);
-                }
-
-                // Next
-                container.appendChild(
-                    makeBtn(`<i class="ri-arrow-right-line"></i>`, number >= totalPages - 1, () => fetchScheduleList(boardId, number + 1))
-                );
-            }
-
-            // ✅ 삭제/수정(선택)
-            async function deleteSchedule(scheduleId) {
-                if (!confirm("일정을 삭제하시겠습니까?")) return;
-                try {
-                    const res = await fetch(`/api/v1/admin/school/schedule`, {
-                        method: "DELETE",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ postId : scheduleId }),
-                    });
-                    const json = await res.json();
-                    if (!json.isSuccess) throw new Error(json.message || "삭제 실패");
-                    alert("삭제되었습니다.");
-                    fetchScheduleList(window.currentBoardId, 0);
-                } catch (e) {
-                    console.error(e);
-                    alert("서버 오류: " + e.message);
-                }
-            }
-
-            // 수정 버튼 눌렀을 때: 모달 열고 값 세팅 (엔드포인트에 맞춰 구현)
-            async function editSchedule(scheduleId) {
-                try {
-                    const res = await fetch(`/api/v1/admin/school/schedule?postId=${scheduleId}`);
-                    const json = await res.json();
-                    if (!json.isSuccess) throw new Error(json.message || "조회 실패");
-
-                    const s = json.result;
-                    document.getElementById("scheduleFrom").dataset.id = s.id;
-                    document.getElementById("scheduleTitle").value = s.title || "";
-                    document.getElementById("scheduleStartDate").value = (s.startDate || "").slice(0,10);
-                    document.getElementById("scheduleEndDate").value   = (s.endDate || "").slice(0,10);
-                    const r = document.querySelector(`input[name="scheduleType"][value="${s.type}"]`);
-                    if (r) r.checked = true;
-
-                    window.currentScheduleId = s.id;
-                    openAddScheduleModal();
-                } catch (e) {
-                    console.error(e);
-                    alert("서버 오류: " + e.message);
-                }
-            }
-
-            // ✅ 필터 이벤트 바인딩 (변경 시 자동 조회)
-            document.addEventListener("DOMContentLoaded", () => {
-                const root = document.getElementById("schedule-list-editor");
-                if (!root) return;
-
-                const requery = () => fetchScheduleList(window.currentBoardId, 0);
-
-                root.querySelector("#schedule-type-filter")?.addEventListener("change", requery);
-                root.querySelector("#schedule-date-from")?.addEventListener("change", requery);
-                root.querySelector("#schedule-date-to")?.addEventListener("change", requery);
-
-                const search = root.querySelector("#schedule-search");
-                if (search) {
-                    let t;
-                    search.addEventListener("input", () => {
-                        clearTimeout(t);
-                        t = setTimeout(requery, 300); // 간단 디바운스
-                    });
-                    search.addEventListener("keydown", (e) => {
-                        if (e.key === "Enter") requery();
-                    });
-                }
-            });
-        </script>
-        <div id="post-editor" class="hidden">
-            <header class="mb-8">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <button
-                                onclick="showBoardListEditor()"
-                                class="mr-4 p-2 text-gray-400 hover:text-white transition-colors"
-                        >
-                            <div class="w-5 h-5 flex items-center justify-center">
-                                <i class="ri-arrow-left-line"></i>
-                            </div>
-                        </button>
-                        <div>
-                            <h1
-                                    class="text-3xl font-bold text-white"
-                                    id="post-editor-title"
-                            >
-                                게시글 수정
-                            </h1>
-                            <p class="text-gray-400 mt-2">
-                                게시글 내용을 수정하고 저장하세요
-                            </p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <button
-                                onclick="showBoardListEditor()"
-                                class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap"
-                        >
-                            취소
-                        </button>
-                        <button
-                                onclick="savePost('TEMPORARY')"
-                                class="px-4 py-2 bg-gray-700 text-white rounded-button hover:bg-gray-600 transition-colors whitespace-nowrap"
-                        >
-                            임시저장
-                        </button>
-                        <button
-                                onclick="savePost('PUBLISHED')"
-                                class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                        >
-                            게시하기
-                        </button>
-                    </div>
-                </div>
-            </header>
-            <div class="admin-card rounded-xl p-6">
-                <div class="space-y-6">
-                    <div class="grid grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2"
-                            >제목</label
-                            >
-                            <input
-                                    type="text"
-                                    value="2025학년도 1학기 학사일정 안내"
-                                    class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
-                            />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2"
-                            >카테고리</label
-                            >
-                            <select
-                                    class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none pr-8"
-                            >
-                                <option>일반</option>
-                                <option>공지사항</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="grid gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2"
-                            >포스트 설명</label
-                            >
-                            <input
-                                    type="text"
-                                    value=""
-                                    class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
-                            />
-                        </div>
-
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2"
-                        >내용</label
-                        >
-                        <textarea id="intro-editor" name="content"></textarea>
-<!--                        텍스트 내용 들어가야함-->
-                    </div>
-                    <div>
-                        <div class="space-y-3">
-                            <input type="file" name="q2" data-index="1" id="file-input-1" data-type="file" accept=".pdf,.doc,.docx,.xls,.xlsx"  class="file-input sr-only">
-                            <label for="file-input-1" class="flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer hover:border-primary transition-colors bg-gray-700 text-gray-300">
-                                <i class="ri-upload-2-line mr-2"></i>
-                                <span class="">파일 선택 또는 드래그하여 업로드</span>
-                            </label>
-                            <div class="flex items-center gap-2 mt-2">
-                                <div id="file-name-1" data-index="1" class=" file-name mt-2 text-sm text-gray-500"></div>
-                                <button type="button" id="clear-file-1" class="text-red-500 hover:text-red-700 text-sm clear-btn hidden" data-index="1">✕</button>
-                            </div>
-                        </div>
-                        <div class="space-y-3">
-                            <input type="file" name="q2" id="file-input-2" data-index="2" data-type="file" accept=".pdf,.doc,.docx,.xls,.xlsx"  class="file-input sr-only">
-                            <label for="file-input-2" class="flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer hover:border-primary transition-colors bg-gray-700 text-gray-300">
-                                <i class="ri-upload-2-line mr-2"></i>
-                                <span class="">파일 선택 또는 드래그하여 업로드</span>
-                            </label>
-                            <div class="flex items-center gap-2 mt-2">
-                                <div id="file-name-2" data-index="2" class=" file-name mt-2 text-sm text-gray-500"></div>
-                                <button type="button" id="clear-file-2" class="text-red-500 hover:text-red-700 text-sm clear-btn hidden" data-index="2">✕</button>
-                            </div>
-                        </div>
-                        <div class="space-y-3">
-                            <input type="file" name="q2" id="file-input-3" data-index="3" data-type="file" accept=".pdf,.doc,.docx,.xls,.xlsx"  class="file-input sr-only">
-                            <label for="file-input-3" class="flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer hover:border-primary transition-colors bg-gray-700 text-gray-300">
-                                <i class="ri-upload-2-line mr-2"></i>
-                                <span class="">파일 선택 또는 드래그하여 업로드</span>
-                            </label>
-                            <div class="flex items-center gap-2 mt-2">
-                                <div id="file-name-3" data-index="3" class=" file-name mt-2 text-sm text-gray-500"></div>
-                                <button type="button" id="clear-file-3" class="text-red-500 hover:text-red-700 text-sm clear-btn hidden" data-index="3">✕</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div id="filePost-editor" class="hidden">
-            <header class="mb-8">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <button
-                                onclick="showBoardListEditor()"
-                                class="mr-4 p-2 text-gray-400 hover:text-white transition-colors"
-                        >
-                            <div class="w-5 h-5 flex items-center justify-center">
-                                <i class="ri-arrow-left-line"></i>
-                            </div>
-                        </button>
-                        <div>
-                            <h1
-                                    class="text-3xl font-bold text-white"
-                                    id="filePost-editor-title"
-                            >
-                                게시글 수정
-                            </h1>
-                            <p class="text-gray-400 mt-2">
-                                게시글 내용을 수정하고 저장하세요
-                            </p>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <button
-                                onclick="showBoardListEditor()"
-                                class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-500 transition-colors whitespace-nowrap"
-                        >
-                            취소
-                        </button>
-                        <button
-                                onclick="saveFilePost('TEMPORARY')"
-                                class="px-4 py-2 bg-gray-700 text-white rounded-button hover:bg-gray-600 transition-colors whitespace-nowrap"
-                        >
-                            임시저장
-                        </button>
-                        <button
-                                onclick="saveFilePost('PUBLISHED')"
-                                class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                        >
-                            게시하기
-                        </button>
-                    </div>
-                </div>
-            </header>
-            <div class="admin-card rounded-xl p-6">
-                <div class="space-y-6">
-                    <div class="grid grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2"
-                            >제목</label
-                            >
-                            <input
-                                    type="text"
-                                    value=""
-                                    class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
-                            />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2"
-                            >카테고리</label
-                            >
-                            <select
-                                    class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none pr-8"
-                            >
-                                <option>일반</option>
-                                <option>공지사항</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="space-y-3">
-                            <input type="file" id="postFile-input" data-type="file" accept=".pdf,.doc,.docx,.xls,.xlsx"  class="file-input sr-only">
-                            <label for="postFile-input" id = "postFile-label" class="flex items-center justify-center px-4 py-2 rounded-lg cursor-pointer hover:border-primary transition-colors bg-gray-700 text-gray-300">
-                                <i class="ri-upload-2-line mr-2"></i>
-                                <span class="">파일 선택 또는 드래그하여 업로드</span>
-                            </label>
-                            <div class="flex items-center gap-2 mt-2">
-                                <div id="postFile-name" class=" file-name mt-2 text-sm text-gray-500"></div>
-                                <button type="button" id="clear-postFile" class="text-red-500 hover:text-red-700 text-sm hidden">✕</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div
-                id="addScheduleModal"
-                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50"
-                data-schedule-id=""
-        >
-            <div class="bg-gray-800 rounded-xl p-6 w-[560px] shadow-2xl">
-                <!-- 헤더 -->
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-xl font-bold text-white">새 일정 추가</h3>
-                    <button
-                            class="text-gray-400 hover:text-white transition-colors"
-                            id="closeAddScheduleModalBtn"
-                            aria-label="닫기"
-                    >
-                        <div class="w-6 h-6 flex items-center justify-center">
-                            <i class="ri-close-line"></i>
-                        </div>
-                    </button>
-                </div>
-
-                <!-- 폼 필드 -->
-                <div class="space-y-4">
-                    <!-- 제목 -->
-                    <div>
-                        <label for="scheduleTitle" class="block text-sm font-medium text-gray-300 mb-2">
-                            제목
-                        </label>
-                        <input
-                                id="scheduleTitle"
-                                type="text"
-                                class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
-                                placeholder="일정 제목을 입력하세요"
-                        />
-                    </div>
-
-                    <!-- 날짜 -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label for="scheduleStartDate" class="block text-sm font-medium text-gray-300 mb-2">
-                                시작 날짜
-                            </label>
-                            <input
-                                    id="scheduleStartDate"
-                                    type="date"
-                                    class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
-                            />
-                        </div>
-                        <div>
-                            <label for="scheduleEndDate" class="block text-sm font-medium text-gray-300 mb-2">
-                                끝 날짜
-                            </label>
-                            <input
-                                    id="scheduleEndDate"
-                                    type="date"
-                                    class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border-none"
-                            />
-                        </div>
-                    </div>
-
-                    <!-- 게시판 타입 (라디오) -->
-                    <div>
-                        <span class="block text-sm font-medium text-gray-300 mb-2">게시판 타입</span>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                            <!-- ACADEMIC -->
-                            <label class="relative flex items-center justify-center p-3 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
-                                <input type="radio" name="scheduleType" value="ACADEMIC" class="sr-only peer" checked />
-                                <div class="flex items-center gap-2 text-white">
-                                    <i class="ri-graduation-cap-fill text-primary"></i>
-                                    <span class="text-sm">ACADEMIC</span>
-                                </div>
-                                <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 peer-checked:opacity-100"></div>
-                            </label>
-
-                            <!-- ADMISSION -->
-                            <label class="relative flex items-center justify-center p-3 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
-                                <input type="radio" name="scheduleType" value="ADMISSION" class="sr-only peer" />
-                                <div class="flex items-center gap-2 text-white">
-                                    <i class="ri-door-open-line text-primary"></i>
-                                    <span class="text-sm">ADMISSION</span>
-                                </div>
-                                <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 peer-checked:opacity-100"></div>
-                            </label>
-
-                            <!-- SCHOLARSHIP -->
-                            <label class="relative flex items-center justify-center p-3 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
-                                <input type="radio" name="scheduleType" value="SCHOLARSHIP" class="sr-only peer" />
-                                <div class="flex items-center gap-2 text-white">
-                                    <i class="ri-award-line text-primary"></i>
-                                    <span class="text-sm">SCHOLARSHIP</span>
-                                </div>
-                                <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 peer-checked:opacity-100"></div>
-                            </label>
-
-                            <!-- DORMITORY -->
-                            <label class="relative flex items-center justify-center p-3 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
-                                <input type="radio" name="scheduleType" value="DORMITORY" class="sr-only peer" />
-                                <div class="flex items-center gap-2 text-white">
-                                    <i class="ri-home-4-line text-primary"></i>
-                                    <span class="text-sm">DORMITORY</span>
-                                </div>
-                                <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 peer-checked:opacity-100"></div>
-                            </label>
-
-                            <!-- INTERNATIONAL -->
-                            <label class="relative flex items-center justify-center p-3 bg-gray-700 rounded-lg cursor-pointer group hover:bg-gray-600 transition-colors">
-                                <input type="radio" name="scheduleType" value="INTERNATIONAL" class="sr-only peer" />
-                                <div class="flex items-center gap-2 text-white">
-                                    <i class="ri-plane-line text-primary"></i>
-                                    <span class="text-sm">INTERNATIONAL</span>
-                                </div>
-                                <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 peer-checked:opacity-100"></div>
-                            </label>
-                        </div>
-                        <p class="text-xs text-gray-400 mt-2">※ 위 값은 서버로 그대로 전달될 enum 문자열입니다.</p>
-                    </div>
-                </div>
-
-                <div class="flex justify-end space-x-3 mt-6">
-                    <button
-                            class="px-4 py-2 bg-gray-700 text-white rounded-button hover:bg-gray-600 transition-colors whitespace-nowrap"
-                            id="scheduleCancelBtn"
-                    >
-                        취소
-                    </button>
-                    <button
-                            class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition-colors whitespace-nowrap"
-                            id="scheduleSubmitBtn"
-                    >
-                        추가하기
-                    </button>
-                </div>
-            </div>
-        </div>
-    </main>
-</div>
-<script id="postSchedule">
-    (function () {
-        async function submitSchedule() {
-            const btn   = document.getElementById("scheduleSubmitBtn");
-            const modal = document.getElementById("addScheduleModal"); // 모달 루트 엘리먼트
-            const isEdit = !!modal.dataset.scheduleId;
-
-            const boardId   = Number(window.currentBoardId);
-            const title     = document.getElementById("scheduleTitle").value.trim();
-            const startDate = document.getElementById("scheduleStartDate").value; // YYYY-MM-DD
-            const endDate   = document.getElementById("scheduleEndDate").value;   // YYYY-MM-DD or ""
-            const type      = document.querySelector('input[name="scheduleType"]:checked')?.value || "ACADEMIC";
-
-            // 기본 검증
-            if (!boardId)   return alert("boardId가 없습니다.");
-            if (!title)     return alert("제목을 입력하세요.");
-            if (!startDate) return alert("시작 날짜를 선택하세요.");
-            if (endDate && endDate < startDate) return alert("끝 날짜가 시작 날짜보다 빠릅니다.");
-
-            // 공통 바디 (PATCH/POST 동일)
-            const fd = new FormData();
-            fd.append("boardId", String(boardId));
-            fd.append("title", title);
-            fd.append("startDate", startDate);
-            if (endDate) fd.append("endDate", endDate);
-            fd.append("type", type);
-            if (isEdit) fd.append("scheduleId", modal.dataset.scheduleId);
-
-            const url = "/api/v1/admin/school/schedule";   // PATCH/POST 동일 URL
-            const method = isEdit ? "PATCH" : "POST";
-
-            btn.disabled = true;
-            try {
-                const res = await fetch(url, { method, body: fd });
-                const json = await res.json();
-                if (!json.isSuccess) throw new Error(json.message || "저장 실패");
-
-                alert(isEdit ? "일정을 수정했습니다." : "일정을 등록했습니다.");
-                closeAddScheduleModal();               // 닫으면서 dataset.scheduleId 비우기
-                await fetchScheduleList(boardId, 0);   // 목록 갱신 (프로젝트 함수에 맞게)
-            } catch (e) {
-                console.error(e);
-                alert("오류: " + e.message);
-            } finally {
-                btn.disabled = false;
-            }
+        // Pages
+        for (let i = 0; i < totalPages; i++) {
+            const btn = document.createElement("button");
+            btn.textContent = i + 1;
+            btn.className = `px-3 py-2 ${i === number ? "bg-primary text-white" : "text-gray-400 hover:text-white"} transition-colors`;
+            btn.onclick = () => fetchScheduleList(boardId, i);
+            container.appendChild(btn);
         }
 
-        // 버튼 클릭 바인딩 (위임)
-        document.addEventListener("click", (e) => {
-            if (e.target.closest("#scheduleSubmitBtn")) submitSchedule();
-        });
+        // Next
+        container.appendChild(
+            makeBtn(`<i class="ri-arrow-right-line"></i>`, number >= totalPages - 1, () => fetchScheduleList(boardId, number + 1))
+        );
+    }
+
+    // ✅ 삭제/수정(선택)
+    async function deleteSchedule(scheduleId) {
+        if (!confirm("일정을 삭제하시겠습니까?")) return;
+        try {
+            const res = await fetch(`/api/v1/admin/school/schedule`, {
+                method: "DELETE",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({postId: scheduleId}),
+            });
+            const json = await res.json();
+            if (!json.isSuccess) throw new Error(json.message || "삭제 실패");
+            alert("삭제되었습니다.");
+            fetchScheduleList(window.currentBoardId, 0);
+        } catch (e) {
+            console.error(e);
+            alert("서버 오류: " + e.message);
+        }
+    }
+
+    // ✅ 필터 이벤트 바인딩 (변경 시 자동 조회)
+    (function () {
+        const root = document.getElementById("schedule-list-editor");
+        if (!root) return;
+
+        const requery = () => fetchScheduleList(window.currentBoardId, 0);
+
+        root.querySelector("#schedule-type-filter")?.addEventListener("change", requery);
+        root.querySelector("#schedule-date-from")?.addEventListener("change", requery);
+        root.querySelector("#schedule-date-to")?.addEventListener("change", requery);
+
+        const search = root.querySelector("#schedule-search");
+        if (search) {
+            let t;
+            search.addEventListener("input", () => {
+                clearTimeout(t);
+                t = setTimeout(requery, 300); // 간단 디바운스
+            });
+            search.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") requery();
+            });
+        }
     })();
+
+    // window module export
+    window.fetchScheduleList = fetchScheduleList;
+    window.deleteSchedule = deleteSchedule;
 </script>
-<script id="board-management">
-    document.addEventListener("DOMContentLoaded", function () {
-        window.currentView = "board-list";
-        window.currentBoardName = "";
-        window.currentPostTitle = "";
-        window.deleteBoard = async function (boardName, boardId) {
-            if (confirm(`"${boardName}" 게시판을 삭제하시겠습니까?`)) {
-                try {
-                    const response = await fetch("/api/v1/admin/school/board", {
-                        method: "DELETE",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({ boardId: boardId })
-                    });
+<script id="postSchedule" type="module">
+    async function submitSchedule() {
+        const btn = document.getElementById("scheduleSubmitBtn");
+        const modal = document.getElementById("addScheduleModal"); // 모달 루트 엘리먼트
+        const isEdit = !!modal.dataset.scheduleId;
 
-                    const result = await response.json();
-                    if (result.isSuccess) {
-                        // 알림 표시
-                        const notification = document.createElement("div");
-                        notification.className =
-                            "fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50";
-                        notification.textContent = "게시판이 삭제되었습니다";
-                        document.body.appendChild(notification);
+        const boardId = Number(window.currentBoardId);
+        const title = document.getElementById("scheduleTitle").value.trim();
+        const startDate = document.getElementById("scheduleStartDate").value; // YYYY-MM-DD
+        const endDate = document.getElementById("scheduleEndDate").value;   // YYYY-MM-DD or ""
+        const type = document.querySelector('input[name="scheduleType"]:checked')?.value || "ACADEMIC";
 
-                        setTimeout(() => {
-                            notification.remove();
-                            location.reload(); // 새로고침
-                        }, 1500);
-                    } else {
-                        alert("삭제 실패: " + result.message);
-                    }
-                } catch (e) {
-                    console.error("삭제 오류:", e);
-                    alert("오류가 발생했습니다.");
+        // 기본 검증
+        if (!boardId) return alert("boardId가 없습니다.");
+        if (!title) return alert("제목을 입력하세요.");
+        if (!startDate) return alert("시작 날짜를 선택하세요.");
+        if (endDate && endDate < startDate) return alert("끝 날짜가 시작 날짜보다 빠릅니다.");
+
+        // 공통 바디 (PATCH/POST 동일)
+        const fd = new FormData();
+        fd.append("boardId", String(boardId));
+        fd.append("title", title);
+        fd.append("startDate", startDate);
+        if (endDate) fd.append("endDate", endDate);
+        fd.append("type", type);
+        if (isEdit) fd.append("scheduleId", modal.dataset.scheduleId);
+
+        const url = "/api/v1/admin/school/schedule";   // PATCH/POST 동일 URL
+        const method = isEdit ? "PATCH" : "POST";
+
+        btn.disabled = true;
+        try {
+            const res = await fetch(url, {method, body: fd});
+            const json = await res.json();
+            if (!json.isSuccess) throw new Error(json.message || "저장 실패");
+
+            alert(isEdit ? "일정을 수정했습니다." : "일정을 등록했습니다.");
+            closeAddScheduleModal();               // 닫으면서 dataset.scheduleId 비우기
+            await fetchScheduleList(boardId, 0);   // 목록 갱신 (프로젝트 함수에 맞게)
+        } catch (e) {
+            console.error(e);
+            alert("오류: " + e.message);
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    // 버튼 클릭 바인딩 (위임)
+    document.addEventListener("click", (e) => {
+        if (e.target.closest("#scheduleSubmitBtn")) submitSchedule();
+    });
+</script>
+
+<script id="saveIntroPage" type="module">
+    function collectIntro() {
+        const titleInput = document.getElementById("intro-title");
+        const descInput = document.getElementById("intro-description");
+        const schoolPicUrlInput = document.getElementById("schoolPicUrl");
+        const title = titleInput ? titleInput.value.trim() : "";
+        const description = descInput ? descInput.value.trim() : "";
+        const schoolPicUrl = descInput ? schoolPicUrlInput.value.trim() : "";
+
+        const advantageInputs = document.querySelectorAll("#advantages-list input");
+        const advantages = Array.from(advantageInputs)
+            .map(i => i.value.trim())
+            .filter(v => v.length > 0);
+
+        return {
+            title,
+            description,
+            advantages,
+            schoolPicUrl
+        };
+    }
+
+    // ===== BasicInfo (기본 정보) 수집 =====
+    function collectBasicInfo() {
+        const schoolName = document.getElementById("basic-schoolName")?.value.trim() || "";
+        const builtAt     = document.getElementById("basic-builtAt")?.value.trim() || "";
+        const location    = document.getElementById("basic-location")?.value.trim() || "";
+        const feature     = document.getElementById("basic-feature")?.value.trim() || "";
+
+        return {
+            schoolName,
+            builtAt,
+            location,
+            feature
+        };
+    }
+
+    // ===== 링크 목록 (추가 링크) 수집 =====
+    function collectUrls() {
+        const urlNames = [];
+        const url = [];
+
+        const urlCards = document.querySelectorAll("#url-list > div, #url-list [data-url-card]");
+        urlCards.forEach(card => {
+            const inputs = card.querySelectorAll("input");
+            if (inputs.length >= 2) {
+                const nameValue = inputs[0].value.trim();
+                const urlValue  = inputs[1].value.trim();
+
+                if (nameValue || urlValue) {
+                    urlNames.push(nameValue);
+                    url.push(urlValue);
                 }
             }
+        });
+
+        return {
+            urlNames,
+            url
         };
-    });
+    }
+
+    // ===== 단과대(College) 수집 =====
+    // 지금 DTO는 단과대 1개만 받으므로, 첫 번째 카드만 사용
+    function collectCollegeDto() {
+        const cards = document.querySelectorAll("#college-list .college-card");
+
+        if (!cards.length) {
+            return [];   // 비어있으면 빈 배열
+        }
+
+        const dtoList = [];
+
+        cards.forEach(card => {
+            const nameInput = card.querySelector('[data-role="college-name"]');
+            const typeSelect = card.querySelector('[data-role="college-type"]');
+            const descTextarea = card.querySelector('[data-role="college-description"]');
+
+            const name = nameInput?.value.trim() || "";
+            const description = descTextarea?.value.trim() || "";
+            const type = typeSelect?.value || "UNDERGRADUATE";
+
+            // 학과 태그들 수집
+            const deptChips = card.querySelectorAll("[data-dept-name]");
+            const deptList = Array.from(deptChips)
+                .map(chip => chip.dataset.deptName || chip.textContent.trim())
+                .filter(v => v.length > 0);
+
+            const departments = deptList.join("_");
+
+            // 단과대 id가 있을 수도 있음
+            const collegeId = card.dataset.id
+                ? Number(card.dataset.id)
+                : null;
+
+            dtoList.push({
+                id: collegeId,   // null → 신규, 숫자 → 기존 업데이트
+                name,
+                description,
+                type,
+                departments
+            });
+        });
+        return dtoList;
+    }
+
+    // ===== 메인: 저장 버튼 클릭 시 호출 =====
+    async function saveIntroBoard() {
+        // 1. 각 부분 데이터 수집
+        const intro = collectIntro();
+        const basicInfo = collectBasicInfo();
+        const boardId = Number(window.currentBoardId);
+
+        console.log("boardId: ",boardId);
+        console.log("windo boardId: ",Number(window.currentBoardId));
+
+        const rankRaw = document.getElementById("college-rank")?.value.trim() || "";
+        const collegeRank = rankRaw === "" ? 0 : parseInt(rankRaw, 10) || 0;
+
+        const urlsDto = collectUrls();
+        const collegeDto = collectCollegeDto();
+
+        const homepageUrl   = document.getElementById("homepage-url")?.value.trim() || "";
+        const englishPageUrl = document.getElementById("english-url")?.value.trim() || "";
+        const mapUrl = document.getElementById("map-url")?.value.trim() || "";
+        // 2. DTO 구조에 맞는 payload 생성
+        const payload = {
+            intro,          // IntroSaveDto
+            basicInfo,      // BasicInfoSaveDto
+            collegeRank,    // int
+            urlsDto,        // HomepageUrlSaveDto
+            collegeDto,     // CollegeSaveDto (또는 null)
+            homepageUrl,
+            englishPageUrl,
+            mapUrl,
+            boardId
+        };
+
+        console.log("보내는 TotalIntroSaveDto:", payload);
+
+        const requestUrl = "/api/v1/admin/school/intro"; // TODO: 실제 엔드포인트로 변경
+        try {
+            // window.api가 있으면:
+            if (window.api && typeof window.api.post === "function") {
+                const res = await window.api.post(requestUrl, payload);
+                // 서버 응답 구조에 따라 수정
+                alert("소개 페이지가 저장되었습니다.");
+                // 필요하면 목록 화면으로 이동
+                showBoardList();
+                return;
+            }
+
+            // api 헬퍼가 없다면 fetch 사용
+            const res = await fetch(requestUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                throw new Error("HTTP " + res.status);
+            }
+
+            const data = await res.json().catch(() => null);
+            console.log("서버 응답:", data);
+            alert("소개 페이지가 저장되었습니다.");
+            showBoardList();
+        } catch (e) {
+            console.error("소개 저장 중 오류:", e);
+            alert("소개 페이지 저장 중 오류가 발생했습니다.");
+        }
+    }
+
+    window.saveIntroBoard = saveIntroBoard;
+
+</script>
+
+<script id="load-introPage" type="module">
+    async function loadIntroBoard(boardId) {
+
+        const data = await api.get(`/admin/school/intro/${boardId}`);
+        console.log("로드된 intro 데이터:", data);
+
+        /* -----------------------------
+           1) IntroInfo
+        ------------------------------ */
+        document.getElementById('intro-title').value = data.intro.title || "";
+        document.getElementById('intro-description').value = data.intro.description || "";
+        document.getElementById('schoolPicUrl').value = data.intro.schoolPicUrl || "";
+        // advantages
+        const advList = document.getElementById('advantages-list');
+        advList.innerHTML = "";
+        if (data.intro.advantages) {
+            data.intro.advantages.forEach(adv => addAdvantage(adv));
+        }
+
+        /* -----------------------------
+           2) BasicInfo
+        ------------------------------ */
+        document.getElementById('basic-schoolName').value = data.basicInfo.schoolName || "";
+        document.getElementById('basic-builtAt').value = data.basicInfo.builtAt || "";
+        document.getElementById('basic-location').value = data.basicInfo.location || "";
+
+        // feature (List<String>)
+        if (data.basicInfo.feature && data.basicInfo.feature.length > 0) {
+            document.getElementById('basic-feature').value = data.basicInfo.feature.join(", ");
+        }
+
+        /* -----------------------------
+           3) CollegeRank
+        ------------------------------ */
+        document.getElementById('college-rank').value = data.collegeRank ?? "";
+
+        /* -----------------------------
+           4) homepageUrl + englishUrl
+        ------------------------------ */
+        document.getElementById('homepage-url').value = data.homepageUrl || "";
+        document.getElementById('english-url').value = data.englishPageUrl || "";
+        document.getElementById('map-url').value = data.mapUrl || "";
+
+        /* -----------------------------
+           5) UrlInfo (추가 링크 목록)
+        ------------------------------ */
+        const urlList = document.getElementById('url-list');
+        urlList.innerHTML = "";
+
+        if (data.homepageUrls &&
+            data.homepageUrls.urlNames &&
+            data.homepageUrls.urls) {
+
+            data.homepageUrls.urlNames.forEach((name, idx) => {
+                addUrlField(name, data.homepageUrls.urls[idx]);
+            });
+        }
+
+        /* -----------------------------
+           6) CollegeInfo (단과대 정보)
+        ------------------------------ */
+        const collegeList = document.getElementById('college-list');
+        collegeList.innerHTML = "";
+
+        data.colleges.forEach(college => {
+            addCollege(college.collegeName, college.type, college.departments,college.id);
+        });
+
+    }window.loadIntroBoard = loadIntroBoard;
+</script>
+
+<script id="board-management" type="module">
+    // fixme: 라이브러리를 위한 전역변수 인지 확인 필요, 지역 변수로 변경해도 되는지 파악 필요
+    window.currentView = "board-list";
+    window.currentBoardName = "";
+    window.currentPostTitle = "";
+
+    const fileInputs = [
+        document.getElementById("file-input-1"),
+        document.getElementById("file-input-2"),
+        document.getElementById("file-input-3")
+    ];
+
     function toggleSchool(schoolId) {
-        console.log("school "+schoolId);
+        console.log("school " + schoolId);
         const arrow = document.getElementById(schoolId + "-arrow");
         const children = document.getElementById(schoolId + "-children");
         const node = arrow.closest(".tree-node");
@@ -1582,6 +846,7 @@
             arrow.style.transform = "rotate(90deg)";
         }
     }
+
     function showBoardList() {
         document.getElementById("board-list-view").classList.remove("hidden");
         document.getElementById("intro-board-editor").classList.add("hidden");
@@ -1590,18 +855,6 @@
         document.getElementById("post-editor").classList.add("hidden");
         document.getElementById("filePost-editor").classList.add("hidden");
         window.currentView = "board-list";
-    }
-    function editIntroBoard(boardName) {
-        window.currentBoardName = boardName;
-        document.getElementById("intro-board-title").textContent =
-            boardName + " 수정";
-        document.getElementById("board-list-view").classList.add("hidden");
-        document.getElementById("intro-board-editor").classList.remove("hidden");
-        document.getElementById("board-list-editor").classList.add("hidden");
-        document.getElementById("schedule-list-editor").classList.add("hidden");
-        document.getElementById("post-editor").classList.add("hidden");
-        document.getElementById("filePost-editor").classList.add("hidden");
-        window.currentView = "intro-editor";
     }
 
     function editBoardList(boardTitle, boardId, boardType) {
@@ -1620,6 +873,18 @@
         window.currentView = "board-list-editor";
 
         fetchPostList(boardId, 0); // ← 게시판 ID로 목록 불러오기
+    }
+
+    function showBoardListEditor() {
+        resetFilePostEditor();
+        window.currentPostId = null;
+        document.getElementById("board-list-view").classList.add("hidden");
+        document.getElementById("intro-board-editor").classList.add("hidden");
+        document.getElementById("board-list-editor").classList.remove("hidden");
+        document.getElementById("schedule-list-editor").classList.add("hidden");
+        document.getElementById("post-editor").classList.add("hidden");
+        document.getElementById("filePost-editor").classList.add("hidden");
+        window.currentView = "board-list-editor";
     }
 
     //스케줄 목록 관리
@@ -1642,25 +907,353 @@
         fetchScheduleList(boardId, 0); // ← 게시판 ID로 목록 불러오기
     }
 
-    function showBoardListEditor() {
-        resetFilePostEditor();
-        window.currentPostId=null;
+    function editIntroBoard(boardName, boardId) {
+        window.currentBoardName = boardName;
+        console.log("Intro board수정 클릭 boardId:",boardId);
+        window.currentBoardId = boardId;
+        document.getElementById("intro-board-title").textContent =
+            boardName + " 수정";
         document.getElementById("board-list-view").classList.add("hidden");
-        document.getElementById("intro-board-editor").classList.add("hidden");
-        document.getElementById("board-list-editor").classList.remove("hidden");
+        document.getElementById("intro-board-editor").classList.remove("hidden");
+        document.getElementById("board-list-editor").classList.add("hidden");
         document.getElementById("schedule-list-editor").classList.add("hidden");
         document.getElementById("post-editor").classList.add("hidden");
         document.getElementById("filePost-editor").classList.add("hidden");
-        window.currentView = "board-list-editor";
+        loadIntroBoard(boardId);
+        window.currentView = "intro-editor";
     }
+
+    //intro editor 관련 javascript
+
+    function addAdvantage(value = "") {
+        const container = document.getElementById("advantages-list");
+        if (!container) return;
+
+        if(value===""){
+            const div = document.createElement("div");
+            div.className = "flex flex-col md:flex-row gap-2 items-stretch";
+
+            const input = document.createElement("input");
+            input.className = "dark-input flex-1";
+            input.placeholder = "강점 입력 (예: 높은 취업률, 다양한 교환학생 프로그램 등)";
+
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.innerText = "삭제";
+            btn.className =
+                "px-3 py-2 rounded-button bg-gray-800 text-gray-300 text-xs md:text-sm " +
+                "hover:bg-gray-700 border border-gray-700 whitespace-nowrap";
+            btn.onclick = () => div.remove();
+
+            div.appendChild(input);
+            div.appendChild(btn);
+
+            container.appendChild(div);
+        }else{
+            const row = document.createElement("div");
+            row.className = "flex gap-2";
+
+            row.innerHTML = `
+        <input class="dark-input flex-1" value="${value}">
+        <button type="button" class="text-red-400 hover:text-red-300" onclick="this.parentElement.remove()">
+            <i class="ri-delete-bin-line"></i>
+        </button>
+    `;
+            container.appendChild(row);
+        }
+    }
+
+    function addUrlField(name = "", url = "") {
+        const container = document.getElementById("url-list");
+        if (!container) return;
+
+        if(name==="" && url===""){
+            const div = document.createElement("div");
+            // 카드형으로: 어두운 배경 + border
+            div.className =
+                "rounded-2xl border border-gray-800 bg-gray-900/70 p-3 md:p-4 space-y-3";
+
+            div.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+                <label class="block text-xs font-medium text-gray-200 mb-1">
+                    링크 이름
+                </label>
+                <input
+                    class="dark-input"
+                    placeholder="예: 입학 안내, 장학 제도"
+                />
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-200 mb-1">
+                    URL
+                </label>
+                <input
+                    class="dark-input"
+                    placeholder="예: https://www.example.ac.kr/admission"
+                />
+            </div>
+        </div>
+        <div class="flex justify-end">
+            <button
+                type="button"
+                class="mt-1 inline-flex items-center px-3 py-1.5 rounded-button bg-gray-800 text-gray-300 text-xs hover:bg-gray-700 border border-gray-700"
+                onclick="this.closest('[data-url-card]')?.remove()">
+                <i class="ri-delete-bin-line mr-1 text-sm"></i>
+                링크 삭제
+            </button>
+        </div>
+    `;
+
+            // 삭제 버튼에서 closest로 찾을 수 있게 data 속성 부여
+            div.setAttribute("data-url-card", "true");
+
+            container.appendChild(div);
+        }else{
+            const row = document.createElement("div");
+            row.className = "grid grid-cols-1 md:grid-cols-2 gap-3";
+
+            row.innerHTML = `
+        <input class="dark-input" placeholder="링크 이름" value="${name}">
+        <div class="flex gap-3">
+            <input class="dark-input flex-1" placeholder="URL" value="${url}">
+            <button type="button" class="text-red-400 hover:text-red-300" onclick="this.parentElement.parentElement.remove()">
+                <i class="ri-delete-bin-line"></i>
+            </button>
+        </div>
+    `;
+            container.appendChild(row);
+        }
+    }
+
+    let collegeCounter = 0;
+
+    function addCollege(name = "", type = "UNDERGRADUATE", departments = [],id = null) {
+        const list = document.getElementById("college-list");
+        const index = collegeCounter++;
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "college-card border border-gray-800 rounded-2xl bg-gray-900/70 p-4 md:p-5 space-y-4";
+        wrapper.dataset.collegeIndex = String(index);
+
+        // 카드 HTML (원본 그대로 유지)
+        wrapper.innerHTML = `
+        <div class="flex items-start justify-between gap-3">
+            <div class="flex-1 space-y-3">
+
+                <!-- 단과대 이름 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-200 mb-1">
+                        단과대 이름
+                    </label>
+                    <input
+                        type="text"
+                        class="dark-input"
+                        data-role="college-name"
+                        placeholder="예: 공과대학"
+                    />
+                </div>
+
+                <!-- 학위 구분 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-200 mb-1">
+                        학위 구분
+                    </label>
+                    <select class="dark-input" data-role="college-type">
+                        <option value="UNDERGRADUATE">학사 과정</option>
+                        <option value="GRADUATE">석/박사 과정</option>
+                    </select>
+                    <p class="field-help">해당 단과대의 주 교육 과정을 선택해 주세요.</p>
+                </div>
+
+                <!-- 설명 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-200 mb-1">
+                        단과대 설명 (선택)
+                    </label>
+                    <textarea
+                        class="dark-input !rounded-2xl !h-20 !py-2.5 resize-none"
+                        data-role="college-description"
+                        placeholder="단과대의 주요 전공 및 특징을 간단히 소개해 주세요."></textarea>
+                </div>
+
+                <!-- 학과 태그 영역 -->
+                <div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-sm font-medium text-gray-200">
+                            소속 학과
+                        </label>
+                        <span class="text-xs text-gray-500">
+                            학과명을 입력 후 Enter를 누르면 추가됩니다.
+                        </span>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 mb-2" data-role="department-chips"></div>
+
+                    <input
+                        type="text"
+                        class="dark-input"
+                        data-role="department-input"
+                        placeholder="예: 컴퓨터공학과, 전기공학과 등 입력 후 Enter"
+                    />
+                </div>
+            </div>
+
+            <!-- 단과대 삭제 -->
+            <button
+                type="button"
+                class="ml-2 text-gray-500 hover:text-red-500 text-sm flex-shrink-0"
+                onclick="removeCollege(this)">
+                <i class="ri-close-line mr-0.5"></i> 삭제
+            </button>
+        </div>
+    `;
+
+        list.appendChild(wrapper);
+        if (id !== null) wrapper.dataset.id = id;
+
+
+        wrapper.querySelector('[data-role="college-name"]').value = name || "";
+        wrapper.querySelector('[data-role="college-type"]').value = type || "UNDERGRADUATE";
+        const chipWrap = wrapper.querySelector('[data-role="department-chips"]');
+
+        if (departments && Array.isArray(departments)) {
+            departments.forEach(dep => {
+                const chip = document.createElement("span");
+                chip.className = "px-2 py-1 bg-gray-700 text-gray-100 text-xs rounded-full flex items-center gap-1 dept-chip";
+                chip.dataset.deptName = dep;
+                chip.innerHTML = `
+                <span class="mr-1">${dep}</span>
+                <button type="button" class="text-gray-300 hover:text-red-400"
+                        onclick="this.parentElement.remove()">
+                    <i class="ri-close-line text-xs"></i>
+                </button>
+            `;
+                chipWrap.appendChild(chip);
+            });
+        }
+
+        setupDepartmentInput(wrapper);
+    }
+
+    function removeCollege(button) {
+        const card = button.closest(".college-card");
+        if (card) {
+            card.remove();
+        }
+    }
+
+    function setupDepartmentInput(collegeElement) {
+        const input = collegeElement.querySelector('[data-role="department-input"]');
+        const chipsContainer = collegeElement.querySelector('[data-role="department-chips"]');
+
+        if (!input || !chipsContainer) return;
+
+        // Enter 키로 태그 추가
+        input.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                const value = input.value.trim();
+                if (!value) return;
+
+                addDepartmentChip(chipsContainer, value);
+                input.value = "";
+            }
+        });
+    }
+
+    function addDepartmentChip(container, name) {
+        // 같은 이름 중복 방지 (원하면 제거)
+        const exists = Array.from(container.querySelectorAll("[data-dept-name]"))
+            .some(span => span.dataset.deptName === name);
+        if (exists) return;
+
+        const chip = document.createElement("span");
+        chip.className = "inline-flex items-center px-2.5 py-1 rounded-full bg-gray-800 text-gray-100 text-xs border border-gray-600";
+        chip.dataset.deptName = name;
+
+        chip.innerHTML = `
+            <span class="mr-1">${name}</span>
+            <button type="button" class="text-gray-400 hover:text-red-400 text-xs"
+                    onclick="this.parentElement.remove()">
+                <i class="ri-close-line"></i>
+            </button>
+        `;
+
+        container.appendChild(chip);
+    }
+
+    window.addCollege = addCollege;
+    window.removeCollege = removeCollege;
+    window.addAdvantage = addAdvantage;
+    window.addUrlField = addUrlField;
+
+
+    async function deleteBoard(boardName, boardId) {
+        if (confirm(`"${boardName}" 게시판을 삭제하시겠습니까?`)) {
+            try {
+                const response = await fetch("/api/v1/admin/school/board", {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({boardId: boardId})
+                });
+
+                const result = await response.json();
+                if (result.isSuccess) {
+                    // 알림 표시
+                    const notification = document.createElement("div");
+                    notification.className =
+                        "fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50";
+                    notification.textContent = "게시판이 삭제되었습니다";
+                    document.body.appendChild(notification);
+
+                    setTimeout(() => {
+                        notification.remove();
+                        location.reload(); // 새로고침
+                    }, 1500);
+                } else {
+                    alert("삭제 실패: " + result.message);
+                }
+            } catch (e) {
+                console.error("삭제 오류:", e);
+                alert("오류가 발생했습니다.");
+            }
+        }
+    }
+
+    function createNewPost() {
+        document.getElementById("post-editor-title").textContent = "새 게시글 작성";
+        const type = window.currentBoardType
+        console.log("createNewPost type:", type);
+        document.querySelector('#post-editor input[type="text"]').value = "";
+        document.querySelector("#post-editor textarea").value = "";
+
+        document.getElementById("board-list-view").classList.add("hidden");
+        document.getElementById("intro-board-editor").classList.add("hidden");
+        document.getElementById("board-list-editor").classList.add("hidden");
+        document.getElementById("schedule-list-editor").classList.add("hidden");
+
+        if (type === "NOTICE") {
+            document.getElementById("post-editor").classList.remove("hidden");
+            document.getElementById("filePost-editor").classList.add("hidden");
+            window.currentView = "post-editor";
+        } else {
+            document.getElementById("filePost-editor").classList.remove("hidden");
+            document.getElementById("post-editor").classList.add("hidden");
+            window.currentView = "filePost-editor";
+        }
+    }
+
     async function editPost(postTitle, postId, type) {
-        console.log(postTitle,postId);
+        console.log(postTitle, postId);
         window.currentPostTitle = postTitle;
-        console.log("editPost에서 "+window.currentPostTitle);
-        console.log("type:",type);
+        console.log("editPost에서 " + window.currentPostTitle);
+        console.log("type:", type);
         window.currentPostId = postId;
         try {
-            const url = "/api/v1/admin/school/"+((type==="FILES")?"file":"post")+`?postId=${postId}`;
+            const url = "/api/v1/admin/school/" + ((type === "FILES") ? "file" : "post") + `?postId=${postId}`;
             const response = await fetch(url);
 
             const result = await response.json();
@@ -1670,7 +1263,7 @@
                 const post = result.result.post;
                 const files = result.result.file;
 
-                if(type==="NOTICE"){
+                if (type === "NOTICE") {
                     console.log("NOTICE타입");
                     // 1. 제목, 설명 세팅
                     const textInputs = document.querySelectorAll('#post-editor input[type="text"]');
@@ -1699,7 +1292,7 @@
                             nameDiv.textContent = `📎 ${files[i].name}`;
                             // 덮어쓴 파일 구분 위해 fileId 저장
                             input.dataset.existingFileId = files[i].fileId;
-                            const clearButton = document.querySelector(`.clear-btn[data-index="${i+1}"]`);
+                            const clearButton = document.querySelector(`.clear-btn[data-index="${i + 1}"]`);
                             clearButton.classList.remove("hidden");
                         } else {
                             nameDiv.textContent = "";
@@ -1716,7 +1309,7 @@
                     document.getElementById("post-editor").classList.remove("hidden");
                     document.getElementById("filePost-editor").classList.add("hidden");
                     window.currentView = "post-editor";
-                }else if(type==="FILES"){
+                } else if (type === "FILES") {
                     console.log("FILES타입");
                     const textInputs = document.querySelectorAll('#filePost-editor input[type="text"]');
                     textInputs[0].value = post.title;
@@ -1732,14 +1325,14 @@
                     }
 
                     const nameDiv = document.getElementById(`postFile-name`);
-                    const input =document.getElementById(`postFile-input`);
-                    if(files){
+                    const input = document.getElementById(`postFile-input`);
+                    if (files) {
                         nameDiv.textContent = `📎 ${files.name}`;
                         // 덮어쓴 파일 구분 위해 fileId 저장
                         input.dataset.existingFileId = files.fileId;
                         const clearBtn = document.getElementById("clear-postFile");
                         clearBtn.classList.remove("hidden");
-                    }else{
+                    } else {
                         nameDiv.textContent = "";
                         delete input.dataset.existingFileId;
                     }
@@ -1764,54 +1357,6 @@
             alert("서버 오류가 발생했습니다.");
         }
     }
-
-    function createNewPost() {
-        document.getElementById("post-editor-title").textContent = "새 게시글 작성";
-        const type = window.currentBoardType
-        console.log("createNewPost type:",type);
-        document.querySelector('#post-editor input[type="text"]').value = "";
-        document.querySelector("#post-editor textarea").value = "";
-
-        document.getElementById("board-list-view").classList.add("hidden");
-        document.getElementById("intro-board-editor").classList.add("hidden");
-        document.getElementById("board-list-editor").classList.add("hidden");
-        document.getElementById("schedule-list-editor").classList.add("hidden");
-
-        if(type==="NOTICE"){
-            document.getElementById("post-editor").classList.remove("hidden");
-            document.getElementById("filePost-editor").classList.add("hidden");
-            window.currentView = "post-editor";
-        }else{
-            document.getElementById("filePost-editor").classList.remove("hidden");
-            document.getElementById("post-editor").classList.add("hidden");
-            window.currentView = "filePost-editor";
-        }
-    }
-
-    function saveIntroBoard() {
-        alert("소개페이지가 저장되었습니다.");
-        showBoardList();
-    }
-
-    const clearButtons = document.querySelectorAll('.clear-btn');
-    const fileInputs = [
-        document.getElementById("file-input-1"),
-        document.getElementById("file-input-2"),
-        document.getElementById("file-input-3")
-    ];
-
-    clearButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            console.log("초기화 클릭");
-            const index = button.dataset.index;
-            const fileInput = document.querySelector(`.file-input[data-index="${index}"]`);
-            const fileNameDisplay = document.querySelector(`.file-name[data-index="${index}"]`);
-
-            fileInput.value = '';
-            fileNameDisplay.textContent = '';
-            button.classList.add('hidden');
-        });
-    });
 
     async function savePost(status) {
         const boardId = Number(window.currentBoardId);
@@ -1841,7 +1386,7 @@
                 if (existingFileId) {
                     filesToDelete.push(existingFileId);
                 }
-            }else if (existingFileId && (!fileNameDisplay.textContent || fileNameDisplay.textContent.trim() === '')) {
+            } else if (existingFileId && (!fileNameDisplay.textContent || fileNameDisplay.textContent.trim() === '')) {
                 filesToDelete.push(existingFileId);
             }
         });
@@ -1860,7 +1405,7 @@
             });
 
             const result = await response.json();
-            window.currentPostId=null;
+            window.currentPostId = null;
 
             if (result.isSuccess) {
                 alert("게시글이 저장되었습니다.");
@@ -1896,18 +1441,18 @@
 
         const fileInput = document.getElementById("postFile-input");
 
-        console.log("fileInput",fileInput);
+        console.log("fileInput", fileInput);
 
-        if(fileInput){
+        if (fileInput) {
             const existingFileId = fileInput.dataset.existingFileId;
             const fileNameDisplay = document.getElementById(`postFile-name`);
 
-            if(fileInput.files.length>0){
+            if (fileInput.files.length > 0) {
                 formData.append("files", fileInput.files[0]);
-                if(existingFileId){
-                    filesToDelete=existingFileId;
-                }else if (existingFileId && (!fileNameDisplay.textContent || fileNameDisplay.textContent.trim() === '')) {
-                    filesToDelete=existingFileId;
+                if (existingFileId) {
+                    filesToDelete = existingFileId;
+                } else if (existingFileId && (!fileNameDisplay.textContent || fileNameDisplay.textContent.trim() === '')) {
+                    filesToDelete = existingFileId;
                 }
             }
         }
@@ -1919,7 +1464,7 @@
                 formData.append("postId", window.currentPostId);
             }
 
-            console.log("forData:",formData);
+            console.log("forData:", formData);
 
             const response = await fetch("/api/v1/admin/school/file", {
                 method: window.currentPostId ? "PATCH" : "POST",
@@ -1927,7 +1472,7 @@
             });
 
             const result = await response.json();
-            window.currentPostId=null;
+            window.currentPostId = null;
 
             if (result.isSuccess) {
                 alert("게시글이 저장되었습니다.");
@@ -1943,100 +1488,43 @@
             alert("오류 발생: " + e.message);
         }
     }
-</script>
-<script id="toggle-switches">
-    document.addEventListener("DOMContentLoaded", function () {
-        const toggles = document.querySelectorAll('input[type="checkbox"]');
-        toggles.forEach((toggle) => {
-            const toggleContainer = toggle.nextElementSibling;
-            const toggleBg = toggleContainer.querySelector("div:first-child");
-            const toggleThumb = toggleContainer.querySelector("div:last-child");
-            toggle.addEventListener("change", function () {
-                if (this.checked) {
-                    toggleBg.classList.remove("bg-gray-600");
-                    toggleBg.classList.add("bg-primary");
-                    toggleThumb.classList.add("translate-x-5");
-                } else {
-                    toggleBg.classList.remove("bg-primary");
-                    toggleBg.classList.add("bg-gray-600");
-                    toggleThumb.classList.remove("translate-x-5");
-                }
-            });
-        });
-        const boardTypeRadios = document.querySelectorAll('input[name="boardType"]');
-        boardTypeRadios.forEach((radio) => {
-            radio.addEventListener("change", function () {
-                const labels = document.querySelectorAll("label.relative");
-                labels.forEach((label) => {
-                    const border = label.querySelector(".absolute");
-                    if (label.contains(this)) {
-                        border.classList.remove("opacity-0");
-                        border.classList.add("opacity-100");
-                    } else {
-                        border.classList.remove("opacity-100");
-                        border.classList.add("opacity-0");
-                    }
-                });
-            });
+
+
+    const clearButtons = document.querySelectorAll('.clear-btn');
+    clearButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            console.log("초기화 클릭");
+            const index = button.dataset.index;
+            const fileInput = document.querySelector(`.file-input[data-index="${index}"]`);
+            const fileNameDisplay = document.querySelector(`.file-name[data-index="${index}"]`);
+
+            fileInput.value = '';
+            fileNameDisplay.textContent = '';
+            button.classList.add('hidden');
         });
     });
+
+    // export module functions
+    window.toggleSchool = toggleSchool;
+    window.showBoardList = showBoardList;
+    window.editBoardList = editBoardList;
+    window.showBoardListEditor = showBoardListEditor;
+    window.editScheduleList = editScheduleList;
+    window.editIntroBoard = editIntroBoard;
+    window.deleteBoard = deleteBoard;
+    window.createNewPost = createNewPost;
+    window.editPost = editPost;
+    window.savePost = savePost;
+    window.saveFilePost = saveFilePost
 </script>
-<script>
-    function submitAddCategory() {
-        const modal = document.getElementById("addCategoryModal");
-        const schoolId = modal.dataset.schoolId;
-
-        const boardTitle = document.querySelector('input[placeholder="카테고리 이름을 입력하세요"]').value;
-        const boardDescription = document.querySelectorAll('input[placeholder="카테고리 이름을 입력하세요"]')[1].value;
-
-        const boardTypeValue = document.querySelector('input[name="boardType"]:checked').value;
-
-        console.log("boardType:",boardTypeValue);
-
-        let boardType;
-        if (boardTypeValue === "intro") boardType = "intro";
-        else if (boardTypeValue === "files") boardType = "files";
-        else if (boardTypeValue === "schedule") boardType = "schedule";
-        else boardType = "notice"; // 기본값
-
-        const data = {
-            schoolId: Number(schoolId),
-            boardTitle: boardTitle,
-            realTitle: boardTitle, // 필요시 다른 값으로 수정
-            boardDescription: boardDescription,
-            boardType: boardType
-        };
-
-        fetch("/api/v1/admin/school/board", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("카테고리 추가에 실패했습니다.");
-                }
-                return response.json();
-            })
-            .then(result => {
-                alert("카테고리가 성공적으로 추가되었습니다.");
-                window.location.href = "/admin/school";
-            })
-            .catch(error => {
-                console.error(error);
-                alert("에러 발생: " + error.message);
-            });
-    }
-</script>
-<script>
+<script type="module">
+    // fixme: board-management 모듈과 합쳐도 될 지 고민 필요
     function renderPagination(pageData, boardId) {
         const paginationContainer = document.getElementById("pagination");
-        console.log(paginationContainer+"가져옴");
+        console.log(paginationContainer + "가져옴");
         paginationContainer.innerHTML = "";
 
-        const { totalPages, number } = pageData;
+        const {totalPages, number} = pageData;
 
         // fix 새 카테고리 추가에 버튼이 생김
 
@@ -2067,7 +1555,7 @@
 
     function renderPostTable(posts) {
         const tbody = document.getElementById("post-table-body");
-        console.log("tbody:"+tbody);
+        console.log("tbody:" + tbody);
         tbody.innerHTML = ''; // 기존  테이블 비우기
 
         posts.forEach(post => {
@@ -2114,20 +1602,20 @@
         });
     }
 
-    async function deletePost(postId,type) {
+    async function deletePost(postId, type) {
         if (!confirm("정말 삭제하시겠습니까?")) return;
 
-        console.log("postId:",postId);
+        console.log("postId:", postId);
         try {
-            const url = "/api/v1/admin/school/"+((type==="NOTICE")?"post":"file");
-            console.log("type:",type);
-            console.log("url:",url);
+            const url = "/api/v1/admin/school/" + ((type === "NOTICE") ? "post" : "file");
+            console.log("type:", type);
+            console.log("url:", url);
             const response = await fetch(url, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ postId })
+                body: JSON.stringify({postId})
             });
 
             const result = await response.json();
@@ -2166,7 +1654,7 @@
             const result = await response.json();
             console.log("값 가져옴");
             if (result.isSuccess) {
-                console.log("데이터:"+result.result.content);
+                console.log("데이터:" + result.result.content);
                 renderPostTable(result.result.content); // 리스트 렌더링
                 renderPagination(result.result, boardId); // 페이징 렌더링
             } else {
@@ -2177,30 +1665,104 @@
             alert("서버 오류 발생");
         }
     }
+
+    // export module functions
+    window.deleteBoard = deleteBoard;
+    window.fetchPostList = fetchPostList;
 </script>
-<script id="textEdit">
-            const editor = SUNEDITOR.create('intro-editor', {
-                lang: SUNEDITOR_LANG['ko'],
-                height: '300px',
-                width: '100%',
-                placeholder: '학교 소개 내용을 입력하세요...',
-                buttonList: [
-                    ['undo', 'redo', 'formatBlock', 'fontSize', 'bold', 'underline', 'italic', 'strike',
-                        'fontColor', 'hiliteColor', 'align', 'list', 'table', 'link', 'image', 'codeView']
-                ],
-                imageUploadUrl: '/api/v1/file/school',
-                withCredentials: true,
-                imageUploadName: 'file',
-                imageMultipleFile: false
+<script id="toggle-switches" type="module">
+    const toggles = document.querySelectorAll('input[type="checkbox"]');
+    toggles.forEach((toggle) => {
+        const toggleContainer = toggle.nextElementSibling;
+        const toggleBg = toggleContainer.querySelector("div:first-child");
+        const toggleThumb = toggleContainer.querySelector("div:last-child");
+        toggle.addEventListener("change", function () {
+            if (this.checked) {
+                toggleBg.classList.remove("bg-gray-600");
+                toggleBg.classList.add("bg-primary");
+                toggleThumb.classList.add("translate-x-5");
+            } else {
+                toggleBg.classList.remove("bg-primary");
+                toggleBg.classList.add("bg-gray-600");
+                toggleThumb.classList.remove("translate-x-5");
+            }
+        });
+    });
+    const boardTypeRadios = document.querySelectorAll('input[name="boardType"]');
+    boardTypeRadios.forEach((radio) => {
+        radio.addEventListener("change", function () {
+            const labels = document.querySelectorAll("label.relative");
+            labels.forEach((label) => {
+                const border = label.querySelector(".absolute");
+                if (label.contains(this)) {
+                    border.classList.remove("opacity-0");
+                    border.classList.add("opacity-100");
+                } else {
+                    border.classList.remove("opacity-100");
+                    border.classList.add("opacity-0");
+                }
             });
+        });
+    });
 </script>
-<script>
-    const introEditor = SUNEDITOR.create('school-intro-editor', {
+<script type="module">
+    function submitAddCategory() {
+        const modal = document.getElementById("addCategoryModal");
+        const schoolId = modal.dataset.schoolId;
+
+        const boardTitle = document.querySelector('input[placeholder="카테고리 이름을 입력하세요"]').value;
+        const boardDescription = document.querySelectorAll('input[placeholder="카테고리 이름을 입력하세요"]')[1].value;
+
+        const boardTypeValue = document.querySelector('input[name="boardType"]:checked').value;
+
+        console.log("boardType:", boardTypeValue);
+
+        let boardType;
+        if (boardTypeValue === "intro") boardType = "intro";
+        else if (boardTypeValue === "files") boardType = "files";
+        else if (boardTypeValue === "schedule") boardType = "schedule";
+        else boardType = "notice"; // 기본값
+
+        const data = {
+            schoolId: Number(schoolId),
+            boardTitle: boardTitle,
+            realTitle: boardTitle, // 필요시 다른 값으로 수정
+            boardDescription: boardDescription,
+            boardType: boardType
+        };
+
+        fetch("/api/v1/admin/school/board", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("카테고리 추가에 실패했습니다.");
+                }
+                return response.json();
+            })
+            .then(result => {
+                alert("카테고리가 성공적으로 추가되었습니다.");
+                window.location.href = "/admin/school";
+            })
+            .catch(error => {
+                console.error(error);
+                alert("에러 발생: " + error.message);
+            });
+    }
+
+    // export module functions
+    window.submitAddCategory = submitAddCategory;
+</script>
+
+<script id="textEdit" type="module">
+    const editor = SUNEDITOR.create('intro-editor', {
         lang: SUNEDITOR_LANG['ko'],
-        height: '300px', // 기본 높이 고정
+        height: '300px',
         width: '100%',
-        autoHeight: false, // 자동 증가 비활성화
-        iframe: false,
         placeholder: '학교 소개 내용을 입력하세요...',
         buttonList: [
             ['undo', 'redo', 'formatBlock', 'fontSize', 'bold', 'underline', 'italic', 'strike',
@@ -2211,15 +1773,12 @@
         imageUploadName: 'file',
         imageMultipleFile: false
     });
-    function resizeEditorHeight() {
-        const height = window.innerWidth < 640 ? 250 : 400; // 모바일 250px, 데스크탑 400px 등
-        introEditor.setOptions({ height: `${height}px` });
-    }
 
-    window.addEventListener('load', resizeEditorHeight);
-    window.addEventListener('resize', resizeEditorHeight);
+    // export module functions
+    window.editor = editor;
 </script>
-<script>
+
+<script type="module">
     // 파일 입력
     document.querySelectorAll('input[type="file"]').forEach((fileInput) => {
         const type = fileInput.dataset.type; // file or image
@@ -2233,9 +1792,9 @@
                 const index = fileInput.dataset.index;
                 const clearButton = document.querySelector(`.clear-btn[data-index="${index}"], #clear-postFile`);
 
-                    fileNameDisplay.textContent = this.files.length > 0
-                        ? `선택된 파일: ${this.files[0].name}`
-                        : '';
+                fileNameDisplay.textContent = this.files.length > 0
+                    ? `선택된 파일: ${this.files[0].name}`
+                    : '';
 
                 if (clearButton) {
                     clearButton.classList.remove('hidden');
@@ -2264,6 +1823,7 @@
         }
 
     }
+
     function resetFilePostEditor() {
         // 제목, 설명 초기화
         const textInputs = document.querySelectorAll('#filePost-editor input[type="text"]');
@@ -2275,33 +1835,34 @@
         const input = document.getElementById(`postFile-input`);
         if (input) input.value = "";
         const nameDiv = document.getElementById(`postFile-name`);
-        if(nameDiv) nameDiv.textContent = "";
+        if (nameDiv) nameDiv.textContent = "";
         const clearBtn = document.getElementById(`clear-postFile`);
-        if(clearBtn) clearBtn.classList.add("hidden");
+        if (clearBtn) clearBtn.classList.add("hidden");
 
     }
+
+    // export module functions
+    window.resetPostEditor = resetPostEditor;
+    window.resetFilePostEditor = resetFilePostEditor;
 </script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const boardTypeRadios = document.querySelectorAll('input[name="boardType"]');
+<script type="module">
+    const boardTypeRadios = document.querySelectorAll('input[name="boardType"]');
 
-        boardTypeRadios.forEach((radio) => {
-            radio.addEventListener("change", function () {
-                const allLabels = document.querySelectorAll('label.relative');
-                allLabels.forEach((label) => {
-                    const border = label.querySelector(".absolute");
-                    border.classList.remove("opacity-100");
-                    border.classList.add("opacity-0");
-                });
-
-                const selectedLabel = this.closest("label.relative");
-                const border = selectedLabel.querySelector(".absolute");
-                border.classList.remove("opacity-0");
-                border.classList.add("opacity-100");
+    boardTypeRadios.forEach((radio) => {
+        radio.addEventListener("change", function () {
+            const allLabels = document.querySelectorAll('label.relative');
+            allLabels.forEach((label) => {
+                const border = label.querySelector(".absolute");
+                border.classList.remove("opacity-100");
+                border.classList.add("opacity-0");
             });
+
+            const selectedLabel = this.closest("label.relative");
+            const border = selectedLabel.querySelector(".absolute");
+            border.classList.remove("opacity-0");
+            border.classList.add("opacity-100");
         });
     });
 </script>
-
 </body>
 </html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<!-- 단과대 카드 Fragment (body slot 버전)
+     ▸ Props:
+       - collegeName : 단과대 이름 (예: "공과대학")
+       - body        : 내부에 삽입될 학과 리스트 블록 (<div data-chips> 등)
+-->
+<section th:fragment="universityCollegeCard(collegeName)">
+    <article class="border rounded-xl p-5 hover:shadow-md transition group flex flex-wrap gap-2"
+             th:attr="data-college=${collegeName}">
+
+        <!-- 🏷️ 헤더 -->
+        <header class="flex items-center justify-between mb-3 w-full">
+            <h3 class="text-lg font-semibold text-gray-900" th:text="${collegeName}">단과대명</h3>
+            <span class="text-xs text-gray-500" data-count>—</span>
+        </header>
+
+        <!-- 📦 내부 콘텐츠 (학과 칩 리스트 등) -->
+        <div th:insert="~{::body}" class="w-full"></div>
+
+        <!-- 🔽 더보기 버튼 -->
+        <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more>
+            더보기
+        </button>
+    </article>
+</section>
+
+</html>

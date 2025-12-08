@@ -3,10 +3,10 @@ package com.cooperation.project.cooperationcenter.domain.school.service;
 import com.cooperation.project.cooperationcenter.domain.file.dto.FileAttachmentDto;
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.file.service.FileService;
-import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolRequest;
-import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolResponse;
+import com.cooperation.project.cooperationcenter.domain.school.dto.*;
 import com.cooperation.project.cooperationcenter.domain.school.model.*;
 import com.cooperation.project.cooperationcenter.domain.school.repository.*;
+import io.jsonwebtoken.lang.Collections;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,8 +35,7 @@ public class SchoolService {
 
     private final SchoolFindService schoolFindService;
     private final FileService fileService;
-
-
+    private final CollegeRepository collegeRepository;
 
     @Transactional
     public void saveSchool(SchoolRequest.SchoolDto request){
@@ -49,8 +50,6 @@ public class SchoolService {
 
         if(schoolBoard.getType().equals(SchoolBoard.BoardType.INTRO)){
             IntroPost introPost = IntroPost.builder()
-                    .title(schoolBoard.getBoardTitle())
-                    .content("introductionTemplate")
                     .schoolBoard(schoolBoard)
                     .build();
             schoolBoard.setIntroPost(introPost);
@@ -86,15 +85,61 @@ public class SchoolService {
     }
 
     @Transactional
-    public void saveIntro(SchoolRequest.IntroDto request){
-        SchoolBoard board = schoolFindService.loadBoardById(request.boardId());
-        IntroPost introPost = IntroPost.fromDto(request);
+    public void saveIntro(IntroRequest.TotalIntroSaveDto request){
+        try{
+            SchoolBoard board = schoolFindService.loadBoardById(request.boardId());
+            IntroPost intro = board.getIntroPost();
+            intro.fromDto(request);
+            //todo collegeDto는 따로 저쟝해야함. 저장이 없어서 사라지는듯
+            intro.updateCollege(saveCollege(intro,request.collegeDto()));
+            schoolBoardRepository.save(board);
+        }
+        catch(Exception e){
+            log.warn(e.getMessage());
+        }
+    }
 
-        introPost = introPostRepository.save(introPost);
-        board.setIntroPost(introPost);
+    @Transactional
+    public List<College> saveCollege(IntroPost intro, List<IntroRequest.CollegeSaveDto> dtos){
+        List<College> saveList = new ArrayList<>();
+        deleteRemovedCollege(intro.getCollege(),dtos);
+        for(IntroRequest.CollegeSaveDto dto : dtos){
+            if(dto.id() == null){
+                saveList.add(
+                        College.builder()
+                                .collegeName(dto.name())
+                                .departments(dto.departments())
+                                .type(CollegeDegreeType.valueOf(dto.type()))
+                                .introPost(intro)
+                                .build()
+                );
+            }else{
+                College tmp = schoolFindService.loadCollegesById(dto.id());
+                tmp.updateFromDto(dto);
+                saveList.add(tmp);
+            }
+        }
+        return collegeRepository.saveAll(saveList);
+    }
 
-        //todo 여기에는 그냥 내용 수정된거 저장하는 용도
-        schoolBoardRepository.save(board);
+    @Transactional
+    public void deleteRemovedCollege(List<College> original, List<IntroRequest.CollegeSaveDto> dtos ){
+        Set<Long> incomingIds = dtos.stream()
+                .map(IntroRequest.CollegeSaveDto::id)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        for (College col : original) {
+            if (!incomingIds.contains(col.getId())) {
+                collegeRepository.delete(col); // 실제 삭제
+            }
+        }
+    }
+
+    @Transactional
+    public IntroResponse.IntroPostResponseDto loadIntro(Long boardId){
+        SchoolBoard board = schoolFindService.loadBoardById(boardId);
+        IntroPost intro = board.getIntroPost();
+        return intro.toResponse();
     }
 
     @Transactional
@@ -134,7 +179,7 @@ public class SchoolService {
         SchoolBoard board = schoolFindService.loadBoardById(request.boardId());
         SchoolBoard.BoardType type = board.getType();
         if(type == SchoolBoard.BoardType.NOTICE) return schoolFindService.loadPostPageByBoardByDto(board,pageable);
-        else return schoolFindService.loadFilePostPageByBoardByDto(board,pageable);
+        else return schoolFindService.getFilePostPageByBoardByDto(board,pageable);
     }
 
     @Transactional
