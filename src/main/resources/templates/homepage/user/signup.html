@@ -573,7 +573,7 @@
     </script>
 
     <script id="checkAgencySignup">
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("turbo:load", function () {
             const buttons = document.querySelectorAll("[data-agency-mode]");
             const existingSection = document.getElementById("agency-existing-section");
             const newSection = document.getElementById("agency-new-section");
@@ -998,7 +998,7 @@
                 console.error("지역 목록 불러오기 실패:", e);
                 // 필요하면 여기서 토스트/알림 띄워도 됨
             }
-        })().then();
+         })().then();
     </script>
 </th:block>
 </html>
