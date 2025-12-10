@@ -70,7 +70,7 @@ public class IntroPost extends BaseEntity {
     }
 
     public String getImgUrl(){
-        if(this.schoolPicUrl==null){
+        if(this.schoolPicUrl==null || this.schoolPicUrl.isEmpty()){
             return "/api/v1/file/default/school";
         }else{
             return this.schoolPicUrl;
