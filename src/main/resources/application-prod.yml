@@ -6,7 +6,7 @@ spring:
     password: ${DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: update          # 운영 DB는 마이그레이션 툴 사용 권장(Flyway/Liquibase)
+      ddl-auto: none        # 운영 DB는 마이그레이션 툴 사용 권장(Flyway/Liquibase)
     show-sql: false
     properties:
       hibernate.format_sql: false
