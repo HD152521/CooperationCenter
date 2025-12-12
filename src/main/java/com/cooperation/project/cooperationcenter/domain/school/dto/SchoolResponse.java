@@ -222,7 +222,7 @@ public class SchoolResponse {
             String fileId
     ){
         public static PostFileDto from(FileAttachment file){
-            String url = "/api/v1/file/"+file.getFiletype().getFileType()+"/"+file.getFileId();
+            String url = "/api/v1/file/"+file.getFiletype().getFileType().toLowerCase()+"/"+file.getFileId();
             return new PostFileDto(
                     file.getOriginalName(),
                     url,

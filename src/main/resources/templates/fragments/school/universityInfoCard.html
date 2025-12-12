@@ -12,7 +12,7 @@
 <section th:fragment="universityInfoCard(title, value1, value2, value3, note)">
     <div class="bg-white rounded-lg shadow-sm p-6 min-h-[200px]">
         <h2 class="text-xl font-semibold mb-4" th:text="${title}">카드 제목</h2>
-        <p class="text-3xl font-bold" th:text="${value1}">내용 1</p>
+        <p class="text-3xl font-bold" th:text="${value1}"> - </p>
         <p class="text-gray-600 text-sm mt-1" th:text="${value2}">내용 2</p>
         <p class="text-xs text-gray-500 mt-3" th:text="${note}">보조 설명</p>
     </div>
@@ -32,12 +32,14 @@
         <h2 class="text-xl font-semibold mb-4" th:text="${title}">관련 홈페이지</h2>
 
         <ul class="space-y-2">
-            <li th:each="name, iter : ${urlNames}">
+            <li th:each="name, iter : ${urlNames}"
+                th:if="${not #strings.isEmpty(urls[iter.index])}">
                 <span class="font-medium" th:text="${name}"></span>
                 :
                 <a class="text-primary hover:underline"
-                   th:href="${urls[iter.index]}"
-                   > 바로가기 </a>
+                   th:href="${urls[iter.index]}">
+                    바로가기
+                </a>
             </li>
         </ul>
     </div>

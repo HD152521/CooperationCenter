@@ -407,16 +407,14 @@ public class SchoolFindService {
         increasePostView(postId);
         SchoolPost schoolPost = loadPostById(postId);
         SchoolResponse.SchoolPostDto dto = SchoolResponse.SchoolPostDto.from(schoolPost);
-        SchoolBoard schoolBoard = schoolPost.getSchoolBoard();
         //fixme 수정하기 QueryDSL로
-//        SchoolPost beforePost = getBeforePostById(postId,schoolBoard);
-//        SchoolPost afterPost = getAfterPostById(postId,schoolBoard);
 
         try{
             SchoolPost beforePost = schoolPostQSDLRepository.findBeforePost(schoolPost);
             SchoolPost afterPost = schoolPostQSDLRepository.findAfterPost(schoolPost);
 
-            return new SchoolResponse.PostDetailDto(dto,
+            return new SchoolResponse.PostDetailDto(
+                    dto,
                     loadPostFileByPost(postId),
                     (beforePost==null)? null: SchoolResponse.SchoolPostSimpleDto.from(beforePost),
                     (afterPost==null)? null: SchoolResponse.SchoolPostSimpleDto.from(afterPost));
