@@ -14,8 +14,8 @@
             <!-- 학교명 (한/영) : 왼쪽 -->
             <div class="min-w-0">
                 <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
-        <span class="text-base sm:text-lg font-semibold text-gray-900" th:text="${school.koreanName}">대학교 이름</span>
-                    <span class="text-sm sm:text-base text-gray-500" th:text="${school.englishName}">University English Name</span>
+                    <span class="text-base sm:text-lg font-semibold text-gray-900" th:text="${school.koreanName}">大学名称</span>
+                    <span class="text-sm sm:text-base text-gray-500" th:text="${school.englishName}">大学英文名称</span>
                 </div>
             </div>
 
@@ -36,6 +36,6 @@
 
 
 <div th:fragment="empty-data">
-    <h3>no-data</h3>
+    <h3>暂无数据</h3>
 </div>
 </html>

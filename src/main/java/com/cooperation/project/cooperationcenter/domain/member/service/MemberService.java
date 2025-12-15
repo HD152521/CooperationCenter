@@ -96,7 +96,7 @@ public class MemberService {
     }
 
     private Agency checkAgency(MemberRequest.SignupExistingAgencyDto agencyDto){
-        return agencyRepository.findAgencyByAgencyNameAndAgencyEmail(agencyDto.agencyName(),agencyDto.agencyEmail()).orElseThrow(
+        return agencyRepository.findAgencyByAgencyNameAndAgencyEmailAndShare(agencyDto.agencyName(),agencyDto.agencyEmail(),true).orElseThrow(
                 () -> new BaseException(ErrorCode.AGENCY_NOT_FOUND)
         );
     }

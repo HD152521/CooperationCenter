@@ -2,7 +2,7 @@
 <html th:replace="~{fragments/layout/main-layout :: main-layout(~{::head}, ~{::body}, ~{::script})}"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>설문 폴더</title>
+    <title>问卷文件夹</title>
     <style>
         :where([class^="ri-"])::before {
             content: "\f3c2";
@@ -57,12 +57,12 @@
             <div class="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-red-100 text-red-500 mb-4">
                 <i class="ri-delete-bin-line ri-xl"></i>
             </div>
-            <h3 class="text-lg font-bold text-gray-900 mb-2">폴더 삭제</h3>
-            <p class="text-gray-500">이 폴더를 삭제하시겠습니까? 폴더의 설문은 서버 정책에 따라 이동/고아 처리됩니다.</p>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">删除文件夹</h3>
+            <p class="text-gray-500">确定要删除此文件夹吗？文件夹中的问卷将按服务器策略移动或成为孤立数据。</p>
         </div>
         <div class="flex gap-3">
-            <button id="cancel-delete" class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-button">취소</button>
-            <button id="confirm-delete" class="flex-1 px-4 py-2 bg-red-500 text-white rounded-button">삭제</button>
+            <button id="cancel-delete" class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-button">取消</button>
+            <button id="confirm-delete" class="flex-1 px-4 py-2 bg-red-500 text-white rounded-button">删除</button>
         </div>
     </div>
 </div>
@@ -70,19 +70,19 @@
 <!-- 생성/이름변경 모달 -->
 <div id="simple-input-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50">
     <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 mx-4">
-        <h3 id="sim-title" class="text-lg font-bold text-gray-900 mb-3">새 폴더</h3>
+        <h3 id="sim-title" class="text-lg font-bold text-gray-900 mb-3">新建文件夹</h3>
 
-        <label class="block text-sm font-medium text-gray-700 mb-1">표시용 폴더 이름</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">显示用文件夹名称</label>
         <input id="sim-input-display" type="text" class="w-full px-3 py-2 border border-gray-300 rounded mb-4"
-               placeholder="표시용 폴더 이름을 입력하세요"/>
+               placeholder="请输入显示用文件夹名称"/>
 
-        <label class="block text-sm font-medium text-gray-700 mb-1">저장용 폴더 이름 (영어/숫자, -, _)</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">存储用文件夹名称（英文/数字，-，_）</label>
         <input id="sim-input-stored" type="text" class="w-full px-3 py-2 border border-gray-300 rounded mb-4"
-               placeholder="예: my-folder_1"/>
+               placeholder="例如：my-folder_1"/>
 
         <div class="flex gap-3">
-            <button id="sim-cancel" class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-button">취소</button>
-            <button id="sim-confirm" class="flex-1 px-4 py-2 bg-primary text-white rounded-button">확인</button>
+            <button id="sim-cancel" class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-button">取消</button>
+            <button id="sim-confirm" class="flex-1 px-4 py-2 bg-primary text-white rounded-button">确认</button>
         </div>
     </div>
 </div>
@@ -90,11 +90,11 @@
 <main class="container mx-auto px-4 py-6 pt-16 md:pt-20">
     <!-- 헤더 -->
     <div class="flex flex-row flex-wrap items-center justify-between gap-3 mb-6">
-        <h1 class="text-xl sm:text-2xl font-bold">설문 폴더</h1>
+        <h1 class="text-xl sm:text-2xl font-bold">问卷文件夹</h1>
         <div class="flex flex-row gap-2">
             <button id="open-create-modal"
                     class="bg-primary text-white px-4 py-2 rounded-button flex items-center justify-center text-sm sm:text-base">
-                <i class="ri-add-line mr-2"></i> 새 폴더 만들기
+                <i class="ri-add-line mr-2"></i> 新建文件夹
             </button>
         </div>
     </div>
@@ -105,14 +105,14 @@
             <div class="relative flex-1">
                 <input type="text" name="q" th:value="${condition.text}" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded
                        focus:ring-2 focus:ring-primary/50 focus:border-primary text-sm sm:text-base"
-                       placeholder="폴더명 검색"/>
+                       placeholder="搜索文件夹名称"/>
                 <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                     <i class="ri-search-line"></i>
                 </div>
             </div>
             <button type="submit"
                     class="w-full sm:w-auto bg-primary text-white px-4 py-2 rounded-button text-sm sm:text-base">
-                검색
+                搜索
             </button>
         </form>
     </div>
@@ -129,7 +129,7 @@
             </span>
                         <div>
                             <h3 class="text-lg font-bold text-gray-900 group-hover:text-primary"
-                                th:text="${folder.displayName}">폴더명</h3>
+                                th:text="${folder.displayName}">文件夹名</h3>
                             <p class="text-xs text-gray-500" th:text="'ID: ' + ${folder.folderId}">ID</p>
                         </div>
                     </a>
@@ -139,9 +139,9 @@
                             <i class="ri-more-2-fill"></i>
                         </button>
                         <div class="dropdown-menu absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg z-10">
-                            <button class="w-full text-left px-3 py-2 hover:bg-gray-50 rename-folder-btn">이름 변경</button>
+                            <button class="w-full text-left px-3 py-2 hover:bg-gray-50 rename-folder-btn">修改名称</button>
                             <button class="w-full text-left px-3 py-2 hover:bg-red-50 text-red-600 delete-folder-btn">
-                                삭제
+                                删除
                             </button>
                         </div>
                     </div>
@@ -151,19 +151,19 @@
                     <div class="flex items-center">
                         <i class="ri-file-list-3-line mr-2 text-gray-500"></i>
                         <!--                        <span th:text="'설문 ' + ${folder.surveyCount} + '개'">설문 0개</span>-->
-                        <span th:text="'설문: ' + ${folder.surveyCnt} + '개'">설문 0개</span>
+                        <span th:text="'问卷：' + ${folder.surveyCnt} + '个'">问卷 0 个</span>
                     </div>
                     <div class="flex items-center">
                         <i class="ri-calendar-line mr-2 text-gray-500"></i>
-                        <span th:text="'생성일: ' + ${#temporals.format(folder.createdAt, 'yyyy년 MM월 dd일 HH:mm')}">생성일</span>
+                        <span th:text="'创建时间：' + ${#temporals.format(folder.createdAt, 'yyyy年 MM月 dd日 HH:mm')}">创建时间</span>
                     </div>
                 </div>
 
                 <div class="mt-4 flex items-center justify-between pt-4 border-t border-gray-100">
                     <a th:href="@{/survey/list(folderId=${folder.folderId})}"
-                       class="px-3 py-1 bg-white text-indigo-600 border border-indigo-600 text-sm rounded hover:bg-indigo-50 transition">열기</a>
+                       class="px-3 py-1 bg-white text-indigo-600 border border-indigo-600 text-sm rounded hover:bg-indigo-50 transition">打开</a>
                     <!--                    <div class="text-xs text-gray-500" th:text="${folder.isDefault} ? '기본 폴더' : ''"></div>-->
-                    <div class="text-xs text-gray-500" th:text="'기본 폴더'"></div>
+                    <div class="text-xs text-gray-500" th:text="'默认文件夹'"></div>
                 </div>
             </div>
         </div>
@@ -172,8 +172,8 @@
         <div th:if="${#lists.isEmpty(folders)}"
              class="col-span-full bg-white rounded-lg shadow-sm p-10 text-center text-gray-500">
             <i class="ri-folder-2-line text-3xl mb-2 block"></i>
-            아직 폴더가 없습니다.
-            <button id="open-create-modal-2" class="text-primary underline">폴더를 만들어 보세요.</button>
+            还没有文件夹。
+            <button id="open-create-modal-2" class="text-primary underline">试着创建一个文件夹。</button>
         </div>
     </div>
 </main>
@@ -231,15 +231,15 @@
                     if (res.ok) {
                         document.querySelector(`[data-folder-id="${CSS.escape(targetFolderId)}"]`)?.remove();
                         close();
-                        alert("삭제되었습니다.");
+                        alert("已删除。");
                         if (!document.querySelector("#folder-grid [data-folder-id]")) location.reload();
                     } else {
                         close();
-                        alert("삭제 실패");
+                        alert("删除失败");
                     }
                 } catch (err) {
                     console.error(err);
-                    alert("서버 오류로 삭제에 실패했습니다.");
+                    alert("服务器错误，删除失败。");
                 }
             });
         })();
@@ -276,7 +276,7 @@
             // 생성 모달 열기
             const openCreate = () => {
                 mode = "create";
-                title.textContent = "새 폴더";
+                title.textContent = "新建文件夹";
                 inputDisplay.value = "";
                 inputStored.value = "";
                 open();
@@ -295,7 +295,7 @@
                 const currentStored = card?.dataset.storedName ?? "";
 
                 mode = "rename";
-                title.textContent = "폴더 이름 변경";
+                title.textContent = "修改文件夹名称";
                 inputDisplay.value = currentDisplay;
                 inputStored.value = currentStored;
                 open();
@@ -316,15 +316,15 @@
                 const storedName = inputStored.value.trim();
 
                 if (!displayName) {
-                    alert("표시용 폴더 이름을 입력하세요.");
+                    alert("请输入显示用文件夹名称。");
                     return;
                 }
                 if (!storedName) {
-                    alert("저장용 폴더 이름(영어/숫자, -, _)을 입력하세요.");
+                    alert("请输入存储用文件夹名称（英文/数字，-，_）。");
                     return;
                 }
                 if (!isValidStored(storedName)) {
-                    alert("저장용 폴더 이름은 영어/숫자, -, _만 사용할 수 있습니다.");
+                    alert("存储用文件夹名称只能使用英文/数字、-、_。");
                     return;
                 }
 
@@ -363,10 +363,10 @@
                             return;
                         }
                     }
-                    alert("처리에 실패했습니다.");
+                    alert("处理失败。");
                 } catch (e) {
                     console.error(e);
-                    alert("서버 오류가 발생했습니다.");
+                    alert("服务器发生错误。");
                 } finally {
                     close();
                 }

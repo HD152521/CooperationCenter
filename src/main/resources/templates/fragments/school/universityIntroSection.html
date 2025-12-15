@@ -23,8 +23,8 @@
         <div class="flex flex-col md:flex-row gap-8">
             <!-- 왼쪽 텍스트 영역 -->
             <div class="md:w-1/2">
-                <h2 class="text-2xl font-bold text-gray-900 mb-4" th:text="${title}">학교 소개 제목</h2>
-                <p class="text-gray-700 mb-3" th:text="${desc}">학교 설명 문구</p>
+                <h2 class="text-2xl font-bold text-gray-900 mb-4" th:text="${title}">学校介绍标题</h2>
+                <p class="text-gray-700 mb-3" th:text="${desc}">学校说明文案</p>
 
                 <ul id="univIntro" class="list-disc pl-5 text-gray-700 space-y-1">
                     <li th:each="adv : ${advantages}" th:text="${adv}"></li>
@@ -34,12 +34,12 @@
                     <a th:if="${not #strings.isEmpty(homepageUrl)}"
                        th:href="${homepageUrl}" target="_blank" rel="noopener"
                        class="px-4 py-2 bg-primary text-white rounded-button hover:bg-blue-600 transition flex items-center">
-                        <i class="ri-external-link-line mr-2"></i> 공식 홈페이지
+                        <i class="ri-external-link-line mr-2"></i> 官方网站
                     </a>
                     <a th:if="${not #strings.isEmpty(engUrl)}"
                        th:href="${engUrl}" target="_blank" rel="noopener"
                        class="px-4 py-2 border border-gray-300 text-gray-700 rounded-button hover:bg-gray-50 transition">
-                        English Site
+                        英文网站
                     </a>
                 </div>
             </div>
@@ -47,7 +47,7 @@
             <!-- 오른쪽 이미지 -->
             <div class="md:w-1/2">
                 <div class="rounded-lg overflow-hidden h-72 bg-gray-100">
-                    <img th:src="${imageUrl}" alt="학교 전경" class="w-full h-full object-cover object-center"/>
+                    <img th:src="${imageUrl}" alt="校园全景" class="w-full h-full object-cover object-center"/>
                 </div>
             </div>
         </div>

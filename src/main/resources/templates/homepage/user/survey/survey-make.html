@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html th:replace="~{fragments/layout/base :: base(~{::head}, ~{::body})}" xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <title>설문조사 관리</title>
+    <title>问卷管理</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <style>
         :where([class^="ri-"])::before {
@@ -144,7 +144,7 @@
                 </div>
             </div>
             <div id="toast-action" class="mt-3 hidden">
-                <button class="text-sm text-primary font-medium">다시 시도</button>
+                <button class="text-sm text-primary font-medium">重试</button>
             </div>
         </div>
     </div>
@@ -158,70 +158,70 @@
         <div id="left-sidebar"
              class="w-64 shrink-0 mr-6 hidden fixed top-0 left-0 h-full z-40 sm:block sm:relative sm:h-auto sm:top-auto sm:left-auto">
             <div class="bg-white rounded-lg shadow-sm p-4 sticky top-20">
-                <h2 class="text-lg font-semibold mb-4">문제 유형</h2>
+                <h2 class="text-lg font-semibold mb-4">题型</h2>
                 <div class="space-y-2">
                     <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200 bg-primary bg-opacity-5"
                             data-question-type="short">
                         <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-primary bg-opacity-10 text-primary">
                             <i class="ri-text-line"></i>
                         </div>
-                        <span>단답형</span>
+                        <span>简答题</span>
                     </button>
                     <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
                             data-question-type="essay">
                         <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                             <i class="ri-file-text-line"></i>
                         </div>
-                        <span>서술형</span>
+                        <span>叙述题</span>
                     </button>
                     <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
                             data-question-type="multiple">
                         <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                             <i class="ri-radio-button-line"></i>
                         </div>
-                        <span>객관식 (단일 선택)</span>
+                        <span>选择题（单选）</span>
                     </button>
                     <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
                             data-question-type="multiple-checkbox">
                         <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                             <i class="ri-checkbox-multiple-line"></i>
                         </div>
-                        <span>객관식 (다중 선택)</span>
+                        <span>选择题（多选）</span>
                     </button>
                     <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
                             data-question-type="dropdown">
                         <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                             <i class="ri-list-unordered"></i>
                         </div>
-                        <span>드롭다운</span>
+                        <span>下拉选择</span>
                     </button>
                     <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
                             data-question-type="date">
                         <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                             <i class="ri-calendar-line"></i>
                         </div>
-                        <span>날짜 답변</span>
+                        <span>日期回答</span>
                     </button>
                     <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
                             data-question-type="file">
                         <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                             <i class="ri-file-upload-line"></i>
                         </div>
-                        <span>파일 업로드</span>
+                        <span>文件上传</span>
                     </button>
                     <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
                             data-question-type="image">
                         <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                             <i class="ri-image-line"></i>
                         </div>
-                        <span>이미지 업로드</span>
+                        <span>图片上传</span>
                     </button>
                     <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
                             data-question-type="hierarchy">
                         <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                             <i class="ri-node-tree"></i>
                         </div>
-                        <span>계층형 선택</span>
+                        <span>层级选择</span>
                     </button>
 
                 </div>
@@ -231,12 +231,12 @@
         <div class="flex-1 min-w-0">
             <div class="bg-white rounded-lg shadow-sm p-6 mb-4">
                 <div class="flex items-center justify-between mb-4">
-                    <input id="survey-title" type="text" placeholder="설문조사 제목을 입력하세요"
-                           class="text-xl font-bold w-full focus:outline-none" value="새 설문조사"/>
+                    <input id="survey-title" type="text" placeholder="请输入问卷标题"
+                           class="text-xl font-bold w-full focus:outline-none" value="新问卷"/>
                     <button id="saveButton"
                             class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap flex items-center">
                         <i class="ri-save-line mr-2"></i>
-                        저장하기
+                        保存
                     </button>
                 </div>
                 <div class="mb-4">
@@ -245,7 +245,7 @@
                     <!--                        placeholder="설문조사 제목을 입력하세요"-->
                     <!--                        class="w-full text-xl font-semibold border-none focus:ring-0 focus:outline-none"-->
                     <!--                />-->
-                    <textarea placeholder="설문조사에 대한 설명을 입력하세요"
+                    <textarea placeholder="请输入问卷说明"
                               class="w-full mt-2 border-none focus:ring-0 focus:outline-none resize-none text-gray-600">
                 </textarea>
                 </div>
@@ -257,13 +257,12 @@
                     <div class="w-16 h-16 flex items-center justify-center rounded-full bg-primary bg-opacity-10 text-primary mb-4">
                         <i class="ri-add-line ri-xl"></i>
                     </div>
-                    <h3 class="text-lg font-medium mb-2">문제가 없습니다</h3>
+                    <h3 class="text-lg font-medium mb-2">暂无题目</h3>
                     <p class="text-gray-500 mb-4 text-center">
-                        왼쪽 메뉴에서 문제 유형을 선택하거나<br/>아래 버튼을 클릭하여
-                        문제를 추가하세요 </p>
+                        请在左侧菜单选择题型<br/>或点击下方按钮添加题目</p>
                     <button id="add-question-btn"
                             class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap">
-                        문제 만들기
+                        创建题目
                     </button>
                 </div>
                 <!-- 문제 템플릿 (기본적으로 숨겨져 있음) -->
@@ -271,9 +270,9 @@
                      data-question-id="1">
                     <div class="flex items-start justify-between mb-4">
                         <div class="flex-1 min-w-0">
-                            <input type="text" placeholder="문제 제목을 입력하세요"
+                            <input type="text" placeholder="请输入题目标题"
                                    class="w-full text-lg font-medium border-none focus:ring-0 focus:outline-none"/>
-                            <textarea placeholder="문제에 대한 설명을 입력하세요 (선택사항)"
+                            <textarea placeholder="请输入题目说明（可选）"
                                       class="w-full mt-2 text-sm border-none focus:ring-0 focus:outline-none resize-none text-gray-600"></textarea>
                         </div>
                         <div class="flex items-center space-x-2 ml-4">
@@ -288,13 +287,13 @@
                     <!-- 단답형 답변 영역 -->
                     <div class="answer-container" data-type="short">
                         <div class="bg-gray-50 border border-gray-200 rounded p-3 text-gray-500">
-                            단답형 텍스트
+                            简答文本
                         </div>
                     </div>
                     <!-- 서술형 답변 영역 -->
                     <div class="answer-container hidden" data-type="essay">
                         <div class="bg-gray-50 border border-gray-200 rounded p-3 text-gray-500 h-36">
-                            서술형 텍스트
+                            叙述文本
                         </div>
                     </div>
                     <!-- 객관식 답변 영역 (단일 선택) -->
@@ -304,14 +303,14 @@
                                 <div class="w-6 h-6 flex items-center justify-center mr-2">
                                     <div class="w-4 h-4 rounded-full border border-gray-400"></div>
                                 </div>
-                                <input type="text" placeholder="옵션 1"
+                                <input type="text" placeholder="选项 1"
                                        class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
                                 <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                                     <i class="ri-delete-bin-line"></i>
                                 </button>
                                 <div class="flex items-center space-x-2 ml-8 mt-1">
                                     <select class="jump-target-select border border-gray-300 text-sm rounded p-1">
-                                        <option value="">선택 시 이동할 문항</option>
+                                        <option value="">选择后跳转到题目</option>
                                         <!-- 여기에는 JS에서 동적으로 채워짐 -->
                                     </select>
                                 </div>
@@ -321,21 +320,21 @@
                                 <div class="w-6 h-6 flex items-center justify-center mr-2">
                                     <div class="w-4 h-4 rounded-full border border-gray-400"></div>
                                 </div>
-                                <input type="text" placeholder="옵션 2"
+                                <input type="text" placeholder="选项 2"
                                        class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
                                 <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                                     <i class="ri-delete-bin-line"></i>
                                 </button>
                                 <div class="flex items-center space-x-2 ml-8 mt-1">
                                     <select class="jump-target-select border border-gray-300 text-sm rounded p-1">
-                                        <option value="">선택 시 이동할 문항</option>
+                                        <option value="">选择后跳转到题目</option>
                                         <!-- 여기에는 JS에서 동적으로 채워짐 -->
                                     </select>
                                 </div>
                             </div>
                             <button class="flex items-center text-primary font-medium mt-2 add-option-button">
                                 <i class="ri-add-line mr-1"></i>
-                                옵션 추가
+                                添加选项
                             </button>
                         </div>
                     </div>
@@ -346,7 +345,7 @@
                                 <div class="w-6 h-6 flex items-center justify-center mr-2">
                                     <div class="w-4 h-4 rounded border border-gray-400"></div>
                                 </div>
-                                <input type="text" placeholder="옵션 1"
+                                <input type="text" placeholder="选项 1"
                                        class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
                                 <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                                     <i class="ri-delete-bin-line"></i>
@@ -356,7 +355,7 @@
                                 <div class="w-6 h-6 flex items-center justify-center mr-2">
                                     <div class="w-4 h-4 rounded border border-gray-400"></div>
                                 </div>
-                                <input type="text" placeholder="옵션 2"
+                                <input type="text" placeholder="选项 2"
                                        class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
                                 <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                                     <i class="ri-delete-bin-line"></i>
@@ -364,7 +363,7 @@
                             </div>
                             <button class="flex items-center text-primary font-medium mt-2 add-option-button">
                                 <i class="ri-add-line mr-1"></i>
-                                옵션 추가
+                                添加选项
                             </button>
                         </div>
                     </div>
@@ -372,46 +371,46 @@
                     <div class="answer-container hidden" data-type="dropdown">
                         <div class="space-y-2">
                             <div class="flex items-center">
-                                <input type="text" placeholder="옵션 1"
+                                <input type="text" placeholder="选项 1"
                                        class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
                                 <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                                     <i class="ri-delete-bin-line"></i>
                                 </button>
                                 <div class="flex items-center space-x-2 ml-8 mt-1">
                                     <select class="jump-target-select border border-gray-300 text-sm rounded p-1">
-                                        <option value="">선택 안 함</option>
+                                        <option value="">选择后跳转到题目</option>
                                         <!-- 여기에는 JS에서 동적으로 채워짐 -->
                                     </select>
                                 </div>
                             </div>
                             <div class="flex items-center">
-                                <input type="text" placeholder="옵션 2"
+                                <input type="text" placeholder="选项 2"
                                        class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
                                 <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                                     <i class="ri-delete-bin-line"></i>
                                 </button>
                                 <div class="flex items-center space-x-2 ml-8 mt-1">
                                     <select class="jump-target-select border border-gray-300 text-sm rounded p-1">
-                                        <option value="">선택 안 함</option>
+                                        <option value="">选择后跳转到题目</option>
                                         <!-- 여기에는 JS에서 동적으로 채워짐 -->
                                     </select>
                                 </div>
                             </div>
                             <button class="flex items-center text-primary font-medium mt-2 add-option-button">
                                 <i class="ri-add-line mr-1"></i>
-                                옵션 추가
+                                添加选项
                             </button>
                         </div>
                         <div class="bg-gray-50 border border-gray-200 rounded p-3 mt-4 text-gray-500 flex items-center">
                             <i class="ri-arrow-down-s-line mr-2"></i>
-                            <span>드롭다운 선택</span>
+                            <span>下拉选择</span>
                         </div>
                     </div>
                     <!-- 날짜 답변 영역 -->
                     <div class="answer-container hidden" data-type="date">
                         <div class="bg-gray-50 border border-gray-200 rounded p-3 text-gray-500 flex items-center">
                             <i class="ri-calendar-line mr-2"></i>
-                            날짜 선택
+                            选择日期
                         </div>
                     </div>
                     <!-- 파일 업로드 답변 영역 -->
@@ -421,8 +420,8 @@
                                 <i class="ri-upload-cloud-line ri-lg"></i>
                             </div>
                             <p class="text-gray-500">
-                                파일을 여기에 끌어다 놓거나 클릭하여 업로드 </p>
-                            <p class="text-xs text-gray-400 mt-1">최대 파일 크기: 10MB</p>
+                                将文件拖放到此处或点击上传</p>
+                            <p class="text-xs text-gray-400 mt-1">最大文件大小：10MB</p>
                         </div>
                     </div>
                     <!-- 이미지 업로드 답변 영역 -->
@@ -432,25 +431,21 @@
                                 <i class="ri-upload-cloud-line ri-lg"></i>
                             </div>
                             <p class="text-gray-500">
-                                이미지를 여기에 끌어다 놓거나 클릭하여 업로드 </p>
-                            <p class="text-xs text-gray-400 mt-1">최대 파일 크기: 10MB</p>
+                                将图片拖放到此处或点击上传</p>
+                            <p class="text-xs text-gray-400 mt-1">最大文件大小：10MB</p>
                         </div>
                     </div>
                     <!--                계층형 문제유형-->
                     <div class="answer-container hidden" data-type="hierarchy">
-                        <!--                    <select class="w-full border border-gray-300 rounded p-2 text-sm" id="hierarchy-levels">-->
-                        <!--                        <option value="2">2단계</option>-->
-                        <!--                        <option value="3" selected>3단계</option>-->
-                        <!--                    </select>-->
                         <div class="hierarchy-grid">
                             <div class="hierarchy-column active" data-level="1">
                                 <div class="p-4 border-b border-gray-200 bg-white rounded-t-lg">
                                     <h4 class="font-semibold text-gray-800 flex items-center justify-between">
-                                        1단계 - 대분류
+                                        第1级 - 大类
                                         <button class="text-sm text-primary font-medium flex items-center"
                                                 data-add-option="1">
                                             <i class="ri-add-line mr-1"></i>
-                                            추가
+                                            添加
                                         </button>
                                     </h4>
                                 </div>
@@ -462,11 +457,11 @@
                             <div class="hierarchy-column active" data-level="2">
                                 <div class="p-4 border-b border-gray-200 bg-white rounded-t-lg">
                                     <h4 class="font-semibold text-gray-800 flex items-center justify-between">
-                                        2단계 - 세부전공
+                                        第2级 - 细分
                                         <button class="text-sm text-primary font-medium flex items-center"
                                                 data-add-option="2">
                                             <i class="ri-add-line mr-1"></i>
-                                            추가
+                                            添加
                                         </button>
                                     </h4>
                                 </div>
@@ -478,11 +473,11 @@
                             <div class="hierarchy-column active" data-level="3">
                                 <div class="p-4 border-b border-gray-200 bg-white rounded-t-lg">
                                     <h4 class="font-semibold text-gray-800 flex items-center justify-between">
-                                        3단계 - 세부분야
+                                        第3级 - 子领域
                                         <button class="text-sm text-primary font-medium flex items-center"
                                                 data-add-option="3">
                                             <i class="ri-add-line mr-1"></i>
-                                            추가
+                                            添加
                                         </button>
                                     </h4>
                                 </div>
@@ -493,14 +488,13 @@
                         </div>
                     </div>
 
-
                     <div class="flex items-center mt-4 pt-4 border-t border-gray-100">
                         <div class="relative inline-block text-left">
                             <button type="button"
                                     class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
                                     id="question-type-menu-button" aria-expanded="false" aria-haspopup="true">
-                                <span class="mr-1">문제 유형:</span>
-                                <span class="font-medium question-type-text">단답형</span>
+                                <span class="mr-1">题型：</span>
+                                <span class="font-medium question-type-text">简答题</span>
                                 <i class="ri-arrow-down-s-line ml-1"></i>
                             </button>
                             <div class="hidden origin-top-left absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
@@ -509,39 +503,39 @@
                                 <div class="py-1" role="none">
                                     <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
                                             role="menuitem" tabindex="-1" data-type="short">
-                                        단답형
+                                        简答题
                                     </button>
                                     <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
                                             role="menuitem" tabindex="-1" data-type="essay">
-                                        서술형
+                                        叙述题
                                     </button>
                                     <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
                                             role="menuitem" tabindex="-1" data-type="multiple">
-                                        객관식 (단일 선택)
+                                        选择题（单选）
                                     </button>
                                     <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
                                             role="menuitem" tabindex="-1" data-type="multiple-checkbox">
-                                        객관식 (다중 선택)
+                                        选择题（多选）
                                     </button>
                                     <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
                                             role="menuitem" tabindex="-1" data-type="dropdown">
-                                        드롭다운
+                                        下拉选择
                                     </button>
                                     <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
                                             role="menuitem" tabindex="-1" data-type="date">
-                                        날짜 답변
+                                        日期回答
                                     </button>
                                     <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
                                             role="menuitem" tabindex="-1" data-type="file">
-                                        파일 업로드
+                                        文件上传
                                     </button>
                                     <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
                                             role="menuitem" tabindex="-1" data-type="image">
-                                        이미지 업로드
+                                        图片上传
                                     </button>
                                     <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
                                             role="menuitem" tabindex="-1" data-type="hierarchy">
-                                        계층형 선택
+                                        层级选择
                                     </button>
 
                                 </div>
@@ -549,18 +543,17 @@
                         </div>
                         <div class="ml-auto flex items-center">
                             <input type="checkbox" class="required-checkbox mr-2">
-                            <label class="text-sm text-gray-700">필수 여부</label>
+                            <label class="text-sm text-gray-700">必填</label>
                         </div>
                     </div>
                 </div>
             </div>
 
-
             <div class="mt-4 flex justify-center">
                 <button id="add-question-btn-bottom"
                         class="flex items-center text-primary font-medium px-4 py-2 rounded-button border border-primary bg-white whitespace-nowrap">
                     <i class="ri-add-line mr-2"></i>
-                    문제 추가하기
+                    添加题目
                 </button>
             </div>
         </div>
@@ -570,15 +563,15 @@
         <div id="right-sidebar"
              class="w-72 shrink-0 ml-6 hidden fixed top-0 right-0 h-full z-40 sm:block sm:relative sm:h-auto sm:right-auto">
             <div class="bg-white rounded-lg shadow-sm sticky top-20 p-4">
-                <h2 class="text-lg font-semibold mb-4">설정</h2>
+                <h2 class="text-lg font-semibold mb-4">设置</h2>
 
                 <div class="border-t border-gray-100 my-4"></div>
                 <!-- 설문지 설정 -->
                 <div id="survey-settings">
-                    <h3 class="font-medium text-gray-700 mb-3">설문지 설정</h3>
+                    <h3 class="font-medium text-gray-700 mb-3">问卷设置</h3>
                     <div class="space-y-4">
                         <div>
-                            <label class="text-sm text-gray-600 block mb-1">응답 기간</label>
+                            <label class="text-sm text-gray-600 block mb-1">填写期限</label>
                             <div class="flex items-center space-x-2">
                                 <input id="start-date" type="date"
                                        th:value="${survey != null ? survey.startDate : ''}"/>
@@ -589,7 +582,7 @@
                             </div>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">공개 여부</span>
+                            <span class="text-sm text-gray-600">公开</span>
                             <label class="custom-switch">
                                 <input id="isPublic" name="isShare" type="checkbox"
                                        th:checked="${survey == null or survey.isShare}"/>
@@ -598,26 +591,26 @@
                             </label>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">응답자 정보 수집</span>
+                            <span class="text-sm text-gray-600">收集答题者信息</span>
                             <label class="custom-switch">
                                 <input type="checkbox" checked/>
                                 <span class="slider"></span>
                             </label>
                         </div>
                         <div class="flex items-center justify-between">
-                            <label class="text-sm text-gray-600">설문지 유형</label>
+                            <label class="text-sm text-gray-600">问卷类型</label>
                             <select id="survey-type" name="surveyType"
                                     class="border border-gray-300 text-sm rounded px-2 py-1">
                                 <option value="normal"
                                         th:selected="${survey != null and survey.surveyType == 'NORMAL'}">
-                                    일반
+                                    普通
                                 </option>
                                 <option value="student"
                                         th:selected="${survey != null and survey.surveyType == 'STUDENT'}">
-                                    학생
+                                    学生
                                 </option>
                                 <option value="promotion"
-                                        th:selected="${survey != null and survey.surveyType == 'PROMOTION'}">홍보 수수료
+                                        th:selected="${survey != null and survey.surveyType == 'PROMOTION'}">推广佣金
                                 </option>
                             </select>
                         </div>
@@ -704,14 +697,13 @@
         else if (level === 2 && parentId && store.hierarchyData[parentId]) options = store.hierarchyData[parentId];
         else if (level === 3 && parentId && store.hierarchySubData[parentId]) options = store.hierarchySubData[parentId];
 
-
         options.forEach((option) => {
             const optionDiv = document.createElement("div");
             optionDiv.className = "hierarchy-option group relative";
             optionDiv.setAttribute("data-option-id", option.id);
             optionDiv.setAttribute("data-parent", parentId);
             optionDiv.innerHTML = `
-        <input type="text" value="${option.text}" placeholder="옵션명 입력">
+        <input type="text" value="${option.text}" placeholder="输入选项名称">
         <button class="absolute top-2 right-2 w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100" data-delete-option>
             <i class="ri-close-line text-xs"></i>
         </button>
@@ -812,7 +804,7 @@
 
             const container = questionContainer.querySelector(`[data-options-container="${level}"]`);
             const newOptionId = `${level}-${store.hierarchyOptionCount[level] + 1}`;
-            const newOptionText = "옵션";
+            const newOptionText = "选项";
 
             if (level === 1) {
                 store.firstHierarchyData.push({id: newOptionId, text: newOptionText});
@@ -822,7 +814,7 @@
                 const parentId = store.selectedOptions[level - 1];
 
                 if (!parentId || parentId === "") {
-                    alert(`⚠️ ${level - 1}단계에서 옵션을 먼저 선택해주세요.`);
+                    alert(`⚠️ 请先在第${level - 1}级选择一个选项。`);
                     return;
                 }
 
@@ -882,7 +874,7 @@
                     }
                 }
             } else {
-                alert("각 계층에는 최소 2개의 옵션이 필요합니다.");
+                alert("每个层级至少需要 2 个选项。");
             }
         }
     });
@@ -1041,12 +1033,12 @@
 
     async function saveForm() {
         console.log("save button click");
-        const titleInput = document.querySelector(
-            'input[placeholder="설문조사 제목을 입력하세요"]'
-        );
+
+        // [수정] placeholder 텍스트에 의존하면 다국어(중국어)에서 깨짐 → id로 직접 선택
+        const titleInput = document.getElementById("survey-title");
 
         if (!titleInput.value.trim()) {
-            window.showToast("error", "설문조사 제목을 입력해주세요");
+            window.showToast("error", "请输入问卷标题");
             titleInput.focus();
             return;
         }
@@ -1057,24 +1049,24 @@
         //저장 가능 체크
         if (questions == null) {
             console.log("questions is null");
-            window.showToast("error", "설문조사 문항을 제대로 입력해주세요");
+            window.showToast("error", "请正确填写问卷题目");
             return;
         }
 
         if (questions.length === 0) {
-            window.showToast("error", "문제를 하나 이상 추가해주세요");
+            window.showToast("error", "请至少添加一道题");
             return;
         }
 
         if (!validateDateRange()) {
-            window.showToast("error", "날짜를 다시 확인해주세요");
+            window.showToast("error", "请检查日期范围");
             return;
         }
 
         const originalContent = saveButton.innerHTML;
         saveButton.innerHTML = `
         <i class="ri-loader-4-line loading-spinner mr-2"></i>
-        저장 중...
+        保存中...
     `;
         saveButton.disabled = true;
 
@@ -1115,10 +1107,10 @@
 
             if (!response.ok) throw new Error("저장 실패");
 
-            window.showToast("success", "설문조사가 저장되었습니다");
+            window.showToast("success", "问卷已保存");
             window.location.href = "/survey/list?folderId=" + folderId;
         } catch (error) {
-            window.showToast("error", "저장 중 오류가 발생했습니다", true);
+            window.showToast("error", "保存过程中发生错误", true);
         } finally {
             saveButton.innerHTML = originalContent;
             saveButton.disabled = false;
@@ -1171,7 +1163,7 @@
                 <div class="w-6 h-6 flex items-center justify-center mr-2">
                     <div class="w-4 h-4 rounded-full border border-gray-400"></div>
                 </div>
-                <input type="text" placeholder="옵션 ${optionCount + 1}" class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none">
+                <input type="text" placeholder="选项 ${optionCount + 1}" class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none">
                 <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                     <i class="ri-delete-bin-line"></i>
                 </button>`;
@@ -1180,13 +1172,13 @@
                 <div class="w-6 h-6 flex items-center justify-center mr-2">
                     <div class="w-4 h-4 rounded border border-gray-400"></div>
                 </div>
-                <input type="text" placeholder="옵션 ${optionCount + 1}" class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none">
+                <input type="text" placeholder="选项 ${optionCount + 1}" class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none">
                 <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                     <i class="ri-delete-bin-line"></i>
                 </button>`;
         } else if (type === "dropdown") {
             wrapper.innerHTML = `
-                <input type="text" placeholder="옵션 ${optionCount + 1}" class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none">
+                <input type="text" placeholder="选项 ${optionCount + 1}" class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none">
                 <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                     <i class="ri-delete-bin-line"></i>
                 </button>`;
@@ -1198,7 +1190,7 @@
 
             selectWrapper.innerHTML = `
         <select class="jump-target-select border border-gray-300 text-sm rounded p-1">
-            <option value="">선택 시 이동할 문항</option>
+            <option value="">选择后跳转到题目</option>
             <!-- 여기에는 JS에서 동적으로 채워짐 -->
         </select>
 `;
@@ -1213,14 +1205,14 @@
             const selects = question.querySelectorAll(".jump-target-select");
             selects.forEach(select => {
                 const currentValue = select.value;
-                select.innerHTML = '<option value="">선택 시 이동할 문항</option>';
+                select.innerHTML = '<option value="">选择后跳转到题目</option>';
 
                 for (let i = index + 1; i < allQuestions.length; i++) {
                     // const targetQuestion = allQuestions[i];
                     const displayNumber = i + 1; // 순서대로 1, 2, 3처럼 표기
                     const option = document.createElement("option");
                     option.value = displayNumber;
-                    option.textContent = `${displayNumber}번 문항`; // UI에 보이는 순서 기준
+                    option.textContent = `第${displayNumber}题`; // UI에 보이는 순서 기준
                     if (String(displayNumber) === currentValue) option.selected = true;
                     select.appendChild(option);
                 }
@@ -1230,11 +1222,9 @@
 
     document.addEventListener("click", function (event) {
         // ✅ 옵션 추가 버튼 처리
-        const addButton = event.target.closest("button");
-        if (
-            addButton &&
-            addButton.textContent.trim().includes("옵션 추가")
-        ) {
+        // [수정] 버튼 텍스트(“옵션 추가”)에 의존하면 다국어에서 깨짐 → 클래스 기반으로 처리
+        const addButton = event.target.closest(".add-option-button");
+        if (addButton) {
             const container = addButton.closest(
                 '.answer-container[data-type="multiple"], .answer-container[data-type="multiple-checkbox"], .answer-container[data-type="dropdown"]'
             );
@@ -1252,12 +1242,11 @@
             updateJumpTargets();
 
             // 옵션 placeholder 재정렬
+            // [수정] placeholder 접두어(“옵션”)에 의존하면 번역 시 깨짐 → 무조건 순번으로 갱신
             const inputs = optionsContainer.querySelectorAll('input[type="text"]');
             let count = 1;
             inputs.forEach(input => {
-                if (input.placeholder.startsWith("옵션")) {
-                    input.placeholder = `옵션 ${count++}`;
-                }
+                input.placeholder = `选项 ${count++}`;
             });
         }
 
@@ -1273,7 +1262,7 @@
                 console.log("현재 옵션 개수:", optionCount);
 
                 if (optionCount < 4) {
-                    alert("최소 2개의 옵션이 필요합니다.");
+                    alert("至少需要 2 个选项。");
                 } else {
                     const optionRow = deleteBtn.closest("div.flex.items-center");
                     if (optionRow) {
@@ -1332,17 +1321,17 @@
         const typeText = questionElement.querySelector(".question-type-text");
         if (typeText) {
             const typeLabels = {
-                short: "단답형",
-                essay: "서술형",
-                multiple: "객관식 (단일 선택)",
-                "multiple-checkbox": "객관식 (다중 선택)",
-                dropdown: "드롭다운",
-                date: "날짜 답변",
-                file: "파일 업로드",
-                image: "이미지 업로드",
-                hierarchy: "계층형 선택"
+                short: "简答题",
+                essay: "叙述题",
+                multiple: "选择题（单选）",
+                "multiple-checkbox": "选择题（多选）",
+                dropdown: "下拉选择",
+                date: "日期回答",
+                file: "文件上传",
+                image: "图片上传",
+                hierarchy: "层级选择"
             };
-            typeText.textContent = typeLabels[type] || "단답형";
+            typeText.textContent = typeLabels[type] || "简答题";
         }
     }
 
@@ -1418,6 +1407,8 @@
     // export window functions
     window.addQuestion = addQuestion;
 </script>
+
+<!-- 이하 스크립트들은 로직 변경 없이(문구만) 번역된 상태이며, 원본 구조 유지 -->
 <script id="dataLoad" th:inline="javascript" type="module">
     function renderExistingQuestions(survey) {
         survey.questions.forEach((q) => {
@@ -1460,13 +1451,10 @@
                         input.dataset.nextQuestion = nextQuestion;
                         input.dataset.realNextQuestion = realNextQuestion;
                         input.dataset.id = optionId;
-                        // input.setAttribute("data-next-question", nextQuestion);
-                        // input.setAttribute("data-real-next-question", realNextQuestion);
                     } else {
                         const newOption = createOptionElement(questionType, index);
                         optionsContainer.insertBefore(newOption, addButton);
 
-                        // setTimeout(() => {
                         const newInputs = optionsContainer.querySelectorAll("input[type='text']");
                         const newInput = newInputs[index];
                         if (newInput) {
@@ -1478,7 +1466,6 @@
                         } else {
                             console.warn(`옵션 ${index + 1}용 input 찾을 수 없음`);
                         }
-                        // }, 10);
                     }
                 });
 
@@ -1490,7 +1477,7 @@
                 q.options.forEach((option) => {
                     const level = option.level;
                     const parentId = option.parentOptionId ?? null;
-                    const text = option.text ?? "옵션";
+                    const text = option.text ?? "选项";
                     const id = option.hierarchyId;
                     const optionId = option.optionId;
                     if (level === 1) {
@@ -1522,7 +1509,6 @@
                 if (targetId === 0) return;
                 console.log("targetId:", targetId);
 
-                // 바로 아래에 있는 select 찾기 (HTML 구조에 맞춰서 보장됨)
                 const select = input.closest(".flex")?.querySelector(".jump-target-select")
                     || input.parentElement?.querySelector(".jump-target-select");
 
@@ -1543,7 +1529,7 @@
     try {
         const survey = /*[[${survey}]]*/ null;
         if (survey && survey.questions?.length > 0) {
-            document.getElementById("survey-title").value = survey.title || "새 설문조사";
+            document.getElementById("survey-title").value = survey.title || "新问卷";
             // 설명
             document.querySelector("textarea").value = survey.description || "";
 
@@ -1567,7 +1553,6 @@
         console.warn("survey 데이터 없음");
     }
 </script>
-
 
 <script id="change_template" type="module">
     const surveyTypeSelect = document.getElementById('survey-type');
@@ -1644,7 +1629,7 @@
                     q.options?.forEach(option => {
                         const level = option.level;
                         const parentId = option.parentOptionId ?? null;
-                        const text = option.text ?? '옵션';
+                        const text = option.text ?? '选项';
                         const id = option.hierarchyId;
                         const optionId = option.optionId;
 
@@ -1670,7 +1655,7 @@
             updateJumpTargets();
         } catch (e) {
             console.warn("템플릿 불러오기 실패:", e);
-            window.showToast("error", "템플릿 불러오기에 실패했습니다");
+            window.showToast("error", "模板加载失败");
         }
     });
 </script>
