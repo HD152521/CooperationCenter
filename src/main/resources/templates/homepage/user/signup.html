@@ -173,7 +173,7 @@
                             查看
                         </button>
                     </div>
-                    <div class="flex items-center">
+                    <mlㅇdiv class="flex items-center">
                         <div class="relative w-5 h-5 mr-2">
                             <input type="checkbox" id="agreeMarketing" name="agreeMarketing" class="sr-only"/>
                             <div class="w-5 h-5 border border-gray-300 rounded cursor-pointer flex items-center justify-center"
@@ -182,7 +182,7 @@
                             </div>
                         </div>
                         <label for="agreeMarketing" class="text-sm text-gray-700 cursor-pointer">同意接收营销信息（可选）</label>
-                    </div>
+                    </mlㅇdiv>
                 </div>
             </div>
             <!-- 버튼 영역 -->
@@ -577,6 +577,8 @@
             const buttons = document.querySelectorAll("[data-agency-mode]");
             const existingSection = document.getElementById("agency-existing-section");
             const newSection = document.getElementById("agency-new-section");
+
+            if (!existingSection || !newSection || buttons.length === 0) return;
 
             let currentMode = "existing";
             window.currentMode = currentMode;

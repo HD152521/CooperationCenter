@@ -309,54 +309,53 @@ public class SurveySaveService {
                 new QuestionDto(
                         null,
                         "hierarchy",
-                        "학/석사 선택",
+                        "本科/硕士选择",
                         "",
                         List.of(
                                 // ====== Level 1 (학사 / 석사) ======
-                                new OptionDto(0, null, "학사", null, null, "1-1", 1),
-                                new OptionDto(0, null, "석사", null, null, "1-2", 1),
+                                new OptionDto(0, null, "本科", null, null, "1-1", 1),
+                                new OptionDto(0, null, "硕士", null, null, "1-2", 1),
 
                                 // ====== Level 2: 학사 계열 단과대학 ======
-                                new OptionDto(0, null, "소프트웨어융합대학", null, "1-1", "2-1", 2),
-                                new OptionDto(0, null, "자연과학대학", null, "1-1", "2-2", 2),
+                                new OptionDto(0, null, "软件融合学院", null, "1-1", "2-1", 2),
+                                new OptionDto(0, null, "自然科学学院", null, "1-1", "2-2", 2),
 
                                 // ====== Level 3: 소프트웨어융합대학 학과 ======
-                                new OptionDto(0, null, "컴퓨터공학과", null, "2-1", "3-1", 3),
-                                new OptionDto(0, null, "지능기전공학과", null, "2-1", "3-2", 3),
+                                new OptionDto(0, null, "计算机工程系", null, "2-1", "3-1", 3),
+                                new OptionDto(0, null, "智能机电工程系", null, "2-1", "3-2", 3),
 
                                 // ====== Level 3: 자연과학대학 학과 ======
-                                new OptionDto(0, null, "물리천문학과", null, "2-2", "3-3", 3),
-                                new OptionDto(0, null, "수학통계학과", null, "2-2", "3-4", 3),
+                                new OptionDto(0, null, "物理天文学系", null, "2-2", "3-3", 3),
+                                new OptionDto(0, null, "数学统计学系", null, "2-2", "3-4", 3),
 
                                 // ====== Level 2: 석사 계열 단과대학 ======
-                                new OptionDto(0, null, "자연과학", null, "1-2", "2-3", 2),
-                                new OptionDto(0, null, "공학", null, "1-2", "2-4", 2),
+                                new OptionDto(0, null, "自然科学", null, "1-2", "2-3", 2),
+                                new OptionDto(0, null, "工学", null, "1-2", "2-4", 2),
 
                                 // ====== Level 3: 석사 계열 학과 ======
-                                new OptionDto(0, null, "수학과", null, "2-3", "3-5", 3),
-                                new OptionDto(0, null, "응용통계학과", null, "2-3", "3-6", 3),
-                                new OptionDto(0, null, "건축공학과", null, "2-4", "3-7", 3),
-                                new OptionDto(0, null, "건설환경공학과", null, "2-4", "3-8", 3)
+                                new OptionDto(0, null, "数学系", null, "2-3", "3-5", 3),
+                                new OptionDto(0, null, "应用统计学系", null, "2-3", "3-6", 3),
+                                new OptionDto(0, null, "建筑工程系", null, "2-4", "3-7", 3),
+                                new OptionDto(0, null, "建设环境工程系", null, "2-4", "3-8", 3)
                         ),
                         0,
                         true,
                         "degreeZip"
-                )
-                ,
-                new QuestionDto(null, "short", "중국어이름", "", null, 0, true, "chineseName"),
-                new QuestionDto(null, "short", "영문이름", "", null, 0, true, "englishName"),
-                new QuestionDto(null, "date", "생년월일", "", null, 0, true, "birthDate"),
-                new QuestionDto(null, "multiple", "성별", "", List.of(
-                        new OptionDto(0, null, "남성", null,null,null,0),
-                        new OptionDto(0, null, "여성", null,null,null,0)
+                ),
+                new QuestionDto(null, "short", "中文姓名", "", null, 0, true, "chineseName"),
+                new QuestionDto(null, "short", "英文姓名", "", null, 0, true, "englishName"),
+                new QuestionDto(null, "date", "出生日期", "", null, 0, true, "birthDate"),
+                new QuestionDto(null, "multiple", "性别", "", List.of(
+                        new OptionDto(0, null, "男", null, null, null, 0),
+                        new OptionDto(0, null, "女", null, null, null, 0)
                 ), 0, true, "gender"),
 
-                new QuestionDto(null, "short", "학생 메일", "", null, 0, true, "studentEmail"),
-                new QuestionDto(null, "short", "여권 번호", "", null, 0, true, "passportNumber"),
-                new QuestionDto(null, "short", "수험 번호", "", null, 0, true, "examNumber"),
-                new QuestionDto(null, "short", "유학원 담당자 위챗", "", null, 0, true, "agentWechat"),
-                new QuestionDto(null, "short", "유학원 담당자 이메일", "", null, 0, true, "agentEmail"),
-                new QuestionDto(null, "short", "긴급연락처", "", null, 0, true, "emergencyContactNum")
+                new QuestionDto(null, "short", "学生邮箱", "", null, 0, true, "studentEmail"),
+                new QuestionDto(null, "short", "护照号码", "", null, 0, true, "passportNumber"),
+                new QuestionDto(null, "short", "准考证号", "", null, 0, true, "examNumber"),
+                new QuestionDto(null, "short", "留学机构负责人微信", "", null, 0, true, "agentWechat"),
+                new QuestionDto(null, "short", "留学机构负责人邮箱", "", null, 0, true, "agentEmail"),
+                new QuestionDto(null, "short", "紧急联系方式", "", null, 0, true, "emergencyContactNum")
         );
     }
 
