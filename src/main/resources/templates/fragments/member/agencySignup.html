@@ -2,77 +2,80 @@
     <div class="space-y-5">
         <!-- 유학원 이름 -->
         <div>
-            <label for="agencyName" class="block text-sm font-medium text-gray-700 mb-1">유학원 이름 <span
+            <label for="agencyName" class="block text-sm font-medium text-gray-700 mb-1">留学机构名称 <span
                     class="text-red-500">*</span></label>
             <input type="text" id="agencyName" name="agencyName" required
                    class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                   placeholder="글로벌 유학원"/>
+                   placeholder="全球留学机构"/>
         </div>
+
         <!-- 대표자 전화번호 -->
         <div>
-            <label for="owner" class="block text-sm font-medium text-gray-700 mb-1">대표자 성함 <span
+            <label for="owner" class="block text-sm font-medium text-gray-700 mb-1">负责人姓名 <span
                     class="text-red-500">*</span></label>
             <input type="text" id="owner" name="owner" required
                    class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                   placeholder="김**"/>
+                   placeholder="金**"/>
             <p class="mt-1 text-sm text-gray-500">
-                대표자 성함을 입력해주세요. </p>
+                请输入负责人姓名。 </p>
         </div>
+
         <div>
-            <label for="owner" class="block text-sm font-medium text-gray-700 mb-1">대표자 이메일 <span
+            <label for="owner" class="block text-sm font-medium text-gray-700 mb-1">负责人邮箱 <span
                     class="text-red-500">*</span></label>
             <input type="email" id="agencyEmail" name="agencyEmail" required
                    class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
                    placeholder="adf@asdf.com"/>
             <p class="mt-1 text-sm text-gray-500">
-                대표자 이메일을 입력해주세요 </p>
+                请输入负责人邮箱 </p>
         </div>
+
         <div>
-            <label for="agencyPhone" class="block text-sm font-medium text-gray-700 mb-1">유학원 전화번호 <span
+            <label for="agencyPhone" class="block text-sm font-medium text-gray-700 mb-1">留学机构电话 <span
                     class="text-red-500">*</span></label>
             <input type="tel" id="agencyPhone" name="agencyPhone" required
                    class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
                    placeholder="010-1234-5678"/>
             <p class="mt-1 text-sm text-gray-500">
-                '-' 없이 숫자만 입력해주세요 </p>
+                请输入数字（不含“-”） </p>
         </div>
 
         <!-- 유학원 위치 -->
         <div>
-            <label for="agencyAddress" class="block text-sm font-medium text-gray-700 mb-1">유학원 위치 <span
+            <label for="agencyAddress" class="block text-sm font-medium text-gray-700 mb-1">留学机构地址 <span
                     class="text-red-500">*</span></label>
             <div class="flex gap-3 mb-2">
                 <input type="text" id="agencyAddress" name="agencyAddress" readonly required
                        class="w-32 px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                       placeholder="우편번호"/>
+                       placeholder="邮政编码"/>
                 <button type="button" id="searchAgencyAddress"
                         class="whitespace-nowrap !rounded-button bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 font-medium transition"
                         onclick="openPostcode('agency')">
-                    한국 주소 검색
+                    搜索韩国地址
                 </button>
                 <button type="button"
                         class="whitespace-nowrap !rounded-button bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-3 font-medium transition openChineseModal"
                         data-target="agency">
-                    중국 주소 검색
+                    搜索中国地址
                 </button>
             </div>
             <input type="text" id="agencyAddress1" name="agencyAddress1" readonly required
                    class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition mb-2"
-                   placeholder="기본 주소"/>
+                   placeholder="基本地址"/>
             <input type="text" id="agencyAddress2" name="agencyAddress2" required
                    class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                   placeholder="상세 주소"/>
+                   placeholder="详细地址"/>
         </div>
 
         <!-- 유학원 지역 선택 -->
         <div>
             <label for="agencyRegion" class="block text-sm font-medium text-gray-700 mb-1">
-                유학원 지역 <span class="text-red-500">*</span></label>
+                留学机构地区 <span class="text-red-500">*</span></label>
             <div class="relative">
                 <select id="agencyRegion" name="agencyRegion" required
                         class="w-full px-4 py-3 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary outline-none transition appearance-none pr-8">
                     <option value="" disabled selected>
-                        지역을 선택해주세요
+                        请选择地区
                     </option>
 
                 </select>
@@ -81,9 +84,10 @@
                 </div>
             </div>
         </div>
+
         <!-- 유학원 대표 이미지 업로드 -->
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">유학원 대표 이미지 <span
+            <label class="block text-sm font-medium text-gray-700 mb-1">留学机构主图 <span
                     class="text-red-500">*</span></label>
             <div id="imageDropArea" class="file-drop-area">
                 <div class="flex flex-col items-center">
@@ -91,30 +95,31 @@
                         <i class="ri-image-add-line text-gray-500 ri-xl"></i>
                     </div>
                     <p class="text-sm text-gray-700 font-medium">
-                        이미지를 여기에 끌어다 놓거나 </p>
+                        将图片拖拽到此处，或 </p>
                     <p class="text-sm text-gray-500 mb-3">
-                        JPG, PNG, GIF 파일 (최대 5MB) </p>
+                        JPG、PNG、GIF 文件（最多 5MB） </p>
                     <label for="agencyImage"
                            class="whitespace-nowrap !rounded-button bg-primary hover:bg-primary/90 text-white px-4 py-2 font-medium transition cursor-pointer">
-                        파일 선택
+                        选择文件
                     </label>
                     <input type="file" id="agencyImage" name="agencyImage"
                            accept="image/jpeg, image/png, image/gif" class="hidden"/>
                 </div>
                 <div id="imagePreviewContainer" class="hidden mt-4">
-                    <img id="imagePreview" src="#" alt="미리보기" class="preview-image mx-auto"/>
+                    <img id="imagePreview" src="#" alt="预览" class="preview-image mx-auto"/>
                     <div class="flex justify-center mt-2">
                         <button type="button" id="removeImage"
                                 class="text-sm text-red-500 hover:text-red-700">
-                            삭제
+                            删除
                         </button>
                     </div>
                 </div>
             </div>
         </div>
+
         <!-- 사업자 등록증 업로드 -->
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">사업자 등록증 <span
+            <label class="block text-sm font-medium text-gray-700 mb-1">营业执照 <span
                     class="text-red-500">*</span></label>
             <div id="licenseDropArea" class="file-drop-area">
                 <div class="flex flex-col items-center">
@@ -122,12 +127,12 @@
                         <i class="ri-file-upload-line text-gray-500 ri-xl"></i>
                     </div>
                     <p class="text-sm text-gray-700 font-medium">
-                        파일을 여기에 끌어다 놓거나 </p>
+                        将文件拖拽到此处，或 </p>
                     <p class="text-sm text-gray-500 mb-3">
-                        PDF, JPG, PNG 파일 (최대 10MB) </p>
+                        PDF、JPG、PNG 文件（最多 10MB） </p>
                     <label for="businessLicense"
                            class="whitespace-nowrap !rounded-button bg-primary hover:bg-primary/90 text-white px-4 py-2 font-medium transition cursor-pointer">
-                        파일 선택
+                        选择文件
                     </label>
                     <input type="file" id="businessLicense" name="businessLicense"
                            accept="application/pdf, image/jpeg, image/png" class="hidden" required/>

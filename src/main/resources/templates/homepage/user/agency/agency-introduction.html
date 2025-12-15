@@ -2,7 +2,7 @@
 <html th:replace="~{fragments/layout/main-layout :: main-layout(~{::head}, ~{::body}, ~{::script})}"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>유학원 정보 - 유학 정보 플랫폼</title>
+    <title>留学机构信息 - 留学信息平台</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
     <style>
         :where([class^="ri-"])::before {
@@ -21,11 +21,13 @@
                 <div>
                     <h1 class="text-3xl font-bold text-gray-900">查找留学机构</h1>
                     <p class="mt-2 text-lg text-gray-600">
-                        查找可信赖的专业留学咨询机构. </p>
+                        查找可信赖的专业留学咨询机构。
+                    </p>
                 </div>
             </div>
         </div>
     </div>
+
     <!-- 필터 섹션 -->
     <div class="bg-white shadow-sm mt-4">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -40,11 +42,12 @@
                     <input type="text" id="searchKeyword" th:placeholder="${keyword}"
                            class="pl-10 pr-4 py-2 w-full border border-gray-300 !rounded-button focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm"/>
                 </div>
+
                 <!-- 지역 필터 -->
                 <div class="relative inline-block text-left" id="region-filter">
                     <button id="region-menu-button" type="button"
                             class="inline-flex justify-between items-center w-full px-4 py-2 border border-gray-300 !rounded-button bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
-                        <span>지역</span>
+                        <span>地区</span>
                         <span class="w-5 h-5 ml-2 flex items-center justify-center">
                             <i class="ri-arrow-down-s-line"></i>
                         </span>
@@ -54,10 +57,14 @@
                             id="region-menu"
                     >
                         <div class="class= py-1 max-h-60 overflow-y-auto region-menu-list" role="none">
-                            <button type="button" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">전체</button>
+                            <button type="button"
+                                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                全部
+                            </button>
                         </div>
                     </div>
                 </div>
+
                 <div>
                     <!--                    검색 버튼-->
                     <button id="searchButton" type="submit"
@@ -68,25 +75,26 @@
             </div>
         </div>
     </div>
+
     <!-- 목록 보기 섹션 -->
     <div id="list-view" class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="mb-6 flex justify-between items-center">
             <h2 class="text-xl font-semibold text-gray-900">
-                총 <span class="text-primary" th:text="${agencyDto.totalElements}">0</span>개의 유학원 </h2>
+                共 <span class="text-primary" th:text="${agencyDto.totalElements}">0</span> 家留学机构
+            </h2>
         </div>
+
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <th:block th:each="agency : ${agencyDto}">
                 <div th:replace="~{fragments/agency/agencyCard :: card(${agency})}"></div>
             </th:block>
         </div>
 
-        <!--        <div th:replace="~{fragments/common/pagination :: pagination(page=${agencyDto}, maxButtons=5)}"></div>-->
-
         <!-- TODO: Pagination 컴포넌트 구현하기-->
         <div class="mt-8 flex justify-center items-center space-x-2" th:if="${agencyDto.totalPages > 0}">
             <!-- 이전 버튼 -->
             <a th:if="${agencyDto.hasPrevious()}" th:href="@{/agency/list(page=${agencyDto.number - 1})}"
-               class="px-3 py-1 rounded border text-sm text-gray-700 hover:bg-gray-100">이전</a>
+               class="px-3 py-1 rounded border text-sm text-gray-700 hover:bg-gray-100">上一页</a>
 
             <!-- 페이지 번호 -->
             <span th:each="pageNum : ${#numbers.sequence(0, agencyDto.totalPages - 1)}">
@@ -96,9 +104,10 @@
                              'px-3 py-1 rounded border text-sm text-gray-700 hover:bg-gray-100'">
                 </a>
             </span>
+
             <!-- 다음 버튼 -->
             <a th:if="${agencyDto.hasNext()}" th:href="@{/agency/list(page=${agencyDto.number + 1})}"
-               class="px-3 py-1 rounded border text-sm text-gray-700 hover:bg-gray-100">다음</a>
+               class="px-3 py-1 rounded border text-sm text-gray-700 hover:bg-gray-100">下一页</a>
         </div>
 
     </div>
@@ -145,16 +154,22 @@
                                 : [];
 
                 list.innerHTML = ""; // 초기화
-                const btn = document.createElement("button");
-                btn.type = "button";
-                btn.className = "block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100";
-                btn.textContent = "전체";
-                list.appendChild(btn);
+
+                // ✅ "전체"를 화면에는 "全部"로 보여주되,
+                //    실제 검색 파라미터(region)는 비워서(=전체) 백엔드 호환 유지
+                const allBtn = document.createElement("button");
+                allBtn.type = "button";
+                allBtn.className = "block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100";
+                allBtn.textContent = "全部";
+                allBtn.dataset.value = ""; // region 파라미터를 비움
+                list.appendChild(allBtn);
+
                 regions.forEach(region => {
                     const btn = document.createElement("button");
                     btn.type = "button";
                     btn.className = "block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100";
                     btn.textContent = region;
+                    btn.dataset.value = region; // 실제 값(백엔드 전달용)
                     list.appendChild(btn);
                 });
 
@@ -163,18 +178,19 @@
                 return;
             }
 
-
-
             // 5) 버튼 클릭 시 선택값 반영 (이벤트 위임)
             list.addEventListener("click", (e) => {
                 const target = e.target;
                 if (!target.matches("button")) return;
 
-                selectedRegion = target.textContent.trim();
+                selectedRegion = (target.dataset.value ?? "").trim();
+
+                // 버튼에는 화면용 텍스트를 표시
                 const labelSpan = menuButton.querySelector("span");
                 if (labelSpan) {
-                    labelSpan.textContent = selectedRegion;
+                    labelSpan.textContent = target.textContent.trim();
                 }
+
                 menu.classList.add("hidden");
             });
 
@@ -191,7 +207,6 @@
                     window.location.href = `/agency/list?${params.toString()}`;
                 });
             }
-
         }
 
         initRegionFilter().then();

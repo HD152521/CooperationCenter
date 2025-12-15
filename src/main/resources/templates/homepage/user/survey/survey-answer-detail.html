@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html th:replace="~{fragments/layout/base :: base(~{::head}, ~{::body})}"
-      xmlns:th="http://www.thymeleaf.org" lang="ko">
+      xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
 <head>
-    <title>응답자 상세 정보</title>
+    <title>受访者详细信息</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
     <style>
         :where([class^="ri-"])::before { content: "\f3c2"; }
@@ -60,13 +60,14 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div class="flex items-center justify-between whitespace-nowrap w-full">
             <div th:if="${isAdmin}" class="flex items-center gap-4">
-                <a th:href="@{'/survey/log/list/'+${answerLog.surveyId}}" class="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+                <a th:href="@{'/survey/log/list/'+${answerLog.surveyId}}"
+                   class="flex items-center gap-2 text-gray-600 hover:text-gray-900">
                     <i class="ri-arrow-left-line"></i>
-                    <span>응답 목록으로 돌아가기</span>
+                    <span>返回答卷列表</span>
                 </a>
             </div>
             <div class="flex items-center gap-4 ml-auto shrink-0">
-                <div class="text-sm text-gray-500" th:text="${answerLog.logDto.submitTime}">2025년 7월 1일 화요일</div>
+                <div class="text-sm text-gray-500" th:text="${answerLog.logDto.submitTime}">2025年7月1日 星期二</div>
                 <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
                     <i class="ri-user-line text-gray-600"></i>
                 </div>
@@ -83,31 +84,38 @@
         <div class="bg-white rounded-lg shadow p-6 mb-6">
             <div class="flex flex-col md:flex-row justify-between gap-6">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900" th:text="${answerLog.surveyTitle}">고객 만족도 조사 2025</h1>
-                    <p class="text-sm text-gray-500 mt-1" th:text="${answerLog.surveyStartDate}+' ~ '+${answerLog.surveyEndDate}">2025.06.20 - 2025.07.01</p>
+                    <h1 class="text-2xl font-bold text-gray-900"
+                        th:text="${answerLog.surveyTitle}">2025客户满意度调查</h1>
+                    <p class="text-sm text-gray-500 mt-1"
+                       th:text="${answerLog.surveyStartDate}+' ~ '+${answerLog.surveyEndDate}">2025.06.20 - 2025.07.01</p>
                 </div>
                 <div class="flex flex-wrap gap-3">
                     <!-- 내보내기/인쇄 버튼 필요시 복구 -->
                 </div>
             </div>
+
             <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="p-4 bg-gray-50 rounded-lg">
-                    <div class="text-sm text-gray-500">응답자</div>
-                    <div class="mt-1 text-lg font-medium text-gray-900" th:text="${answerLog.logDto.memberName}">김민준</div>
-                    <div class="text-sm text-gray-500" th:text="${answerLog.logDto.memberEmail}">minjun@example.com</div>
+                    <div class="text-sm text-gray-500">受访者</div>
+                    <div class="mt-1 text-lg font-medium text-gray-900"
+                         th:text="${answerLog.logDto.memberName}">김민준</div>
+                    <div class="text-sm text-gray-500"
+                         th:text="${answerLog.logDto.memberEmail}">minjun@example.com</div>
                 </div>
                 <div class="p-4 bg-gray-50 rounded-lg">
-                    <div class="text-sm text-gray-500">응답 완료 시간</div>
-                    <div class="mt-1 text-lg font-medium text-gray-900" th:text="${answerLog.logDto.submitTime}">2025.06.26 09:23</div>
+                    <div class="text-sm text-gray-500">提交时间</div>
+                    <div class="mt-1 text-lg font-medium text-gray-900"
+                         th:text="${answerLog.logDto.submitTime}">2025.06.26 09:23</div>
                 </div>
                 <div class="p-4 bg-gray-50 rounded-lg">
-                    <div class="text-sm text-gray-500">총 소요 시간</div>
-                    <div class="mt-1 text-lg font-medium text-gray-900" th:text="${answerLog.logDto.spendTime / 60} + '분 ' + (${answerLog.logDto.spendTime} % 60) + '초'">5분 32초</div>
+                    <div class="text-sm text-gray-500">总耗时</div>
+                    <div class="mt-1 text-lg font-medium text-gray-900"
+                         th:text="${answerLog.logDto.spendTime / 60} + '分 ' + (${answerLog.logDto.spendTime} % 60) + '秒'">5分 32秒</div>
                 </div>
                 <div class="p-4 bg-gray-50 rounded-lg">
-                    <div class="text-sm text-gray-500">응답 상태</div>
+                    <div class="text-sm text-gray-500">答卷状态</div>
                     <div class="mt-1 flex items-center">
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">완료</span>
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">已完成</span>
                     </div>
                 </div>
             </div>
@@ -116,7 +124,7 @@
         <!-- 응답 내용 -->
         <div class="space-y-6">
             <div class="bg-white rounded-lg shadow p-6">
-                <h2 class="text-lg font-medium text-gray-900 mb-6">응답 내용</h2>
+                <h2 class="text-lg font-medium text-gray-900 mb-6">作答内容</h2>
 
                 <div>
                     <div th:each="an, iterStat : ${answerLog.answer}"
@@ -126,8 +134,9 @@
                         <div class="flex items-start justify-between gap-3">
                             <h3 class="text-base font-semibold text-gray-900"
                                 th:text="'Q' + ${an.questionId} + '. ' + ${answerLog.questions[an.questionId - 1].question}">
-                                질문 내용
+                                问题内容
                             </h3>
+
                             <div class="flex items-center gap-2">
                                 <span class="q-chip bg-indigo-50 text-indigo-700 border-indigo-200"
                                       th:if="${answerLog.questions[an.questionId - 1].type=='SHORT'}">
@@ -139,31 +148,31 @@
                                 </span>
                                 <span class="q-chip bg-sky-50 text-sky-700 border-sky-200"
                                       th:if="${answerLog.questions[an.questionId - 1].type=='MULTIPLE'}">
-                                    <i class="ri-radio-button-line"></i> 객관식
+                                    <i class="ri-radio-button-line"></i> 单选题
                                 </span>
                                 <span class="q-chip bg-emerald-50 text-emerald-700 border-emerald-200"
                                       th:if="${answerLog.questions[an.questionId - 1].type=='multiple-checkbox'}">
-                                    <i class="ri-checkbox-multiple-line"></i> 체크박스
+                                    <i class="ri-checkbox-multiple-line"></i> 多选题
                                 </span>
                                 <span class="q-chip bg-violet-50 text-violet-700 border-violet-200"
                                       th:if="${answerLog.questions[an.questionId - 1].type=='DROPDOWN'}">
-                                    <i class="ri-arrow-down-s-line"></i> 드롭다운
+                                    <i class="ri-arrow-down-s-line"></i> 下拉选择
                                 </span>
                                 <span class="q-chip bg-amber-50 text-amber-700 border-amber-200"
                                       th:if="${answerLog.questions[an.questionId - 1].type=='DATE'}">
-                                    <i class="ri-calendar-line"></i> 날짜
+                                    <i class="ri-calendar-line"></i> 日期
                                 </span>
                                 <span class="q-chip bg-rose-50 text-rose-700 border-rose-200"
                                       th:if="${answerLog.questions[an.questionId - 1].type=='FILE'}">
-                                    <i class="ri-file-3-line"></i> 파일
+                                    <i class="ri-file-3-line"></i> 文件
                                 </span>
                                 <span class="q-chip bg-pink-50 text-pink-700 border-pink-200"
                                       th:if="${answerLog.questions[an.questionId - 1].type=='IMAGE'}">
-                                    <i class="ri-image-line"></i> 이미지
+                                    <i class="ri-image-line"></i> 图片
                                 </span>
                                 <span class="q-chip bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200"
                                       th:if="${answerLog.questions[an.questionId - 1].type=='hierarchy'}">
-                                    <i class="ri-mind-map"></i> 계층형
+                                    <i class="ri-mind-map"></i> 层级选择
                                 </span>
                             </div>
                         </div>
@@ -171,25 +180,27 @@
                         <!-- SHORT / ESSAY -->
                         <div th:if="${answerLog.questions[an.questionId - 1].type == 'SHORT' or answerLog.questions[an.questionId - 1].type == 'ESSAY'}">
                             <div class="answer-box" th:classappend="${#strings.isEmpty(an.answer)} ? ' empty-box' : ''">
-                                <p th:text="${#strings.isEmpty(an.answer) ? '미응답' : an.answer}">답변</p>
+                                <p th:text="${#strings.isEmpty(an.answer) ? '未作答' : an.answer}">答案</p>
                             </div>
                         </div>
 
                         <!-- MULTIPLE -->
                         <div th:if="${answerLog.questions[an.questionId - 1].type == 'MULTIPLE'}" class="space-y-3">
-                            <div th:each="opt, idx : ${answerLog.questions[an.questionId - 1].options}" class="flex items-center">
+                            <div th:each="opt, idx : ${answerLog.questions[an.questionId - 1].options}"
+                                 class="flex items-center">
                                 <div class="custom-radio"
                                      th:classappend="${((idx.index).toString()) == an.answer} ? ' checked' : ''">
                                 </div>
                                 <span class="ml-2 text-sm"
                                       th:classappend="${((idx.index).toString()) == an.answer} ? ' font-medium text-primary' : ' text-gray-600'"
-                                      th:text="${opt.text}">옵션</span>
+                                      th:text="${opt.text}">选项</span>
                             </div>
                         </div>
 
                         <!-- multiple-checkbox (선택 칩/체크 표시) -->
                         <div th:if="${answerLog.questions[an.questionId - 1].type == 'multiple-checkbox'}" class="space-y-3">
-                            <label th:each="opt, stat : ${answerLog.questions[an.questionId - 1].options}" class="custom-checkbox flex items-center">
+                            <label th:each="opt, stat : ${answerLog.questions[an.questionId - 1].options}"
+                                   class="custom-checkbox flex items-center">
                                 <span class="w-5 h-5 border-2 rounded flex items-center justify-center mr-3 relative"
                                       th:with="selectedVals=${(an.answer ?: '').split(',')}"
                                       th:style="${#arrays.contains(selectedVals, stat.index.toString())}
@@ -200,18 +211,18 @@
                                         <i class="ri-check-line text-xs"></i>
                                     </span>
                                 </span>
-                                <span class="text-gray-700" th:text="${opt.text}">옵션</span>
+                                <span class="text-gray-700" th:text="${opt.text}">选项</span>
                             </label>
                             <div class="answer-box empty-box mt-2"
-                                 th:if="${#strings.isEmpty(an.answer)}">미응답</div>
+                                 th:if="${#strings.isEmpty(an.answer)}">未作答</div>
                         </div>
 
                         <!-- DROPDOWN -->
                         <div th:if="${answerLog.questions[an.questionId - 1].type == 'DROPDOWN'}">
                             <div class="answer-box" th:classappend="${#strings.isEmpty(an.answer)} ? ' empty-box' : ''">
                                 <div class="kv">
-                                    <div class="text-gray-500">선택</div>
-                                    <div th:text="${#strings.isEmpty(an.answer) ? '미응답' : an.answer}">선택된 항목</div>
+                                    <div class="text-gray-500">选择</div>
+                                    <div th:text="${#strings.isEmpty(an.answer) ? '未作答' : an.answer}">已选项</div>
                                 </div>
                             </div>
                         </div>
@@ -220,7 +231,7 @@
                         <div th:if="${answerLog.questions[an.questionId - 1].type == 'DATE'}">
                             <div class="answer-box" th:classappend="${#strings.isEmpty(an.answer)} ? ' empty-box' : ''">
                                 <i class="ri-calendar-line mr-2"></i>
-                                <span th:text="${#strings.isEmpty(an.answer) ? '미응답' : an.answer}">날짜</span>
+                                <span th:text="${#strings.isEmpty(an.answer) ? '未作答' : an.answer}">日期</span>
                             </div>
                         </div>
 
@@ -229,13 +240,14 @@
                             <div class="answer-box flex items-center justify-between">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <i class="ri-file-3-line text-gray-500"></i>
-                                    <div class="truncate" th:text="${#strings.isEmpty(an.answer) ? '미응답' : an.answer}">파일명.ext</div>
+                                    <div class="truncate"
+                                         th:text="${#strings.isEmpty(an.answer) ? '未作答' : an.answer}">文件名.ext</div>
                                 </div>
                                 <button type="button"
                                         class="text-sm font-medium text-indigo-700 hover:underline"
                                         th:if="${!#strings.isEmpty(an.answer)}"
                                         th:attr="data-fullname=${an.answer}">
-                                    보기
+                                    查看
                                 </button>
                             </div>
                             <!-- 실제 PDF 프리뷰 박스는 .uploaded-pdf에서 JS로 렌더 -->
@@ -246,28 +258,31 @@
                         <!-- IMAGE (썸네일 프리뷰) -->
                         <div th:if="${answerLog.questions[an.questionId - 1].type == 'IMAGE'}">
                             <div class="answer-box">
-                                <div th:if="${#strings.isEmpty(an.answer)}" class="empty-box p-3 rounded-lg">미응답</div>
-                                <div class="uploaded-image mt-2" th:if="${!#strings.isEmpty(an.answer)}"
+                                <div th:if="${#strings.isEmpty(an.answer)}"
+                                     class="empty-box p-3 rounded-lg">未作答</div>
+                                <div class="uploaded-image mt-2"
+                                     th:if="${!#strings.isEmpty(an.answer)}"
                                      th:attr="data-fullname=${an.answer}"></div>
                             </div>
                         </div>
 
                         <!-- hierarchy (브레드크럼) -->
-                        <div th:if="${answerLog.questions[an.questionId - 1].type == 'hierarchy'}" class="answer-box">
+                        <div th:if="${answerLog.questions[an.questionId - 1].type == 'hierarchy'}"
+                             class="answer-box">
                             <th:block th:with="
       hierarchyArr=${(an.answer != null ? an.answer : '').split(',')},
       hierarchyLen=${#arrays.length(hierarchyArr)}
   ">
                                 <!-- 비어 있음 -->
                                 <div th:if="${hierarchyLen == 0 or (hierarchyLen == 1 and hierarchyArr[0] == '')}"
-                                     class="empty-box p-3 rounded-lg">미응답</div>
+                                     class="empty-box p-3 rounded-lg">未作答</div>
 
                                 <!-- 값 표시 (브레드크럼) -->
                                 <nav class="text-sm text-gray-800"
                                      th:if="${!(hierarchyLen == 0 or (hierarchyLen == 1 and hierarchyArr[0] == ''))}">
                                     <ol class="flex flex-wrap items-center gap-1">
                                         <li th:each="item, s : ${hierarchyArr}" class="flex items-center gap-1">
-                                            <span th:text="${item}">항목</span>
+                                            <span th:text="${item}">项目</span>
                                             <i class="ri-arrow-right-s-line text-gray-400" th:if="${!s.last}"></i>
                                         </li>
                                     </ol>
@@ -276,6 +291,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
 
@@ -305,7 +321,7 @@
 
         const link = document.createElement("a");
         link.href = `${fileUrl}/pdf/survey/${uuid}`;
-        link.textContent = filename ? `${filename} (미리보기)` : "PDF 미리보기";
+        link.textContent = filename ? `${filename}（预览）` : "PDF 预览";
         link.className = "text-sm text-blue-600 underline";
         link.target = "_blank";
 
@@ -326,7 +342,7 @@
 
         const img = document.createElement("img");
         img.src = `${fileUrl}/survey/${uuid}`;
-        img.alt = filename || "이미지 미리보기";
+        img.alt = filename || "图片预览";
         img.className = "max-h-full max-w-full object-contain";
 
         container.appendChild(img);
