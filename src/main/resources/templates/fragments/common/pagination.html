@@ -17,10 +17,10 @@
     <!-- '이전' 버튼 -->
     <a th:if="${page.hasPrevious()}" th:href="@{''.toString() (page=${page.number - 1})}"
        class="px-3 py-1 rounded border text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-        이전
+        上一页
     </a>
     <span th:if="${!page.hasPrevious()}" class="px-3 py-1 rounded border text-sm text-gray-400 cursor-not-allowed">
-            이전
+            上一页
         </span>
 
     <!-- 페이지 번호 버튼 -->
@@ -41,10 +41,10 @@
     <!-- '다음' 버튼 -->
     <a th:if="${page.hasNext()}" th:href="@{''.toString() (page=${page.number + 1})}"
        class="px-3 py-1 rounded border text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-        다음
+        下一页
     </a>
     <span th:if="${!page.hasNext()}" class="px-3 py-1 rounded border text-sm text-gray-400 cursor-not-allowed">
-            다음
+            下一页
         </span>
 </div>
 

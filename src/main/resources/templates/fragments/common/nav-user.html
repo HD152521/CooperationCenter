@@ -15,14 +15,14 @@
                     <a href="/home"
                        th:classappend="${requestURI == '/home' ? 'border-primary text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}"
                        class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                        홈
+                        首页
                     </a>
 
                     <!-- 대학교 드롭다운 (group-hover 및 group-focus-within 사용) -->
                     <div class="relative group">
                         <button th:classappend="${requestURI.startsWith('/school') ? 'border-primary text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}"
                                 class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-full">
-                            대학교
+                            大学
                             <i class="ri-arrow-down-s-line ml-1 transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180"></i>
                         </button>
                         <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white rounded-lg shadow-lg py-2 w-48
@@ -40,13 +40,13 @@
                     <a href="/agency/list"
                        th:classappend="${requestURI.startsWith('/agency') ? 'border-primary text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}"
                        class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                        유학원
+                        留学机构
                     </a>
 
                     <a th:if="${loginMember != null}" href="/survey/list"
                        th:classappend="${requestURI.startsWith('/survey') ? 'border-primary text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'}"
                        class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                        설문조사
+                        问卷调查
                     </a>
                 </div>
             </div>
@@ -55,12 +55,12 @@
             <div class="relative group">
                 <a href="/member/login" th:if="${loginMember == null}"
                    class="px-4 py-2 rounded-md whitespace-nowrap cursor-pointer bg-primary text-white transition-all duration-300 hover:bg-indigo-800">
-                    로그인
+                    登录
                 </a>
 
                 <button th:unless="${loginMember == null}"
                         class="size-[42px] flex items-center justify-center text-sm font-bold text-indigo-600 bg-indigo-200 rounded-full"
-                   th:text="${loginMember.memberName.substring(0, 1)}">
+                        th:text="${loginMember.memberName.substring(0, 1)}">
                 </button>
                 <div th:unless="${loginMember == null}"
                      class="absolute top-full right-0 mt-1 bg-white rounded-lg shadow-lg py-2 w-48
@@ -69,11 +69,11 @@
                             transition-all duration-200">
                     <button id="profile-button"
                             class="px-4 py-2 w-full text-gray text-left -700 hover:bg-gray-50 hover:text-primary">
-                        마이페이지
+                        个人中心
                     </button>
                     <button id="web-logout-button"
                             class="px-4 py-2 w-full text-gray text-left -700 hover:bg-gray-50 hover:text-primary">
-                        로그아웃
+                        退出登录
                     </button>
                 </div>
             </div>
@@ -84,7 +84,7 @@
                 <button id="mobile-menu-button"
                         type="button"
                         class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary">
-                    <span class="sr-only">메뉴 열기</span>
+                    <span class="sr-only">打开菜单</span>
                     <i class="ri-menu-line ri-lg"></i>
                 </button>
             </div>
@@ -97,11 +97,11 @@
          th:if="${!requestURI.startsWith('/profile')}">
 
         <div class="pt-2 pb-3 space-y-1">
-            <a href="/home" class="block pl-4 pr-4 py-2 text-gray-700 hover:bg-gray-100">홈</a>
+            <a href="/home" class="block pl-4 pr-4 py-2 text-gray-700 hover:bg-gray-100">首页</a>
 
             <button id="mobile-university-button"
                     class="w-full flex justify-between items-center pl-4 pr-4 py-2 text-gray-700 hover:bg-gray-100">
-                대학교
+                大学
                 <i class="ri-arrow-down-s-line transition-transform"></i>
             </button>
 
@@ -112,9 +112,9 @@
                    class="block text-gray-600 hover:text-primary"></a>
             </div>
 
-            <a href="/agency/list" class="block pl-4 pr-4 py-2 text-gray-700 hover:bg-gray-100">유학원</a>
+            <a href="/agency/list" class="block pl-4 pr-4 py-2 text-gray-700 hover:bg-gray-100">留学机构</a>
             <a th:if="${loginMember != null}" href="/survey/list"
-               class="block pl-4 pr-4 py-2 text-gray-700 hover:bg-gray-100">설문조사</a>
+               class="block pl-4 pr-4 py-2 text-gray-700 hover:bg-gray-100">问卷调查</a>
         </div>
     </div>
 </nav>

@@ -2,10 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{fragments/layout/university-layout :: university-layout(~{::head}, ~{::main}, ~{::script})}">
 <head>
-    <title th:text="${school}">세종대학교 소개</title>
+    <title th:text="${school}">大学介绍</title>
 </head>
+
 <main class="min-w-0 flex-1 py-6 px-0 md:px-6">
-    <div th:replace="~{fragments/school/universityNavHeader :: universityNavHeader(${content.schoolDto.koreanName}+' 소개')}"></div>
+    <div th:replace="~{fragments/school/universityNavHeader :: universityNavHeader(${content.schoolDto.koreanName}+' 介绍')}"></div>
 
     <div th:replace="~{fragments/school/universityIntroSection :: universityIntroSection(
     ${content.intro.title},
@@ -27,18 +28,16 @@
 )}">
         </div>
 
-
         <div th:replace="~{fragments/school/universityInfoCard :: universityInfoCard(
-          'QS 세계 대학 순위',
+          'QS 世界大学排名',
           ${content.collegeRank},
           'QS World University Rankings 2026',
           '',
-          '* TopUniversities 기준'
+          '* 以 TopUniversities 为准'
         )}"></div>
 
-
         <div th:replace="~{fragments/school/universityInfoCard :: universityLinkCard(
-          '관련 홈페이지',
+          '相关网站',
           ${content.homepageUrls.urlNames},
           ${content.homepageUrls.urls}
         )}"></div>
@@ -48,10 +47,11 @@
     <section id="sejong-academics" class="bg-white rounded-lg shadow-sm p-6 mb-8">
         <!-- 헤더 + 검색 -->
         <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
-            <h2 class="text-2xl font-bold text-gray-900">세종대학교 학사 학과/학부</h2>
+            <h2 class="text-2xl font-bold text-gray-900"
+                th:text="|${content.schoolDto.koreanName} 本科院系/专业|">本科院系/专业</h2>
             <div class="w-full md:w-80 relative">
                 <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                <input id="deptSearch" type="text" placeholder="학과/학부 검색"
+                <input id="deptSearch" type="text" placeholder="搜索院系/专业"
                        class="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"/>
             </div>
         </div>
@@ -62,7 +62,7 @@
             <!-- 전체 버튼 -->
             <button data-filter="all"
                     class="px-3 py-1.5 rounded-full bg-primary text-white text-sm whitespace-nowrap">
-                전체
+                全部
             </button>
 
             <!-- 학사 단과대 자동 생성 -->
@@ -75,7 +75,6 @@
 
         </div>
 
-
         <div id="collegeGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
 
             <article class="border rounded-xl p-5 hover:shadow-md transition group"
@@ -85,10 +84,10 @@
 
                 <header class="flex items-center justify-between mb-3">
                     <h3 class="text-lg font-semibold text-gray-900" th:text="${college.collegeName}">
-                        단과대 이름
+                        学院名称
                     </h3>
                     <span class="text-xs text-gray-500" data-count
-                          th:text="${#lists.size(college.departments)} + '개'">
+                          th:text="${#lists.size(college.departments)} + '个'">
                         —
                     </span>
                 </header>
@@ -97,11 +96,11 @@
                     <span class="chip" data-dept
                           th:each="dept : ${college.departments}"
                           th:text="${dept}">
-                        학과
+                        专业
                     </span>
                 </div>
 
-                <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more>더보기</button>
+                <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more>更多</button>
             </article>
 
         </div>
@@ -111,10 +110,11 @@
     <section id="sejong-graduate" class="bg-white rounded-lg shadow-sm p-6 mb-8">
         <!-- 헤더 + 검색 -->
         <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
-            <h2 class="text-2xl font-bold text-gray-900">세종대학교 대학원 과/학과</h2>
+            <h2 class="text-2xl font-bold text-gray-900"
+                th:text="|${content.schoolDto.koreanName} 研究生院系/学科|">研究生院系/学科</h2>
             <div class="w-full md:w-80 relative">
                 <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                <input id="gradDeptSearch" type="text" placeholder="대학원 과/학과 검색"
+                <input id="gradDeptSearch" type="text" placeholder="搜索研究生院系/学科"
                        class="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"/>
             </div>
         </div>
@@ -124,7 +124,7 @@
 
             <button data-filter="all"
                     class="px-3 py-1.5 rounded-full bg-primary text-white text-sm whitespace-nowrap">
-                전체
+                全部
             </button>
 
             <button th:each="college : ${content.colleges}"
@@ -146,43 +146,52 @@
 
                 <header class="flex items-center justify-between mb-3">
                     <h3 class="text-lg font-semibold text-gray-900" th:text="${college.collegeName}">
-                        대학원 단과대
+                        研究生学院
                     </h3>
                     <span class="text-xs text-gray-500" data-count
-                          th:text="${#lists.size(college.departments)} + '개'">
-                —
-            </span>
+                          th:text="${#lists.size(college.departments)} + '个'">
+                        —
+                    </span>
                 </header>
 
                 <div class="flex flex-wrap gap-2" data-chips>
-            <span class="chip" data-dept
-                  th:each="dept : ${college.departments}"
-                  th:text="${dept}">
-                대학원 학과
-            </span>
+                    <span class="chip" data-dept
+                          th:each="dept : ${college.departments}"
+                          th:text="${dept}">
+                        研究生学科
+                    </span>
                 </div>
 
-                <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more>더보기</button>
+                <button class="show-more mt-3 hidden text-sm text-primary hover:underline" data-more>更多</button>
             </article>
 
         </div>
 
     </section>
+
     <div th:replace="~{fragments/school/universityCampusMap :: universityCampus(
-  '캠퍼스 위치',
+  '校区位置',
   ${content.mapLocationURl},
   ${content.basicInfo.location},
   ${content.mapUrl},
-  '오시는 길 안내'
+  '路线指南'
 )}"></div>
 
 </main>
+
 <th:block th:fragment="script">
     <script type="module">
         const grid = document.getElementById('collegeGrid');
-        const cards = Array.from(grid.querySelectorAll('article[data-college]'));
         const filters = document.getElementById('collegeFilters');
         const search = document.getElementById('deptSearch');
+
+        // ✅ (한국어) 이 섹션이 제거되거나 요소가 렌더링되지 않은 경우, 아래 코드가 NPE로 터지지 않도록 방어합니다.
+        if (!grid || !filters || !search) {
+            // (한국어) 요소가 없으면 조용히 종료
+            return;
+        }
+
+        const cards = Array.from(grid.querySelectorAll('article[data-college]'));
 
         // 칩 개수 > 10 이면 접기 처리
         cards.forEach(card => {
@@ -192,7 +201,7 @@
             const countEl = card.querySelector('[data-count]');
 
             // 카운트 표시
-            countEl.textContent = chips.length + '개';
+            countEl.textContent = chips.length + '个';
 
             if (chips.length > 10) {
                 chips.slice(10).forEach(ch => ch.classList.add('hidden'));
@@ -200,7 +209,8 @@
                 moreBtn?.addEventListener('click', () => {
                     const hidden = chips.slice(10).some(ch => ch.classList.contains('hidden'));
                     chips.slice(10).forEach(ch => ch.classList.toggle('hidden'));
-                    moreBtn.textContent = hidden ? '접기' : '더보기';
+                    // (화면 문구만 중국어로 변경)
+                    moreBtn.textContent = hidden ? '收起' : '更多';
                 });
             }
         });
@@ -228,7 +238,9 @@
         }
 
         // 초기 active
-        filters?.querySelector('button[data-filter="all"]').classList.add('active');
+        // ✅ (한국어) 기존 코드: filters?.querySelector(...).classList.add(...) 는 버튼이 없으면 터질 수 있어,
+        //             querySelector 결과에도 ?. 를 붙여 안전하게 처리합니다.
+        filters?.querySelector('button[data-filter="all"]')?.classList.add('active');
 
         // 탭 클릭
         filters?.addEventListener('click', (e) => {
@@ -246,12 +258,19 @@
         // 검색
         search?.addEventListener('input', applyFilter);
     </script>
+
     <script type="module">
         //대학원 모듈
         const grid = document.getElementById('gradCollegeGrid');
-        const cards = Array.from(grid.querySelectorAll('article[data-college]'));
         const filters = document.getElementById('gradCollegeFilters');
         const search = document.getElementById('gradDeptSearch');
+
+        // ✅ (한국어) 요소가 없으면(섹션 삭제/미렌더링 등) NPE 방지
+        if (!grid || !filters || !search) {
+            return;
+        }
+
+        const cards = Array.from(grid.querySelectorAll('article[data-college]'));
 
         // chip 접기
         cards.forEach(card => {
@@ -260,7 +279,7 @@
             const moreBtn = card.querySelector('[data-more]');
             const countEl = card.querySelector('[data-count]');
 
-            countEl.textContent = chips.length + '개';
+            countEl.textContent = chips.length + '个';
 
             if (chips.length > 10) {
                 chips.slice(10).forEach(ch => ch.classList.add('hidden'));
@@ -268,7 +287,8 @@
                 moreBtn?.addEventListener('click', () => {
                     const hidden = chips.slice(10).some(ch => ch.classList.contains('hidden'));
                     chips.slice(10).forEach(ch => ch.classList.toggle('hidden'));
-                    moreBtn.textContent = hidden ? '접기' : '더보기';
+                    // (화면 문구만 중국어로 변경)
+                    moreBtn.textContent = hidden ? '收起' : '更多';
                 });
             }
         });
@@ -296,7 +316,8 @@
         }
 
         // 초기 active
-        filters?.querySelector('button[data-filter="all"]').classList.add('active');
+        // ✅ (한국어) querySelector 결과가 null일 때 classList 접근으로 터질 수 있어 ?. 를 추가합니다.
+        filters?.querySelector('button[data-filter="all"]')?.classList.add('active');
 
         // 탭 클릭
         filters?.addEventListener('click', (e) => {

@@ -17,29 +17,29 @@
 <section th:fragment="universityBasicInfo(name, englishName, foundedYear, location, features)"
          class="bg-white rounded-lg shadow-sm p-6 md:col-span-2">
 
-    <h2 class="text-xl font-semibold mb-4">기본 정보</h2>
+    <h2 class="text-xl font-semibold mb-4">基本信息</h2>
 
     <dl class="space-y-3 text-sm">
 
         <div class="flex items-start">
-            <dt class="w-28 text-gray-500">학교명</dt>
+            <dt class="w-28 text-gray-500">学校名称</dt>
             <dd class="flex-1 font-medium" th:text="|${name} (${englishName})|"> - </dd>
         </div>
 
         <div class="flex items-start">
-            <dt class="w-28 text-gray-500">설립 연도</dt>
+            <dt class="w-28 text-gray-500">成立年份</dt>
             <dd class="flex-1" th:text="${foundedYear}"> - </dd>
         </div>
 
         <div class="flex items-start">
-            <dt class="w-28 text-gray-500">위치</dt>
+            <dt class="w-28 text-gray-500">位置</dt>
             <dd class="flex-1" th:text="${location}">
                 -
             </dd>
         </div>
 
         <div class="flex items-start">
-            <dt class="w-28 text-gray-500">특징</dt>
+            <dt class="w-28 text-gray-500">特色</dt>
             <dd class="flex-1" th:text="${features}">
                 -
             </dd>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html th:replace="~{fragments/layout/base :: base(~{::head}, ~{::body})}" xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <title>설문조사 목록</title>
+    <title>问卷列表</title>
     <style>
         :where([class^="ri-"])::before {
             content: "\f3c2";
@@ -63,17 +63,17 @@
                 <div class="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-red-100 text-red-500 mb-4">
                     <i class="ri-delete-bin-line ri-xl"></i>
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">설문조사 삭제</h3>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">删除问卷</h3>
                 <p class="text-gray-500">
-                    정말로 이 설문조사를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다. </p>
+                    确定要删除此问卷吗？此操作无法撤销。</p>
             </div>
             <div class="flex space-x-3">
                 <button id="cancel-delete"
                         class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-button whitespace-nowrap">
-                    취소
+                    取消
                 </button>
                 <button id="confirm-delete" class="flex-1 px-4 py-2 bg-red-500 text-white rounded-button whitespace-nowrap">
-                    삭제
+                    删除
                 </button>
             </div>
         </div>
@@ -84,17 +84,17 @@
                 <div class="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-blue-100 text-blue-500 mb-4">
                     <i class="ri-file-copy-line"></i>
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">설문조사 복사</h3>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">复制问卷</h3>
                 <p class="text-gray-500">
-                    설문조사를 복사 하시겠습니까? </p>
+                    要复制此问卷吗？</p>
             </div>
             <div class="flex space-x-3">
                 <button id="cancel-copy"
                         class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-button whitespace-nowrap">
-                    취소
+                    取消
                 </button>
                 <button id="confirm-copy" class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-button whitespace-nowrap">
-                    복사
+                    复制
                 </button>
             </div>
         </div>
@@ -106,7 +106,7 @@
     <main class="container mx-auto px-4 py-6" id="survey-main" th:fragment="surveyMain">
 
         <div class="flex items-center justify-between mb-6">
-            <h1 class="text-2xl font-bold">설문조사 목록</h1>
+            <h1 class="text-2xl font-bold">问卷列表</h1>
         </div>
 
         <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
@@ -116,7 +116,7 @@
 
                     <!-- 검색 입력: 화면 남는 만큼 확장 -->
                     <div class="flex-1 min-w-0 relative"> <!-- flex-1 + min-w-0 -->
-                        <input type="text" name="text" th:value="${condition.text}" placeholder="설문조사 제목 검색"
+                        <input type="text" name="text" th:value="${condition.text}" placeholder="搜索问卷标题"
                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"/>
                         <div class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center text-gray-400">
                             <i class="ri-search-line"></i>
@@ -128,10 +128,10 @@
                         <div class="relative">
                             <select class="appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded bg-white focus:ring-2 focus:ring-primary focus:ring-opacity-50 focus:border-primary"
                                     name="status">
-                                <option value="all" th:selected="${condition.status == 'all'}">모든 상태</option>
-                                <option value="before" th:selected="${condition.status == 'before'}">진행 전</option>
-                                <option value="active" th:selected="${condition.status == 'active'}">진행 중</option>
-                                <option value="ended" th:selected="${condition.status == 'ended'}">종료</option>
+                                <option value="all" th:selected="${condition.status == 'all'}">所有状态</option>
+                                <option value="before" th:selected="${condition.status == 'before'}">未开始</option>
+                                <option value="active" th:selected="${condition.status == 'active'}">进行中</option>
+                                <option value="ended" th:selected="${condition.status == 'ended'}">已结束</option>
                             </select>
                             <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
                                 <i class="ri-arrow-down-s-line"></i>
@@ -147,13 +147,13 @@
                         <button type="submit"
                                 class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap flex items-center"
                                 id="searchButton">
-                            검색
+                            搜索
                         </button>
 
                         <button type="button"
                                 class="bg-white text-gray-700 border border-gray-300 px-4 py-2 !rounded-button whitespace-nowrap flex items-center"
                                 id="resetButton">
-                            초기화
+                            重置
                         </button>
                     </div>
                 </form>
@@ -163,9 +163,9 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                 <tr>
-                    <th class="w-32 px-4 py-3 text-left text-sm font-semibold text-gray-700">마감</th>
-                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">설문조사 제목</th>
-                    <th class="w-32 px-4 py-3 text-right text-sm font-semibold text-gray-700">참여</th>
+                    <th class="w-32 px-4 py-3 text-left text-sm font-semibold text-gray-700">截止</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">问卷标题</th>
+                    <th class="w-32 px-4 py-3 text-right text-sm font-semibold text-gray-700">参与</th>
                 </tr>
                 </thead>
 
@@ -176,7 +176,7 @@
           <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full" th:classappend="${survey.isBefore} ? 'bg-gray-100 text-gray-700'
                             : (${survey.lastDate >= 0} ? 'bg-green-100 text-green-800'
                             : 'bg-red-100 text-red-700')"
-                th:text="${survey.isBefore} ? '진행 전' : (${survey.lastDate >= 0 } ? 'D-' + ${survey.lastDate} : '종료')">
+                th:text="${survey.isBefore} ? '未开始' : (${survey.lastDate >= 0 } ? 'D-' + ${survey.lastDate} : '已结束')">
             D-0
           </span>
                     </td>
@@ -184,7 +184,7 @@
                     <!-- 제목 -->
                     <td class="px-4 py-3">
                         <div class="text-gray-900 font-medium truncate max-w-[42ch]" th:text="${survey.title}">
-                            설문 제목
+                            问卷标题
                         </div>
                     </td>
 
@@ -192,7 +192,7 @@
                     <td class="px-4 py-3 text-right">
                         <form th:action="@{/survey/answer/{id}(id=${survey.surveyId})}" method="get">
                             <button class="px-3 py-1 bg-white text-blue-600 border border-blue-600 text-sm rounded hover:bg-blue-50 transition-colors">
-                                참여하기
+                                参与
                             </button>
                         </form>
                     </td>
@@ -200,7 +200,7 @@
 
                 <!-- 비어있을 때 -->
                 <tr th:if="${#lists.isEmpty(surveys.content)}">
-                    <td colspan="3" class="px-4 py-6 text-center text-gray-500">표시할 설문이 없습니다.</td>
+                    <td colspan="3" class="px-4 py-6 text-center text-gray-500">暂无可显示的问卷。</td>
                 </tr>
                 </tbody>
             </table>

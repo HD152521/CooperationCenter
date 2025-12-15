@@ -79,10 +79,10 @@
                         <div class="w-5 h-5 flex items-center justify-center">
                             <i class="ri-arrow-left-line"></i>
                         </div>
-                        <span>목록으로</span>
+                        <span>返回列表</span>
                     </a>
                     <div class="text-sm text-gray-500">
-                        <span>공지사항</span>
+                        <span>通知</span>
                         <span class="mx-2">></span>
                         <span class="text-gray-700" th:text="${postDto.post.title}"></span>
                     </div>
@@ -96,8 +96,8 @@
                             <div class="w-5 h-5 flex items-center justify-center">
                                 <i class="ri-user-line"></i>
                             </div>
-                            <!--                        <span th:text="${postDto.status}">관리자</span>-->
-                            <span>관리자</span>
+                            <!--                        <span th:text="${postDto.status}">管理员</span>-->
+                            <span>管理员</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <div class="w-5 h-5 flex items-center justify-center">
@@ -119,7 +119,7 @@
                         <div class="w-6 h-6 flex items-center justify-center text-primary">
                             <i class="ri-attachment-line"></i>
                         </div>
-                        <h3 class="font-medium text-gray-800">첨부파일</h3>
+                        <h3 class="font-medium text-gray-800">附件</h3>
                     </div>
                     <div class="space-y-2">
                         <div th:each="file : ${postDto.file}"
@@ -131,16 +131,17 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <p class="font-medium text-gray-800" th:text="${file.name}">파일이름</p>
+                                    <p class="font-medium text-gray-800" th:text="${file.name}">文件名</p>
                                 </div>
                             </div>
                             <a th:href="${file.url}" download
                                class="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 text-sm whitespace-nowrap !rounded-button">
-                                다운로드
+                                下载
                             </a>
                         </div>
                     </div>
                 </div>
+
                 <div class="content-area" th:utext="${postDto.post.content}">
                     <!-- HTML 내용 출력 -->
                 </div>
@@ -148,7 +149,8 @@
                 <div class="border-t border-gray-200 pt-6 mt-8">
                     <div class="flex flex-col sm:flex-row justify-between gap-4">
                         <div class="flex-1">
-                            <div class="p-4 border rounded hover:bg-gray-50 cursor-pointer">
+                            <!-- ✅ id 추가: JS에서 :has() 대신 안정적으로 선택할 수 있도록(화면 영향 없음) -->
+                            <div id="prevPostCard" class="p-4 border rounded hover:bg-gray-50 cursor-pointer">
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded">
                                         <div class="w-5 h-5 flex items-center justify-center text-gray-600">
@@ -156,19 +158,20 @@
                                         </div>
                                     </div>
                                     <div class="flex-1" th:if="${postDto.beforePost != null}">
-                                        <p class="text-sm text-gray-500" th:attr="data-id=${postDto.beforePost.id}">이전글</p>
+                                        <p class="text-sm text-gray-500" th:attr="data-id=${postDto.beforePost.id}">上一篇</p>
                                         <p class="font-medium text-gray-800 hover:text-primary"
                                            th:text="${postDto.beforePost.title}"></p>
                                     </div>
                                     <div class="flex-1" th:if="${postDto.beforePost == null}">
-                                        <p class="text-sm text-gray-500">이전글</p>
+                                        <p class="text-sm text-gray-500">上一篇</p>
                                         <p class="font-medium text-gray-800 hover:text-primary"></p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="flex-1">
-                            <div class="p-4 border rounded hover:bg-gray-50 cursor-pointer">
+                            <!-- ✅ id 추가: JS에서 :has() 대신 안정적으로 선택할 수 있도록(화면 영향 없음) -->
+                            <div id="nextPostCard" class="p-4 border rounded hover:bg-gray-50 cursor-pointer">
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded">
                                         <div class="w-5 h-5 flex items-center justify-center text-gray-600">
@@ -176,12 +179,12 @@
                                         </div>
                                     </div>
                                     <div class="flex-1" th:if="${postDto.afterPost != null}">
-                                        <p class="text-sm text-gray-500" th:attr="data-id=${postDto.afterPost.id}">다음글</p>
+                                        <p class="text-sm text-gray-500" th:attr="data-id=${postDto.afterPost.id}">下一篇</p>
                                         <p class="font-medium text-gray-800 hover:text-primary"
                                            th:text="${postDto.afterPost.title}"></p>
                                     </div>
                                     <div class="flex-1" th:if="${postDto.afterPost == null}">
-                                        <p class="text-sm text-gray-500">다음글</p>
+                                        <p class="text-sm text-gray-500">下一篇</p>
                                         <p class="font-medium text-gray-800 hover:text-primary"></p>
                                     </div>
                                 </div>
@@ -192,8 +195,9 @@
 
                 <div class="flex justify-center mt-6">
                     <a th:href="@{'/school/' + ${school} + '/board/' + ${boardId}}" data-readdy="true"
-                       class="px-6 py-3 bg-primary text-white rounded hover:bg-primary/90 font-medium whitespace-nowrap !rounded-button">목록으로
-                        돌아가기</a>
+                       class="px-6 py-3 bg-primary text-white rounded hover:bg-primary/90 font-medium whitespace-nowrap !rounded-button">
+                        返回列表
+                    </a>
                 </div>
             </div>
         </div>
@@ -203,19 +207,19 @@
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
-                    <h3 class="text-lg font-bold mb-4">대학교 국제 프로그램</h3>
+                    <h3 class="text-lg font-bold mb-4">大学国际项目</h3>
                     <p class="text-gray-300 text-sm">
-                        글로벌 인재 양성을 위한 최고의 교육 환경을 제공합니다. 다양한 국제
-                        프로그램을 통해 세계 각국의 학생들과 함께 성장하세요. </p>
+                        我们提供培养全球人才的最佳教育环境。通过多样化的国际项目，与来自世界各国的学生共同成长。
+                    </p>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold mb-4">연락처</h3>
+                    <h3 class="text-lg font-bold mb-4">联系方式</h3>
                     <ul class="space-y-2 text-sm text-gray-300">
                         <li class="flex items-center gap-2">
                             <div class="w-5 h-5 flex items-center justify-center">
                                 <i class="ri-map-pin-line"></i>
                             </div>
-                            <span>서울특별시 강남구 대학로 123</span>
+                            <span>首尔特别市 江南区 大学路 123</span>
                         </li>
                         <li class="flex items-center gap-2">
                             <div class="w-5 h-5 flex items-center justify-center">
@@ -232,49 +236,59 @@
                     </ul>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold mb-4">빠른 링크</h3>
+                    <h3 class="text-lg font-bold mb-4">快速链接</h3>
                     <ul class="space-y-2 text-sm text-gray-300">
                         <li>
-                            <a href="#" class="hover:text-primary">대학교 메인 홈페이지</a>
+                            <a href="#" class="hover:text-primary">大学官网</a>
                         </li>
-                        <li><a href="#" class="hover:text-primary">학사 일정</a></li>
-                        <li><a href="#" class="hover:text-primary">도서관</a></li>
-                        <li><a href="#" class="hover:text-primary">캠퍼스 맵</a></li>
-                        <li><a href="#" class="hover:text-primary">커뮤니티</a></li>
+                        <li><a href="#" class="hover:text-primary">校历</a></li>
+                        <li><a href="#" class="hover:text-primary">图书馆</a></li>
+                        <li><a href="#" class="hover:text-primary">校园地图</a></li>
+                        <li><a href="#" class="hover:text-primary">社区</a></li>
                     </ul>
                 </div>
             </div>
             <div class="border-t border-gray-700 mt-8 pt-6 text-center text-sm text-gray-400">
-                <p>© 2025 대학교 국제 프로그램. All rights reserved.</p>
+                <p>© 2025 大学国际项目. All rights reserved.</p>
             </div>
         </div>
     </footer>
 </div>
 
 <script id="downloadScript" type="module">
-    const downloadButtons = Array.from(document.querySelectorAll("button"));
-    downloadButtons.forEach((button) => {
-        if (button.textContent.includes("다운로드")) {
-            button?.addEventListener("click", function () {
-                const fileName = this
-                    .closest(".flex")
-                    .querySelector(".font-medium").textContent;
-                alert(`${fileName} 파일을 다운로드합니다.`);
-            });
-        }
+    // ✅ (한국어) 기존 코드 문제:
+    // - "다운로드"는 <button>이 아니라 <a download> 링크인데,
+    //   button만 찾고 있어서 이벤트가 거의 안 붙습니다.
+    // ✅ 개선:
+    // - download 속성이 있는 <a>를 기준으로 잡아서 언어(다운로드/下载)와 무관하게 동작하게 변경했습니다.
+    const downloadButtons = Array.from(document.querySelectorAll('a[download]'));
+
+    downloadButtons.forEach((btn) => {
+        btn?.addEventListener("click", function () {
+            // (한국어) 다운로드 행에서 파일명을 찾아 알림에 사용
+            const fileName =
+                this.closest(".flex.items-center.justify-between")
+                    ?.querySelector(".font-medium")
+                    ?.textContent?.trim() || "文件";
+            alert(`${fileName} 文件将开始下载。`);
+            // (한국어) 기본 다운로드 동작은 그대로 진행되도록 preventDefault()는 하지 않습니다.
+        });
     });
 </script>
 
-<script id="navigationScript" type="module">
-    const prevPost = document.querySelector(
-        ".cursor-pointer:has(.ri-arrow-up-line)",
-    );
-    const nextPost = document.querySelector(
-        ".cursor-pointer:has(.ri-arrow-down-line)",
-    );
+<!-- ✅ th:inline="javascript" 추가: [[${...}]] 치환이 실제로 적용되려면 반드시 필요 -->
+<script id="navigationScript" type="module" th:inline="javascript">
+    // ✅ (한국어) 기존 코드 문제:
+    // - th:inline="javascript"가 없으면 [[${school}]] / [[${boardId}]] 가 실제 값으로 치환되지 않고
+    //   문자열 그대로 남아서 URL이 깨질 수 있습니다.
+    // ✅ 개선:
+    // - th:inline 추가 + 문자열/숫자 타입 안전하게 주입 방식 변경
 
-    const school = "[[${school}]]";
-    const boardId = [[${boardId}]];
+    const prevPost = document.getElementById("prevPostCard");
+    const nextPost = document.getElementById("nextPostCard");
+
+    const school = /*[[${school}]]*/ "";
+    const boardId = /*[[${boardId}]]*/ 0;
 
     if (prevPost) {
         const pTag = prevPost.querySelector("p[data-id]");
