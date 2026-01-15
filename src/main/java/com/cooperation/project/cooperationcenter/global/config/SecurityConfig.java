@@ -46,11 +46,8 @@ public class SecurityConfig {
                                 //note static 해제
                                 .requestMatchers("/css/**","/plugins/**","/js/**").permitAll()
                                 //fixme 임시용임 밑에는
-                                .requestMatchers("/v3/**",
-                                        "/swagger-ui.html",
-                                        "/swagger-ui/**",
-                                        "/swagger-resources/**",
-                                        "/api-test/**").permitAll()
+                                .requestMatchers("/v3/**", "/swagger-ui.html", "/swagger-ui/**",
+                                        "/swagger-resources/**", "/api-test/**","/api-test").permitAll()
 
                                 //note 일반 사용자 페이지
                                 .requestMatchers("/","/home", "/member/signup","/member/login",
@@ -60,8 +57,7 @@ public class SecurityConfig {
                                 .requestMatchers("/check/**","/member/password/**","/api/v1/member/reset/**").permitAll()
                                 .requestMatchers("/api/v1/tencent/**","/api/v1/agency/region").permitAll()
                                 .requestMatchers("/api/v1/admin/login").permitAll()
-
-
+                                .requestMatchers("/actuator/**","/actuator","/error").permitAll()
 
                                 //note 로그인한 사용자
                                 .requestMatchers("/survey/log/detail/**").authenticated()

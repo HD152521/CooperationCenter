@@ -2,6 +2,7 @@ package com.cooperation.project.cooperationcenter.domain.agency.controller.homep
 
 import com.cooperation.project.cooperationcenter.domain.member.dto.AgencyRegion;
 import com.cooperation.project.cooperationcenter.global.exception.BaseResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,8 @@ import java.util.List;
 @RequestMapping("/api/v1/agency")
 @Slf4j
 public class AgencyRestController {
+
+    @Operation(summary = "유학원 지역 리스트 반환")
     @GetMapping("/region")
     public BaseResponse<?> getRegionList(){
         List<String> regions = Arrays.stream(AgencyRegion.values())

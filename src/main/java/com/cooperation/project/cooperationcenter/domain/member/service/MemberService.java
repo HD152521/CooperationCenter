@@ -1,6 +1,8 @@
 package com.cooperation.project.cooperationcenter.domain.member.service;
 
 
+import com.cooperation.project.cooperationcenter.domain.agency.exception.AgencyHandler;
+import com.cooperation.project.cooperationcenter.domain.agency.exception.status.AgencyErrorStatus;
 import com.cooperation.project.cooperationcenter.domain.agency.model.Agency;
 import com.cooperation.project.cooperationcenter.domain.agency.repository.AgencyRepository;
 import com.cooperation.project.cooperationcenter.domain.file.dto.FileAttachmentDto;
@@ -97,7 +99,7 @@ public class MemberService {
 
     private Agency checkAgency(MemberRequest.SignupExistingAgencyDto agencyDto){
         return agencyRepository.findAgencyByAgencyNameAndAgencyEmailAndShare(agencyDto.agencyName(),agencyDto.agencyEmail(),true).orElseThrow(
-                () -> new BaseException(ErrorCode.AGENCY_NOT_FOUND)
+                () -> new AgencyHandler(AgencyErrorStatus.AGENCY_NOT_FOUND)
         );
     }
 
