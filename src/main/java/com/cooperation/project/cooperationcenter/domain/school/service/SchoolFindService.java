@@ -36,6 +36,7 @@ public class SchoolFindService {
 
     private final FileAttachmentRepository fileAttachmentRepository;
 
+    @Transactional(readOnly = true)
     public List<SchoolResponse.SchoolDto> loadAllSchoolByDto(){
         try{
             return loadAllSchool().stream()
@@ -47,6 +48,7 @@ public class SchoolFindService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<SchoolResponse.SchoolHomeDto> loadAllSchoolByHomeDto(){
         try{
             return loadAllSchool().stream()
@@ -58,6 +60,7 @@ public class SchoolFindService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<School> loadAllSchool(){
         try{
             return schoolRepository.findAll();

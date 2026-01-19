@@ -3,6 +3,8 @@ package com.cooperation.project.cooperationcenter.domain.file.service;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.model.ObjectMetadata;
 import com.cooperation.project.cooperationcenter.domain.file.dto.FileAttachmentDto;
+import com.cooperation.project.cooperationcenter.domain.file.exception.FileHandler;
+import com.cooperation.project.cooperationcenter.domain.file.exception.status.FileErrorStatus;
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.file.model.FileTargetType;
 
@@ -63,9 +65,25 @@ public class FileService {
     @Transactional
     public FileAttachment saveFile(FileAttachmentDto request) {
         MultipartFile file = request.file();
+
+        if (file == null || file.isEmpty()) {
+            throw new FileHandler(FileErrorStatus.FILE_EMPTY);
+        }
+
+        FileTargetType fileType;
+
+        try {
+            fileType = FileTargetType.fromType(request.type());
+        } catch (Exception e) {
+            throw new FileHandler(FileErrorStatus.FILE_TARGET_INVALID);
+        }
+
+        String path = getPath(request);
+        if (path == null) {
+            throw new FileHandler(FileErrorStatus.FILE_TARGET_INVALID);
+        }
+
         try (InputStream in = file.getInputStream()) {
-            String path = getPath(request);
-            FileTargetType fileType = FileTargetType.fromType(request.type());
             FileAttachment inputFile = saveFileModel(path,file,fileType);
 
             String key = String.format("%s/%s",
@@ -75,12 +93,15 @@ public class FileService {
             meta.setContentLength(file.getSize());
             if (file.getContentType() != null) meta.setContentType(file.getContentType());
             meta.setHeader("x-oss-server-side-encryption", "AES256");
-            //            meta.setHeader(OSSHeaders.SERVER_SIDE_ENCRYPTION, "AES256");
 
             oss.putObject(bucket, key, in, meta);
             return inputFile;
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to upload to OSS", e);
+        }catch (IOException e) {
+            log.error("File upload IO error", e);
+            throw new FileHandler(FileErrorStatus.FILE_UPLOAD_ERROR);
+        } catch (Exception e) {
+            log.error("File save error", e);
+            throw new FileHandler(FileErrorStatus.FILE_SAVE_ERROR);
         }
     }
 
@@ -101,15 +122,9 @@ public class FileService {
     }
 
     public FileAttachment loadFileAttachment(String fileId,String type){
-        try{
-            FileTargetType fileType = FileTargetType.fromType(type);
-            return fileAttachmentRepository.findByFileIdAndFiletype(fileId,fileType).orElseThrow(
-                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
-            );
-        }catch (Exception e){
-            log.warn(e.getMessage());
-            return null;
-        }
+        FileTargetType fileType = FileTargetType.fromType(type);
+        return fileAttachmentRepository.findByFileIdAndFiletype(fileId, fileType)
+                .orElseThrow(() -> new FileHandler(FileErrorStatus.FILE_META_NOT_FOUND));
     }
 
     public FileAttachment loadFileAttachment(String fileId,FileTargetType type){
@@ -210,10 +225,12 @@ public class FileService {
 
             fileAttachmentRepository.delete(fileAttachment);
         }catch (Exception e){
-            log.warn(e.getMessage());
+            log.error("File delete error", e);
+            throw new FileHandler(FileErrorStatus.FILE_DELETE_ERROR);
         }
     }
 
+    @Transactional
     public void deleteFile(List<FileAttachment> fileAttachments){
         try{
             fileAttachmentRepository.deleteAll(fileAttachments);
@@ -222,6 +239,7 @@ public class FileService {
         }
     }
 
+    @Transactional
     public void deleteFileById(String fileId,FileTargetType type){
         try{
             FileAttachment file = loadFileAttachment(fileId,type);
@@ -232,16 +250,30 @@ public class FileService {
     }
 
     public URL getViewUrl(FileAttachment file){
-        return ossService.presignedGetUrl(file.getPath(), 15, false, file.getStoredName(), null);
+        try {
+            return ossService.presignedGetUrl(file.getPath(), 15, false, file.getStoredName(), null);
+        } catch (Exception e) {
+            log.error("Presigned URL generation failed", e);
+            throw new FileHandler(FileErrorStatus.FILE_URL_GENERATE_ERROR);
+        }
     }
 
     public URL getViewUrl(String path,String fileName){
-        log.info("path:{}, fileName:{}",path,fileName);
-        return ossService.presignedGetUrl(path, 15, false, null, null);
+        try {
+            return ossService.presignedGetUrl(path, 15, false, null, null);
+        } catch (Exception e) {
+            log.error("Presigned URL generation failed", e);
+            throw new FileHandler(FileErrorStatus.FILE_URL_GENERATE_ERROR);
+        }
     }
 
     public URL getDownloadUrl(FileAttachment file){
-        return ossService.presignedGetUrl(file.getPath(), 15, true, file.getStoredName(), file.getContentType());
+        try {
+            return ossService.presignedGetUrl(file.getPath(), 15, true, file.getStoredName(), file.getContentType());
+        } catch (Exception e) {
+            log.error("Presigned Download URL generation failed", e);
+            throw new FileHandler(FileErrorStatus.FILE_URL_GENERATE_ERROR);
+        }
     }
 
     public  ResponseEntity<Void> saveSchoolImgAndReturnUrl(String type, MultipartFile file){

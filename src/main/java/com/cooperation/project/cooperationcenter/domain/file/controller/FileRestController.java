@@ -49,8 +49,13 @@ public class FileRestController {
         return fileService.viewPdf(fileId,type);
     }
 
+    @Operation(
+            summary = "학교 이미지 저장",
+            description = """
+        학교에 사용되는 이미지를 저장하고 URL을 반환.
+        """
+    )
     @PostMapping("/{type}")
-    @Operation(summary = "학교 이미지 저장")
     public ResponseEntity<Void> saveFile(@PathVariable String type,@RequestParam("file-0") MultipartFile file) throws IOException {
         log.info("save file");
         return fileService.saveSchoolImgAndReturnUrl(type, file);

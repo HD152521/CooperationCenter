@@ -54,7 +54,6 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
 
         for (String allowed : IGNORE_PATHS) {
             if (path.startsWith(allowed)) {
-                log.info("무시 path:{}",allowed);
                 filterChain.doFilter(request, response);
                 return;
             }

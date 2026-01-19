@@ -152,6 +152,12 @@ public class SurveyRestController {
         return BaseResponse.onSuccess("succeess");
     }
 
+    @Operation(
+            summary = "전체 설문 응답 로그 조회",
+            description = """
+        관리자 권한으로 전체 설문 응답 로그를 조회합니다.
+        """
+    )
     @GetMapping("/admin/answer")
     public BaseResponse<?> getAllAnswerLog(){
         List<AnswerResponse.LogDto> result = surveyLogService.getAllAnswerLog();
@@ -159,6 +165,12 @@ public class SurveyRestController {
         return BaseResponse.onSuccess(result);
     }
 
+    @Operation(
+            summary = "설문별 응답 로그 조회",
+            description = """
+        특정 설문에 대한 응답 로그를 조회합니다.
+        """
+    )
     @GetMapping("/admin/answer/{surveyId}")
     public BaseResponse<?> getAnswerLog(@PathVariable String surveyId){
         AnswerResponse.AnswerDto result = surveyLogService.getAnswerLog(surveyId);
@@ -172,16 +184,35 @@ public class SurveyRestController {
         return surveyLogService.extractCsv(request);
     }
 
+    @Operation(
+            summary = "설문 응답 CSV 추출",
+            description = """
+        특정 설문에 대한 응답 데이터를 CSV 파일로 스트리밍 다운로드합니다.
+        """
+    )
     @PostMapping("/admin/log/{surveyId}")
     public ResponseEntity<StreamingResponseBody> extractCsv(@PathVariable String surveyId){
         log.info("extracy all csv...");
         return surveyLogService.extractAllCsv(surveyId);
     }
 
+    @Operation(
+            summary = "설문 응답 파일 다운로드 (학생 기준)",
+            description = """
+        학생 기준으로 업로드된 설문 응답 파일을 응답한 학생 별로 파일을 만들어서 다운로드합니다.
+        """
+    )
     @PostMapping("/admin/log/file/student/{surveyId}")
     public ResponseEntity<StreamingResponseBody> extractFileStudent(@PathVariable String surveyId){
         return surveyLogService.extractFileStudent(surveyId);
     }
+
+    @Operation(
+            summary = "설문 응답 파일 다운로드 (설문 기준)",
+            description = """
+        설문 응답에 포함된 파일 업로드 데이터를 설문조사 별로 파일을 만들어 다운로드합니다.
+        """
+    )
     @PostMapping("/admin/log/file/survey/{surveyId}")
     public ResponseEntity<StreamingResponseBody> extractFileSurvey(@PathVariable String surveyId){
         return surveyLogService.extractFileSurvey(surveyId);

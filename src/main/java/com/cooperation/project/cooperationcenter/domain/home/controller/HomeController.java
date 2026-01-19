@@ -21,6 +21,7 @@ public class HomeController {
 
     @RequestMapping({"/", "/home"})
     public String home(Model model, HttpServletRequest request) {
+        log.info("home controller진입");
         model.addAttribute("agencyDto", agencyService.getAgencyListForHome());
         model.addAttribute("schoolDto", schoolFindService.loadAllSchoolByHomeDto());
         return "homepage/user/index";

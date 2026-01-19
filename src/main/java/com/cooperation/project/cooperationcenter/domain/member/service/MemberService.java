@@ -6,11 +6,15 @@ import com.cooperation.project.cooperationcenter.domain.agency.exception.status.
 import com.cooperation.project.cooperationcenter.domain.agency.model.Agency;
 import com.cooperation.project.cooperationcenter.domain.agency.repository.AgencyRepository;
 import com.cooperation.project.cooperationcenter.domain.file.dto.FileAttachmentDto;
+import com.cooperation.project.cooperationcenter.domain.file.exception.FileHandler;
+import com.cooperation.project.cooperationcenter.domain.file.exception.status.FileErrorStatus;
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.file.service.FileService;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberRequest;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberResponse;
 import com.cooperation.project.cooperationcenter.domain.member.dto.UpdatePasswordDto;
+import com.cooperation.project.cooperationcenter.domain.member.exception.MemberHandler;
+import com.cooperation.project.cooperationcenter.domain.member.exception.status.MemberErrorStatus;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.member.model.PasswordResetToken;
 import com.cooperation.project.cooperationcenter.domain.member.model.UserStatus;
@@ -85,14 +89,14 @@ public class MemberService {
             agency = checkAgency(agencyDto);
         }else{
             MemberRequest.SignupNewAgencyDto agencyDto = MemberRequest.SignupNewAgencyDto.from(agencyData);
-            agency = makeAgency(agencyDto);
-
-            FileAttachment file1 = (agencyPicture==null) ? null : fileService.saveFile(new FileAttachmentDto(agencyPicture,"member",null,uuid,null));
-            FileAttachment file2 = (businessCertificate==null) ? null : fileService.saveFile(new FileAttachmentDto(businessCertificate,"member", null,uuid,null));
-
-            agency.updateFiles(file1,file2);
+            try{
+                FileAttachment file1 = (agencyPicture==null) ? null : fileService.saveFile(new FileAttachmentDto(agencyPicture,"member",null,uuid,null));
+                FileAttachment file2 = (businessCertificate==null) ? null : fileService.saveFile(new FileAttachmentDto(businessCertificate,"member", null,uuid,null));
+                agency = makeAgency(agencyDto,file1,file2);
+            }catch (Exception e){
+                throw new FileHandler(FileErrorStatus.FILE_SAVE_ERROR);
+            }
         }
-
         Member member = Member.fromDto(request.withEncodedPassword(encodedPassword),agency,uuid);
         agency.addMember(memberRepository.save(member));
     }
@@ -103,17 +107,17 @@ public class MemberService {
         );
     }
 
-    private Agency makeAgency(MemberRequest.SignupNewAgencyDto agencyDto){
-        return agencyRepository.save(
-                Agency.fromDto(agencyDto)
-        );
+    private Agency makeAgency(MemberRequest.SignupNewAgencyDto agencyDto,FileAttachment file1,FileAttachment file2){
+        Agency agency = Agency.fromDto(agencyDto);
+        agency.updateFiles(file1,file2);
+        return agencyRepository.save(agency);
     }
 
 
 
     public void login(MemberRequest.LoginDto requestDto,HttpServletResponse response,HttpServletRequest request){
         Member member = memberRepository.findMemberByEmail(requestDto.email())
-                .orElseThrow(() -> new BaseException(ErrorCode.EMAIL_NOT_FOUND));
+                .orElseThrow(() -> new MemberHandler(MemberErrorStatus.EMAIL_NOT_FOUND));
         checkLogin(requestDto,member);
         //성공시 cookie
         TokenResponse tokenResponse = getTokenResponse(response,member);
@@ -127,12 +131,12 @@ public class MemberService {
 
     public void checkLogin(MemberRequest.LoginDto request, Member member){
         if (!passwordEncoder.matches(request.password(), member.getPassword())) {
-            throw new BaseException(ErrorCode.PASSWORD_ERROR);
+            throw new MemberHandler(MemberErrorStatus.PASSWORD_ERROR);
         }
 
         if(!member.isAccept()){
             log.warn("아직 승인되지 않은 아이디임.");
-            throw new BaseException(ErrorCode.MEMBER_NOT_ACCEPTED);
+            throw new MemberHandler(MemberErrorStatus.MEMBER_NOT_ACCEPTED);
         }
     }
 
@@ -145,7 +149,7 @@ public class MemberService {
             return member;
         }catch (Exception e){
             log.warn("member create error");
-            throw new BaseException(ErrorCode.MEMBER_SAVE_ERROR);
+            throw new MemberHandler(MemberErrorStatus.MEMBER_SAVE_ERROR);
         }
     }
 
@@ -193,16 +197,8 @@ public class MemberService {
     }
 
     public Member getMember(String email){
-        try {
-            return memberRepository.findMemberByEmail(email)
-                    .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
-        } catch (BaseException e){
-            log.warn("멤버 조회 실패: {}", e.getMessage());
-            return null;
-        } catch (Exception e){
-            log.error("알 수 없는 에러 발생: {}", e.getMessage(), e);
-            return null;
-        }
+        return memberRepository.findMemberByEmail(email)
+                .orElseThrow(() -> new MemberHandler(MemberErrorStatus.MEMBER_NOT_FOUND));
     }
 
     public boolean isUsernameTaken(String username){
@@ -266,8 +262,8 @@ public class MemberService {
  */
     public void adminLogin(MemberRequest.LoginDto request,HttpServletResponse response){
         Member member = memberRepository.findMemberByEmail(request.email())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
-        if(!member.getRole().isAdmin()) throw new BaseException(ErrorCode.MEMBER_NOT_ADMIN);
+                .orElseThrow(() -> new MemberHandler(MemberErrorStatus.MEMBER_NOT_FOUND));
+        if(!member.getRole().isAdmin()) throw new MemberHandler(MemberErrorStatus.MEMBER_NOT_ADMIN);
         checkLogin(request,member);
         //성공시 cookie
         TokenResponse tokenResponse = getTokenResponse(response,member);
@@ -278,13 +274,15 @@ public class MemberService {
     @Transactional
     public void acceptedMember(String email){
         Member member = memberRepository.findMemberByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+                .orElseThrow(() -> new MemberHandler(MemberErrorStatus.MEMBER_NOT_FOUND));
+
         boolean duplicated = memberRepository.countMemberByEmailAndStatus(email,UserStatus.APPROVED)>0;
-        if(duplicated) throw new BaseException(
-                ErrorCode.MEMBER_ALREADY_ACCEPTED_EMAIL
+        if(duplicated) throw new MemberHandler(
+                MemberErrorStatus.MEMBER_ALREADY_ACCEPTED_EMAIL
         );
         member.accept();
         Agency agency = member.getAgency();
+
         if(!agency.isShare()) {
             agency.setShare();
             agencyRepository.save(agency);
@@ -296,7 +294,7 @@ public class MemberService {
     @Transactional
     public void pendingMember(String email){
         Member member = memberRepository.findMemberByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+                .orElseThrow(() -> new MemberHandler(MemberErrorStatus.MEMBER_NOT_FOUND));
         member.pending();
         Agency agency = member.getAgency();
         agency.removeMember(member);
@@ -309,16 +307,12 @@ public class MemberService {
 
     public MemberResponse.DetailDto detailMember(String email){
         Member member = memberRepository.findMemberByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+                .orElseThrow(() -> new MemberHandler(MemberErrorStatus.MEMBER_NOT_FOUND));
         return MemberResponse.DetailDto.from(member);
     }
 
     public List<MemberResponse.PendingDto> getPendingList(){
         List<Member> member = memberRepository.findTop4ByApprovalSignupFalseOrderByCreatedAtDesc();
-        if(member == null){
-            log.warn("가입 승인 대기중인 멤버가 없음.");
-            return null;
-        }
         return MemberResponse.PendingDto.from(member);
     }
 

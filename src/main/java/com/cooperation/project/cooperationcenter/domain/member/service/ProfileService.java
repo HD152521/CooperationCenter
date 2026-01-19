@@ -3,18 +3,19 @@ package com.cooperation.project.cooperationcenter.domain.member.service;
 import com.cooperation.project.cooperationcenter.domain.agency.model.Agency;
 import com.cooperation.project.cooperationcenter.domain.agency.repository.AgencyRepository;
 import com.cooperation.project.cooperationcenter.domain.file.dto.FileAttachmentDto;
+import com.cooperation.project.cooperationcenter.domain.file.exception.FileHandler;
+import com.cooperation.project.cooperationcenter.domain.file.exception.status.FileErrorStatus;
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.file.model.FileTargetType;
 import com.cooperation.project.cooperationcenter.domain.file.service.FileService;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
 import com.cooperation.project.cooperationcenter.domain.member.dto.Profile;
+import com.cooperation.project.cooperationcenter.domain.member.exception.MemberHandler;
+import com.cooperation.project.cooperationcenter.domain.member.exception.status.MemberErrorStatus;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.member.repository.MemberRepository;
 import com.cooperation.project.cooperationcenter.domain.survey.model.SurveyLog;
-import com.cooperation.project.cooperationcenter.domain.survey.repository.SurveyLogRepository;
 import com.cooperation.project.cooperationcenter.domain.survey.service.homepage.SurveyFindService;
-import com.cooperation.project.cooperationcenter.global.exception.BaseException;
-import com.cooperation.project.cooperationcenter.global.exception.codes.ErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,8 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -41,14 +40,21 @@ public class ProfileService {
 
     public Member getMember(String email){
         return memberRepository.findMemberByEmail(email)
-                .orElseThrow(() -> new BaseException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new MemberHandler(MemberErrorStatus.MEMBER_NOT_FOUND));
     }
 
     public Profile.ProfileDto getProfileDto(MemberDetails memberDetails, Pageable pageable){
+
         Member member = getMember(memberDetails.getUsername());
         Agency agency = member.getAgency();
+
+        if (agency == null) {
+            throw new MemberHandler(MemberErrorStatus.MEMBER_AGENCY_NOT_FOUND);
+        }
+
+        FileAttachment business = agency.getBusinessPicture();
         log.info("memberName:{}",memberDetails.getUsername());
-        log.info("member File:{}",agency.getBusinessPicture().toString());
+        log.info("business file exists: {}", business != null);
 
         Page<SurveyLog> logs = surveyFindService.getSurveyLogs(member,pageable);
 
@@ -65,6 +71,9 @@ public class ProfileService {
     @Transactional
     public void updateMember(Profile.MemberDto request,MemberDetails memberDetails){
         Member member = getMember(memberDetails.getUsername());
+        if (!member.isAccept()) {
+            throw new MemberHandler(MemberErrorStatus.MEMBER_NOT_ACCEPTED);
+        }
         member.updateMember(request);
         memberRepository.save(member);
     }
@@ -72,35 +81,43 @@ public class ProfileService {
     @Transactional
     public void updateAgency(Profile.AgencyDto request,MemberDetails memberDetails){
         Member member = getMember(memberDetails.getUsername());
+        if (!member.isAccept()) {
+            throw new MemberHandler(MemberErrorStatus.MEMBER_NOT_ACCEPTED);
+        }
         Agency agency = member.getAgency();
-
         agency.updateAgency(request);
         agencyRepository.save(agency);
     }
 
     @Transactional
-    public void updateBussinessCert(MultipartFile file,MemberDetails memberDetails){
+    public void updateBusinessCert(MultipartFile file, MemberDetails memberDetails){
         Member member = getMember(memberDetails.getUsername());
         Agency agency = member.getAgency();
 
-        // 옛 엔티티를 건드리지 않음 (프록시 초기화 금지)
-        String uuid = UUID.randomUUID().toString();
-        FileAttachment fresh = fileService.saveFile(new FileAttachmentDto(file, "member", null, uuid, null));
+        requireFile(file);
 
         FileAttachment old = agency.getBusinessPicture();
-        String oldFileId = old.getFileId();
-        FileTargetType oldType = old.getFiletype();
+        String uuid = UUID.randomUUID().toString();
+        FileAttachment fresh = fileService.saveFile(new FileAttachmentDto(file, "member", null, uuid, null));
 
         agency.updateBusinessCertificate(fresh);
         agencyRepository.saveAndFlush(agency);  // FK 교체 먼저 확정
 
-        fileService.deleteFileById(oldFileId,oldType);
+        if (old != null) {
+            try {
+                fileService.deleteFileById(old.getFileId(), old.getFiletype());
+            } catch (Exception e) {
+                log.error("old business cert delete failed", e);
+            }
+        }
     }
 
     @Transactional
     public void updateAgencyPicture(MultipartFile file,MemberDetails memberDetails){
         Member member = getMember(memberDetails.getUsername());
         Agency agency = member.getAgency();
+
+        requireFile(file);
 
         FileAttachment old = agency.getAgencyPicture();
         String oldFileId = old.getFileId();
@@ -116,8 +133,8 @@ public class ProfileService {
 
     private void requireFile(MultipartFile file) {
         if (file == null || file.isEmpty())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "파일이 비었습니다.");
+            throw new FileHandler(FileErrorStatus.FILE_EMPTY);
         if (file.getSize() > 10 * 1024 * 1024L)
-            throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE, "최대 10MB.");
+            throw new FileHandler(FileErrorStatus.FILE_SIZE_ERROR);
     }
 }
