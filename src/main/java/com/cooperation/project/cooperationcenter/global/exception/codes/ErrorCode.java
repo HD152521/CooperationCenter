@@ -85,8 +85,6 @@ public enum ErrorCode implements BaseCode {
     EMPTY_TOKEN_PROVIDED(HttpStatus.UNAUTHORIZED, "TOKEN-0002", "토큰 텅텅"),
     REFRESH_TOKEN_NOT_VALID(HttpStatus.UNAUTHORIZED, "TOKEN-0003", "리프레시 토큰이 올바르지 않음"),
 
-    COLLEGE_NOT_FOUND(HttpStatus.BAD_REQUEST,"COLLEGE-0001","해당 학과를 찾을 수가 없습니다."),
-
     SURVEY_DATE_NOT_VALID(HttpStatus.BAD_REQUEST,"SURVEY-0000","지금 설문조사 입력 기간이 아닙니다."),
     SURVEY_NOT_SHARE(HttpStatus.BAD_REQUEST,"SURVEY-0001","해당 설문조사는 공개 전입니다."),
 
