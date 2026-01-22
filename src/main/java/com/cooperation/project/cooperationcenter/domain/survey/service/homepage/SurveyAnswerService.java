@@ -4,6 +4,8 @@ import com.cooperation.project.cooperationcenter.domain.file.dto.FileAttachmentD
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.file.service.FileService;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
+import com.cooperation.project.cooperationcenter.domain.member.exception.MemberHandler;
+import com.cooperation.project.cooperationcenter.domain.member.exception.status.MemberErrorStatus;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.member.repository.MemberRepository;
 import com.cooperation.project.cooperationcenter.domain.student.service.StudentService;
@@ -67,7 +69,7 @@ public class SurveyAnswerService {
 
 
         Member member = memberRepository.findMemberByEmail(memberDetails.getUsername()).orElseThrow(
-                () -> new BaseException(ErrorCode.MEMBER_NOT_FOUND)
+                () -> new MemberHandler(MemberErrorStatus.MEMBER_NOT_FOUND)
         );
 
         log.info("find Member");

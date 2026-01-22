@@ -4,6 +4,8 @@ import com.cooperation.project.cooperationcenter.domain.file.dto.FileAttachmentD
 import com.cooperation.project.cooperationcenter.domain.file.model.FileAttachment;
 import com.cooperation.project.cooperationcenter.domain.file.service.FileService;
 import com.cooperation.project.cooperationcenter.domain.school.dto.*;
+import com.cooperation.project.cooperationcenter.domain.school.exception.SchoolHandler;
+import com.cooperation.project.cooperationcenter.domain.school.exception.status.SchoolErrorStatus;
 import com.cooperation.project.cooperationcenter.domain.school.model.*;
 import com.cooperation.project.cooperationcenter.domain.school.repository.*;
 import io.jsonwebtoken.lang.Collections;
@@ -20,6 +22,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.cooperation.project.cooperationcenter.domain.school.model.SchoolBoard.BoardType.INTRO;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +43,11 @@ public class SchoolService {
 
     @Transactional
     public void saveSchool(SchoolRequest.SchoolDto request){
+
+        if (schoolRepository.existsBySchoolEnglishName(request.schoolEnglishName())) {
+            throw new SchoolHandler(SchoolErrorStatus.SCHOOL_ALREADY_EXISTS);
+        }
+
         School school = School.fromDto(request);
         schoolRepository.save(school);
     }
@@ -48,7 +57,8 @@ public class SchoolService {
         School school = schoolFindService.loadSchoolById(request.schoolId());
         SchoolBoard schoolBoard = SchoolBoard.fromDto(request);
 
-        if(schoolBoard.getType().equals(SchoolBoard.BoardType.INTRO)){
+        if(schoolBoard.getType().equals(INTRO)){
+            if(school.hasIntroBoard()) throw new SchoolHandler(SchoolErrorStatus.INTRO_BOARD_ALREADY_EXISTS);
             IntroPost introPost = IntroPost.builder()
                     .schoolBoard(schoolBoard)
                     .build();
@@ -86,17 +96,15 @@ public class SchoolService {
 
     @Transactional
     public void saveIntro(IntroRequest.TotalIntroSaveDto request){
-        try{
-            SchoolBoard board = schoolFindService.loadBoardById(request.boardId());
-            IntroPost intro = board.getIntroPost();
-            intro.fromDto(request);
-            //todo collegeDto는 따로 저쟝해야함. 저장이 없어서 사라지는듯
-            intro.updateCollege(saveCollege(intro,request.collegeDto()));
-            schoolBoardRepository.save(board);
+        SchoolBoard board = schoolFindService.loadBoardById(request.boardId());
+        IntroPost intro = board.getIntroPost();
+        if (intro == null) {
+            throw new SchoolHandler(SchoolErrorStatus.INTRO_POST_NOT_FOUND);
         }
-        catch(Exception e){
-            log.warn(e.getMessage());
-        }
+        intro.fromDto(request);
+        //todo collegeDto는 따로 저쟝해야함. 저장이 없어서 사라지는듯
+        intro.updateCollege(saveCollege(intro,request.collegeDto()));
+        schoolBoardRepository.save(board);
     }
 
     @Transactional

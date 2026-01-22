@@ -65,7 +65,7 @@ public class SchoolFindService {
 
     public School loadSchoolByEnglishName(String englishName){
         return schoolRepository.findSchoolBySchoolEnglishName(englishName)
-                .orElseThrow(() -> new BaseException(SchoolErrorStatus.SCHOOL_NOT_FOUND));
+                .orElseThrow(() -> new SchoolHandler(SchoolErrorStatus.SCHOOL_NOT_FOUND));
     }
 
     public School loadSchoolById(Long id){
