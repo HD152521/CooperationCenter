@@ -4,9 +4,10 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 src/main/resources/application-local.yml
+src/main/resources/logback-spring.xml
 *.env
 .env
-
+docker-compose.yml
 uploads
 ### STS ###
 .apt_generated

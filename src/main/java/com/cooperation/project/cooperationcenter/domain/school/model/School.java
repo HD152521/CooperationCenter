@@ -51,4 +51,11 @@ public class School extends BaseEntity {
                 .logoUrl(dto.imgUrl())
                 .build();
     }
+
+    public boolean hasIntroBoard(){
+        for(SchoolBoard board: boards){
+            if(board.getType().equals(SchoolBoard.BoardType.INTRO)) return true;
+        }
+        return false;
+    }
 }
