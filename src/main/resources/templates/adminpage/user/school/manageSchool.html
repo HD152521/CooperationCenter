@@ -145,6 +145,24 @@
     window.closeAddBoardModal = function () {
         document.getElementById("addBoardModal").classList.add("hidden");
     };
+    window.openEditSchoolModal = function (buttonElement, event) {
+        event?.stopPropagation();
+
+        const modal = document.getElementById("editSchoolModal");
+        modal.dataset.schoolId = buttonElement.dataset.schoolId || "";
+        document.getElementById("editSchoolKoreanName").value = buttonElement.dataset.koreanName || "";
+        document.getElementById("editSchoolEnglishName").value = buttonElement.dataset.englishName || "";
+        document.getElementById("editSchoolImgUrl").value = buttonElement.dataset.imgUrl || "";
+        modal.classList.remove("hidden");
+    };
+    window.closeEditSchoolModal = function () {
+        const modal = document.getElementById("editSchoolModal");
+        modal.classList.add("hidden");
+        modal.dataset.schoolId = "";
+        document.getElementById("editSchoolKoreanName").value = "";
+        document.getElementById("editSchoolEnglishName").value = "";
+        document.getElementById("editSchoolImgUrl").value = "";
+    };
     window.openCategoryModal = function () {
         document.getElementById("categoryModal").classList.remove("hidden");
     };
@@ -227,6 +245,62 @@
                 location.reload(); // 새로고침해서 반영
             } else {
                 throw new Error(result.message || "추가 실패");
+            }
+        } catch (error) {
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50";
+            notification.textContent = "오류 발생: " + error.message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+    };
+
+    window.saveEditedSchool = async function () {
+        const modal = document.getElementById("editSchoolModal");
+        const schoolId = Number(modal.dataset.schoolId);
+        const schoolKoreanName = document.getElementById("editSchoolKoreanName").value.trim();
+        const schoolEnglishName = document.getElementById("editSchoolEnglishName").value.trim();
+        const imgUrl = document.getElementById("editSchoolImgUrl").value.trim();
+
+        if (!schoolId || !schoolKoreanName || !schoolEnglishName || !imgUrl) {
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50";
+            notification.textContent = "모든 항목을 입력해주세요";
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+            return;
+        }
+
+        const payload = {
+            schoolId,
+            schoolKoreanName,
+            schoolEnglishName,
+            imgUrl
+        };
+
+        try {
+            const response = await fetch("/api/v1/admin/school", {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const result = await response.json();
+            if (result.isSuccess) {
+                const notification = document.createElement("div");
+                notification.className =
+                    "fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50";
+                notification.textContent = "학교 정보가 수정되었습니다";
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 3000);
+                closeEditSchoolModal();
+                location.reload();
+            } else {
+                throw new Error(result.message || "수정 실패");
             }
         } catch (error) {
             const notification = document.createElement("div");
@@ -1090,12 +1164,11 @@
 
                     <div class="flex flex-wrap gap-2 mb-2" data-role="department-chips"></div>
 
-                    <input
-                        type="text"
-                        class="dark-input"
+                    <textarea
+                        class="dark-input min-h-[80px]"
                         data-role="department-input"
-                        placeholder="예: 컴퓨터공학과, 전기공학과 등 입력 후 Enter"
-                    />
+                        placeholder="학과명을 입력하세요. (줄바꿈으로 구분하여 여러 개 입력 가능)"
+                    ></textarea>
                 </div>
             </div>
 
@@ -1109,7 +1182,7 @@
         </div>
     `;
 
-        list.appendChild(wrapper);
+        list.prepend(wrapper);
         if (id !== null) wrapper.dataset.id = id;
 
 
@@ -1149,14 +1222,31 @@
 
         if (!input || !chipsContainer) return;
 
-        // Enter 키로 태그 추가
+        // 입력 이벤트: 붙여넣기 등으로 줄바꿈이 들어왔을 때 처리
+        input.addEventListener("input", function () {
+            if (input.value.includes("\n")) {
+                const lines = input.value.split("\n");
+                lines.forEach(line => {
+                    const trimmed = line.trim();
+                    if (trimmed) {
+                        addDepartmentChip(chipsContainer, trimmed);
+                    }
+                });
+                input.value = "";
+            }
+        });
+
+        // Enter 키: 줄바꿈 대신 입력 완료로 처리
         input.addEventListener("keydown", function (e) {
             if (e.key === "Enter") {
                 e.preventDefault();
-                const value = input.value.trim();
-                if (!value) return;
-
-                addDepartmentChip(chipsContainer, value);
+                const lines = input.value.split("\n");
+                lines.forEach(line => {
+                    const trimmed = line.trim();
+                    if (trimmed) {
+                        addDepartmentChip(chipsContainer, trimmed);
+                    }
+                });
                 input.value = "";
             }
         });

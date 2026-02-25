@@ -53,6 +53,17 @@ public class SchoolService {
     }
 
     @Transactional
+    public void editSchool(SchoolRequest.SchoolEditDto request) {
+        School school = schoolFindService.loadSchoolById(request.schoolId());
+
+        if (schoolRepository.existsBySchoolEnglishNameAndIdNot(request.schoolEnglishName(), request.schoolId())) {
+            throw new SchoolHandler(SchoolErrorStatus.SCHOOL_ALREADY_EXISTS);
+        }
+
+        school.updateInfo(request);
+    }
+
+    @Transactional
     public void saveBoard(SchoolRequest.SchoolBoardDto request){
         School school = schoolFindService.loadSchoolById(request.schoolId());
         SchoolBoard schoolBoard = SchoolBoard.fromDto(request);

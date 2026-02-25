@@ -141,12 +141,6 @@
                 return;
             } catch (err) {
                 console.error("🚨 네트워크 또는 서버 오류:", err);
-                showModal({
-                    type: "error",
-                    title: "登录失败",
-                    message: err?.message || "登录过程中发生错误。请检查网络状态。",
-                    buttonText: "确认"
-                });
             }
         });
 

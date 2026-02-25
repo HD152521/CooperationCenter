@@ -52,6 +52,12 @@ public class School extends BaseEntity {
                 .build();
     }
 
+    public void updateInfo(SchoolRequest.SchoolEditDto dto) {
+        this.schoolKoreanName = dto.schoolKoreanName();
+        this.schoolEnglishName = dto.schoolEnglishName();
+        this.logoUrl = dto.imgUrl();
+    }
+
     public boolean hasIntroBoard(){
         for(SchoolBoard board: boards){
             if(board.getType().equals(SchoolBoard.BoardType.INTRO)) return true;

@@ -46,6 +46,18 @@ public class SchoolAdminRestController {
     }
 
     @Operation(
+            summary = "?숆탳 ?뺣낫 ?섏젙",
+            description = """
+        ?숆탳 湲곕낯 ?뺣낫(援??숊삎, ?곸뼱紐?, 濡쒓퀬 URL)瑜??섏젙?⑸땲??
+        """
+    )
+    @PatchMapping
+    public BaseResponse<?> editSchool(@RequestBody SchoolRequest.SchoolEditDto request){
+        schoolService.editSchool(request);
+        return BaseResponse.onSuccess("success");
+    }
+
+    @Operation(
             summary = "학교 소개 정보 저장",
             description = """
         학교 소개 페이지에 사용되는 정보를 저장합니다.
