@@ -60,6 +60,11 @@
                                     소개 페이지 상단에 노출될 제목과 간단한 설명, 학교의 강점을 입력해주세요.
                                 </p>
                             </div>
+                            <button type="button"
+                                    onclick="saveIntroSection('intro')"
+                                    class="inline-flex items-center px-3 py-1.5 rounded-button bg-primary text-white text-xs md:text-sm hover:bg-primary/90 transition-colors whitespace-nowrap shadow-md shadow-primary/20">
+                                Save
+                            </button>
                         </div>
 
                         <div class="space-y-4">
@@ -135,6 +140,11 @@
                                     학교의 이름, 설립연도, 위치, 간단한 특징을 입력해주세요.
                                 </p>
                             </div>
+                            <button type="button"
+                                    onclick="saveIntroSection('basicInfo')"
+                                    class="inline-flex items-center px-3 py-1.5 rounded-button bg-primary text-white text-xs md:text-sm hover:bg-primary/90 transition-colors whitespace-nowrap shadow-md shadow-primary/20">
+                                Save
+                            </button>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -201,6 +211,11 @@
                                     내부 정렬이나 노출 순서를 위한 숫자입니다. 숫자가 작을수록 상단에 노출됩니다.
                                 </p>
                             </div>
+                            <button type="button"
+                                    onclick="saveIntroSection('collegeRank')"
+                                    class="inline-flex items-center px-3 py-1.5 rounded-button bg-primary text-white text-xs md:text-sm hover:bg-primary/90 transition-colors whitespace-nowrap shadow-md shadow-primary/20">
+                                Save
+                            </button>
                         </div>
 
                         <div class="w-full md:w-44">
@@ -227,6 +242,11 @@
                                     입학 안내, 장학 제도, 기숙사 안내 등 자주 사용하는 페이지 링크를 등록할 수 있습니다.
                                 </p>
                             </div>
+                            <button type="button"
+                                    onclick="saveIntroSection('urls')"
+                                    class="inline-flex items-center px-3 py-1.5 rounded-button bg-primary text-white text-xs md:text-sm hover:bg-primary/90 transition-colors whitespace-nowrap shadow-md shadow-primary/20">
+                                Save
+                            </button>
                         </div>
 
                         <div id="url-list" class="space-y-3"></div>
@@ -248,12 +268,19 @@
                                     여러 단과대를 추가하고, 각 단과대에 포함된 학과들을 입력할 수 있습니다.
                                 </p>
                             </div>
-                            <button type="button"
-                                    onclick="addCollege()"
-                                    class="inline-flex items-center px-3 py-1.5 rounded-button bg-gray-800 text-gray-100 text-xs md:text-sm hover:bg-gray-700 border border-gray-700">
-                                <i class="ri-add-line mr-1 text-base"></i>
-                                단과대 추가
-                            </button>
+                            <div class="flex items-center gap-2">
+                                <button type="button"
+                                        onclick="saveIntroSection('college')"
+                                        class="inline-flex items-center px-3 py-1.5 rounded-button bg-primary text-white text-xs md:text-sm hover:bg-primary/90 transition-colors whitespace-nowrap shadow-md shadow-primary/20">
+                                    Save
+                                </button>
+                                <button type="button"
+                                        onclick="addCollege()"
+                                        class="inline-flex items-center px-3 py-1.5 rounded-button bg-gray-800 text-gray-100 text-xs md:text-sm hover:bg-gray-700 border border-gray-700">
+                                    <i class="ri-add-line mr-1 text-base"></i>
+                                    단과대 추가
+                                </button>
+                            </div>
                         </div>
 
                         <!-- 단과대 카드들이 여기 들어감 -->
@@ -269,6 +296,11 @@
                                     대표 국문/영문 홈페이지 주소를 입력합니다.
                                 </p>
                             </div>
+                            <button type="button"
+                                    onclick="saveIntroSection('homepage')"
+                                    class="inline-flex items-center px-3 py-1.5 rounded-button bg-primary text-white text-xs md:text-sm hover:bg-primary/90 transition-colors whitespace-nowrap shadow-md shadow-primary/20">
+                                Save
+                            </button>
                         </div>
 
                         <div class="space-y-4">

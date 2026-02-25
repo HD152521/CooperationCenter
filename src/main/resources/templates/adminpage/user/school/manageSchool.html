@@ -652,7 +652,7 @@
         const schoolPicUrlInput = document.getElementById("schoolPicUrl");
         const title = titleInput ? titleInput.value.trim() : "";
         const description = descInput ? descInput.value.trim() : "";
-        const schoolPicUrl = descInput ? schoolPicUrlInput.value.trim() : "";
+        const schoolPicUrl = schoolPicUrlInput ? schoolPicUrlInput.value.trim() : "";
 
         const advantageInputs = document.querySelectorAll("#advantages-list input");
         const advantages = Array.from(advantageInputs)
@@ -820,7 +820,24 @@
         }
     }
 
+    async function saveIntroSection(sectionKey) {
+        const saveFn = window.saveIntroBoard;
+        if (typeof saveFn !== "function") {
+            alert("저장 함수를 찾을 수 없습니다.");
+            return;
+        }
+
+        const originalShowBoardList = window.showBoardList;
+        window.showBoardList = () => {};
+        try {
+            await saveFn();
+        } finally {
+            window.showBoardList = originalShowBoardList;
+        }
+    }
+
     window.saveIntroBoard = saveIntroBoard;
+    window.saveIntroSection = saveIntroSection;
 
 </script>
 
