@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import com.cooperation.project.cooperationcenter.domain.agency.model.Agency;
 
 public interface MemberRepository extends JpaRepository<Member,Long>,MemberRepositoryCustom  {
     Optional<Member> findMemberByEmail(String email);
@@ -23,6 +24,7 @@ public interface MemberRepository extends JpaRepository<Member,Long>,MemberRepos
     long count();
     long countByStatus(UserStatus status);
     long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+    boolean existsByAgencyAndStatus(Agency agency, UserStatus status);
 
     long countByApprovedDateGreaterThanEqualAndApprovedDateLessThan(LocalDate start,LocalDate end);
 

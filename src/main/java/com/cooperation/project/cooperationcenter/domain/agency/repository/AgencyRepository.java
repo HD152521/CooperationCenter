@@ -12,6 +12,7 @@ import java.util.Optional;
 public interface AgencyRepository extends JpaRepository<Agency,Long> {
     long countByAgencyPicture(FileAttachment file);
     Optional<Agency> findAgencyByAgencyNameAndAgencyEmailAndShare(String name, String email,Boolean share);
+    Optional<Agency> findAgencyByAgencyNameAndAgencyEmail(String name, String email);
     List<Agency> findAgenciesByShare(boolean share);
     Page<Agency> findAgenciesByShare(boolean share, Pageable pageable);
 
