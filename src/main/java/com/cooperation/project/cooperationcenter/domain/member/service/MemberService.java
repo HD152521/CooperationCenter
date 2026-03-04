@@ -102,7 +102,7 @@ public class MemberService {
     }
 
     private Agency checkAgency(MemberRequest.SignupExistingAgencyDto agencyDto){
-        return agencyRepository.findAgencyByAgencyNameAndAgencyEmailAndShare(agencyDto.agencyName(),agencyDto.agencyEmail(),true).orElseThrow(
+        return agencyRepository.findAgencyByAgencyNameAndAgencyEmail(agencyDto.agencyName(),agencyDto.agencyEmail()).orElseThrow(
                 () -> new AgencyHandler(AgencyErrorStatus.AGENCY_NOT_FOUND)
         );
     }
@@ -283,11 +283,7 @@ public class MemberService {
         member.accept();
         Agency agency = member.getAgency();
 
-        if(!agency.isShare()) {
-            agency.setShare();
-            agencyRepository.save(agency);
-            member.setAgency(agency);
-        }
+        updateAgencyShareByApprovedMembers(agency);
         memberRepository.save(member);
     }
 
@@ -297,12 +293,14 @@ public class MemberService {
                 .orElseThrow(() -> new MemberHandler(MemberErrorStatus.MEMBER_NOT_FOUND));
         member.pending();
         Agency agency = member.getAgency();
-        agency.removeMember(member);
-        if(agency.getMember().isEmpty() && agency.isShare()){
-            agency.setShare();
-            agencyRepository.save(agency);
-        }
+        updateAgencyShareByApprovedMembers(agency);
         memberRepository.save(member);
+    }
+
+    private void updateAgencyShareByApprovedMembers(Agency agency) {
+        boolean hasApprovedMember = memberRepository.existsByAgencyAndStatus(agency, UserStatus.APPROVED);
+        agency.setShare(hasApprovedMember);
+        agencyRepository.save(agency);
     }
 
     public MemberResponse.DetailDto detailMember(String email){

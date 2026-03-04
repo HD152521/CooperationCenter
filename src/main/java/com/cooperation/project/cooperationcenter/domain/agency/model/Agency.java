@@ -74,8 +74,8 @@ public class Agency extends BaseEntity {
         this.member.remove(member);
     }
 
-    public void setShare(){
-        this.share = !this.share;
+    public void setShare(boolean share){
+        this.share = share;
     }
 
     public static Agency fromDto(
