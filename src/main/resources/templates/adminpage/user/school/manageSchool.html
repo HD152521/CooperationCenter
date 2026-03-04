@@ -139,16 +139,52 @@
 </div>
 
 <script id="modal-functions" type="module">
+    function resetAddBoardModalFields() {
+        const modal = document.getElementById("addBoardModal");
+        if (!modal) return;
+        const textInputs = modal.querySelectorAll('input[type="text"]');
+        const urlInput = modal.querySelector('input[type="url"]');
+        textInputs.forEach(input => input.value = "");
+        if (urlInput) urlInput.value = "";
+    }
+
+    function resetEditSchoolModalFields() {
+        const modal = document.getElementById("editSchoolModal");
+        if (!modal) return;
+        modal.dataset.schoolId = "";
+        const ko = document.getElementById("editSchoolKoreanName");
+        const en = document.getElementById("editSchoolEnglishName");
+        const img = document.getElementById("editSchoolImgUrl");
+        if (ko) ko.value = "";
+        if (en) en.value = "";
+        if (img) img.value = "";
+    }
+
+    function resetAddCategoryModalFields() {
+        const modal = document.getElementById("addCategoryModal");
+        if (!modal) return;
+        modal.dataset.schoolId = "";
+        const textInputs = modal.querySelectorAll('input[type="text"]');
+        textInputs.forEach(input => input.value = "");
+        const radios = modal.querySelectorAll('input[name="boardType"]');
+        radios.forEach(radio => {
+            radio.checked = radio.value === "notice";
+        });
+    }
+
     window.openAddBoardModal = function () {
+        resetAddBoardModalFields();
         document.getElementById("addBoardModal").classList.remove("hidden");
     };
     window.closeAddBoardModal = function () {
+        resetAddBoardModalFields();
         document.getElementById("addBoardModal").classList.add("hidden");
     };
     window.openEditSchoolModal = function (buttonElement, event) {
         event?.stopPropagation();
 
         const modal = document.getElementById("editSchoolModal");
+        resetEditSchoolModalFields();
         modal.dataset.schoolId = buttonElement.dataset.schoolId || "";
         document.getElementById("editSchoolKoreanName").value = buttonElement.dataset.koreanName || "";
         document.getElementById("editSchoolEnglishName").value = buttonElement.dataset.englishName || "";
@@ -158,10 +194,7 @@
     window.closeEditSchoolModal = function () {
         const modal = document.getElementById("editSchoolModal");
         modal.classList.add("hidden");
-        modal.dataset.schoolId = "";
-        document.getElementById("editSchoolKoreanName").value = "";
-        document.getElementById("editSchoolEnglishName").value = "";
-        document.getElementById("editSchoolImgUrl").value = "";
+        resetEditSchoolModalFields();
     };
     window.openCategoryModal = function () {
         document.getElementById("categoryModal").classList.remove("hidden");
@@ -172,6 +205,7 @@
 
     window.openAddCategoryModal = function (buttonElement) {
         const modal = document.getElementById("addCategoryModal");
+        resetAddCategoryModalFields();
         const schoolId = buttonElement.dataset.schoolId;
         modal.dataset.schoolId = schoolId;
         modal.classList.remove("hidden");
@@ -180,7 +214,7 @@
     window.closeAddCategoryModal = function () {
         const modal = document.getElementById("addCategoryModal");
         modal.classList.add("hidden");
-        modal.dataset.schoolId = "";
+        resetAddCategoryModalFields();
     };
 
     window.deleteCategory = function (categoryName) {
@@ -721,10 +755,9 @@
         cards.forEach(card => {
             const nameInput = card.querySelector('[data-role="college-name"]');
             const typeSelect = card.querySelector('[data-role="college-type"]');
-            const descTextarea = card.querySelector('[data-role="college-description"]');
 
             const name = nameInput?.value.trim() || "";
-            const description = descTextarea?.value.trim() || "";
+            const description = "";
             const type = typeSelect?.value || "UNDERGRADUATE";
 
             // 학과 태그들 수집
@@ -938,7 +971,36 @@
         }
     }
 
+    function resetIntroEditorForm() {
+        const inputIds = [
+            "intro-title",
+            "intro-description",
+            "schoolPicUrl",
+            "basic-schoolName",
+            "basic-builtAt",
+            "basic-location",
+            "basic-feature",
+            "college-rank",
+            "homepage-url",
+            "english-url",
+            "map-url"
+        ];
+
+        inputIds.forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.value = "";
+        });
+
+        const advantages = document.getElementById("advantages-list");
+        const urls = document.getElementById("url-list");
+        const colleges = document.getElementById("college-list");
+        if (advantages) advantages.innerHTML = "";
+        if (urls) urls.innerHTML = "";
+        if (colleges) colleges.innerHTML = "";
+    }
+
     function showBoardList() {
+        resetIntroEditorForm();
         document.getElementById("board-list-view").classList.remove("hidden");
         document.getElementById("intro-board-editor").classList.add("hidden");
         document.getElementById("board-list-editor").classList.add("hidden");
@@ -967,6 +1029,7 @@
     }
 
     function showBoardListEditor() {
+        resetIntroEditorForm();
         resetFilePostEditor();
         window.currentPostId = null;
         document.getElementById("board-list-view").classList.add("hidden");
@@ -1010,6 +1073,7 @@
         document.getElementById("schedule-list-editor").classList.add("hidden");
         document.getElementById("post-editor").classList.add("hidden");
         document.getElementById("filePost-editor").classList.add("hidden");
+        resetIntroEditorForm();
         loadIntroBoard(boardId);
         window.currentView = "intro-editor";
     }
@@ -1133,42 +1197,33 @@
             <div class="flex-1 space-y-3">
 
                 <!-- 단과대 이름 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-200 mb-1">
-                        단과대 이름
-                    </label>
-                    <input
-                        type="text"
-                        class="dark-input"
-                        data-role="college-name"
-                        placeholder="예: 공과대학"
-                    />
-                </div>
-
-                <!-- 학위 구분 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-200 mb-1">
-                        학위 구분
-                    </label>
-                    <select class="dark-input" data-role="college-type">
-                        <option value="UNDERGRADUATE">학사 과정</option>
-                        <option value="GRADUATE">석/박사 과정</option>
-                    </select>
-                    <p class="field-help">해당 단과대의 주 교육 과정을 선택해 주세요.</p>
-                </div>
-
-                <!-- 설명 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-200 mb-1">
-                        단과대 설명 (선택)
-                    </label>
-                    <textarea
-                        class="dark-input !rounded-2xl !h-20 !py-2.5 resize-none"
-                        data-role="college-description"
-                        placeholder="단과대의 주요 전공 및 특징을 간단히 소개해 주세요."></textarea>
-                </div>
 
                 <!-- 학과 태그 영역 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-200 mb-1">
+                            단과대 이름
+                        </label>
+                        <input
+                            type="text"
+                            class="dark-input"
+                            data-role="college-name"
+                            placeholder="예: 공과대학"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-200 mb-1">
+                            학위 구분
+                        </label>
+                        <select class="dark-input" data-role="college-type">
+                            <option value="UNDERGRADUATE">학사 과정</option>
+                            <option value="GRADUATE">석/박사 과정</option>
+                        </select>
+                        <p class="field-help">해당 단과대의 주 교육 과정을 선택해 주세요.</p>
+                    </div>
+                </div>
+
                 <div>
                     <div class="flex items-center justify-between mb-1">
                         <label class="block text-sm font-medium text-gray-200">
@@ -1182,7 +1237,7 @@
                     <div class="flex flex-wrap gap-2 mb-2" data-role="department-chips"></div>
 
                     <textarea
-                        class="dark-input min-h-[80px]"
+                        class="dark-input min-h-[64px]"
                         data-role="department-input"
                         placeholder="학과명을 입력하세요. (줄바꿈으로 구분하여 여러 개 입력 가능)"
                     ></textarea>
@@ -1817,10 +1872,11 @@
         const modal = document.getElementById("addCategoryModal");
         const schoolId = modal.dataset.schoolId;
 
-        const boardTitle = document.querySelector('input[placeholder="카테고리 이름을 입력하세요"]').value;
-        const boardDescription = document.querySelectorAll('input[placeholder="카테고리 이름을 입력하세요"]')[1].value;
+        const textInputs = modal.querySelectorAll('input[type="text"]');
+        const boardTitle = (textInputs[0]?.value || "").trim();
+        const boardDescription = (textInputs[1]?.value || "").trim();
 
-        const boardTypeValue = document.querySelector('input[name="boardType"]:checked').value;
+        const boardTypeValue = modal.querySelector('input[name="boardType"]:checked')?.value || "notice";
 
         console.log("boardType:", boardTypeValue);
 
@@ -1853,6 +1909,9 @@
             })
             .then(result => {
                 alert("카테고리가 성공적으로 추가되었습니다.");
+                if (window.closeAddCategoryModal) {
+                    window.closeAddCategoryModal();
+                }
                 window.location.href = "/admin/school";
             })
             .catch(error => {
