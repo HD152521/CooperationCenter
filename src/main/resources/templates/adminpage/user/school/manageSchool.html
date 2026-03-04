@@ -139,11 +139,62 @@
 </div>
 
 <script id="modal-functions" type="module">
+    function resetAddBoardModalFields() {
+        const modal = document.getElementById("addBoardModal");
+        if (!modal) return;
+        const textInputs = modal.querySelectorAll('input[type="text"]');
+        const urlInput = modal.querySelector('input[type="url"]');
+        textInputs.forEach(input => input.value = "");
+        if (urlInput) urlInput.value = "";
+    }
+
+    function resetEditSchoolModalFields() {
+        const modal = document.getElementById("editSchoolModal");
+        if (!modal) return;
+        modal.dataset.schoolId = "";
+        const ko = document.getElementById("editSchoolKoreanName");
+        const en = document.getElementById("editSchoolEnglishName");
+        const img = document.getElementById("editSchoolImgUrl");
+        if (ko) ko.value = "";
+        if (en) en.value = "";
+        if (img) img.value = "";
+    }
+
+    function resetAddCategoryModalFields() {
+        const modal = document.getElementById("addCategoryModal");
+        if (!modal) return;
+        modal.dataset.schoolId = "";
+        const textInputs = modal.querySelectorAll('input[type="text"]');
+        textInputs.forEach(input => input.value = "");
+        const radios = modal.querySelectorAll('input[name="boardType"]');
+        radios.forEach(radio => {
+            radio.checked = radio.value === "notice";
+        });
+    }
+
     window.openAddBoardModal = function () {
+        resetAddBoardModalFields();
         document.getElementById("addBoardModal").classList.remove("hidden");
     };
     window.closeAddBoardModal = function () {
+        resetAddBoardModalFields();
         document.getElementById("addBoardModal").classList.add("hidden");
+    };
+    window.openEditSchoolModal = function (buttonElement, event) {
+        event?.stopPropagation();
+
+        const modal = document.getElementById("editSchoolModal");
+        resetEditSchoolModalFields();
+        modal.dataset.schoolId = buttonElement.dataset.schoolId || "";
+        document.getElementById("editSchoolKoreanName").value = buttonElement.dataset.koreanName || "";
+        document.getElementById("editSchoolEnglishName").value = buttonElement.dataset.englishName || "";
+        document.getElementById("editSchoolImgUrl").value = buttonElement.dataset.imgUrl || "";
+        modal.classList.remove("hidden");
+    };
+    window.closeEditSchoolModal = function () {
+        const modal = document.getElementById("editSchoolModal");
+        modal.classList.add("hidden");
+        resetEditSchoolModalFields();
     };
     window.openCategoryModal = function () {
         document.getElementById("categoryModal").classList.remove("hidden");
@@ -154,6 +205,7 @@
 
     window.openAddCategoryModal = function (buttonElement) {
         const modal = document.getElementById("addCategoryModal");
+        resetAddCategoryModalFields();
         const schoolId = buttonElement.dataset.schoolId;
         modal.dataset.schoolId = schoolId;
         modal.classList.remove("hidden");
@@ -162,7 +214,7 @@
     window.closeAddCategoryModal = function () {
         const modal = document.getElementById("addCategoryModal");
         modal.classList.add("hidden");
-        modal.dataset.schoolId = "";
+        resetAddCategoryModalFields();
     };
 
     window.deleteCategory = function (categoryName) {
@@ -227,6 +279,62 @@
                 location.reload(); // 새로고침해서 반영
             } else {
                 throw new Error(result.message || "추가 실패");
+            }
+        } catch (error) {
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50";
+            notification.textContent = "오류 발생: " + error.message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+    };
+
+    window.saveEditedSchool = async function () {
+        const modal = document.getElementById("editSchoolModal");
+        const schoolId = Number(modal.dataset.schoolId);
+        const schoolKoreanName = document.getElementById("editSchoolKoreanName").value.trim();
+        const schoolEnglishName = document.getElementById("editSchoolEnglishName").value.trim();
+        const imgUrl = document.getElementById("editSchoolImgUrl").value.trim();
+
+        if (!schoolId || !schoolKoreanName || !schoolEnglishName || !imgUrl) {
+            const notification = document.createElement("div");
+            notification.className =
+                "fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50";
+            notification.textContent = "모든 항목을 입력해주세요";
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+            return;
+        }
+
+        const payload = {
+            schoolId,
+            schoolKoreanName,
+            schoolEnglishName,
+            imgUrl
+        };
+
+        try {
+            const response = await fetch("/api/v1/admin/school", {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const result = await response.json();
+            if (result.isSuccess) {
+                const notification = document.createElement("div");
+                notification.className =
+                    "fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50";
+                notification.textContent = "학교 정보가 수정되었습니다";
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 3000);
+                closeEditSchoolModal();
+                location.reload();
+            } else {
+                throw new Error(result.message || "수정 실패");
             }
         } catch (error) {
             const notification = document.createElement("div");
@@ -578,7 +686,7 @@
         const schoolPicUrlInput = document.getElementById("schoolPicUrl");
         const title = titleInput ? titleInput.value.trim() : "";
         const description = descInput ? descInput.value.trim() : "";
-        const schoolPicUrl = descInput ? schoolPicUrlInput.value.trim() : "";
+        const schoolPicUrl = schoolPicUrlInput ? schoolPicUrlInput.value.trim() : "";
 
         const advantageInputs = document.querySelectorAll("#advantages-list input");
         const advantages = Array.from(advantageInputs)
@@ -647,10 +755,9 @@
         cards.forEach(card => {
             const nameInput = card.querySelector('[data-role="college-name"]');
             const typeSelect = card.querySelector('[data-role="college-type"]');
-            const descTextarea = card.querySelector('[data-role="college-description"]');
 
             const name = nameInput?.value.trim() || "";
-            const description = descTextarea?.value.trim() || "";
+            const description = "";
             const type = typeSelect?.value || "UNDERGRADUATE";
 
             // 학과 태그들 수집
@@ -746,7 +853,24 @@
         }
     }
 
+    async function saveIntroSection(sectionKey) {
+        const saveFn = window.saveIntroBoard;
+        if (typeof saveFn !== "function") {
+            alert("저장 함수를 찾을 수 없습니다.");
+            return;
+        }
+
+        const originalShowBoardList = window.showBoardList;
+        window.showBoardList = () => {};
+        try {
+            await saveFn();
+        } finally {
+            window.showBoardList = originalShowBoardList;
+        }
+    }
+
     window.saveIntroBoard = saveIntroBoard;
+    window.saveIntroSection = saveIntroSection;
 
 </script>
 
@@ -847,7 +971,36 @@
         }
     }
 
+    function resetIntroEditorForm() {
+        const inputIds = [
+            "intro-title",
+            "intro-description",
+            "schoolPicUrl",
+            "basic-schoolName",
+            "basic-builtAt",
+            "basic-location",
+            "basic-feature",
+            "college-rank",
+            "homepage-url",
+            "english-url",
+            "map-url"
+        ];
+
+        inputIds.forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.value = "";
+        });
+
+        const advantages = document.getElementById("advantages-list");
+        const urls = document.getElementById("url-list");
+        const colleges = document.getElementById("college-list");
+        if (advantages) advantages.innerHTML = "";
+        if (urls) urls.innerHTML = "";
+        if (colleges) colleges.innerHTML = "";
+    }
+
     function showBoardList() {
+        resetIntroEditorForm();
         document.getElementById("board-list-view").classList.remove("hidden");
         document.getElementById("intro-board-editor").classList.add("hidden");
         document.getElementById("board-list-editor").classList.add("hidden");
@@ -876,6 +1029,7 @@
     }
 
     function showBoardListEditor() {
+        resetIntroEditorForm();
         resetFilePostEditor();
         window.currentPostId = null;
         document.getElementById("board-list-view").classList.add("hidden");
@@ -919,6 +1073,7 @@
         document.getElementById("schedule-list-editor").classList.add("hidden");
         document.getElementById("post-editor").classList.add("hidden");
         document.getElementById("filePost-editor").classList.add("hidden");
+        resetIntroEditorForm();
         loadIntroBoard(boardId);
         window.currentView = "intro-editor";
     }
@@ -1042,42 +1197,33 @@
             <div class="flex-1 space-y-3">
 
                 <!-- 단과대 이름 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-200 mb-1">
-                        단과대 이름
-                    </label>
-                    <input
-                        type="text"
-                        class="dark-input"
-                        data-role="college-name"
-                        placeholder="예: 공과대학"
-                    />
-                </div>
-
-                <!-- 학위 구분 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-200 mb-1">
-                        학위 구분
-                    </label>
-                    <select class="dark-input" data-role="college-type">
-                        <option value="UNDERGRADUATE">학사 과정</option>
-                        <option value="GRADUATE">석/박사 과정</option>
-                    </select>
-                    <p class="field-help">해당 단과대의 주 교육 과정을 선택해 주세요.</p>
-                </div>
-
-                <!-- 설명 -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-200 mb-1">
-                        단과대 설명 (선택)
-                    </label>
-                    <textarea
-                        class="dark-input !rounded-2xl !h-20 !py-2.5 resize-none"
-                        data-role="college-description"
-                        placeholder="단과대의 주요 전공 및 특징을 간단히 소개해 주세요."></textarea>
-                </div>
 
                 <!-- 학과 태그 영역 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-200 mb-1">
+                            단과대 이름
+                        </label>
+                        <input
+                            type="text"
+                            class="dark-input"
+                            data-role="college-name"
+                            placeholder="예: 공과대학"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-200 mb-1">
+                            학위 구분
+                        </label>
+                        <select class="dark-input" data-role="college-type">
+                            <option value="UNDERGRADUATE">학사 과정</option>
+                            <option value="GRADUATE">석/박사 과정</option>
+                        </select>
+                        <p class="field-help">해당 단과대의 주 교육 과정을 선택해 주세요.</p>
+                    </div>
+                </div>
+
                 <div>
                     <div class="flex items-center justify-between mb-1">
                         <label class="block text-sm font-medium text-gray-200">
@@ -1090,12 +1236,11 @@
 
                     <div class="flex flex-wrap gap-2 mb-2" data-role="department-chips"></div>
 
-                    <input
-                        type="text"
-                        class="dark-input"
+                    <textarea
+                        class="dark-input min-h-[64px]"
                         data-role="department-input"
-                        placeholder="예: 컴퓨터공학과, 전기공학과 등 입력 후 Enter"
-                    />
+                        placeholder="학과명을 입력하세요. (줄바꿈으로 구분하여 여러 개 입력 가능)"
+                    ></textarea>
                 </div>
             </div>
 
@@ -1109,7 +1254,7 @@
         </div>
     `;
 
-        list.appendChild(wrapper);
+        list.prepend(wrapper);
         if (id !== null) wrapper.dataset.id = id;
 
 
@@ -1149,14 +1294,31 @@
 
         if (!input || !chipsContainer) return;
 
-        // Enter 키로 태그 추가
+        // 입력 이벤트: 붙여넣기 등으로 줄바꿈이 들어왔을 때 처리
+        input.addEventListener("input", function () {
+            if (input.value.includes("\n")) {
+                const lines = input.value.split("\n");
+                lines.forEach(line => {
+                    const trimmed = line.trim();
+                    if (trimmed) {
+                        addDepartmentChip(chipsContainer, trimmed);
+                    }
+                });
+                input.value = "";
+            }
+        });
+
+        // Enter 키: 줄바꿈 대신 입력 완료로 처리
         input.addEventListener("keydown", function (e) {
             if (e.key === "Enter") {
                 e.preventDefault();
-                const value = input.value.trim();
-                if (!value) return;
-
-                addDepartmentChip(chipsContainer, value);
+                const lines = input.value.split("\n");
+                lines.forEach(line => {
+                    const trimmed = line.trim();
+                    if (trimmed) {
+                        addDepartmentChip(chipsContainer, trimmed);
+                    }
+                });
                 input.value = "";
             }
         });
@@ -1710,10 +1872,11 @@
         const modal = document.getElementById("addCategoryModal");
         const schoolId = modal.dataset.schoolId;
 
-        const boardTitle = document.querySelector('input[placeholder="카테고리 이름을 입력하세요"]').value;
-        const boardDescription = document.querySelectorAll('input[placeholder="카테고리 이름을 입력하세요"]')[1].value;
+        const textInputs = modal.querySelectorAll('input[type="text"]');
+        const boardTitle = (textInputs[0]?.value || "").trim();
+        const boardDescription = (textInputs[1]?.value || "").trim();
 
-        const boardTypeValue = document.querySelector('input[name="boardType"]:checked').value;
+        const boardTypeValue = modal.querySelector('input[name="boardType"]:checked')?.value || "notice";
 
         console.log("boardType:", boardTypeValue);
 
@@ -1746,6 +1909,9 @@
             })
             .then(result => {
                 alert("카테고리가 성공적으로 추가되었습니다.");
+                if (window.closeAddCategoryModal) {
+                    window.closeAddCategoryModal();
+                }
                 window.location.href = "/admin/school";
             })
             .catch(error => {

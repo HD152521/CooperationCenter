@@ -2,6 +2,7 @@ package com.cooperation.project.cooperationcenter.domain.agency.controller.homep
 
 import com.cooperation.project.cooperationcenter.domain.agency.dto.AgencyRequest;
 import com.cooperation.project.cooperationcenter.domain.agency.service.homepage.AgencyService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ public class AgengyController {
     private final String agencyPath = "homepage/user/agency";
 
     @RequestMapping("/list")
+    @Operation(summary = "해당 지역과 키워드 값을 가진 유학원 반환")
     public String agencyList(
             Model model,
             @PageableDefault(size = 12, sort = "createdAt", direction = Sort.Direction.DESC)

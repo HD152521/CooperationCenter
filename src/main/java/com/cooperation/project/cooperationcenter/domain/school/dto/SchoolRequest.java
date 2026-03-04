@@ -12,6 +12,13 @@ public class SchoolRequest {
             String imgUrl
     ){}
 
+    public record SchoolEditDto(
+            Long schoolId,
+            String schoolKoreanName,
+            String schoolEnglishName,
+            String imgUrl
+    ){}
+
     public record SchoolBoardDto(
             Long schoolId,
             String boardTitle,

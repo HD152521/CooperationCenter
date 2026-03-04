@@ -4,6 +4,8 @@ import com.cooperation.project.cooperationcenter.domain.agency.model.Agency;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.student.dto.StudentRequest;
 import com.cooperation.project.cooperationcenter.domain.student.dto.StudentResponse;
+import com.cooperation.project.cooperationcenter.domain.student.exception.StudentHandler;
+import com.cooperation.project.cooperationcenter.domain.student.exception.status.StudentErrorStatus;
 import com.cooperation.project.cooperationcenter.domain.student.model.Student;
 import com.cooperation.project.cooperationcenter.domain.student.repository.StudentRepository;
 import com.cooperation.project.cooperationcenter.domain.student.repository.StudentRepositoryCustom;
@@ -49,18 +51,24 @@ public class StudentService {
             "비상연락처","소속(Agency)"
     };
 
-    public void addStudentBySurvey(List<Question> questionList, List<Answer> savedAnswer, Member member){
-        log.info("before changing answer to Student");
-        int questionLen = questionList.size();
-        int answerLen = savedAnswer.size();
-        if(questionLen!=answerLen) log.info("문항 답변 개수 다름");
 
-        log.info("=======original Answer List========");
-        for(Answer an : savedAnswer){
-            log.info("values:{}",an.getAnswer());
-        }
+
+    @Transactional
+    public void addStudentBySurvey(List<Question> questionList, List<Answer> savedAnswer, Member member){
+
+        log.info("before changing answer to Student");
+        if (savedAnswer == null || savedAnswer.isEmpty()) throw new StudentHandler(StudentErrorStatus.STUDENT_SURVEY_ANSWER_EMPTY);
+
+//        int questionLen = questionList.size();
+//        int answerLen = savedAnswer.size();
+//        if(questionLen!=answerLen) log.info("문항 답변 개수 다름");
+//        log.info("=======original Answer List========");
+//        for(Answer an : savedAnswer){
+//            log.info("values:{}",an.getAnswer());
+//        }
 
         SurveyLog surveyLog = savedAnswer.get(0).getSurveyLog();
+        if (surveyLog == null) throw new BaseException(StudentErrorStatus.STUDENT_SURVEY_LOG_NOT_FOUND);
         Map<String, Answer> answerByQid = savedAnswer.stream()
                 .filter(Objects::nonNull)
                 .filter(a -> a.getQuestionRealId() != null)
@@ -71,11 +79,6 @@ public class StudentService {
                         LinkedHashMap::new
                 ));
 
-        log.info("=======AnswerQid List========");
-        for(Answer an : answerByQid.values()){
-            log.info("an:{}",an.getAnswer());
-        }
-
         Map<String,String> domainMap = new LinkedHashMap<>();
 
         for(Question q : questionList){
@@ -83,22 +86,17 @@ public class StudentService {
             if(!q.isTemplate()) continue;
             String domainField = q.getDomainField();
             Answer answer = answerByQid.get(q.getQuestionId());
-            if(answer == null){
-                log.warn("템플릿 문항에 대한 답변이 없습니다. questionId:{}, question:{}", q.getQuestionId(), q.getQuestion());
-                continue;
-            }
+            if(answer == null) throw new StudentHandler(StudentErrorStatus.STUDENT_SURVEY_ANSWER_EMPTY);
             String generateAnswer = answer.getAnswer();
-            if(generateAnswer == null){
-                log.warn("템플릿 문항 답변 값이 null 입니다. questionId:{}, question:{}", q.getQuestionId(), q.getQuestion());
-                continue;
-            }
-
+            if(generateAnswer == null) throw new StudentHandler(StudentErrorStatus.STUDENT_SURVEY_ANSWER_EMPTY);
             domainMap.put(domainField,generateAnswer);
         }
-        log.info("=======domain List========");
-        for(String str : domainMap.values()){
-            log.info("values:{}",str);
-        }
+        if (domainMap.isEmpty()) throw new BaseException(StudentErrorStatus.STUDENT_MAPPING_FAILED);
+
+//        log.info("=======domain List========");
+//        for(String str : domainMap.values()){
+//            log.info("values:{}",str);
+//        }
 
         ObjectMapper mapper = new ObjectMapper()
                 .registerModule(new JavaTimeModule())
@@ -120,7 +118,7 @@ public class StudentService {
             return buildExcel(rows);
         }catch (Exception e){
             log.warn(e.getMessage());
-            return null;
+            throw new BaseException(StudentErrorStatus.STUDENT_EXCEL_EXPORT_FAILED);
         }
     }
 
@@ -130,25 +128,16 @@ public class StudentService {
             studentRepository.save(student);
         }catch (Exception e){
             log.warn(e.getMessage());
+            throw new BaseException(StudentErrorStatus.STUDENT_SAVE_FAILED);
         }
     }
 
     public Page<StudentResponse.ListDto> getStudentDtoPageByCondition(StudentRequest.ConditionDto condition, Pageable pageable){
-        try{
-            return StudentResponse.ListDto.from(loadStudentPageByCondition(condition,pageable));
-        }catch (Exception e){
-            log.warn(e.getMessage());
-            return Page.empty();
-        }
+        return StudentResponse.ListDto.from(loadStudentPageByCondition(condition,pageable));
     }
 
     public List<StudentResponse.ListDto> getStudentDtoByCondition(StudentRequest.ConditionDto condition){
-        try{
-            return StudentResponse.ListDto.from(loadStudentDtoByCondition(condition));
-        }catch (Exception e){
-            log.warn(e.getMessage());
-            return Collections.emptyList();
-        }
+        return StudentResponse.ListDto.from(loadStudentDtoByCondition(condition));
     }
 
 

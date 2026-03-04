@@ -2,6 +2,8 @@ package com.cooperation.project.cooperationcenter.global.filter;
 
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberDetails;
 import com.cooperation.project.cooperationcenter.domain.member.dto.MemberResponse;
+import com.cooperation.project.cooperationcenter.domain.member.exception.MemberHandler;
+import com.cooperation.project.cooperationcenter.domain.member.exception.status.MemberErrorStatus;
 import com.cooperation.project.cooperationcenter.domain.member.model.Member;
 import com.cooperation.project.cooperationcenter.domain.member.repository.MemberRepository;
 import com.cooperation.project.cooperationcenter.domain.school.dto.SchoolResponse;
@@ -43,10 +45,10 @@ public class GlobalModelAttributeAdvice {
         if (memberDetails == null || uri.startsWith("/api/")) return null;
         String email = memberDetails.getUsername();
         Member member = memberRepository.findMemberByEmail(email).orElseThrow(
-                ()->new BaseException(ErrorCode.MEMBER_NOT_FOUND)
+                ()->new MemberHandler(MemberErrorStatus.MEMBER_NOT_FOUND)
         );
         if(!member.isAccept()) {
-            throw new BaseException(ErrorCode.MEMBER_NOT_ACCEPTED);
+            throw new MemberHandler(MemberErrorStatus.MEMBER_NOT_ACCEPTED);
         }
         return MemberResponse.LoginDto.from(member); // null일 수 있음
     }
@@ -58,7 +60,7 @@ public class GlobalModelAttributeAdvice {
     }
 
     @ModelAttribute("schoolCategory")
-    public List<SchoolResponse.SchoolDto> loadSchoolCatogory() {
+    public List<SchoolResponse.SchoolDto> loadSchoolCategory() {
         return schoolFindService.loadAllSchoolByDto();
     }
 
@@ -76,6 +78,7 @@ public class GlobalModelAttributeAdvice {
         if (vars != null && vars.get("boardId") != null) {
             nowId = Long.valueOf(vars.get("boardId"));
         }
+        log.info("찾으려는 대학교:{}",englishName);
 //        String englishName = request.getRequestURI().split("/")[2];
         School school = schoolFindService.loadSchoolByEnglishName(englishName);
         return schoolFindService.loadBoardBySchoolByDto(school,nowId);

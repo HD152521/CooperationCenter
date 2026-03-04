@@ -181,161 +181,161 @@
 
 <th:block th:fragment="script">
     <script type="module">
-        const grid = document.getElementById('collegeGrid');
-        const filters = document.getElementById('collegeFilters');
-        const search = document.getElementById('deptSearch');
+        (() => {
+            const grid = document.getElementById('collegeGrid');
+            const filters = document.getElementById('collegeFilters');
+            const search = document.getElementById('deptSearch');
+            if (!grid || !filters || !search) return;
 
-        // ✅ (한국어) 이 섹션이 제거되거나 요소가 렌더링되지 않은 경우, 아래 코드가 NPE로 터지지 않도록 방어합니다.
-        if (!grid || !filters || !search) {
-            // (한국어) 요소가 없으면 조용히 종료
-            return;
-        }
-
-        const cards = Array.from(grid.querySelectorAll('article[data-college]'));
-
-        // 칩 개수 > 10 이면 접기 처리
-        cards.forEach(card => {
-            const chipsWrap = card.querySelector('[data-chips]');
-            const chips = Array.from(chipsWrap.querySelectorAll('.chip[data-dept]'));
-            const moreBtn = card.querySelector('[data-more]');
-            const countEl = card.querySelector('[data-count]');
-
-            // 카운트 표시
-            countEl.textContent = chips.length + '个';
-
-            if (chips.length > 10) {
-                chips.slice(10).forEach(ch => ch.classList.add('hidden'));
-                moreBtn.classList.remove('hidden');
-                moreBtn?.addEventListener('click', () => {
-                    const hidden = chips.slice(10).some(ch => ch.classList.contains('hidden'));
-                    chips.slice(10).forEach(ch => ch.classList.toggle('hidden'));
-                    // (화면 문구만 중국어로 변경)
-                    moreBtn.textContent = hidden ? '收起' : '更多';
-                });
-            }
-        });
-
-        function applyFilter() {
-            const activeBtn = filters.querySelector('button.active');
-            const collegeFilter = activeBtn ? activeBtn.dataset.filter : 'all';
-            const q = (search.value || '').trim().toLowerCase();
+            const cards = Array.from(grid.querySelectorAll('article[data-college]'));
 
             cards.forEach(card => {
-                const college = card.dataset.college;
-                const chips = Array.from(card.querySelectorAll('.chip[data-dept]'));
-                // 검색
-                let hitChip = false;
-                chips.forEach(c => {
-                    const match = c.textContent.toLowerCase().includes(q);
-                    c.style.opacity = q ? (match ? '1' : '0.25') : '1';
-                    if (match) hitChip = true;
+                const chipsWrap = card.querySelector('[data-chips]');
+                const chips = Array.from(chipsWrap.querySelectorAll('.chip[data-dept]'));
+                const moreBtn = card.querySelector('[data-more]');
+                const countEl = card.querySelector('[data-count]');
+
+                if (countEl) countEl.textContent = `${chips.length}`;
+
+                if (chips.length > 10) {
+                    chips.slice(10).forEach(ch => ch.classList.add('hidden'));
+                    moreBtn.classList.remove('hidden');
+                    moreBtn?.addEventListener('click', () => {
+                        const hidden = chips.slice(10).some(ch => ch.classList.contains('hidden'));
+                        chips.slice(10).forEach(ch => ch.classList.toggle('hidden'));
+                        moreBtn.textContent = hidden ? 'less' : 'more';
+                    });
+                }
+            });
+
+            function applyFilter() {
+                const activeBtn = filters.querySelector('button.active');
+                const collegeFilter = activeBtn ? activeBtn.dataset.filter : 'all';
+                const q = (search.value || '').trim().toLowerCase();
+
+                cards.forEach(card => {
+                    const college = card.dataset.college;
+                    const chips = Array.from(card.querySelectorAll('.chip[data-dept]'));
+                    let hitChip = false;
+
+                    chips.forEach(c => {
+                        const match = c.textContent.toLowerCase().includes(q);
+                        c.style.opacity = q ? (match ? '1' : '0.25') : '1';
+                        c.classList.remove('font-semibold', 'text-gray-900', 'text-gray-400', 'text-gray-700');
+                        if (!q) {
+                            c.classList.add('text-gray-700');
+                            return;
+                        }
+                        if (match) {
+                            c.classList.add('font-semibold', 'text-gray-900');
+                            hitChip = true;
+                        } else {
+                            c.classList.add('text-gray-400');
+                        }
+                    });
+
+                    const passCollege = (collegeFilter === 'all') || (collegeFilter === college);
+                    const passSearch = q ? hitChip : true;
+                    card.style.display = (passCollege && passSearch) ? '' : 'none';
                 });
-                // 카드 표시 조건
-                const passCollege = (collegeFilter === 'all') || (collegeFilter === college);
-                const passSearch = q ? hitChip : true;
-                card.style.display = (passCollege && passSearch) ? '' : 'none';
-            });
-        }
+            }
 
-        // 초기 active
-        // ✅ (한국어) 기존 코드: filters?.querySelector(...).classList.add(...) 는 버튼이 없으면 터질 수 있어,
-        //             querySelector 결과에도 ?. 를 붙여 안전하게 처리합니다.
-        filters?.querySelector('button[data-filter="all"]')?.classList.add('active');
-
-        // 탭 클릭
-        filters?.addEventListener('click', (e) => {
-            const btn = e.target.closest('button[data-filter]');
-            if (!btn) return;
-            filters.querySelectorAll('button').forEach(b => {
-                b.classList.remove('active', 'bg-primary', 'text-white');
-                b.classList.add('bg-gray-100', 'text-gray-700');
+            filters.querySelector('button[data-filter="all"]')?.classList.add('active');
+            filters.addEventListener('click', (e) => {
+                const btn = e.target.closest('button[data-filter]');
+                if (!btn) return;
+                filters.querySelectorAll('button').forEach(b => {
+                    b.classList.remove('active', 'bg-primary', 'text-white');
+                    b.classList.add('bg-gray-100', 'text-gray-700');
+                });
+                btn.classList.add('active', 'bg-primary', 'text-white');
+                btn.classList.remove('bg-gray-100', 'text-gray-700');
+                applyFilter();
             });
-            btn.classList.add('active', 'bg-primary', 'text-white');
-            btn.classList.remove('bg-gray-100', 'text-gray-700');
+
+            search.addEventListener('input', applyFilter);
             applyFilter();
-        });
-
-        // 검색
-        search?.addEventListener('input', applyFilter);
+        })();
     </script>
 
     <script type="module">
-        //대학원 모듈
-        const grid = document.getElementById('gradCollegeGrid');
-        const filters = document.getElementById('gradCollegeFilters');
-        const search = document.getElementById('gradDeptSearch');
+        (() => {
+            const grid = document.getElementById('gradCollegeGrid');
+            const filters = document.getElementById('gradCollegeFilters');
+            const search = document.getElementById('gradDeptSearch');
+            if (!grid || !filters || !search) return;
 
-        // ✅ (한국어) 요소가 없으면(섹션 삭제/미렌더링 등) NPE 방지
-        if (!grid || !filters || !search) {
-            return;
-        }
-
-        const cards = Array.from(grid.querySelectorAll('article[data-college]'));
-
-        // chip 접기
-        cards.forEach(card => {
-            const chipsWrap = card.querySelector('[data-chips]');
-            const chips = Array.from(chipsWrap.querySelectorAll('.chip[data-dept]'));
-            const moreBtn = card.querySelector('[data-more]');
-            const countEl = card.querySelector('[data-count]');
-
-            countEl.textContent = chips.length + '个';
-
-            if (chips.length > 10) {
-                chips.slice(10).forEach(ch => ch.classList.add('hidden'));
-                moreBtn.classList.remove('hidden');
-                moreBtn?.addEventListener('click', () => {
-                    const hidden = chips.slice(10).some(ch => ch.classList.contains('hidden'));
-                    chips.slice(10).forEach(ch => ch.classList.toggle('hidden'));
-                    // (화면 문구만 중국어로 변경)
-                    moreBtn.textContent = hidden ? '收起' : '更多';
-                });
-            }
-        });
-
-        function applyFilter() {
-            const activeBtn = filters.querySelector('button.active');
-            const collegeFilter = activeBtn ? activeBtn.dataset.filter : 'all';
-            const q = (search.value || '').trim().toLowerCase();
+            const cards = Array.from(grid.querySelectorAll('article[data-college]'));
 
             cards.forEach(card => {
-                const college = card.dataset.college;
-                const chips = Array.from(card.querySelectorAll('.chip[data-dept]'));
+                const chipsWrap = card.querySelector('[data-chips]');
+                const chips = Array.from(chipsWrap.querySelectorAll('.chip[data-dept]'));
+                const moreBtn = card.querySelector('[data-more]');
+                const countEl = card.querySelector('[data-count]');
 
-                let hitChip = false;
-                chips.forEach(c => {
-                    const match = c.textContent.toLowerCase().includes(q);
-                    c.style.opacity = q ? (match ? '1' : '0.25') : '1';
-                    if (match) hitChip = true;
+                if (countEl) countEl.textContent = `${chips.length}`;
+
+                if (chips.length > 10) {
+                    chips.slice(10).forEach(ch => ch.classList.add('hidden'));
+                    moreBtn.classList.remove('hidden');
+                    moreBtn?.addEventListener('click', () => {
+                        const hidden = chips.slice(10).some(ch => ch.classList.contains('hidden'));
+                        chips.slice(10).forEach(ch => ch.classList.toggle('hidden'));
+                        moreBtn.textContent = hidden ? 'less' : 'more';
+                    });
+                }
+            });
+
+            function applyFilter() {
+                const activeBtn = filters.querySelector('button.active');
+                const collegeFilter = activeBtn ? activeBtn.dataset.filter : 'all';
+                const q = (search.value || '').trim().toLowerCase();
+
+                cards.forEach(card => {
+                    const college = card.dataset.college;
+                    const chips = Array.from(card.querySelectorAll('.chip[data-dept]'));
+                    let hitChip = false;
+
+                    chips.forEach(c => {
+                        const match = c.textContent.toLowerCase().includes(q);
+                        c.style.opacity = q ? (match ? '1' : '0.25') : '1';
+                        c.classList.remove('font-semibold', 'text-gray-900', 'text-gray-400', 'text-gray-700');
+                        if (!q) {
+                            c.classList.add('text-gray-700');
+                            return;
+                        }
+                        if (match) {
+                            c.classList.add('font-semibold', 'text-gray-900');
+                            hitChip = true;
+                        } else {
+                            c.classList.add('text-gray-400');
+                        }
+                    });
+
+                    const passCollege = (collegeFilter === 'all') || (collegeFilter === college);
+                    const passSearch = q ? hitChip : true;
+                    card.style.display = (passCollege && passSearch) ? '' : 'none';
+                });
+            }
+
+            filters.querySelector('button[data-filter="all"]')?.classList.add('active');
+            filters.addEventListener('click', (e) => {
+                const btn = e.target.closest('button[data-filter]');
+                if (!btn) return;
+
+                filters.querySelectorAll('button').forEach(b => {
+                    b.classList.remove('active', 'bg-primary', 'text-white');
+                    b.classList.add('bg-gray-100', 'text-gray-700');
                 });
 
-                const passCollege = (collegeFilter === 'all') || (collegeFilter === college);
-                const passSearch = q ? hitChip : true;
-                card.style.display = (passCollege && passSearch) ? '' : 'none';
-            });
-        }
-
-        // 초기 active
-        // ✅ (한국어) querySelector 결과가 null일 때 classList 접근으로 터질 수 있어 ?. 를 추가합니다.
-        filters?.querySelector('button[data-filter="all"]')?.classList.add('active');
-
-        // 탭 클릭
-        filters?.addEventListener('click', (e) => {
-            const btn = e.target.closest('button[data-filter]');
-            if (!btn) return;
-
-            filters.querySelectorAll('button').forEach(b => {
-                b.classList.remove('active', 'bg-primary', 'text-white');
-                b.classList.add('bg-gray-100', 'text-gray-700');
+                btn.classList.add('active', 'bg-primary', 'text-white');
+                btn.classList.remove('bg-gray-100', 'text-gray-700');
+                applyFilter();
             });
 
-            btn.classList.add('active', 'bg-primary', 'text-white');
-            btn.classList.remove('bg-gray-100', 'text-gray-700');
+            search.addEventListener('input', applyFilter);
             applyFilter();
-        });
-
-        // 검색 바인딩
-        search?.addEventListener('input', applyFilter);
+        })();
     </script>
 </th:block>
 </html>
