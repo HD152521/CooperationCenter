@@ -47,6 +47,9 @@ jobs:
         run: cp build/libs/*.jar app.jar
 
       # Docker metadata
+      # - main push: prod + sha
+      # - PR(main): pr-<num> + sha
+      # - develop: push 안 하므로 태그만 생성돼도 업로드는 안 됨
       - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -55,24 +58,25 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
           tags: |
             type=sha,format=short
-            type=ref,event=branch
-            type=ref,event=pr
-            type=raw,value=latest,enable=${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+            type=raw,value=prod,enable=${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+            type=raw,value=pr-${{ github.event.number }},enable=${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
 
-      # 로그인 (main push 또는 main PR일 때만)
+      # DockerHub 로그인
+      # - main push 또는 PR(main)일 때만 로그인/푸시
       - name: Login to DockerHub
-        if: github.ref == 'refs/heads/main' || (github.event_name == 'pull_request' && github.base_ref == 'main')
+        if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'pull_request' && github.base_ref == 'main')
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       # 이미지 빌드 & 푸시
+      # - main push 또는 PR(main)일 때만 push
+      # - develop은 CI만
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main')
-                    || (github.event_name == 'pull_request' && github.base_ref == 'main') }}
+          push: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'pull_request' && github.base_ref == 'main') }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
