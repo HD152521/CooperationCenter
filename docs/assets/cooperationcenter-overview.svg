@@ -1,0 +1,71 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="760" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FAFC"/>
+      <stop offset="1" stop-color="#EEF2FF"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0 0L10 5L0 10V0Z" fill="#64748B"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="760" rx="20" fill="url(#bg)"/>
+  <text x="50" y="64" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" fill="#0F172A">
+    CooperationCenter Architecture Overview
+  </text>
+  <text x="50" y="98" font-family="Segoe UI, Arial, sans-serif" font-size="18" fill="#475569">
+    Survey creation, response flow, and analysis pipeline
+  </text>
+
+  <rect x="50" y="150" width="320" height="180" rx="14" fill="white" stroke="#CBD5E1"/>
+  <text x="72" y="186" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700" fill="#1E293B">Frontend (Thymeleaf + JS)</text>
+  <text x="72" y="220" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#334155">- Survey Builder (admin)</text>
+  <text x="72" y="248" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#334155">- Survey Answer Page (user)</text>
+  <text x="72" y="276" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#334155">- Log / Detail / Export UI</text>
+  <text x="72" y="304" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#334155">- Tailwind + Rollup bundle</text>
+
+  <rect x="440" y="150" width="320" height="180" rx="14" fill="white" stroke="#CBD5E1"/>
+  <text x="462" y="186" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700" fill="#1E293B">Spring Boot API Layer</text>
+  <text x="462" y="220" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#334155">- SurveyController (view routes)</text>
+  <text x="462" y="248" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#334155">- SurveyRestController (REST)</text>
+  <text x="462" y="276" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#334155">- JWT / OAuth2 / Validation</text>
+  <text x="462" y="304" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#334155">- Multipart upload handling</text>
+
+  <rect x="830" y="150" width="320" height="180" rx="14" fill="white" stroke="#CBD5E1"/>
+  <text x="852" y="186" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700" fill="#1E293B">Service &amp; Domain</text>
+  <text x="852" y="220" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#334155">- SurveySaveService</text>
+  <text x="852" y="248" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#334155">- SurveyAnswerService</text>
+  <text x="852" y="276" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#334155">- SurveyFind/Log/Folder/QR</text>
+  <text x="852" y="304" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#334155">- Domain: member/survey/student</text>
+
+  <line x1="370" y1="240" x2="430" y2="240" stroke="#64748B" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <line x1="760" y1="240" x2="820" y2="240" stroke="#64748B" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <rect x="50" y="390" width="1100" height="300" rx="14" fill="white" stroke="#CBD5E1"/>
+  <text x="76" y="430" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700" fill="#1E293B">Core Functional Flow</text>
+
+  <rect x="80" y="460" width="240" height="90" rx="10" fill="#EEF2FF" stroke="#C7D2FE"/>
+  <text x="96" y="496" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#3730A3">1) Build Survey</text>
+  <text x="96" y="522" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#4338CA">Question types, branching, hierarchy</text>
+
+  <rect x="350" y="460" width="240" height="90" rx="10" fill="#ECFEFF" stroke="#A5F3FC"/>
+  <text x="366" y="496" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#0F766E">2) Publish &amp; Share</text>
+  <text x="366" y="522" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#0F766E">Public flag, date range, QR</text>
+
+  <rect x="620" y="460" width="240" height="90" rx="10" fill="#F0FDF4" stroke="#BBF7D0"/>
+  <text x="636" y="496" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#166534">3) Collect Answers</text>
+  <text x="636" y="522" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#166534">Validation + multipart upload</text>
+
+  <rect x="890" y="460" width="240" height="90" rx="10" fill="#FFF7ED" stroke="#FED7AA"/>
+  <text x="906" y="496" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#9A3412">4) Analyze &amp; Export</text>
+  <text x="906" y="522" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#9A3412">Logs, detail view, CSV/ZIP export</text>
+
+  <line x1="320" y1="505" x2="340" y2="505" stroke="#64748B" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <line x1="590" y1="505" x2="610" y2="505" stroke="#64748B" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <line x1="860" y1="505" x2="880" y2="505" stroke="#64748B" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <text x="80" y="602" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#475569">
+    Stack: Java 17, Spring Boot 3.5, Thymeleaf, JPA, QueryDSL, MySQL, JWT, OAuth2, Swagger, TailwindCSS, Rollup
+  </text>
+</svg>
+
