@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html th:replace="~{fragments/layout/base :: base(~{::head}, ~{::body})}" xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <title>问卷管理</title>
+    <title>설문 생성</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <style>
         :where([class^="ri-"])::before {
@@ -123,11 +123,121 @@
         .hierarchy-option.selected input::placeholder {
             color: rgba(255, 255, 255, 0.7);
         }
+
+        .hierarchy-diagram-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 80;
+            background: rgba(15, 23, 42, 0.6);
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .hierarchy-diagram-modal:not(.hidden) {
+            display: flex;
+        }
+
+        .hierarchy-diagram-panel {
+            width: min(1100px, 100%);
+            max-height: calc(100vh - 2rem);
+            background: #fff;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .hierarchy-diagram-body {
+            padding: 1rem;
+            overflow: auto;
+        }
+
+        .hierarchy-diagram-stage {
+            position: relative;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f8fafc;
+            min-height: 360px;
+            padding: 0.75rem;
+        }
+
+        .hierarchy-diagram-lines {
+            display: none;
+        }
+
+        .hierarchy-diagram-columns {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.75rem;
+            z-index: 1;
+        }
+
+        .hierarchy-diagram-column {
+            border: 1px dashed #d1d5db;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0.5rem;
+            min-height: 280px;
+            max-height: 520px;
+            overflow: auto;
+        }
+
+        .hierarchy-diagram-box {
+            border: 1px solid #c7d2fe;
+            background: #eef2ff;
+            border-radius: 8px;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+        }
+
+        .hierarchy-diagram-box:last-child {
+            margin-bottom: 0;
+        }
+
+        .hierarchy-diagram-box.is-selected {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+
+        .hierarchy-diagram-box.is-connect-parent {
+            border-color: #059669;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.25);
+            background: #ecfdf5;
+        }
+
+        .hierarchy-diagram-group {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            background: #f9fafb;
+        }
+
+        .hierarchy-diagram-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .hierarchy-diagram-modal,
+        .hierarchy-diagram-modal * {
+            cursor: default;
+        }
+
+        .hierarchy-diagram-modal button {
+            cursor: pointer;
+        }
+
+        .hierarchy-diagram-modal input,
+        .hierarchy-diagram-modal textarea {
+            cursor: text;
+        }
     </style>
 </head>
 <body>
 <div class="bg-gray-50 min-h-screen">
-    <!-- 상단 배너 -->
+    <!-- ?곷떒 諛곕꼫 -->
     <div id="toast" class="toast hidden max-w-sm bg-white shadow-lg rounded-lg pointer-events-auto">
         <div class="p-4">
             <div class="flex items-center">
@@ -144,135 +254,136 @@
                 </div>
             </div>
             <div id="toast-action" class="mt-3 hidden">
-                <button class="text-sm text-primary font-medium">重试</button>
+                <button class="text-sm text-primary font-medium">다시 시도</button>
             </div>
         </div>
     </div>
 
-    <!--header자리-->
+    <!--header?먮━-->
     <header th:replace="~{fragments/common/survey-nav :: survey-nav}"></header>
 
     <main class="px-4 py-6 flex">
-        <!-- 좌측 사이드바 - 문제 유형 선택 -->
+        <!-- 醫뚯륫 ?ъ씠?쒕컮 - 臾몄젣 ?좏삎 ?좏깮 -->
         <!-- fixme    <div class="w-64 shrink-0 mr-6 ">-->
         <div id="left-sidebar"
              class="w-64 shrink-0 mr-6 hidden fixed top-0 left-0 h-full z-40 sm:block sm:relative sm:h-auto sm:top-auto sm:left-auto">
             <div class="bg-white rounded-lg shadow-sm p-4 sticky top-20">
-                <h2 class="text-lg font-semibold mb-4">题型</h2>
+                <h2 class="text-lg font-semibold mb-4">질문 유형</h2>
                 <div class="space-y-2">
                     <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200 bg-primary bg-opacity-5"
                             data-question-type="short">
                         <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-primary bg-opacity-10 text-primary">
                             <i class="ri-text-line"></i>
                         </div>
-                        <span>简答题</span>
+                        <span>단답형</span>
                     </button>
                     <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
                             data-question-type="essay">
                         <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                             <i class="ri-file-text-line"></i>
                         </div>
-                        <span>叙述题</span>
+                        <span>서술형</span>
                     </button>
                     <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
                             data-question-type="multiple">
                         <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                             <i class="ri-radio-button-line"></i>
                         </div>
-                        <span>选择题（单选）</span>
+                        <span>객관식(단일 선택)</span>
                     </button>
                     <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
                             data-question-type="multiple-checkbox">
                         <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                             <i class="ri-checkbox-multiple-line"></i>
                         </div>
-                        <span>选择题（多选）</span>
+                        <span>객관식(다중 선택)</span>
                     </button>
                     <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
                             data-question-type="dropdown">
                         <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                             <i class="ri-list-unordered"></i>
                         </div>
-                        <span>下拉选择</span>
+                        <span>드롭다운</span>
                     </button>
                     <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
                             data-question-type="date">
                         <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                             <i class="ri-calendar-line"></i>
                         </div>
-                        <span>日期回答</span>
+                        <span>날짜</span>
                     </button>
                     <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
                             data-question-type="file">
                         <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                             <i class="ri-file-upload-line"></i>
                         </div>
-                        <span>文件上传</span>
+                        <span>파일 업로드</span>
                     </button>
                     <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
                             data-question-type="image">
                         <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                             <i class="ri-image-line"></i>
                         </div>
-                        <span>图片上传</span>
+                        <span>이미지 업로드</span>
                     </button>
                     <button class="w-full flex items-center p-3 text-left rounded hover:bg-gray-50 border border-gray-200"
                             data-question-type="hierarchy">
                         <div class="w-8 h-8 flex items-center justify-center mr-3 rounded bg-gray-100 text-gray-600">
                             <i class="ri-node-tree"></i>
                         </div>
-                        <span>层级选择</span>
+                        <span>계층형</span>
                     </button>
 
                 </div>
             </div>
         </div>
-        <!-- 중앙 컨텐츠 영역 - 문제 편집 -->
+        <!-- 以묒븰 而⑦뀗痢??곸뿭 - 臾몄젣 ?몄쭛 -->
         <div class="flex-1 min-w-0">
             <div class="bg-white rounded-lg shadow-sm p-6 mb-4">
                 <div class="flex items-center justify-between mb-4">
-                    <input id="survey-title" type="text" placeholder="请输入问卷标题"
-                           class="text-xl font-bold w-full focus:outline-none" value="新问卷"/>
+                    <input id="survey-title" type="text" placeholder="설문 제목을 입력하세요"
+                           class="text-xl font-bold w-full focus:outline-none" value="새 설문"/>
                     <button id="saveButton"
                             class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap flex items-center">
                         <i class="ri-save-line mr-2"></i>
-                        保存
+                        저장
                     </button>
                 </div>
                 <div class="mb-4">
                     <!--                <input-->
                     <!--                        type="text"-->
-                    <!--                        placeholder="설문조사 제목을 입력하세요"-->
+                    <!--                        placeholder="?ㅻЦ議곗궗 ?쒕ぉ???낅젰?섏꽭??-->
                     <!--                        class="w-full text-xl font-semibold border-none focus:ring-0 focus:outline-none"-->
                     <!--                />-->
-                    <textarea placeholder="请输入问卷说明"
+                    <textarea placeholder="설문 설명을 입력하세요"
                               class="w-full mt-2 border-none focus:ring-0 focus:outline-none resize-none text-gray-600">
                 </textarea>
                 </div>
             </div>
             <div id="questions-container" class="space-y-4">
-                <!-- 초기 상태: 문제 만들기 버튼 -->
+                <!-- 珥덇린 ?곹깭: 臾몄젣 留뚮뱾湲?踰꾪듉 -->
                 <div id="empty-state"
                      class="bg-white rounded-lg shadow-sm p-8 flex flex-col items-center justify-center min-h-[300px]">
                     <div class="w-16 h-16 flex items-center justify-center rounded-full bg-primary bg-opacity-10 text-primary mb-4">
                         <i class="ri-add-line ri-xl"></i>
                     </div>
-                    <h3 class="text-lg font-medium mb-2">暂无题目</h3>
+                    <h3 class="text-lg font-medium mb-2">질문을 추가해보세요</h3>
                     <p class="text-gray-500 mb-4 text-center">
-                        请在左侧菜单选择题型<br/>或点击下方按钮添加题目</p>
+                        왼쪽 질문 유형을 선택하거나<br/>아래 버튼으로 질문을 추가하세요.
+                    </p>
                     <button id="add-question-btn"
                             class="bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap">
-                        创建题目
+                        질문 추가
                     </button>
                 </div>
-                <!-- 문제 템플릿 (기본적으로 숨겨져 있음) -->
+                <!-- 臾몄젣 ?쒗뵆由?(湲곕낯?곸쑝濡??④꺼???덉쓬) -->
                 <div id="question-template" class="question-container bg-white rounded-lg shadow-sm p-6 hidden"
                      data-question-id="1">
                     <div class="flex items-start justify-between mb-4">
                         <div class="flex-1 min-w-0">
-                            <input type="text" placeholder="请输入题目标题"
+                            <input type="text" placeholder="질문을 입력하세요"
                                    class="w-full text-lg font-medium border-none focus:ring-0 focus:outline-none"/>
-                            <textarea placeholder="请输入题目说明（可选）"
+                            <textarea placeholder="질문 설명을 입력하세요"
                                       class="w-full mt-2 text-sm border-none focus:ring-0 focus:outline-none resize-none text-gray-600"></textarea>
                         </div>
                         <div class="flex items-center space-x-2 ml-4">
@@ -284,34 +395,34 @@
                             </button>
                         </div>
                     </div>
-                    <!-- 단답형 답변 영역 -->
+                    <!-- ?⑤떟???듬? ?곸뿭 -->
                     <div class="answer-container" data-type="short">
                         <div class="bg-gray-50 border border-gray-200 rounded p-3 text-gray-500">
-                            简答文本
+                            단답형 응답
                         </div>
                     </div>
-                    <!-- 서술형 답변 영역 -->
+                    <!-- ?쒖닠???듬? ?곸뿭 -->
                     <div class="answer-container hidden" data-type="essay">
                         <div class="bg-gray-50 border border-gray-200 rounded p-3 text-gray-500 h-36">
-                            叙述文本
+                            서술형 응답
                         </div>
                     </div>
-                    <!-- 객관식 답변 영역 (단일 선택) -->
+                    <!-- 媛앷????듬? ?곸뿭 (?⑥씪 ?좏깮) -->
                     <div class="answer-container hidden" data-type="multiple">
                         <div class="space-y-2">
                             <div class="flex items-center">
                                 <div class="w-6 h-6 flex items-center justify-center mr-2">
                                     <div class="w-4 h-4 rounded-full border border-gray-400"></div>
                                 </div>
-                                <input type="text" placeholder="选项 1"
+                                <input type="text" placeholder="옵션 1"
                                        class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
                                 <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                                     <i class="ri-delete-bin-line"></i>
                                 </button>
                                 <div class="flex items-center space-x-2 ml-8 mt-1">
                                     <select class="jump-target-select border border-gray-300 text-sm rounded p-1">
-                                        <option value="">选择后跳转到题目</option>
-                                        <!-- 여기에는 JS에서 동적으로 채워짐 -->
+                                        <option value="">이동할 다음 질문</option>
+                                        <!-- ?ш린?먮뒗 JS?먯꽌 ?숈쟻?쇰줈 梨꾩썙吏?-->
                                     </select>
                                 </div>
                             </div>
@@ -320,32 +431,32 @@
                                 <div class="w-6 h-6 flex items-center justify-center mr-2">
                                     <div class="w-4 h-4 rounded-full border border-gray-400"></div>
                                 </div>
-                                <input type="text" placeholder="选项 2"
+                                <input type="text" placeholder="옵션 2"
                                        class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
                                 <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                                     <i class="ri-delete-bin-line"></i>
                                 </button>
                                 <div class="flex items-center space-x-2 ml-8 mt-1">
                                     <select class="jump-target-select border border-gray-300 text-sm rounded p-1">
-                                        <option value="">选择后跳转到题目</option>
-                                        <!-- 여기에는 JS에서 동적으로 채워짐 -->
+                                        <option value="">이동할 다음 질문</option>
+                                        <!-- ?ш린?먮뒗 JS?먯꽌 ?숈쟻?쇰줈 梨꾩썙吏?-->
                                     </select>
                                 </div>
                             </div>
                             <button class="flex items-center text-primary font-medium mt-2 add-option-button">
                                 <i class="ri-add-line mr-1"></i>
-                                添加选项
+                                옵션 추가
                             </button>
                         </div>
                     </div>
-                    <!-- 객관식 답변 영역 (다중 선택) -->
+                    <!-- 媛앷????듬? ?곸뿭 (?ㅼ쨷 ?좏깮) -->
                     <div class="answer-container hidden" data-type="multiple-checkbox">
                         <div class="space-y-2">
                             <div class="flex items-center">
                                 <div class="w-6 h-6 flex items-center justify-center mr-2">
                                     <div class="w-4 h-4 rounded border border-gray-400"></div>
                                 </div>
-                                <input type="text" placeholder="选项 1"
+                                <input type="text" placeholder="옵션 1"
                                        class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
                                 <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                                     <i class="ri-delete-bin-line"></i>
@@ -355,7 +466,7 @@
                                 <div class="w-6 h-6 flex items-center justify-center mr-2">
                                     <div class="w-4 h-4 rounded border border-gray-400"></div>
                                 </div>
-                                <input type="text" placeholder="选项 2"
+                                <input type="text" placeholder="옵션 2"
                                        class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
                                 <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                                     <i class="ri-delete-bin-line"></i>
@@ -363,89 +474,98 @@
                             </div>
                             <button class="flex items-center text-primary font-medium mt-2 add-option-button">
                                 <i class="ri-add-line mr-1"></i>
-                                添加选项
+                                옵션 추가
                             </button>
                         </div>
                     </div>
-                    <!-- 드롭다운 답변 영역 -->
+                    <!-- ?쒕∼?ㅼ슫 ?듬? ?곸뿭 -->
                     <div class="answer-container hidden" data-type="dropdown">
                         <div class="space-y-2">
                             <div class="flex items-center">
-                                <input type="text" placeholder="选项 1"
+                                <input type="text" placeholder="옵션 1"
                                        class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
                                 <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                                     <i class="ri-delete-bin-line"></i>
                                 </button>
                                 <div class="flex items-center space-x-2 ml-8 mt-1">
                                     <select class="jump-target-select border border-gray-300 text-sm rounded p-1">
-                                        <option value="">选择后跳转到题目</option>
-                                        <!-- 여기에는 JS에서 동적으로 채워짐 -->
+                                        <option value="">이동할 다음 질문</option>
+                                        <!-- ?ш린?먮뒗 JS?먯꽌 ?숈쟻?쇰줈 梨꾩썙吏?-->
                                     </select>
                                 </div>
                             </div>
                             <div class="flex items-center">
-                                <input type="text" placeholder="选项 2"
+                                <input type="text" placeholder="옵션 2"
                                        class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none"/>
                                 <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                                     <i class="ri-delete-bin-line"></i>
                                 </button>
                                 <div class="flex items-center space-x-2 ml-8 mt-1">
                                     <select class="jump-target-select border border-gray-300 text-sm rounded p-1">
-                                        <option value="">选择后跳转到题目</option>
-                                        <!-- 여기에는 JS에서 동적으로 채워짐 -->
+                                        <option value="">이동할 다음 질문</option>
+                                        <!-- ?ш린?먮뒗 JS?먯꽌 ?숈쟻?쇰줈 梨꾩썙吏?-->
                                     </select>
                                 </div>
                             </div>
                             <button class="flex items-center text-primary font-medium mt-2 add-option-button">
                                 <i class="ri-add-line mr-1"></i>
-                                添加选项
+                                옵션 추가
                             </button>
                         </div>
                         <div class="bg-gray-50 border border-gray-200 rounded p-3 mt-4 text-gray-500 flex items-center">
                             <i class="ri-arrow-down-s-line mr-2"></i>
-                            <span>下拉选择</span>
+                            <span>드롭다운 응답</span>
                         </div>
                     </div>
-                    <!-- 날짜 답변 영역 -->
+                    <!-- ?좎쭨 ?듬? ?곸뿭 -->
                     <div class="answer-container hidden" data-type="date">
                         <div class="bg-gray-50 border border-gray-200 rounded p-3 text-gray-500 flex items-center">
                             <i class="ri-calendar-line mr-2"></i>
-                            选择日期
+                            날짜 입력
                         </div>
                     </div>
-                    <!-- 파일 업로드 답변 영역 -->
+                    <!-- ?뚯씪 ?낅줈???듬? ?곸뿭 -->
                     <div class="answer-container hidden" data-type="file">
                         <div class="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-6 text-center">
                             <div class="w-12 h-12 mx-auto flex items-center justify-center rounded-full bg-gray-100 text-gray-500 mb-2">
                                 <i class="ri-upload-cloud-line ri-lg"></i>
                             </div>
                             <p class="text-gray-500">
-                                将文件拖放到此处或点击上传</p>
-                            <p class="text-xs text-gray-400 mt-1">最大文件大小：10MB</p>
+                                파일을 업로드할 수 있습니다.
+                            </p>
+                            <p class="text-xs text-gray-400 mt-1">최대 파일 크기: 10MB</p>
                         </div>
                     </div>
-                    <!-- 이미지 업로드 답변 영역 -->
+                    <!-- ?대?吏 ?낅줈???듬? ?곸뿭 -->
                     <div class="answer-container hidden" data-type="image">
                         <div class="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-6 text-center">
                             <div class="w-12 h-12 mx-auto flex items-center justify-center rounded-full bg-gray-100 text-gray-500 mb-2">
                                 <i class="ri-upload-cloud-line ri-lg"></i>
                             </div>
                             <p class="text-gray-500">
-                                将图片拖放到此处或点击上传</p>
-                            <p class="text-xs text-gray-400 mt-1">最大文件大小：10MB</p>
+                                이미지를 업로드할 수 있습니다.
+                            </p>
+                            <p class="text-xs text-gray-400 mt-1">최대 파일 크기: 10MB</p>
                         </div>
                     </div>
-                    <!--                계층형 문제유형-->
+                    <!--                怨꾩링??臾몄젣?좏삎-->
                     <div class="answer-container hidden" data-type="hierarchy">
+                        <div class="flex justify-end mb-3">
+                            <button type="button"
+                                    class="px-3 py-1.5 text-sm rounded border border-primary text-primary hover:bg-primary hover:text-white"
+                                    data-hierarchy-edit-open>
+                                편집
+                            </button>
+                        </div>
                         <div class="hierarchy-grid">
                             <div class="hierarchy-column active" data-level="1">
                                 <div class="p-4 border-b border-gray-200 bg-white rounded-t-lg">
                                     <h4 class="font-semibold text-gray-800 flex items-center justify-between">
-                                        第1级 - 大类
+                                        레벨 1
                                         <button class="text-sm text-primary font-medium flex items-center"
                                                 data-add-option="1">
                                             <i class="ri-add-line mr-1"></i>
-                                            添加
+                                            추가
                                         </button>
                                     </h4>
                                 </div>
@@ -457,11 +577,11 @@
                             <div class="hierarchy-column active" data-level="2">
                                 <div class="p-4 border-b border-gray-200 bg-white rounded-t-lg">
                                     <h4 class="font-semibold text-gray-800 flex items-center justify-between">
-                                        第2级 - 细分
+                                        레벨 2
                                         <button class="text-sm text-primary font-medium flex items-center"
                                                 data-add-option="2">
                                             <i class="ri-add-line mr-1"></i>
-                                            添加
+                                            추가
                                         </button>
                                     </h4>
                                 </div>
@@ -473,16 +593,50 @@
                             <div class="hierarchy-column active" data-level="3">
                                 <div class="p-4 border-b border-gray-200 bg-white rounded-t-lg">
                                     <h4 class="font-semibold text-gray-800 flex items-center justify-between">
-                                        第3级 - 子领域
+                                        레벨 3
                                         <button class="text-sm text-primary font-medium flex items-center"
                                                 data-add-option="3">
                                             <i class="ri-add-line mr-1"></i>
-                                            添加
+                                            추가
                                         </button>
                                     </h4>
                                 </div>
                                 <div class="p-2 max-h-64 overflow-y-auto" data-options-container="3">
 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hierarchy-diagram-modal hidden" data-hierarchy-modal>
+                            <div class="hierarchy-diagram-panel">
+                                <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                                    <h3 class="font-semibold text-gray-900">계층 다이어그램 편집기</h3>
+                                    <button type="button"
+                                            class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-800"
+                                            data-hierarchy-edit-close>
+                                        <i class="ri-close-line"></i>
+                                    </button>
+                                </div>
+                                <div class="hierarchy-diagram-body space-y-3">
+                                    <div class="flex flex-wrap gap-2">
+                                        <button type="button"
+                                                class="px-3 py-1.5 text-sm rounded border border-primary text-primary"
+                                                data-hierarchy-diagram-connect>
+                                            선 연결 모드
+                                        </button>
+                                        <span class="text-xs text-gray-600 flex items-center" data-hierarchy-connect-hint>
+                                            선 연결 모드 꺼짐
+                                        </span>
+                                        <button type="button"
+                                                class="ml-auto px-3 py-1.5 text-sm rounded bg-emerald-600 text-white"
+                                                data-hierarchy-diagram-apply>
+                                            완료
+                                        </button>
+                                    </div>
+                                    <div class="hierarchy-diagram-stage" data-hierarchy-stage>
+                                        <svg class="hierarchy-diagram-lines" data-hierarchy-lines></svg>
+                                        <div data-hierarchy-diagram-host></div>
+                                    </div>
+                                    <p class="text-xs text-gray-500">L1 → L2 → L3 구조만 지원합니다. 최대 레벨 3까지만 연결할 수 있습니다.</p>
                                 </div>
                             </div>
                         </div>
@@ -493,8 +647,8 @@
                             <button type="button"
                                     class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
                                     id="question-type-menu-button" aria-expanded="false" aria-haspopup="true">
-                                <span class="mr-1">题型：</span>
-                                <span class="font-medium question-type-text">简答题</span>
+                                <span class="mr-1">유형:</span>
+                                <span class="font-medium question-type-text">단답형</span>
                                 <i class="ri-arrow-down-s-line ml-1"></i>
                             </button>
                             <div class="hidden origin-top-left absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
@@ -503,39 +657,39 @@
                                 <div class="py-1" role="none">
                                     <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
                                             role="menuitem" tabindex="-1" data-type="short">
-                                        简答题
+                                        단답형
                                     </button>
                                     <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
                                             role="menuitem" tabindex="-1" data-type="essay">
-                                        叙述题
+                                        서술형
                                     </button>
                                     <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
                                             role="menuitem" tabindex="-1" data-type="multiple">
-                                        选择题（单选）
+                                        객관식(단일 선택)
                                     </button>
                                     <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
                                             role="menuitem" tabindex="-1" data-type="multiple-checkbox">
-                                        选择题（多选）
+                                        객관식(다중 선택)
                                     </button>
                                     <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
                                             role="menuitem" tabindex="-1" data-type="dropdown">
-                                        下拉选择
+                                        드롭다운
                                     </button>
                                     <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
                                             role="menuitem" tabindex="-1" data-type="date">
-                                        日期回答
+                                        날짜
                                     </button>
                                     <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
                                             role="menuitem" tabindex="-1" data-type="file">
-                                        文件上传
+                                        파일 업로드
                                     </button>
                                     <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
                                             role="menuitem" tabindex="-1" data-type="image">
-                                        图片上传
+                                        이미지 업로드
                                     </button>
                                     <button class="text-gray-700 block px-4 py-2 text-sm w-full text-left hover:bg-gray-50"
                                             role="menuitem" tabindex="-1" data-type="hierarchy">
-                                        层级选择
+                                        계층형
                                     </button>
 
                                 </div>
@@ -543,7 +697,7 @@
                         </div>
                         <div class="ml-auto flex items-center">
                             <input type="checkbox" class="required-checkbox mr-2">
-                            <label class="text-sm text-gray-700">必填</label>
+                            <label class="text-sm text-gray-700">필수</label>
                         </div>
                     </div>
                 </div>
@@ -553,25 +707,25 @@
                 <button id="add-question-btn-bottom"
                         class="flex items-center text-primary font-medium px-4 py-2 rounded-button border border-primary bg-white whitespace-nowrap">
                     <i class="ri-add-line mr-2"></i>
-                    添加题目
+                    질문 추가
                 </button>
             </div>
         </div>
 
-        <!-- 우측 사이드바 - 설정 패널 -->
+        <!-- ?곗륫 ?ъ씠?쒕컮 - ?ㅼ젙 ?⑤꼸 -->
         <!--fixme     <div class="w-72 shrink-0 ml-6">-->
         <div id="right-sidebar"
              class="w-72 shrink-0 ml-6 hidden fixed top-0 right-0 h-full z-40 sm:block sm:relative sm:h-auto sm:right-auto">
             <div class="bg-white rounded-lg shadow-sm sticky top-20 p-4">
-                <h2 class="text-lg font-semibold mb-4">设置</h2>
+                <h2 class="text-lg font-semibold mb-4">설정</h2>
 
                 <div class="border-t border-gray-100 my-4"></div>
-                <!-- 설문지 설정 -->
+                <!-- ?ㅻЦ吏 ?ㅼ젙 -->
                 <div id="survey-settings">
-                    <h3 class="font-medium text-gray-700 mb-3">问卷设置</h3>
+                    <h3 class="font-medium text-gray-700 mb-3">설문 설정</h3>
                     <div class="space-y-4">
                         <div>
-                            <label class="text-sm text-gray-600 block mb-1">填写期限</label>
+                            <label class="text-sm text-gray-600 block mb-1">응답 기간</label>
                             <div class="flex items-center space-x-2">
                                 <input id="start-date" type="date"
                                        th:value="${survey != null ? survey.startDate : ''}"/>
@@ -582,7 +736,7 @@
                             </div>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">公开</span>
+                            <span class="text-sm text-gray-600">공개</span>
                             <label class="custom-switch">
                                 <input id="isPublic" name="isShare" type="checkbox"
                                        th:checked="${survey == null or survey.isShare}"/>
@@ -591,26 +745,26 @@
                             </label>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">收集答题者信息</span>
+                            <span class="text-sm text-gray-600">익명 응답 허용</span>
                             <label class="custom-switch">
                                 <input type="checkbox" checked/>
                                 <span class="slider"></span>
                             </label>
                         </div>
                         <div class="flex items-center justify-between">
-                            <label class="text-sm text-gray-600">问卷类型</label>
+                            <label class="text-sm text-gray-600">설문 종류</label>
                             <select id="survey-type" name="surveyType"
                                     class="border border-gray-300 text-sm rounded px-2 py-1">
                                 <option value="normal"
                                         th:selected="${survey != null and survey.surveyType == 'NORMAL'}">
-                                    普通
+                                    일반
                                 </option>
                                 <option value="student"
                                         th:selected="${survey != null and survey.surveyType == 'STUDENT'}">
-                                    学生
+                                    학생
                                 </option>
                                 <option value="promotion"
-                                        th:selected="${survey != null and survey.surveyType == 'PROMOTION'}">推广佣金
+                                        th:selected="${survey != null and survey.surveyType == 'PROMOTION'}">홍보
                                 </option>
                             </select>
                         </div>
@@ -622,7 +776,7 @@
 </div>
 
 
-<!-- 계층형 관련 스크립트 -->
+<!-- 怨꾩링??愿???ㅽ겕由쏀듃 -->
 <script id="toast-management" type="module">
     function showToast(type, message, showRetry = false) {
         const toast = document.getElementById("toast");
@@ -686,11 +840,11 @@
         const store = getStore(questionId);
         container.innerHTML = "";
 
-        console.log("✅ 호출된 questionId:", questionId);
-        console.log("✅ store.selectedOptions:", store.selectedOptions);
-        console.log("✅ store.hierarchyData:", store.hierarchyData);
-        console.log("✅ store.subhierarchyData:", store.hierarchySubData);
-        console.log("✅ container:", container);
+        console.log("questionId:", questionId);
+        console.log("store.selectedOptions:", store.selectedOptions);
+        console.log("store.hierarchyData:", store.hierarchyData);
+        console.log("store.hierarchySubData:", store.hierarchySubData);
+        console.log("container:", container);
 
         let options = [];
         if (level === 1) options = store.firstHierarchyData;
@@ -703,7 +857,7 @@
             optionDiv.setAttribute("data-option-id", option.id);
             optionDiv.setAttribute("data-parent", parentId);
             optionDiv.innerHTML = `
-        <input type="text" value="${option.text}" placeholder="输入选项名称">
+        <input type="text" value="${option.text}" placeholder="옵션명을 입력하세요">
         <button class="absolute top-2 right-2 w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100" data-delete-option>
             <i class="ri-close-line text-xs"></i>
         </button>
@@ -712,7 +866,7 @@
         });
 
         if (options.length > 0) {
-            console.log("option길이" + options.length);
+            console.log("option湲몄씠" + options.length);
             const currentSelectedId = store.selectedOptions[level];
             const allOptions = container.querySelectorAll(".hierarchy-option");
             let selectedFound = false;
@@ -723,7 +877,7 @@
                     selectedFound = true;
                 }
             });
-            // 선택된 게 없으면 첫 번째를 기본 선택으로
+            // ?좏깮??寃??놁쑝硫?泥?踰덉㎏瑜?湲곕낯 ?좏깮?쇰줈
             if (!selectedFound) {
                 const firstOption = container.querySelector(".hierarchy-option");
                 if (firstOption) {
@@ -731,10 +885,10 @@
                     store.selectedOptions[level] = firstOption.getAttribute("data-option-id");
                 }
             }
-            // 다음 단계 업데이트
+            // ?ㅼ쓬 ?④퀎 ?낅뜲?댄듃
             if (level < 3) {
                 const questionContainer = container.closest(".question-container");
-                const nextParentId = store.selectedOptions[level];  // 위에서 보정된 값 사용
+                const nextParentId = store.selectedOptions[level];  // ?꾩뿉??蹂댁젙??媛??ъ슜
                 const nextLevel = level + 1;
                 const nextContainer = questionContainer.querySelector(`[data-options-container="${nextLevel}"]`);
                 updateHierarchyColumn(level + 1, nextParentId, nextContainer, questionId);
@@ -757,12 +911,12 @@
             !event.target.closest("button") &&
             !event.target.matches("input")
         ) {
-            // ✅ 현재 column(계층)을 정확히 찾기
+            // ???꾩옱 column(怨꾩링)???뺥솗??李얘린
             const levelElement = option.closest("[data-level]");
             const level = parseInt(levelElement.getAttribute("data-level"));
             const questionContainer = option.closest(".question-container");
 
-            // ✅ container를 column 내부에서 찾기 (핵심 수정)
+            // ??container瑜?column ?대??먯꽌 李얘린 (?듭떖 ?섏젙)
             const container = levelElement.querySelector(`[data-options-container="${level}"]`);
 
             const questionId = questionContainer.getAttribute("data-question-id");
@@ -771,16 +925,16 @@
             const optionId = option.getAttribute("data-option-id");
             const store = getStore(questionId);
 
-            // ✅ 선택 상태 갱신
+            // ???좏깮 ?곹깭 媛깆떊
             container.querySelectorAll(".hierarchy-option").forEach((opt) => {
                 opt.classList.remove("selected");
             });
             option.classList.add("selected");
 
             store.selectedOptions[level] = optionId;
-            console.log(`✅ 선택됨: level=${level}, optionId=${optionId}`);
+            console.log(`선택됨 level=${level}, optionId=${optionId}`);
 
-            // ✅ 다음 단계 갱신
+            // ???ㅼ쓬 ?④퀎 媛깆떊
             if (level < 3) {
                 const nextColumn = questionContainer.querySelector(
                     `[data-level="${level + 1}"]`
@@ -804,7 +958,7 @@
 
             const container = questionContainer.querySelector(`[data-options-container="${level}"]`);
             const newOptionId = `${level}-${store.hierarchyOptionCount[level] + 1}`;
-            const newOptionText = "选项";
+            const newOptionText = "옵션";
 
             if (level === 1) {
                 store.firstHierarchyData.push({id: newOptionId, text: newOptionText});
@@ -814,7 +968,7 @@
                 const parentId = store.selectedOptions[level - 1];
 
                 if (!parentId || parentId === "") {
-                    alert(`⚠️ 请先在第${level - 1}级选择一个选项。`);
+                    alert("먼저 부모 옵션을 선택해주세요.");
                     return;
                 }
 
@@ -874,7 +1028,7 @@
                     }
                 }
             } else {
-                alert("每个层级至少需要 2 个选项。");
+                alert("옵션은 최소 2개 이상 필요합니다.");
             }
         }
     });
@@ -906,6 +1060,685 @@
         }
     });
 
+    const hierarchyDiagramDrafts = {};
+
+    function escapeHtml(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    }
+
+    function buildDraftFromStore(store) {
+        const nodes = [];
+        let order = 0;
+        let maxLocalId = 0;
+        const updateMax = (id) => {
+            const match = String(id).match(/^dg-(\d+)$/);
+            if (match) {
+                const n = Number(match[1]);
+                if (!Number.isNaN(n) && n > maxLocalId) maxLocalId = n;
+            }
+        };
+
+        (store.firstHierarchyData || []).forEach((node) => {
+            nodes.push({
+                id: String(node.id),
+                text: node.text || "",
+                parentId: null,
+                optionId: node.optionId,
+                order: order++
+            });
+            updateMax(node.id);
+        });
+
+        Object.entries(store.hierarchyData || {}).forEach(([parentId, list]) => {
+            (list || []).forEach((node) => {
+                nodes.push({
+                    id: String(node.id),
+                    text: node.text || "",
+                    parentId: String(parentId),
+                    optionId: node.optionId,
+                    order: order++
+                });
+                updateMax(node.id);
+            });
+        });
+
+        Object.entries(store.hierarchySubData || {}).forEach(([parentId, list]) => {
+            (list || []).forEach((node) => {
+                nodes.push({
+                    id: String(node.id),
+                    text: node.text || "",
+                    parentId: String(parentId),
+                    optionId: node.optionId,
+                    order: order++
+                });
+                updateMax(node.id);
+            });
+        });
+
+        return {nodes, nextId: maxLocalId + 1};
+    }
+
+    function getDraft(questionId) {
+        if (!hierarchyDiagramDrafts[questionId]) {
+            hierarchyDiagramDrafts[questionId] = {nodes: [], nextId: 1};
+        }
+        return hierarchyDiagramDrafts[questionId];
+    }
+
+    function getNodeMap(nodes) {
+        const map = new Map();
+        nodes.forEach((node) => map.set(String(node.id), node));
+        return map;
+    }
+
+    function calculateLevels(nodes) {
+        const nodeMap = getNodeMap(nodes);
+        const memo = {};
+        let hasCycle = false;
+
+        function levelOf(nodeId, path = new Set()) {
+            const id = String(nodeId);
+            if (memo[id] != null) return memo[id];
+            if (path.has(id)) {
+                hasCycle = true;
+                return 99;
+            }
+            const node = nodeMap.get(id);
+            if (!node || !node.parentId) {
+                memo[id] = 1;
+                return 1;
+            }
+            const nextPath = new Set(path);
+            nextPath.add(id);
+            const parentLevel = levelOf(String(node.parentId), nextPath);
+            memo[id] = parentLevel + 1;
+            return memo[id];
+        }
+
+        nodes.forEach((node) => levelOf(node.id));
+        return {levels: memo, hasCycle};
+    }
+
+    function descendantsOf(nodes, startId) {
+        const descendants = [];
+        const queue = [String(startId)];
+        while (queue.length > 0) {
+            const current = queue.shift();
+            nodes.forEach((node) => {
+                if (String(node.parentId) === String(current)) {
+                    descendants.push(String(node.id));
+                    queue.push(String(node.id));
+                }
+            });
+        }
+        return descendants;
+    }
+
+    const hierarchyDiagramUiState = {};
+
+    function getDiagramUiState(questionId) {
+        if (!hierarchyDiagramUiState[questionId]) {
+            hierarchyDiagramUiState[questionId] = {
+                selectedNodeId: "",
+                connectMode: false,
+                connectParentId: ""
+            };
+        }
+        return hierarchyDiagramUiState[questionId];
+    }
+
+    function findAncestorAtLevel(nodeId, targetLevel, nodes, levels) {
+        const nodeMap = getNodeMap(nodes);
+        let current = nodeMap.get(String(nodeId));
+        while (current) {
+            const level = levels[String(current.id)] || 1;
+            if (level === targetLevel) return String(current.id);
+            current = current.parentId ? nodeMap.get(String(current.parentId)) : null;
+        }
+        return "";
+    }
+
+    function normalizeNodeOrders(nodes) {
+        nodes
+            .sort((a, b) => (a.order || 0) - (b.order || 0))
+            .forEach((node, index) => {
+                node.order = index;
+            });
+    }
+
+    function insertNodeAfterSubtree(draft, newNode, parentId = null) {
+        const nodes = draft.nodes;
+        let insertAfter = -1;
+
+        if (!parentId) {
+            insertAfter = nodes.reduce((max, node) => Math.max(max, node.order || 0), -1);
+        } else {
+            const related = new Set([String(parentId), ...descendantsOf(nodes, String(parentId))]);
+            nodes.forEach((node) => {
+                if (related.has(String(node.id))) {
+                    insertAfter = Math.max(insertAfter, node.order || 0);
+                }
+            });
+        }
+
+        nodes.forEach((node) => {
+            if ((node.order || 0) > insertAfter) {
+                node.order = (node.order || 0) + 1;
+            }
+        });
+
+        newNode.order = insertAfter + 1;
+        nodes.push(newNode);
+    }
+
+    function moveSubtreeUnderParent(nodes, movedRootId, parentId) {
+        const movedSet = new Set([String(movedRootId), ...descendantsOf(nodes, String(movedRootId))]);
+        const movedNodes = nodes
+            .filter((node) => movedSet.has(String(node.id)))
+            .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+        const remaining = nodes
+            .filter((node) => !movedSet.has(String(node.id)))
+            .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+        const parentRelated = new Set([String(parentId), ...descendantsOf(remaining, String(parentId))]);
+        let anchorOrder = -1;
+        remaining.forEach((node) => {
+            if (parentRelated.has(String(node.id))) {
+                anchorOrder = Math.max(anchorOrder, node.order || 0);
+            }
+        });
+
+        let insertIndex = remaining.length;
+        if (anchorOrder >= 0) {
+            const found = remaining.findIndex((node) => (node.order || 0) > anchorOrder);
+            insertIndex = found === -1 ? remaining.length : found;
+        }
+
+        const merged = [
+            ...remaining.slice(0, insertIndex),
+            ...movedNodes,
+            ...remaining.slice(insertIndex)
+        ];
+
+        merged.forEach((node, idx) => {
+            node.order = idx;
+        });
+    }
+
+    function drawDiagramLines(modal, nodes) {
+        const stage = modal.querySelector("[data-hierarchy-stage]");
+        const svg = modal.querySelector("[data-hierarchy-lines]");
+        if (!stage || !svg) return;
+
+        const stageRect = stage.getBoundingClientRect();
+        svg.setAttribute("width", String(stage.clientWidth));
+        svg.setAttribute("height", String(stage.clientHeight));
+        svg.setAttribute("viewBox", `0 0 ${stage.clientWidth} ${stage.clientHeight}`);
+        svg.innerHTML = "";
+
+        const nodeElementMap = new Map();
+        modal.querySelectorAll("[data-diagram-node-id]").forEach((el) => {
+            nodeElementMap.set(String(el.getAttribute("data-diagram-node-id")), el);
+        });
+
+        nodes.forEach((node) => {
+            if (!node.parentId) return;
+            const fromEl = nodeElementMap.get(String(node.parentId));
+            const toEl = nodeElementMap.get(String(node.id));
+            if (!fromEl || !toEl) return;
+
+            const fromRect = fromEl.getBoundingClientRect();
+            const toRect = toEl.getBoundingClientRect();
+            const x1 = fromRect.left + (fromRect.width / 2) - stageRect.left;
+            const y1 = fromRect.bottom - stageRect.top;
+            const x2 = toRect.left + (toRect.width / 2) - stageRect.left;
+            const y2 = toRect.top - stageRect.top;
+            const midY = (y1 + y2) / 2;
+
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("d", `M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`);
+            path.setAttribute("stroke", "#6366f1");
+            path.setAttribute("stroke-width", "2");
+            path.setAttribute("fill", "none");
+            path.setAttribute("opacity", "0.9");
+            svg.appendChild(path);
+        });
+    }
+
+    function renderHierarchyDiagramModal(questionContainer) {
+        const modal = questionContainer.querySelector("[data-hierarchy-modal]");
+        const host = modal?.querySelector("[data-hierarchy-diagram-host]");
+        const questionId = questionContainer.getAttribute("data-question-id");
+        if (!modal || !host || !questionId) return;
+
+        const draft = getDraft(questionId);
+        const uiState = getDiagramUiState(questionId);
+        const {levels} = calculateLevels(draft.nodes);
+        const byLevel = {1: [], 2: [], 3: []};
+        draft.nodes.forEach((node) => {
+            const level = levels[String(node.id)] || 1;
+            if (level >= 1 && level <= 3) byLevel[level].push(node);
+        });
+
+        [1, 2, 3].forEach((level) => {
+            byLevel[level].sort((a, b) => a.order - b.order);
+        });
+
+        const renderNodeCard = (node, level) => {
+            const nodeId = String(node.id);
+            const selectedClass = uiState.selectedNodeId === nodeId ? "is-selected" : "";
+            const connectParentClass = (uiState.connectMode && uiState.connectParentId === nodeId) ? "is-connect-parent" : "";
+            return `
+                <div class="hierarchy-diagram-box ${selectedClass} ${connectParentClass}"
+                     data-diagram-node-id="${escapeHtml(nodeId)}"
+                     data-hierarchy-diagram-node="${escapeHtml(nodeId)}">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[11px] text-indigo-700">L${level}</span>
+                        <button type="button" class="text-gray-400 hover:text-red-500" data-hierarchy-diagram-delete="${escapeHtml(nodeId)}">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                    </div>
+                    <input type="text"
+                           class="w-full border border-indigo-200 bg-white rounded px-2 py-1 text-sm"
+                           data-hierarchy-diagram-text="${escapeHtml(nodeId)}"
+                           value="${escapeHtml(node.text || "")}">
+                </div>
+            `;
+        };
+
+        const buildLevelColumn = (level, innerHtml) => `
+            <div class="hierarchy-diagram-column">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="text-xs font-semibold text-gray-500 uppercase">Level ${level}</div>
+                    <button type="button"
+                            class="text-xs px-2 py-1 rounded border border-primary text-primary hover:bg-primary hover:text-white"
+                            data-hierarchy-diagram-add-level="${level}">
+                        + 추가
+                    </button>
+                </div>
+                ${innerHtml || '<div class="text-xs text-gray-400">박스 없음</div>'}
+            </div>
+        `;
+
+        const level1Html = byLevel[1].map((node) => renderNodeCard(node, 1)).join("");
+
+        const level2ByLevel1Html = byLevel[1].map((level1Node) => {
+            const children = byLevel[2].filter((node) => String(node.parentId) === String(level1Node.id));
+            if (children.length === 0) return "";
+            return `
+                <div class="hierarchy-diagram-group">
+                    <div class="text-[11px] font-semibold text-emerald-700 mb-2">
+                        L1: ${escapeHtml(level1Node.text || "이름 없음")}
+                    </div>
+                    ${children.map((node) => renderNodeCard(node, 2)).join("")}
+                </div>
+            `;
+        }).join("");
+
+        const orphanLevel2 = byLevel[2].filter((node) => {
+            return !byLevel[1].some((parent) => String(parent.id) === String(node.parentId));
+        });
+        const orphanLevel2Html = orphanLevel2.length > 0
+            ? `
+                <div class="hierarchy-diagram-group">
+                    <div class="text-[11px] font-semibold text-rose-700 mb-2">미분류</div>
+                    ${orphanLevel2.map((node) => renderNodeCard(node, 2)).join("")}
+                </div>
+            `
+            : "";
+
+        const level3ByLevel2Html = byLevel[2].map((level2Node) => {
+            const children = byLevel[3].filter((node) => String(node.parentId) === String(level2Node.id));
+            if (children.length === 0) return "";
+            return `
+                <div class="hierarchy-diagram-group">
+                    <div class="text-[11px] font-semibold text-sky-700 mb-2">
+                        L2: ${escapeHtml(level2Node.text || "이름 없음")}
+                    </div>
+                    ${children.map((node) => renderNodeCard(node, 3)).join("")}
+                </div>
+            `;
+        }).join("");
+
+        const orphanLevel3 = byLevel[3].filter((node) => {
+            return !byLevel[2].some((parent) => String(parent.id) === String(node.parentId));
+        });
+        const orphanLevel3Html = orphanLevel3.length > 0
+            ? `
+                <div class="hierarchy-diagram-group">
+                    <div class="text-[11px] font-semibold text-rose-700 mb-2">미분류</div>
+                    ${orphanLevel3.map((node) => renderNodeCard(node, 3)).join("")}
+                </div>
+            `
+            : "";
+
+        host.innerHTML = `
+            <div class="hierarchy-diagram-columns">
+                ${buildLevelColumn(1, level1Html)}
+                ${buildLevelColumn(2, `${level2ByLevel1Html}${orphanLevel2Html}`)}
+                ${buildLevelColumn(3, `${level3ByLevel2Html}${orphanLevel3Html}`)}
+            </div>
+        `;
+
+        const connectButton = modal.querySelector("[data-hierarchy-diagram-connect]");
+        const connectHint = modal.querySelector("[data-hierarchy-connect-hint]");
+        if (connectButton) {
+            connectButton.classList.toggle("bg-primary", uiState.connectMode);
+            connectButton.classList.toggle("text-white", uiState.connectMode);
+            connectButton.classList.toggle("border-primary", true);
+            connectButton.textContent = uiState.connectMode ? "선 연결 모드 ON" : "선 연결 모드";
+        }
+        if (connectHint) {
+            if (!uiState.connectMode) {
+                connectHint.textContent = "선 연결 모드 꺼짐";
+            } else if (!uiState.connectParentId) {
+                connectHint.textContent = "1) 부모 박스를 클릭하세요";
+            } else {
+                connectHint.textContent = "2) 자식 박스를 클릭하세요";
+            }
+        }
+
+    }
+
+    function openHierarchyModal(questionContainer) {
+        const questionId = questionContainer.getAttribute("data-question-id");
+        const modal = questionContainer.querySelector("[data-hierarchy-modal]");
+        if (!questionId || !modal) return;
+        const store = getStore(questionId);
+        hierarchyDiagramDrafts[questionId] = buildDraftFromStore(store);
+        hierarchyDiagramUiState[questionId] = {
+            selectedNodeId: "",
+            connectMode: false,
+            connectParentId: ""
+        };
+        modal.classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+        window.questionSortable?.option("disabled", true);
+        renderHierarchyDiagramModal(questionContainer);
+    }
+
+    function closeHierarchyModal(questionContainer) {
+        const modal = questionContainer.querySelector("[data-hierarchy-modal]");
+        if (!modal) return;
+        modal.classList.add("hidden");
+        window.questionSortable?.option("disabled", false);
+        if (!document.querySelector("[data-hierarchy-modal]:not(.hidden)")) {
+            document.body.style.overflow = "";
+        }
+    }
+
+    function addDiagramNode(questionContainer, addLevel) {
+        const questionId = questionContainer.getAttribute("data-question-id");
+        if (!questionId) return;
+        const draft = getDraft(questionId);
+        const uiState = getDiagramUiState(questionId);
+        const {levels} = calculateLevels(draft.nodes);
+
+        let parentId = null;
+        if (addLevel > 1) {
+            const selectedId = uiState.selectedNodeId;
+            if (!selectedId) {
+                alert(`레벨 ${addLevel - 1} 박스를 먼저 선택해주세요.`);
+                return;
+            }
+
+            parentId = findAncestorAtLevel(selectedId, addLevel - 1, draft.nodes, levels);
+            if (!parentId) {
+                alert(`레벨 ${addLevel - 1} 박스를 먼저 선택해주세요.`);
+                return;
+            }
+        }
+
+        const existingIds = new Set(draft.nodes.map((node) => String(node.id)));
+        let newId = `dg-${draft.nextId++}`;
+        while (existingIds.has(newId)) {
+            newId = `dg-${draft.nextId++}`;
+        }
+
+        const newNode = {
+            id: newId,
+            text: "새 박스",
+            parentId,
+            optionId: null,
+            order: 0
+        };
+        insertNodeAfterSubtree(draft, newNode, parentId);
+        uiState.selectedNodeId = newId;
+        renderHierarchyDiagramModal(questionContainer);
+    }
+
+    function connectDiagramNodes(questionContainer, parentId, childId) {
+        const questionId = questionContainer.getAttribute("data-question-id");
+        if (!questionId) return false;
+        if (!parentId || !childId) {
+            alert("부모 박스와 자식 박스를 모두 선택해주세요.");
+            return false;
+        }
+        if (parentId === childId) {
+            alert("같은 박스끼리는 연결할 수 없습니다.");
+            return false;
+        }
+
+        const draft = getDraft(questionId);
+        const nodes = draft.nodes;
+        const nodeMap = getNodeMap(nodes);
+        const parentNode = nodeMap.get(String(parentId));
+        const childNode = nodeMap.get(String(childId));
+        if (!parentNode || !childNode) {
+            alert("선택한 박스를 찾을 수 없습니다.");
+            return false;
+        }
+
+        let cursor = parentNode;
+        while (cursor) {
+            if (String(cursor.id) === String(childId)) {
+                alert("순환 연결은 허용되지 않습니다.");
+                return false;
+            }
+            cursor = cursor.parentId ? nodeMap.get(String(cursor.parentId)) : null;
+        }
+
+        const {levels: beforeLevels} = calculateLevels(nodes);
+        const parentLevelBefore = beforeLevels[String(parentId)] || 1;
+        const childLevelBefore = beforeLevels[String(childId)] || 1;
+        if (parentLevelBefore === childLevelBefore) {
+            alert("같은 계층끼리는 연결할 수 없습니다.");
+            return false;
+        }
+
+        const previousParentId = childNode.parentId ? String(childNode.parentId) : null;
+        childNode.parentId = String(parentId);
+        const {levels, hasCycle} = calculateLevels(nodes);
+        const parentLevel = levels[String(parentId)] || 1;
+        const overLevel = nodes.some((node) => (levels[String(node.id)] || 1) > 3);
+
+        if (hasCycle || parentLevel >= 3 || overLevel) {
+            childNode.parentId = previousParentId;
+            alert("최대 레벨 3까지만 허용됩니다.");
+            return false;
+        }
+
+        moveSubtreeUnderParent(nodes, String(childId), String(parentId));
+        return true;
+    }
+
+    function handleDiagramNodeClick(questionContainer, nodeId) {
+        const questionId = questionContainer.getAttribute("data-question-id");
+        if (!questionId || !nodeId) return;
+
+        const uiState = getDiagramUiState(questionId);
+        if (!uiState.connectMode) {
+            uiState.selectedNodeId = String(nodeId);
+            renderHierarchyDiagramModal(questionContainer);
+            return;
+        }
+
+        if (!uiState.connectParentId) {
+            uiState.connectParentId = String(nodeId);
+            uiState.selectedNodeId = String(nodeId);
+            renderHierarchyDiagramModal(questionContainer);
+            return;
+        }
+
+        const parentId = uiState.connectParentId;
+        const childId = String(nodeId);
+        const connected = connectDiagramNodes(questionContainer, parentId, childId);
+        uiState.connectParentId = "";
+        if (connected) {
+            uiState.selectedNodeId = childId;
+        }
+        renderHierarchyDiagramModal(questionContainer);
+    }
+
+    function deleteDiagramNode(questionContainer, nodeId) {
+        const questionId = questionContainer.getAttribute("data-question-id");
+        if (!questionId) return;
+        const draft = getDraft(questionId);
+        const uiState = getDiagramUiState(questionId);
+        const removeSet = new Set([String(nodeId), ...descendantsOf(draft.nodes, String(nodeId))]);
+        draft.nodes = draft.nodes.filter((node) => !removeSet.has(String(node.id)));
+        normalizeNodeOrders(draft.nodes);
+        if (removeSet.has(String(uiState.selectedNodeId))) {
+            uiState.selectedNodeId = "";
+        }
+        if (removeSet.has(String(uiState.connectParentId))) {
+            uiState.connectParentId = "";
+        }
+        renderHierarchyDiagramModal(questionContainer);
+    }
+
+    function applyDiagramToHierarchy(questionContainer) {
+        const questionId = questionContainer.getAttribute("data-question-id");
+        if (!questionId) return;
+        const draft = getDraft(questionId);
+        const {levels, hasCycle} = calculateLevels(draft.nodes);
+        if (hasCycle || draft.nodes.some((node) => (levels[String(node.id)] || 1) > 3)) {
+            alert("최대 레벨 3까지만 허용됩니다.");
+            return;
+        }
+
+        const store = getStore(questionId);
+        store.firstHierarchyData = [];
+        store.hierarchyData = {};
+        store.hierarchySubData = {};
+        store.selectedOptions = {1: "", 2: "", 3: ""};
+        store.hierarchyOptionCount = {1: 0, 2: 0, 3: 0};
+
+        const ordered = [...draft.nodes].sort((a, b) => a.order - b.order);
+        ordered.forEach((node) => {
+            const id = String(node.id);
+            const level = levels[id] || 1;
+            const text = node.text || "버튼";
+            const baseOption = node.optionId ? {id, text, optionId: node.optionId} : {id, text};
+
+            if (level === 1) {
+                store.firstHierarchyData.push(baseOption);
+                store.hierarchyOptionCount[1]++;
+            } else if (level === 2 && node.parentId) {
+                const parentId = String(node.parentId);
+                if (!store.hierarchyData[parentId]) store.hierarchyData[parentId] = [];
+                store.hierarchyData[parentId].push(baseOption);
+                store.hierarchyOptionCount[2]++;
+            } else if (level === 3 && node.parentId) {
+                const parentId = String(node.parentId);
+                if (!store.hierarchySubData[parentId]) store.hierarchySubData[parentId] = [];
+                store.hierarchySubData[parentId].push(baseOption);
+                store.hierarchyOptionCount[3]++;
+            }
+        });
+
+        const level1Container = questionContainer.querySelector('[data-options-container="1"]');
+        updateHierarchyColumn(1, null, level1Container, questionId);
+        closeHierarchyModal(questionContainer);
+    }
+
+    document.addEventListener("click", function (event) {
+        const openBtn = event.target.closest("[data-hierarchy-edit-open]");
+        if (openBtn) {
+            const questionContainer = openBtn.closest(".question-container");
+            if (questionContainer) openHierarchyModal(questionContainer);
+            return;
+        }
+
+        const closeBtn = event.target.closest("[data-hierarchy-edit-close]");
+        if (closeBtn) {
+            const questionContainer = closeBtn.closest(".question-container");
+            if (questionContainer) closeHierarchyModal(questionContainer);
+            return;
+        }
+
+        const addLevelBtn = event.target.closest("[data-hierarchy-diagram-add-level]");
+        if (addLevelBtn) {
+            const questionContainer = addLevelBtn.closest(".question-container");
+            const addLevel = Number(addLevelBtn.getAttribute("data-hierarchy-diagram-add-level"));
+            if (questionContainer && addLevel >= 1 && addLevel <= 3) {
+                addDiagramNode(questionContainer, addLevel);
+            }
+            return;
+        }
+
+        const connectBtn = event.target.closest("[data-hierarchy-diagram-connect]");
+        if (connectBtn) {
+            const questionContainer = connectBtn.closest(".question-container");
+            const questionId = questionContainer?.getAttribute("data-question-id");
+            if (questionContainer && questionId) {
+                const uiState = getDiagramUiState(questionId);
+                uiState.connectMode = !uiState.connectMode;
+                uiState.connectParentId = "";
+                renderHierarchyDiagramModal(questionContainer);
+            }
+            return;
+        }
+
+        const nodeBox = event.target.closest("[data-hierarchy-diagram-node]");
+        if (nodeBox && !event.target.closest("[data-hierarchy-diagram-delete]") && !event.target.matches("input")) {
+            const questionContainer = nodeBox.closest(".question-container");
+            const nodeId = nodeBox.getAttribute("data-hierarchy-diagram-node");
+            if (questionContainer && nodeId) {
+                handleDiagramNodeClick(questionContainer, nodeId);
+            }
+            return;
+        }
+
+        const deleteBtn = event.target.closest("[data-hierarchy-diagram-delete]");
+        if (deleteBtn) {
+            const questionContainer = deleteBtn.closest(".question-container");
+            const nodeId = deleteBtn.getAttribute("data-hierarchy-diagram-delete");
+            if (questionContainer && nodeId) deleteDiagramNode(questionContainer, nodeId);
+            return;
+        }
+
+        const applyBtn = event.target.closest("[data-hierarchy-diagram-apply]");
+        if (applyBtn) {
+            const questionContainer = applyBtn.closest(".question-container");
+            if (questionContainer) applyDiagramToHierarchy(questionContainer);
+            return;
+        }
+
+        const modal = event.target.closest("[data-hierarchy-modal]");
+        if (modal && event.target === modal) {
+            const questionContainer = modal.closest(".question-container");
+            if (questionContainer) closeHierarchyModal(questionContainer);
+        }
+    });
+
+    document.addEventListener("input", function (event) {
+        const textInput = event.target.closest("[data-hierarchy-diagram-text]");
+        if (!textInput) return;
+        const questionContainer = textInput.closest(".question-container");
+        const questionId = questionContainer?.getAttribute("data-question-id");
+        if (!questionId) return;
+        const draft = getDraft(questionId);
+        const nodeId = String(textInput.getAttribute("data-hierarchy-diagram-text"));
+        const target = draft.nodes.find((node) => String(node.id) === nodeId);
+        if (target) target.text = textInput.value;
+    });
+
     // export module
     window.hierarchyStore = hierarchyStore;
     window.initHierarchy = initHierarchy;
@@ -915,7 +1748,7 @@
 
 
 <script th:inline="javascript" type="module">
-    //note 설문 형태 저장하는 기능
+    //note ?ㅻЦ ?뺥깭 ??ν븯??湲곕뒫
     function collectQuestions() {
         const questionElements = document.querySelectorAll(
             '#questions-container > .question-container:not(#question-template)'
@@ -931,7 +1764,7 @@
             const questionId = el.dataset.id;
             console.log(title);
             if (!title) collectionFailed = true;
-            //fixme 이거 수정한거 spring dto에 추가해야함.
+            //fixme ?닿굅 ?섏젙?쒓굅 spring dto??異붽??댁빞??
             const isTemplate = el.dataset.template === "true";
             const domainField = el.dataset.domainField || null;
 
@@ -944,7 +1777,7 @@
                 ...(domainField && {domainField})
             };
 
-            // 객관식/드롭다운 질문에 옵션이 있다면 추가
+            // 媛앷????쒕∼?ㅼ슫 吏덈Ц???듭뀡???덈떎硫?異붽?
             if (['multiple', 'multiple-checkbox', 'dropdown'].includes(type)) {
                 const optionInputs = el.querySelectorAll(
                     `.answer-container[data-type="${type}"] input[type="text"]`
@@ -958,7 +1791,7 @@
                 }).filter(
                     opt => {
                         const isValid = opt.text.length > 0;
-                        if (!isValid) collectionFailed = true; // 이것도 true로 설정해서 저장 실패 처리
+                        if (!isValid) collectionFailed = true; // ?닿쾬??true濡??ㅼ젙?댁꽌 ????ㅽ뙣 泥섎━
                         return isValid;
                     });
                 questionData.options = optionPairs;
@@ -972,7 +1805,7 @@
 
                 const hierarchyOptions = [];
 
-                // 1단계
+                // 1?④퀎
                 store.firstHierarchyData.forEach(first => {
                     hierarchyOptions.push({
                         text: first.text,
@@ -1025,20 +1858,17 @@
         const endDate = new Date(endInput.value);
 
         if (endDate < startDate) {
-            console.warn('종료일이 시작일보다 이전입니다.');
+            console.warn("종료일은 시작일보다 이전일 수 없습니다.");
             return false;
         }
         return true;
     }
 
     async function saveForm() {
-        console.log("save button click");
-
-        // [수정] placeholder 텍스트에 의존하면 다국어(중국어)에서 깨짐 → id로 직접 선택
         const titleInput = document.getElementById("survey-title");
 
         if (!titleInput.value.trim()) {
-            window.showToast("error", "请输入问卷标题");
+            window.showToast("error", "설문 제목을 입력해주세요.");
             titleInput.focus();
             return;
         }
@@ -1046,27 +1876,25 @@
         const description = document.querySelector("textarea").value.trim();
         const questions = collectQuestions();
 
-        //저장 가능 체크
         if (questions == null) {
-            console.log("questions is null");
-            window.showToast("error", "请正确填写问卷题目");
+            window.showToast("error", "필수 문항을 모두 입력해주세요.");
             return;
         }
 
         if (questions.length === 0) {
-            window.showToast("error", "请至少添加一道题");
+            window.showToast("error", "질문을 최소 1개 이상 추가해주세요.");
             return;
         }
 
         if (!validateDateRange()) {
-            window.showToast("error", "请检查日期范围");
+            window.showToast("error", "응답 기간을 확인해주세요.");
             return;
         }
 
         const originalContent = saveButton.innerHTML;
         saveButton.innerHTML = `
         <i class="ri-loader-4-line loading-spinner mr-2"></i>
-        保存中...
+        저장 중...
     `;
         saveButton.disabled = true;
 
@@ -1075,16 +1903,12 @@
 
         try {
             const survey = /*[[${survey}]]*/ null;
-            if (survey) console.log("survey있음");
-            else console.log("survey없음");
             const folderId = /*[[${folderId}]]*/ null;
-            const surveyAdminUrl = "/api/v1/survey/admin"
+            const surveyAdminUrl = "/api/v1/survey/admin";
             const url = (survey) ? surveyAdminUrl + "/edit" : surveyAdminUrl + "/make";
             const method = (survey) ? "PATCH" : "POST";
             const surveyType = document.getElementById("survey-type")?.value || "normal";
-            const isShare = document.querySelector('#isPublic').checked;
-            console.log("surveyType:" + surveyType);
-            //fixme payload수정함 이거  dto에서 받아야함.
+            const isShare = document.querySelector("#isPublic").checked;
 
             const payload = {
                 title: titleInput.value,
@@ -1092,13 +1916,14 @@
                 questions,
                 startDate,
                 endDate,
-                surveyType: surveyType,
-                ...(survey && {surveyId: survey.surveyId}), // surveyId가 존재할 때만 id 추가
+                surveyType,
+                ...(survey && {surveyId: survey.surveyId}),
                 folderId,
                 isShare
             };
+
             const response = await fetch(url, {
-                method: method,
+                method,
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -1107,10 +1932,10 @@
 
             if (!response.ok) throw new Error("저장 실패");
 
-            window.showToast("success", "问卷已保存");
+            window.showToast("success", "설문이 저장되었습니다.");
             window.location.href = "/survey/list?folderId=" + folderId;
         } catch (error) {
-            window.showToast("error", "保存过程中发生错误", true);
+            window.showToast("error", "저장 중 오류가 발생했습니다.", true);
         } finally {
             saveButton.innerHTML = originalContent;
             saveButton.disabled = false;
@@ -1138,17 +1963,17 @@
         endInput.value = todayStr;
     }
 
-    //옮길수있는걸로 변경
+    //??만?섏엳?붽구濡?蹂寃?
     const questionsContainer = document.getElementById("questions-container");
 
-    new Sortable(questionsContainer, {
-        handle: ".question-container", // 클릭 가능한 핸들 (필요 시 바꿀 수 있음)
+    window.questionSortable = new Sortable(questionsContainer, {
+        handle: ".question-container", // ?대┃ 媛?ν븳 ?몃뱾 (?꾩슂 ??諛붽? ???덉쓬)
         animation: 150,
-        ghostClass: "bg-gray-100", // 드래그 시 배경색 효과
-        filter: "#question-template, #empty-state", // 드래그 제외할 요소
+        ghostClass: "bg-gray-100", // ?쒕옒洹???諛곌꼍???④낵
+        filter: "#question-template, #empty-state, .hierarchy-diagram-modal, .hierarchy-diagram-modal *", // ?쒕옒洹??쒖쇅???붿냼
         onEnd: function (/**Event*/ evt) {
-            console.log(`문항 ${evt.oldIndex + 1} → ${evt.newIndex + 1}로 이동`);
-            updateJumpTargets(); // 점프 대상 다시 정렬
+            console.log(`문항 ${evt.oldIndex + 1} -> ${evt.newIndex + 1} 이동`);
+            updateJumpTargets(); // ?먰봽 ????ㅼ떆 ?뺣젹
         },
     });
 </script>
@@ -1163,7 +1988,7 @@
                 <div class="w-6 h-6 flex items-center justify-center mr-2">
                     <div class="w-4 h-4 rounded-full border border-gray-400"></div>
                 </div>
-                <input type="text" placeholder="选项 ${optionCount + 1}" class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none">
+                <input type="text" placeholder="옵션 ${optionCount + 1}" class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none">
                 <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                     <i class="ri-delete-bin-line"></i>
                 </button>`;
@@ -1172,13 +1997,13 @@
                 <div class="w-6 h-6 flex items-center justify-center mr-2">
                     <div class="w-4 h-4 rounded border border-gray-400"></div>
                 </div>
-                <input type="text" placeholder="选项 ${optionCount + 1}" class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none">
+                <input type="text" placeholder="옵션 ${optionCount + 1}" class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none">
                 <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                     <i class="ri-delete-bin-line"></i>
                 </button>`;
         } else if (type === "dropdown") {
             wrapper.innerHTML = `
-                <input type="text" placeholder="选项 ${optionCount + 1}" class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none">
+                <input type="text" placeholder="옵션 ${optionCount + 1}" class="flex-1 border-none bg-gray-50 p-2 rounded focus:ring-0 focus:outline-none">
                 <button class="w-8 h-8 flex items-center justify-center text-gray-400 delete-option">
                     <i class="ri-delete-bin-line"></i>
                 </button>`;
@@ -1190,8 +2015,8 @@
 
             selectWrapper.innerHTML = `
         <select class="jump-target-select border border-gray-300 text-sm rounded p-1">
-            <option value="">选择后跳转到题目</option>
-            <!-- 여기에는 JS에서 동적으로 채워짐 -->
+            <option value="">이동할 다음 질문</option>
+            <!-- ?ш린?먮뒗 JS?먯꽌 ?숈쟻?쇰줈 梨꾩썙吏?-->
         </select>
 `;
             wrapper.appendChild(selectWrapper);
@@ -1205,14 +2030,14 @@
             const selects = question.querySelectorAll(".jump-target-select");
             selects.forEach(select => {
                 const currentValue = select.value;
-                select.innerHTML = '<option value="">选择后跳转到题目</option>';
+                select.innerHTML = '<option value="">이동할 다음 질문</option>';
 
                 for (let i = index + 1; i < allQuestions.length; i++) {
                     // const targetQuestion = allQuestions[i];
-                    const displayNumber = i + 1; // 순서대로 1, 2, 3처럼 표기
+                    const displayNumber = i + 1; // ?쒖꽌?濡?1, 2, 3泥섎읆 ?쒓린
                     const option = document.createElement("option");
                     option.value = displayNumber;
-                    option.textContent = `第${displayNumber}题`; // UI에 보이는 순서 기준
+                    option.textContent = `질문 ${displayNumber}`;
                     if (String(displayNumber) === currentValue) option.selected = true;
                     select.appendChild(option);
                 }
@@ -1221,8 +2046,8 @@
     }
 
     document.addEventListener("click", function (event) {
-        // ✅ 옵션 추가 버튼 처리
-        // [수정] 버튼 텍스트(“옵션 추가”)에 의존하면 다국어에서 깨짐 → 클래스 기반으로 처리
+        // ???듭뀡 異붽? 踰꾪듉 泥섎━
+        // [?섏젙] 踰꾪듉 ?띿뒪???쒖샃??異붽??????섏〈?섎㈃ ?ㅺ뎅?댁뿉??源⑥쭚 ???대옒??湲곕컲?쇰줈 泥섎━
         const addButton = event.target.closest(".add-option-button");
         if (addButton) {
             const container = addButton.closest(
@@ -1241,16 +2066,16 @@
             optionsContainer.insertBefore(newOption, addButton);
             updateJumpTargets();
 
-            // 옵션 placeholder 재정렬
-            // [수정] placeholder 접두어(“옵션”)에 의존하면 번역 시 깨짐 → 무조건 순번으로 갱신
+            // ?듭뀡 placeholder ?ъ젙??
+            // [?섏젙] placeholder ?묐몢???쒖샃?섃????섏〈?섎㈃ 踰덉뿭 ??源⑥쭚 ??臾댁“嫄??쒕쾲?쇰줈 媛깆떊
             const inputs = optionsContainer.querySelectorAll('input[type="text"]');
             let count = 1;
             inputs.forEach(input => {
-                input.placeholder = `选项 ${count++}`;
+                input.placeholder = `옵션 ${count++}`;
             });
         }
 
-        // ✅ 옵션 삭제 버튼 처리
+        // ???듭뀡 ??젣 踰꾪듉 泥섎━
         const deleteBtn = event.target.closest(".delete-option");
         if (deleteBtn) {
             const optionsContainer = deleteBtn.closest(".space-y-2");
@@ -1262,7 +2087,7 @@
                 console.log("현재 옵션 개수:", optionCount);
 
                 if (optionCount < 4) {
-                    alert("至少需要 2 个选项。");
+                    alert("옵션은 최소 2개 이상 필요합니다.");
                 } else {
                     const optionRow = deleteBtn.closest("div.flex.items-center");
                     if (optionRow) {
@@ -1281,7 +2106,7 @@
 <script id="question-management" th:inline="javascript" type="module">
     let questionCounter = 0;
 
-    // ✅ 밖으로 뺀 함수들 (전역)
+    // ??諛뽰쑝濡?類 ?⑥닔??(?꾩뿭)
     function addQuestion(type = "short") {
         const questionsContainer = document.getElementById("questions-container");
         const emptyState = document.getElementById("empty-state");
@@ -1321,17 +2146,17 @@
         const typeText = questionElement.querySelector(".question-type-text");
         if (typeText) {
             const typeLabels = {
-                short: "简答题",
-                essay: "叙述题",
-                multiple: "选择题（单选）",
-                "multiple-checkbox": "选择题（多选）",
-                dropdown: "下拉选择",
-                date: "日期回答",
-                file: "文件上传",
-                image: "图片上传",
-                hierarchy: "层级选择"
+                short: "단답형",
+                essay: "서술형",
+                multiple: "객관식(단일 선택)",
+                "multiple-checkbox": "객관식(다중 선택)",
+                dropdown: "드롭다운",
+                date: "날짜",
+                file: "파일 업로드",
+                image: "이미지 업로드",
+                hierarchy: "계층형"
             };
-            typeText.textContent = typeLabels[type] || "简答题";
+            typeText.textContent = typeLabels[type] || "단답형";
         }
     }
 
@@ -1408,7 +2233,7 @@
     window.addQuestion = addQuestion;
 </script>
 
-<!-- 이하 스크립트들은 로직 변경 없이(문구만) 번역된 상태이며, 원본 구조 유지 -->
+<!-- ?댄븯 ?ㅽ겕由쏀듃?ㅼ? 濡쒖쭅 蹂寃??놁씠(臾멸뎄留? 踰덉뿭???곹깭?대ŉ, ?먮낯 援ъ“ ?좎? -->
 <script id="dataLoad" th:inline="javascript" type="module">
     function normalizeQuestionType(type) {
         return String(type || "short").toLowerCase();
@@ -1442,7 +2267,7 @@
         const optionsContainer = container?.querySelector(".space-y-2");
         const addButton = optionsContainer?.querySelector(".add-option-button");
         if (!optionsContainer || !addButton) {
-            console.warn("addButton이 존재하지 않습니다. 현재 옵션 추가 불가능한 상태.");
+            console.warn("addButton이 없어 옵션을 추가할 수 없습니다.");
             return;
         }
 
@@ -1485,7 +2310,7 @@
         options.forEach((option) => {
             const level = option.level;
             const parentId = option.parentOptionId ?? null;
-            const text = option.text ?? "选项";
+            const text = option.text ?? "옵션";
             const id = option.hierarchyId;
             const optionId = option.optionId;
 
@@ -1570,17 +2395,17 @@
     try {
         const survey = /*[[${survey}]]*/ null;
         if (survey && survey.questions?.length > 0) {
-            document.getElementById("survey-title").value = survey.title || "新问卷";
-            // 설명
+            document.getElementById("survey-title").value = survey.title || "새 설문";
+            // ?ㅻ챸
             document.querySelector("textarea").value = survey.description || "";
 
-            // 시작일
+            // ?쒖옉??
             const startDateInput = document.getElementById("start-date");
             if (startDateInput && survey.startDate) {
                 startDateInput.value = survey.startDate;
             }
 
-            // 종료일
+            // 醫낅즺??
             const endDateInput = document.getElementById("end-date");
             if (endDateInput && survey.endDate) {
                 endDateInput.value = survey.endDate;
@@ -1591,7 +2416,7 @@
             restoreJumpTargetSelections();
         }
     } catch (e) {
-        console.warn("survey 데이터 없음");
+        console.warn("survey 데이터가 없습니다.");
     }
 </script>
 
@@ -1602,32 +2427,33 @@
     surveyTypeSelect?.addEventListener('change', async function () {
         const selectedType = this.value;
 
-        // 기존 문항 초기화
+        // 湲곗〈 臾명빆 珥덇린??
         const existingQuestions = document.querySelectorAll(
             '#questions-container > .question-container:not(#question-template)'
         );
         existingQuestions.forEach((el) => el.remove());
         emptyState?.classList.remove("hidden");
 
-        // 일반 설문은 빈 상태로 끝냄
+        // ?쇰컲 ?ㅻЦ? 鍮??곹깭濡??앸깂
         if (selectedType === "normal") return;
 
         try {
-            // 템플릿 API 호출
+            // ?쒗뵆由?API ?몄텧
             const templateQuestions = await api.get(
                 `/survey/admin/template?type=${encodeURIComponent(selectedType)}`
             );
             console.log("templateQuestions:", templateQuestions);
 
-            // 템플릿 문항 생성
+            // ?쒗뵆由?臾명빆 ?앹꽦
             window.renderQuestionList(templateQuestions || [], {forceTemplate: true});
 
             updateJumpTargets();
         } catch (e) {
             console.warn("템플릿 불러오기 실패:", e);
-            window.showToast("error", "模板加载失败");
+            window.showToast("error", "템플릿을 불러오지 못했습니다.");
         }
     });
 </script>
 </body>
 </html>
+

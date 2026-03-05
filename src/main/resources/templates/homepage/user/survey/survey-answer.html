@@ -566,6 +566,34 @@
             });
         });
 
+        document.querySelectorAll('input[type="checkbox"][data-next-question]').forEach(input => {
+            input.addEventListener('change', (e) => {
+                const next = e.target.dataset.nextQuestion;
+                const currentWrapper = e.target.closest('[id^="question-"]');
+                if (!currentWrapper) return;
+
+                const currentIdx = parseInt(currentWrapper.id.split('-')[1]);
+                if (isNaN(currentIdx)) return;
+
+                if (e.target.checked && next) {
+                    handleJump(e, next);
+                } else {
+                    const hasCheckedJump = currentWrapper.querySelector(
+                        'input[type="checkbox"][data-next-question]:checked'
+                    );
+                    if (!hasCheckedJump) {
+                        allQuestions.forEach(el => {
+                            const elIdx = parseInt(el.id.split('-')[1]);
+                            if (elIdx > currentIdx) {
+                                el.style.display = '';
+                            }
+                        });
+                    }
+                }
+                updateProgress();
+            });
+        });
+
         document.querySelectorAll('select').forEach(select => {
             select.addEventListener('change', (e) => {
                 const selectedOption = e.target.options[e.target.selectedIndex];
