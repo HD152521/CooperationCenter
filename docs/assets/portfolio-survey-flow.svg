@@ -1,0 +1,117 @@
+<svg width="1400" height="720" viewBox="0 0 1400 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1400" y2="720" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FAFC"/>
+      <stop offset="1" stop-color="#EEF2FF"/>
+    </linearGradient>
+    <linearGradient id="card1" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#EEF2FF"/>
+      <stop offset="1" stop-color="#DBEAFE"/>
+    </linearGradient>
+    <linearGradient id="card2" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#ECFEFF"/>
+      <stop offset="1" stop-color="#CCFBF1"/>
+    </linearGradient>
+    <linearGradient id="card3" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#F0FDF4"/>
+      <stop offset="1" stop-color="#DCFCE7"/>
+    </linearGradient>
+    <linearGradient id="card4" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FFF7ED"/>
+      <stop offset="1" stop-color="#FFEDD5"/>
+    </linearGradient>
+    <linearGradient id="card5" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FDF4FF"/>
+      <stop offset="1" stop-color="#FAE8FF"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0 0L10 5L0 10V0Z" fill="#475569"/>
+    </marker>
+  </defs>
+
+  <rect width="1400" height="720" rx="24" fill="url(#bg)"/>
+
+  <text x="56" y="72" font-family="Segoe UI, Arial, sans-serif" font-size="36" font-weight="700" fill="#0F172A">
+    Portfolio Flow: Survey Lifecycle in CooperationCenter
+  </text>
+  <text x="56" y="106" font-family="Segoe UI, Arial, sans-serif" font-size="18" fill="#475569">
+    설문 생성부터 응답 수집, 분석/내보내기까지의 End-to-End 흐름
+  </text>
+
+  <!-- cards -->
+  <rect x="56" y="164" width="240" height="220" rx="16" fill="url(#card1)" stroke="#C7D2FE"/>
+  <text x="76" y="206" font-family="Segoe UI, Arial, sans-serif" font-size="21" font-weight="700" fill="#312E81">1. 설문 설계</text>
+  <text x="76" y="238" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#3730A3">- 문항 타입 선택</text>
+  <text x="76" y="264" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#3730A3">- 분기 점프 설정</text>
+  <text x="76" y="290" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#3730A3">- 계층형(Level1~3) 편집</text>
+  <text x="76" y="316" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#3730A3">- 폴더 기반 분류</text>
+  <text x="76" y="352" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#4338CA">UI: Thymeleaf + Vanilla JS</text>
+
+  <rect x="324" y="164" width="240" height="220" rx="16" fill="url(#card2)" stroke="#99F6E4"/>
+  <text x="344" y="206" font-family="Segoe UI, Arial, sans-serif" font-size="21" font-weight="700" fill="#0F766E">2. 발행/노출</text>
+  <text x="344" y="238" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#0F766E">- 공개 여부 설정</text>
+  <text x="344" y="264" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#0F766E">- 응답 기간 검증</text>
+  <text x="344" y="290" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#0F766E">- 목록/상세 렌더링</text>
+  <text x="344" y="316" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#0F766E">- QR 생성</text>
+  <text x="344" y="352" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#0F766E">Controller + SurveySaveService</text>
+
+  <rect x="592" y="164" width="240" height="220" rx="16" fill="url(#card3)" stroke="#86EFAC"/>
+  <text x="612" y="206" font-family="Segoe UI, Arial, sans-serif" font-size="21" font-weight="700" fill="#166534">3. 응답 수집</text>
+  <text x="612" y="238" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#166534">- 동적 문항 렌더링</text>
+  <text x="612" y="264" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#166534">- 진행률/필수 검증</text>
+  <text x="612" y="290" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#166534">- 분기 조건 반영</text>
+  <text x="612" y="316" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#166534">- multipart 제출(파일/이미지)</text>
+  <text x="612" y="352" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#166534">API: /api/v1/survey/answer</text>
+
+  <rect x="860" y="164" width="240" height="220" rx="16" fill="url(#card4)" stroke="#FDBA74"/>
+  <text x="880" y="206" font-family="Segoe UI, Arial, sans-serif" font-size="21" font-weight="700" fill="#9A3412">4. 저장/가공</text>
+  <text x="880" y="238" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#9A3412">- 설문/문항/옵션 저장</text>
+  <text x="880" y="264" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#9A3412">- 응답 로그 적재</text>
+  <text x="880" y="290" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#9A3412">- 파일 경로 매핑</text>
+  <text x="880" y="316" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#9A3412">- 통계 조회 모델 생성</text>
+  <text x="880" y="352" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#9A3412">JPA + QueryDSL + MySQL</text>
+
+  <rect x="1128" y="164" width="240" height="220" rx="16" fill="url(#card5)" stroke="#E9D5FF"/>
+  <text x="1148" y="206" font-family="Segoe UI, Arial, sans-serif" font-size="21" font-weight="700" fill="#6B21A8">5. 분석/운영</text>
+  <text x="1148" y="238" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#6B21A8">- 응답 로그 목록/상세</text>
+  <text x="1148" y="264" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#6B21A8">- CSV 내보내기</text>
+  <text x="1148" y="290" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#6B21A8">- 파일 ZIP 다운로드</text>
+  <text x="1148" y="316" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#6B21A8">- 관리자 운영 워크플로우</text>
+  <text x="1148" y="352" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#6B21A8">SurveyLogService + Admin UI</text>
+
+  <!-- arrows -->
+  <line x1="296" y1="274" x2="316" y2="274" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <line x1="564" y1="274" x2="584" y2="274" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <line x1="832" y1="274" x2="852" y2="274" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <line x1="1100" y1="274" x2="1120" y2="274" stroke="#475569" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <!-- bottom technical map -->
+  <rect x="56" y="434" width="1312" height="236" rx="16" fill="white" stroke="#CBD5E1"/>
+  <text x="82" y="472" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" fill="#0F172A">
+    Technical Layers
+  </text>
+  <text x="82" y="504" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#475569">
+    기업 관점에서 확인 가능한 구현 포인트
+  </text>
+
+  <rect x="82" y="530" width="300" height="108" rx="12" fill="#F8FAFC" stroke="#E2E8F0"/>
+  <text x="100" y="562" font-family="Segoe UI, Arial, sans-serif" font-size="17" font-weight="700" fill="#334155">Frontend Interaction</text>
+  <text x="100" y="588" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#334155">- 상태 기반 동적 렌더링</text>
+  <text x="100" y="610" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#334155">- 유효성/분기/진행률 처리</text>
+
+  <rect x="404" y="530" width="300" height="108" rx="12" fill="#F8FAFC" stroke="#E2E8F0"/>
+  <text x="422" y="562" font-family="Segoe UI, Arial, sans-serif" font-size="17" font-weight="700" fill="#334155">API &amp; Service</text>
+  <text x="422" y="588" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#334155">- REST + View Controller 분리</text>
+  <text x="422" y="610" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#334155">- 도메인 서비스 책임 분할</text>
+
+  <rect x="726" y="530" width="300" height="108" rx="12" fill="#F8FAFC" stroke="#E2E8F0"/>
+  <text x="744" y="562" font-family="Segoe UI, Arial, sans-serif" font-size="17" font-weight="700" fill="#334155">Persistence</text>
+  <text x="744" y="588" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#334155">- JPA 엔티티 관계 모델링</text>
+  <text x="744" y="610" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#334155">- QueryDSL 기반 조회 최적화</text>
+
+  <rect x="1048" y="530" width="300" height="108" rx="12" fill="#F8FAFC" stroke="#E2E8F0"/>
+  <text x="1066" y="562" font-family="Segoe UI, Arial, sans-serif" font-size="17" font-weight="700" fill="#334155">Operations</text>
+  <text x="1066" y="588" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#334155">- CSV/ZIP 추출 자동화</text>
+  <text x="1066" y="610" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#334155">- Swagger/Actuator/Prometheus</text>
+</svg>
+

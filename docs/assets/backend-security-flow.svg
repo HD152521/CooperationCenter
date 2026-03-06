@@ -1,0 +1,87 @@
+﻿<svg width="1280" height="620" viewBox="0 0 1280 620" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1280" y2="620" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F172A"/>
+      <stop offset="1" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#0B5FFF"/>
+      <stop offset="1" stop-color="#22C55E"/>
+    </linearGradient>
+    <filter id="shadow" x="-20" y="-20" width="1400" height="700" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-opacity="0.25"/>
+    </filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L10,3 L0,6 Z" fill="#93C5FD"/>
+    </marker>
+    <marker id="arrowWarn" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L10,3 L0,6 Z" fill="#FCA5A5"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1280" height="620" fill="url(#bg)"/>
+
+  <text x="60" y="64" fill="#E2E8F0" font-size="34" font-family="Segoe UI, Arial, sans-serif" font-weight="700">
+    Backend Security Flow (Self-issued JWT)
+  </text>
+  <text x="60" y="98" fill="#94A3B8" font-size="18" font-family="Segoe UI, Arial, sans-serif">
+    CooperationCenter authentication and authorization pipeline
+  </text>
+
+  <g filter="url(#shadow)">
+    <rect x="60" y="150" rx="16" width="220" height="120" fill="#111827" stroke="#334155"/>
+    <text x="88" y="195" fill="#E5E7EB" font-size="22" font-family="Segoe UI, Arial, sans-serif" font-weight="600">Client Browser</text>
+    <text x="88" y="225" fill="#93C5FD" font-size="16" font-family="Segoe UI, Arial, sans-serif">Cookie + Bearer 요청</text>
+
+    <rect x="350" y="130" rx="16" width="260" height="150" fill="#111827" stroke="#334155"/>
+    <text x="374" y="176" fill="#E5E7EB" font-size="21" font-family="Segoe UI, Arial, sans-serif" font-weight="600">/api/v1/member/login</text>
+    <text x="374" y="206" fill="#93C5FD" font-size="16" font-family="Segoe UI, Arial, sans-serif">MemberService.login()</text>
+    <text x="374" y="230" fill="#93C5FD" font-size="16" font-family="Segoe UI, Arial, sans-serif">login log + token issue</text>
+
+    <rect x="680" y="120" rx="16" width="300" height="170" fill="#111827" stroke="#334155"/>
+    <text x="708" y="165" fill="#E5E7EB" font-size="21" font-family="Segoe UI, Arial, sans-serif" font-weight="600">JwtProvider</text>
+    <text x="708" y="197" fill="#93C5FD" font-size="16" font-family="Segoe UI, Arial, sans-serif">Access(30m) / Refresh(7d)</text>
+    <text x="708" y="221" fill="#93C5FD" font-size="16" font-family="Segoe UI, Arial, sans-serif">claims: type, iss, aud</text>
+    <text x="708" y="245" fill="#93C5FD" font-size="16" font-family="Segoe UI, Arial, sans-serif">HMAC SHA-256 signature</text>
+
+    <rect x="1040" y="150" rx="16" width="180" height="120" fill="#111827" stroke="#334155"/>
+    <text x="1063" y="195" fill="#E5E7EB" font-size="21" font-family="Segoe UI, Arial, sans-serif" font-weight="600">Set-Cookie</text>
+    <text x="1063" y="225" fill="#93C5FD" font-size="15" font-family="Segoe UI, Arial, sans-serif">HttpOnly / SameSite</text>
+
+    <rect x="350" y="350" rx="16" width="320" height="150" fill="#111827" stroke="#334155"/>
+    <text x="374" y="395" fill="#E5E7EB" font-size="21" font-family="Segoe UI, Arial, sans-serif" font-weight="600">AuthenticationTokenFilter</text>
+    <text x="374" y="424" fill="#93C5FD" font-size="16" font-family="Segoe UI, Arial, sans-serif">token extract(cookie/header)</text>
+    <text x="374" y="448" fill="#93C5FD" font-size="16" font-family="Segoe UI, Arial, sans-serif">validate + SecurityContext set</text>
+    <text x="374" y="472" fill="#93C5FD" font-size="16" font-family="Segoe UI, Arial, sans-serif">expired token => cookie delete</text>
+
+    <rect x="760" y="350" rx="16" width="240" height="150" fill="#111827" stroke="#334155"/>
+    <text x="790" y="395" fill="#E5E7EB" font-size="21" font-family="Segoe UI, Arial, sans-serif" font-weight="600">SecurityConfig</text>
+    <text x="790" y="424" fill="#93C5FD" font-size="16" font-family="Segoe UI, Arial, sans-serif">STATLESS session</text>
+    <text x="790" y="448" fill="#93C5FD" font-size="16" font-family="Segoe UI, Arial, sans-serif">RBAC URL rules</text>
+    <text x="790" y="472" fill="#93C5FD" font-size="16" font-family="Segoe UI, Arial, sans-serif">custom entry point</text>
+
+    <rect x="1060" y="350" rx="16" width="180" height="150" fill="#111827" stroke="#334155"/>
+    <text x="1086" y="395" fill="#E5E7EB" font-size="21" font-family="Segoe UI, Arial, sans-serif" font-weight="600">Controller</text>
+    <text x="1086" y="424" fill="#93C5FD" font-size="16" font-family="Segoe UI, Arial, sans-serif">Admin APIs</text>
+    <text x="1086" y="448" fill="#93C5FD" font-size="16" font-family="Segoe UI, Arial, sans-serif">Survey APIs</text>
+    <text x="1086" y="472" fill="#93C5FD" font-size="16" font-family="Segoe UI, Arial, sans-serif">File/Log APIs</text>
+
+    <rect x="60" y="370" rx="16" width="220" height="120" fill="#2B1111" stroke="#7F1D1D"/>
+    <text x="88" y="412" fill="#FECACA" font-size="20" font-family="Segoe UI, Arial, sans-serif" font-weight="600">Expired Token</text>
+    <text x="88" y="440" fill="#FCA5A5" font-size="15" font-family="Segoe UI, Arial, sans-serif">cookie 제거 + /member/login</text>
+  </g>
+
+  <path d="M280 210 L350 210" stroke="#93C5FD" stroke-width="4" marker-end="url(#arrow)"/>
+  <path d="M610 205 L680 205" stroke="#93C5FD" stroke-width="4" marker-end="url(#arrow)"/>
+  <path d="M980 210 L1040 210" stroke="#93C5FD" stroke-width="4" marker-end="url(#arrow)"/>
+  <path d="M1130 270 L1130 330 L670 330 L670 420" stroke="#93C5FD" stroke-width="4" marker-end="url(#arrow)"/>
+  <path d="M670 420 L760 420" stroke="#93C5FD" stroke-width="4" marker-end="url(#arrow)"/>
+  <path d="M1000 420 L1060 420" stroke="#93C5FD" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <path d="M350 430 L280 430" stroke="#FCA5A5" stroke-width="4" marker-end="url(#arrowWarn)"/>
+
+  <rect x="58" y="548" width="1164" height="40" rx="10" fill="#0B1220" stroke="url(#card)"/>
+  <text x="80" y="574" fill="#C7D2FE" font-size="16" font-family="Segoe UI, Arial, sans-serif">
+    Key Point: Tokens are self-issued in app layer, validated on every request, and combined with role-based routing for admin isolation.
+  </text>
+</svg>
