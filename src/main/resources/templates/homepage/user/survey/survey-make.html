@@ -73,6 +73,8 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
             min-height: 300px;
+            max-height: 26rem;
+            overflow-y: auto;
         }
 
         .hierarchy-column {
@@ -166,12 +168,29 @@
             display: none;
         }
 
-        .hierarchy-diagram-columns {
-            position: relative;
+        .hierarchy-diagram-root-action {
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .hierarchy-diagram-sector-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .hierarchy-diagram-sector {
+            border: 1px solid #dbeafe;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.98);
+            padding: 0.5rem;
+        }
+
+        .hierarchy-diagram-sector-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 0.75rem;
-            z-index: 1;
         }
 
         .hierarchy-diagram-column {
@@ -179,9 +198,16 @@
             border-radius: 8px;
             background: rgba(255, 255, 255, 0.95);
             padding: 0.5rem;
-            min-height: 280px;
-            max-height: 520px;
-            overflow: auto;
+            min-height: 220px;
+        }
+
+        .hierarchy-diagram-column-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
         }
 
         .hierarchy-diagram-box {
@@ -218,6 +244,24 @@
 
         .hierarchy-diagram-group:last-child {
             margin-bottom: 0;
+        }
+
+        .hierarchy-diagram-subgroup {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            background: #ffffff;
+        }
+
+        .hierarchy-diagram-subgroup:last-child {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 900px) {
+            .hierarchy-diagram-sector-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .hierarchy-diagram-modal,
@@ -569,7 +613,7 @@
                                         </button>
                                     </h4>
                                 </div>
-                                <div class="p-2 max-h-64 overflow-y-auto" data-options-container="1">
+                                <div class="p-2" data-options-container="1">
 
                                 </div>
                             </div>
@@ -585,7 +629,7 @@
                                         </button>
                                     </h4>
                                 </div>
-                                <div class="p-2 max-h-64 overflow-y-auto" data-options-container="2">
+                                <div class="p-2" data-options-container="2">
 
                                 </div>
                             </div>
@@ -601,7 +645,7 @@
                                         </button>
                                     </h4>
                                 </div>
-                                <div class="p-2 max-h-64 overflow-y-auto" data-options-container="3">
+                                <div class="p-2" data-options-container="3">
 
                                 </div>
                             </div>
@@ -836,7 +880,59 @@
         return hierarchyStore[questionId];
     }
 
+    function setupHierarchyScrollSync(questionContainer) {
+        if (!questionContainer || questionContainer.dataset.hierarchyScrollSyncBound === "true") return;
+
+        const containers = Array.from(questionContainer.querySelectorAll("[data-options-container]"));
+        if (containers.length < 2) {
+            questionContainer.dataset.hierarchyScrollSyncBound = "true";
+            return;
+        }
+
+        let syncing = false;
+        containers.forEach((source) => {
+            source.addEventListener("scroll", () => {
+                if (syncing) return;
+                syncing = true;
+
+                const sourceMax = source.scrollHeight - source.clientHeight;
+                const ratio = sourceMax > 0 ? (source.scrollTop / sourceMax) : 0;
+                containers.forEach((target) => {
+                    if (target === source) return;
+                    const targetMax = target.scrollHeight - target.clientHeight;
+                    target.scrollTop = targetMax > 0 ? targetMax * ratio : 0;
+                });
+
+                syncing = false;
+            });
+        });
+
+        questionContainer.dataset.hierarchyScrollSyncBound = "true";
+    }
+
+    function nextHierarchyOptionId(store, level) {
+        const usedIds = new Set();
+        (store.firstHierarchyData || []).forEach((opt) => usedIds.add(String(opt.id)));
+        Object.values(store.hierarchyData || {}).forEach((list) => {
+            (list || []).forEach((opt) => usedIds.add(String(opt.id)));
+        });
+        Object.values(store.hierarchySubData || {}).forEach((list) => {
+            (list || []).forEach((opt) => usedIds.add(String(opt.id)));
+        });
+
+        let next = (store.hierarchyOptionCount[level] || 0) + 1;
+        let candidate = `${level}-${next}`;
+        while (usedIds.has(candidate)) {
+            next += 1;
+            candidate = `${level}-${next}`;
+        }
+        store.hierarchyOptionCount[level] = next;
+        return candidate;
+    }
+
     function updateHierarchyColumn(level, parentId = null, container, questionId) {
+        if (!container) return;
+        setupHierarchyScrollSync(container.closest(".question-container"));
         const store = getStore(questionId);
         container.innerHTML = "";
 
@@ -957,14 +1053,25 @@
             const store = getStore(questionId);
 
             const container = questionContainer.querySelector(`[data-options-container="${level}"]`);
-            const newOptionId = `${level}-${store.hierarchyOptionCount[level] + 1}`;
             const newOptionText = "옵션";
 
             if (level === 1) {
-                store.firstHierarchyData.push({id: newOptionId, text: newOptionText});
-                store.hierarchyOptionCount[level]++;
+                const level1Id = nextHierarchyOptionId(store, 1);
+                const level2Id = nextHierarchyOptionId(store, 2);
+                const level3Id = nextHierarchyOptionId(store, 3);
+
+                store.firstHierarchyData.push({id: level1Id, text: newOptionText});
+                if (!store.hierarchyData[level1Id]) store.hierarchyData[level1Id] = [];
+                store.hierarchyData[level1Id].push({id: level2Id, text: newOptionText});
+                if (!store.hierarchySubData[level2Id]) store.hierarchySubData[level2Id] = [];
+                store.hierarchySubData[level2Id].push({id: level3Id, text: newOptionText});
+
+                store.selectedOptions[1] = level1Id;
+                store.selectedOptions[2] = level2Id;
+                store.selectedOptions[3] = level3Id;
                 updateHierarchyColumn(level, null, container, questionId);
             } else {
+                const newOptionId = nextHierarchyOptionId(store, level);
                 const parentId = store.selectedOptions[level - 1];
 
                 if (!parentId || parentId === "") {
@@ -979,8 +1086,12 @@
                     if (!store.hierarchySubData[parentId]) store.hierarchySubData[parentId] = [];
                     store.hierarchySubData[parentId].push({id: newOptionId, text: newOptionText});
                 }
-                store.hierarchyOptionCount[level]++;
+                store.selectedOptions[level] = newOptionId;
                 updateHierarchyColumn(level, parentId, container, questionId);
+                if (level === 2) {
+                    const level3Container = questionContainer.querySelector('[data-options-container="3"]');
+                    updateHierarchyColumn(3, newOptionId, level3Container, questionId);
+                }
             }
         }
     });
@@ -1310,7 +1421,34 @@
         });
     }
 
+    function syncHierarchyDiagramColumnScroll(modal) {
+        if (!modal) return;
+        const columns = Array.from(modal.querySelectorAll("[data-hierarchy-diagram-scroll]"));
+        if (columns.length < 2) return;
+
+        let syncing = false;
+        columns.forEach((source) => {
+            source.addEventListener("scroll", () => {
+                if (syncing) return;
+                syncing = true;
+
+                const sourceMax = source.scrollHeight - source.clientHeight;
+                const ratio = sourceMax > 0 ? (source.scrollTop / sourceMax) : 0;
+                columns.forEach((target) => {
+                    if (target === source) return;
+                    const targetMax = target.scrollHeight - target.clientHeight;
+                    target.scrollTop = targetMax > 0 ? targetMax * ratio : 0;
+                });
+
+                syncing = false;
+            });
+        });
+    }
+
     function renderHierarchyDiagramModal(questionContainer) {
+        renderHierarchyDiagramModalSectorized(questionContainer);
+        return;
+
         const modal = questionContainer.querySelector("[data-hierarchy-modal]");
         const host = modal?.querySelector("[data-hierarchy-diagram-host]");
         const questionId = questionContainer.getAttribute("data-question-id");
@@ -1352,7 +1490,7 @@
         };
 
         const buildLevelColumn = (level, innerHtml) => `
-            <div class="hierarchy-diagram-column">
+            <div class="hierarchy-diagram-column" data-hierarchy-diagram-scroll="${level}">
                 <div class="flex items-center justify-between mb-2">
                     <div class="text-xs font-semibold text-gray-500 uppercase">Level ${level}</div>
                     <button type="button"
@@ -1417,13 +1555,75 @@
             `
             : "";
 
+        const rootSectorLevel2Html = byLevel[1].map((level1Node) => {
+            const level2Children = byLevel[2].filter((node) => String(node.parentId) === String(level1Node.id));
+            const level2Cards = level2Children.length > 0
+                ? level2Children.map((node) => renderNodeCard(node, 2)).join("")
+                : '<div class="text-[11px] text-gray-400">No L2 nodes</div>';
+
+            return `
+                <div class="hierarchy-diagram-group">
+                    <div class="text-[11px] font-semibold text-emerald-700 mb-2">
+                        L1: ${escapeHtml(level1Node.text || "Untitled")}
+                    </div>
+                    ${level2Cards}
+                </div>
+            `;
+        }).join("");
+
+        const rootSectorLevel3Html = byLevel[1].map((level1Node) => {
+            const level2Children = byLevel[2].filter((node) => String(node.parentId) === String(level1Node.id));
+            const subGroups = level2Children.map((level2Node) => {
+                const level3Children = byLevel[3].filter((node) => String(node.parentId) === String(level2Node.id));
+                const level3Cards = level3Children.length > 0
+                    ? level3Children.map((node) => renderNodeCard(node, 3)).join("")
+                    : '<div class="text-[11px] text-gray-400">No L3 nodes</div>';
+                return `
+                    <div class="hierarchy-diagram-subgroup">
+                        <div class="text-[11px] font-semibold text-sky-700 mb-2">
+                            L2: ${escapeHtml(level2Node.text || "Untitled")}
+                        </div>
+                        ${level3Cards}
+                    </div>
+                `;
+            }).join("");
+
+            return `
+                <div class="hierarchy-diagram-group">
+                    <div class="text-[11px] font-semibold text-sky-700 mb-2">
+                        L1: ${escapeHtml(level1Node.text || "Untitled")}
+                    </div>
+                    ${subGroups || '<div class="text-[11px] text-gray-400">Add L2 first</div>'}
+                </div>
+            `;
+        }).join("");
+
+        const orphanLevel2RootHtml = orphanLevel2.length > 0
+            ? `
+                <div class="hierarchy-diagram-group">
+                    <div class="text-[11px] font-semibold text-rose-700 mb-2">Orphan L2</div>
+                    ${orphanLevel2.map((node) => renderNodeCard(node, 2)).join("")}
+                </div>
+            `
+            : "";
+
+        const orphanLevel3RootHtml = orphanLevel3.length > 0
+            ? `
+                <div class="hierarchy-diagram-group">
+                    <div class="text-[11px] font-semibold text-rose-700 mb-2">Orphan L3</div>
+                    ${orphanLevel3.map((node) => renderNodeCard(node, 3)).join("")}
+                </div>
+            `
+            : "";
+
         host.innerHTML = `
             <div class="hierarchy-diagram-columns">
                 ${buildLevelColumn(1, level1Html)}
-                ${buildLevelColumn(2, `${level2ByLevel1Html}${orphanLevel2Html}`)}
-                ${buildLevelColumn(3, `${level3ByLevel2Html}${orphanLevel3Html}`)}
+                ${buildLevelColumn(2, `${rootSectorLevel2Html}${orphanLevel2RootHtml}`)}
+                ${buildLevelColumn(3, `${rootSectorLevel3Html}${orphanLevel3RootHtml}`)}
             </div>
         `;
+        syncHierarchyDiagramColumnScroll(modal);
 
         const connectButton = modal.querySelector("[data-hierarchy-diagram-connect]");
         const connectHint = modal.querySelector("[data-hierarchy-connect-hint]");
@@ -1443,6 +1643,145 @@
             }
         }
 
+    }
+
+    function renderHierarchyDiagramModalSectorized(questionContainer) {
+        const modal = questionContainer.querySelector("[data-hierarchy-modal]");
+        const host = modal?.querySelector("[data-hierarchy-diagram-host]");
+        const questionId = questionContainer.getAttribute("data-question-id");
+        if (!modal || !host || !questionId) return;
+
+        const draft = getDraft(questionId);
+        const uiState = getDiagramUiState(questionId);
+        const {levels} = calculateLevels(draft.nodes);
+        const byLevel = {1: [], 2: [], 3: []};
+        draft.nodes.forEach((node) => {
+            const level = levels[String(node.id)] || 1;
+            if (level >= 1 && level <= 3) byLevel[level].push(node);
+        });
+        [1, 2, 3].forEach((level) => {
+            byLevel[level].sort((a, b) => (a.order || 0) - (b.order || 0));
+        });
+
+        const renderNodeCard = (node, level, actionHtml = "") => {
+            const nodeId = String(node.id);
+            const selectedClass = uiState.selectedNodeId === nodeId ? "is-selected" : "";
+            const connectParentClass = (uiState.connectMode && uiState.connectParentId === nodeId) ? "is-connect-parent" : "";
+            return `
+                <div class="hierarchy-diagram-box ${selectedClass} ${connectParentClass}"
+                     data-diagram-node-id="${escapeHtml(nodeId)}"
+                     data-hierarchy-diagram-node="${escapeHtml(nodeId)}">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[11px] text-indigo-700">L${level}</span>
+                        <button type="button" class="text-gray-400 hover:text-red-500" data-hierarchy-diagram-delete="${escapeHtml(nodeId)}">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                    </div>
+                    <input type="text"
+                           class="w-full border border-indigo-200 bg-white rounded px-2 py-1 text-sm"
+                           data-hierarchy-diagram-text="${escapeHtml(nodeId)}"
+                           value="${escapeHtml(node.text || "")}">
+                    ${actionHtml ? `<div class="mt-2">${actionHtml}</div>` : ""}
+                </div>
+            `;
+        };
+
+        const childrenOf = (parentId, expectedLevel) => {
+            return draft.nodes
+                .filter((node) => String(node.parentId) === String(parentId) && (levels[String(node.id)] || 1) === expectedLevel)
+                .sort((a, b) => (a.order || 0) - (b.order || 0));
+        };
+
+        const rootSectorsHtml = byLevel[1].map((level1Node) => {
+            const level2Nodes = childrenOf(level1Node.id, 2);
+            const level2Html = level2Nodes.length > 0
+                ? level2Nodes.map((node) => renderNodeCard(
+                    node,
+                    2,
+                    `<button type="button"
+                             class="text-xs px-2 py-1 rounded border border-primary text-primary hover:bg-primary hover:text-white"
+                             data-hierarchy-diagram-add-level="3"
+                             data-hierarchy-diagram-parent="${escapeHtml(String(node.id))}">
+                        + L3
+                    </button>`
+                )).join("")
+                : '<div class="text-xs text-gray-400">No L2 nodes</div>';
+
+            const level3GroupHtml = level2Nodes.map((level2Node) => {
+                const level3Nodes = childrenOf(level2Node.id, 3);
+                const level3Cards = level3Nodes.length > 0
+                    ? level3Nodes.map((node) => renderNodeCard(node, 3)).join("")
+                    : '<div class="text-xs text-gray-400">No L3 nodes</div>';
+                return `
+                    <div class="hierarchy-diagram-group">
+                        <div class="text-[11px] font-semibold text-sky-700 mb-2">
+                            L2: ${escapeHtml(level2Node.text || "Untitled")}
+                        </div>
+                        ${level3Cards}
+                    </div>
+                `;
+            }).join("");
+            const level3Html = level3GroupHtml || '<div class="text-xs text-gray-400">No L3 nodes</div>';
+
+            return `
+                <div class="hierarchy-diagram-sector">
+                    <div class="hierarchy-diagram-sector-grid">
+                        <div class="hierarchy-diagram-column">
+                            <div class="hierarchy-diagram-column-label">Level 1</div>
+                            ${renderNodeCard(
+                                level1Node,
+                                1,
+                                `<button type="button"
+                                         class="text-xs px-2 py-1 rounded border border-primary text-primary hover:bg-primary hover:text-white"
+                                         data-hierarchy-diagram-add-level="2"
+                                         data-hierarchy-diagram-parent="${escapeHtml(String(level1Node.id))}">
+                                    + L2
+                                </button>`
+                            )}
+                        </div>
+                        <div class="hierarchy-diagram-column">
+                            <div class="hierarchy-diagram-column-label">Level 2</div>
+                            ${level2Html}
+                        </div>
+                        <div class="hierarchy-diagram-column">
+                            <div class="hierarchy-diagram-column-label">Level 3</div>
+                            ${level3Html}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+        host.innerHTML = `
+            <div class="hierarchy-diagram-root-action">
+                <button type="button"
+                        class="text-xs px-2 py-1 rounded border border-primary text-primary hover:bg-primary hover:text-white"
+                        data-hierarchy-diagram-add-level="1">
+                    + Level 1
+                </button>
+            </div>
+            <div class="hierarchy-diagram-sector-list">
+                ${rootSectorsHtml || '<div class="text-xs text-gray-400 p-2">Add Level 1 to start.</div>'}
+            </div>
+        `;
+
+        const connectButton = modal.querySelector("[data-hierarchy-diagram-connect]");
+        const connectHint = modal.querySelector("[data-hierarchy-connect-hint]");
+        if (connectButton) {
+            connectButton.classList.toggle("bg-primary", uiState.connectMode);
+            connectButton.classList.toggle("text-white", uiState.connectMode);
+            connectButton.classList.toggle("border-primary", true);
+            connectButton.textContent = uiState.connectMode ? "Connect Mode ON" : "Connect Mode";
+        }
+        if (connectHint) {
+            if (!uiState.connectMode) {
+                connectHint.textContent = "Select connect mode.";
+            } else if (!uiState.connectParentId) {
+                connectHint.textContent = "1) Select parent node.";
+            } else {
+                connectHint.textContent = "2) Select child node.";
+            }
+        }
     }
 
     function openHierarchyModal(questionContainer) {
@@ -1472,7 +1811,50 @@
         }
     }
 
-    function addDiagramNode(questionContainer, addLevel) {
+    function legacyGenerateDiagramNodeId(draft) {
+        return generateDiagramNodeId(draft);
+        return "";
+        if (addLevel === 1) {
+            const level1Id = generateDiagramNodeId(draft);
+            const level2Id = generateDiagramNodeId(draft);
+            const level3Id = generateDiagramNodeId(draft);
+
+            insertNodeAfterSubtree(draft, {
+                id: level1Id,
+                text: "New L1",
+                parentId: null,
+                optionId: null,
+                order: 0
+            }, null);
+
+            insertNodeAfterSubtree(draft, {
+                id: level2Id,
+                text: "New L2",
+                parentId: level1Id,
+                optionId: null,
+                order: 0
+            }, level1Id);
+
+            insertNodeAfterSubtree(draft, {
+                id: level3Id,
+                text: "New L3",
+                parentId: level2Id,
+                optionId: null,
+                order: 0
+            }, level2Id);
+
+            uiState.selectedNodeId = level1Id;
+            renderHierarchyDiagramModal(questionContainer);
+            return;
+        }
+
+        const newId = generateDiagramNodeId(draft);
+        return newId;
+    }
+
+    function legacyAddDiagramNode(questionContainer, addLevel) {
+        return addDiagramNode(questionContainer, addLevel);
+        return;
         const questionId = questionContainer.getAttribute("data-question-id");
         if (!questionId) return;
         const draft = getDraft(questionId);
@@ -1503,6 +1885,84 @@
         const newNode = {
             id: newId,
             text: "새 박스",
+            parentId,
+            optionId: null,
+            order: 0
+        };
+        insertNodeAfterSubtree(draft, newNode, parentId);
+        uiState.selectedNodeId = newId;
+        renderHierarchyDiagramModal(questionContainer);
+    }
+
+    function generateDiagramNodeId(draft) {
+        const existingIds = new Set(draft.nodes.map((node) => String(node.id)));
+        let newId = `dg-${draft.nextId++}`;
+        while (existingIds.has(newId)) {
+            newId = `dg-${draft.nextId++}`;
+        }
+        return newId;
+    }
+
+    function addDiagramNode(questionContainer, addLevel, explicitParentId = "") {
+        const questionId = questionContainer.getAttribute("data-question-id");
+        if (!questionId) return;
+        const draft = getDraft(questionId);
+        const uiState = getDiagramUiState(questionId);
+        const {levels} = calculateLevels(draft.nodes);
+
+        let parentId = null;
+        if (addLevel > 1) {
+            const selectedId = explicitParentId ? String(explicitParentId) : uiState.selectedNodeId;
+            if (!selectedId) {
+                alert(`Select a level ${addLevel - 1} node first.`);
+                return;
+            }
+
+            parentId = findAncestorAtLevel(selectedId, addLevel - 1, draft.nodes, levels);
+            if (!parentId) {
+                alert(`Select a level ${addLevel - 1} node first.`);
+                return;
+            }
+        }
+
+        if (addLevel === 1) {
+            const level1Id = generateDiagramNodeId(draft);
+            const level2Id = generateDiagramNodeId(draft);
+            const level3Id = generateDiagramNodeId(draft);
+
+            insertNodeAfterSubtree(draft, {
+                id: level1Id,
+                text: "New L1",
+                parentId: null,
+                optionId: null,
+                order: 0
+            }, null);
+
+            insertNodeAfterSubtree(draft, {
+                id: level2Id,
+                text: "New L2",
+                parentId: level1Id,
+                optionId: null,
+                order: 0
+            }, level1Id);
+
+            insertNodeAfterSubtree(draft, {
+                id: level3Id,
+                text: "New L3",
+                parentId: level2Id,
+                optionId: null,
+                order: 0
+            }, level2Id);
+
+            uiState.selectedNodeId = level1Id;
+            renderHierarchyDiagramModal(questionContainer);
+            return;
+        }
+
+        const newId = generateDiagramNodeId(draft);
+        const newNode = {
+            id: newId,
+            text: "New Node",
             parentId,
             optionId: null,
             order: 0
@@ -1676,8 +2136,9 @@
         if (addLevelBtn) {
             const questionContainer = addLevelBtn.closest(".question-container");
             const addLevel = Number(addLevelBtn.getAttribute("data-hierarchy-diagram-add-level"));
+            const parentId = addLevelBtn.getAttribute("data-hierarchy-diagram-parent") || "";
             if (questionContainer && addLevel >= 1 && addLevel <= 3) {
-                addDiagramNode(questionContainer, addLevel);
+                addDiagramNode(questionContainer, addLevel, parentId);
             }
             return;
         }
